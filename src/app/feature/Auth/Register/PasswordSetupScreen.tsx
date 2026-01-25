@@ -90,7 +90,7 @@ const PasswordSetupScreen = () => {
 
   const handleSuccessAlertClose = () => {
     setShowSuccessAlert(false);
-    navigation.navigate("Home");
+    navigation.navigate("Login");
   };
 
   const handlePrivacyPolicy = () => {

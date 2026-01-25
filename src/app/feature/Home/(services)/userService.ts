@@ -38,7 +38,7 @@ export const userService = {
         .from("users")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle(); // Usar maybeSingle() para manejar 0 resultados
 
       if (error) {
         throw error;
@@ -67,14 +67,24 @@ export const userService = {
         return { fullName: null, error: authError };
       }
 
+      console.log("Fetching user data for ID:", user.id);
+
       const { data, error } = await supabase
         .from("users")
         .select("full_name")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
+
+      console.log("Query result:", { data, error });
 
       if (error) {
         throw error;
+      }
+
+      // Si no hay datos, el usuario no está en la tabla users
+      if (!data) {
+        console.log("User not found in users table, returning null");
+        return { fullName: null, error: null };
       }
 
       return { fullName: data?.full_name || null, error: null };

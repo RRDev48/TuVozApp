@@ -5,12 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
+import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
 
 type LoginScreenNavigationProp = StackNavigationProp<
@@ -23,14 +24,45 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleContinue = () => {
-    // TODO: Implementar lógica de login
-    console.log("Login", { email, password });
+  const handleContinue = async () => {
+    // Limpiar errores previos
+    setEmailError("");
+    setPasswordError("");
+
+    if (!email.trim() || !password.trim()) {
+      if (!email.trim()) setEmailError("Por favor ingresa tu email");
+      if (!password.trim()) setPasswordError("Por favor ingresa tu contraseña");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await authService.signIn(email, password);
+
+      if (response.success) {
+        // Navegar al Home después de login exitoso
+        navigation.navigate("Home");
+      } else {
+        // Marcar ambos campos como error cuando las credenciales son incorrectas
+        setEmailError("Credenciales incorrectas");
+        setPasswordError("Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setEmailError("Error al iniciar sesión");
+      setPasswordError("Error al iniciar sesión");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
@@ -72,13 +104,21 @@ const LoginScreen = () => {
         {/* Campo Email */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Como es tu correo electronico?</Text>
-          <View style={styles.inputContainer}>
+          <View
+            style={[
+              styles.inputContainer,
+              emailError ? styles.inputContainerError : null,
+            ]}
+          >
             <TextInput
               style={styles.input}
               placeholder="Email*"
               placeholderTextColor={colors.white}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                setEmailError("");
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
@@ -90,18 +130,29 @@ const LoginScreen = () => {
               style={styles.inputIcon}
             />
           </View>
+          {emailError ? (
+            <Text style={styles.errorText}>{emailError}</Text>
+          ) : null}
         </View>
 
         {/* Campo Contraseña */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Y tu contraseña?</Text>
-          <View style={styles.inputContainer}>
+          <View
+            style={[
+              styles.inputContainer,
+              passwordError ? styles.inputContainerError : null,
+            ]}
+          >
             <TextInput
               style={styles.input}
               placeholder="Contraseña*"
               placeholderTextColor={colors.white}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                setPasswordError("");
+              }}
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="password"
@@ -117,6 +168,9 @@ const LoginScreen = () => {
               />
             </TouchableOpacity>
           </View>
+          {passwordError ? (
+            <Text style={styles.errorText}>{passwordError}</Text>
+          ) : null}
         </View>
 
         {/* Link olvidaste contraseña */}
@@ -133,11 +187,14 @@ const LoginScreen = () => {
 
       {/* Botón Continuar */}
       <TouchableOpacity
-        style={styles.continueButton}
+        style={[styles.continueButton, isLoading && styles.buttonDisabled]}
         onPress={handleContinue}
         activeOpacity={0.8}
+        disabled={isLoading}
       >
-        <Text style={styles.continueButtonText}>Continuar</Text>
+        <Text style={styles.continueButtonText}>
+          {isLoading ? "Iniciando sesión..." : "Continuar"}
+        </Text>
       </TouchableOpacity>
 
       {/* Ayuda */}
@@ -211,6 +268,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
+  inputContainerError: {
+    borderWidth: 2,
+    borderColor: "#FF3B30",
+  },
   input: {
     flex: 1,
     fontSize: 15,
@@ -224,6 +285,12 @@ const styles = StyleSheet.create({
   inputIconButton: {
     marginLeft: 10,
     padding: 4,
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#FF3B30",
+    marginTop: 4,
+    marginLeft: 10,
   },
   forgotPasswordContainer: {
     alignItems: "center",
@@ -240,6 +307,9 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: "center",
     marginBottom: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   continueButtonText: {
     color: colors.white,
