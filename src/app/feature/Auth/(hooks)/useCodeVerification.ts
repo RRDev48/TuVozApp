@@ -1,0 +1,71 @@
+import { useEffect, useRef, useState } from "react";
+import { Keyboard, TextInput } from "react-native";
+
+interface UseCodeVerificationProps {
+  codeLength?: number;
+  onComplete?: (code: string) => void;
+}
+
+export const useCodeVerification = ({
+  codeLength = 6,
+  onComplete,
+}: UseCodeVerificationProps = {}) => {
+  const [code, setCode] = useState<string[]>(Array(codeLength).fill(""));
+  const [isVerifying, setIsVerifying] = useState(false);
+  const inputRefs = useRef<Array<TextInput | null>>([]);
+
+  const handleCodeChange = (value: string, index: number) => {
+    // Solo permitir números
+    if (value && !/^\d$/.test(value)) {
+      return;
+    }
+
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+
+    // Auto-avanzar al siguiente campo
+    if (value && index < codeLength - 1) {
+      inputRefs.current[index + 1]?.focus();
+    } else if (value && index === codeLength - 1) {
+      // Cerrar teclado al completar el último dígito
+      Keyboard.dismiss();
+    }
+  };
+
+  const handleKeyPress = (e: any, index: number) => {
+    // Retroceder al campo anterior al presionar backspace
+    if (e.nativeEvent.key === "Backspace" && !code[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const resetCode = () => {
+    setCode(Array(codeLength).fill(""));
+    inputRefs.current[0]?.focus();
+  };
+
+  const getFullCode = () => code.join("");
+
+  const isCodeComplete = () => code.every((digit) => digit !== "");
+
+  // Verificar automáticamente cuando se complete el código
+  useEffect(() => {
+    const fullCode = getFullCode();
+    if (fullCode.length === codeLength && !isVerifying && onComplete) {
+      onComplete(fullCode);
+    }
+  }, [code, codeLength, isVerifying, onComplete]);
+
+  return {
+    code,
+    inputRefs,
+    isVerifying,
+    setIsVerifying,
+    handleCodeChange,
+    handleKeyPress,
+    resetCode,
+    getFullCode,
+    isCodeComplete,
+  };
+};
