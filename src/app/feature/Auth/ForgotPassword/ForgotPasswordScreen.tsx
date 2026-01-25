@@ -73,7 +73,6 @@ const ForgotPasswordScreen = () => {
 
   const handleHelp = () => {
     // TODO: Navegar a pantalla de ayuda
-    console.log("Help");
   };
 
   return (

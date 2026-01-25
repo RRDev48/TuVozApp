@@ -47,7 +47,6 @@ const RegisterInfoScreen = () => {
 
   const handlePrivacyPolicy = () => {
     // TODO: Abrir política de privacidad
-    console.log("Open privacy policy");
   };
 
   return (

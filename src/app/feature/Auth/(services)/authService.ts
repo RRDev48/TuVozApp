@@ -125,8 +125,6 @@ export const authService = {
     metadata?: { full_name: string; age: number; role: string },
   ) {
     try {
-      console.log("Creating user with:", { email, metadata });
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -141,7 +139,6 @@ export const authService = {
         throw error;
       }
 
-      console.log("User created successfully:", data);
       return { success: true, data };
     } catch (error: any) {
       console.error("Error signing up:", error);

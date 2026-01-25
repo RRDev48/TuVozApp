@@ -34,7 +34,7 @@ const HomeScreen = () => {
             route={item.component}
             image={item.icon}
             styles={homeMenuItemStyles}
-            onPress={() => console.log(`Navigate to ${item.component}`)}
+            onPress={() => {}}
           />
         )}
         keyExtractor={(item) => item.component}

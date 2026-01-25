@@ -6,13 +6,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    Alert,
-    Image,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
 import { authService } from "../(services)/authService";
@@ -44,7 +44,6 @@ const CodeVerificationScreen = () => {
     try {
       // TEMPORAL: Aceptar 111111 hasta configurar SMTP
       if (fullCode === "111111") {
-        console.log("Using temporary code 111111");
         navigation.navigate("PasswordSetup", { email, name, age, role });
         return;
       }

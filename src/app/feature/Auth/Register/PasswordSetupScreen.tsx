@@ -37,16 +37,12 @@ const PasswordSetupScreen = () => {
 
   const handleRegister = async (validPassword: string) => {
     try {
-      console.log("Starting registration with:", { email, name, age, role });
-
       // Completar registro con Supabase
       const response = await authService.signUp(email, validPassword, {
         full_name: name,
         age: parseInt(age),
         role: role,
       });
-
-      console.log("Registration response:", response);
 
       if (response.success) {
         setShowSuccessAlert(true);
@@ -95,7 +91,6 @@ const PasswordSetupScreen = () => {
 
   const handlePrivacyPolicy = () => {
     // TODO: Abrir política de privacidad
-    console.log("Open privacy policy");
   };
 
   return (

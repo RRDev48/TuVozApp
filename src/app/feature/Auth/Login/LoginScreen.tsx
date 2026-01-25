@@ -9,7 +9,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
@@ -71,7 +71,6 @@ const LoginScreen = () => {
 
   const handleHelp = () => {
     // TODO: Navegar a pantalla de ayuda
-    console.log("Help");
   };
 
   return (

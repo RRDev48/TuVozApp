@@ -1,4 +1,4 @@
-const getGreeting = (name?: string): string => {
+const getGreeting = (name?: string | null): string => {
   const hour: number = new Date().getHours();
   const userName = name ? ` ${name}` : "";
 
