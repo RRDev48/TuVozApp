@@ -1,15 +1,15 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { RootStackParamsList } from "@/src/app/navigation/navigation.types";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { ROLE_OPTIONS } from "../(constants)/roles";
 import { useRoleSelection } from "../(hooks)/useRoleSelection";

@@ -19,7 +19,7 @@ import OnboardingScreen from "../feature/Onboarding/screen/OnboardingScreen";
 import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
 import SplashScreen from "../feature/Splash/screen/SplashScreen";
 import CardsScreen from "../feature/tarjetas/screens/CardsScreen";
-import { RootStackParamsList } from "./navigation.types";
+import RootStackParamsList from "./navigation.types";
 
 // Definición del stack principal tipado con RootStackParamsList
 const Stack = createStackNavigator<RootStackParamsList>();
