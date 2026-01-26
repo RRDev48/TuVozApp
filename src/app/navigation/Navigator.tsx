@@ -1,6 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { colors } from "../design-system/themes/globalColors-theme";
+import PersonalizacionScreen from "../feature/ajustes/screens/PersonalizacionScreen";
+import SettingsScreen from "../feature/ajustes/screens/SettingsScreen";
 import ForgotPasswordScreen from "../feature/Auth/ForgotPassword/ForgotPasswordScreen";
 import LoginScreen from "../feature/Auth/Login/LoginScreen";
 import CodeVerificationScreen from "../feature/Auth/Register/CodeVerificationScreen";
@@ -9,47 +11,47 @@ import PasswordSetupScreen from "../feature/Auth/Register/PasswordSetupScreen";
 import RegisterInfoScreen from "../feature/Auth/Register/RegisterInfoScreen";
 import RoleSelectionScreen from "../feature/Auth/Register/RoleSelectionScreen";
 import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
+import EmergencyScreen from "../feature/emergencias/screens/EmergencyScreen";
+import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
+import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
 import OnboardingScreen from "../feature/Onboarding/screen/OnboardingScreen";
+import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
 import SplashScreen from "../feature/Splash/screen/SplashScreen";
+import CardsScreen from "../feature/tarjetas/screens/CardsScreen";
 import { RootStackParamsList } from "./navigation.types";
 
 // Definición del stack principal tipado con RootStackParamsList
 const Stack = createStackNavigator<RootStackParamsList>();
 
-// Pantallas principales visibles desde el menú inferior o principal
-// const mainScreens = [
-//   { name: "Home", component: HomeScreen },
-//   { name: "Expresate", component: ExpresateScreen },
-//   { name: "Rutinas", component: RoutineScreen },
-//   { name: "Tarjetas", component: CardsScreen },
-//   { name: "Atajos", component: ShortcutScreen },
-//   { name: "Emergencias", component: EmergencyScreen },
-//   { name: "Ajustes", component: SettingsScreen },
-//   { name: "PersonalizationScreen", component: PersonalizationScreen },
-// ];
+const mainScreens = [
+  { name: "Home", component: HomeScreen },
+  { name: "Expresate", component: ExpresateScreen },
+  { name: "Rutinas", component: RoutineScreen },
+  { name: "Tarjetas", component: CardsScreen },
+  { name: "Atajos", component: ShortcutScreen },
+  { name: "Emergencias", component: EmergencyScreen },
+  { name: "Ajustes", component: SettingsScreen },
+];
 
-// Subpantallas de la sección "Exprésate" (por ahora usan SettingsScreen como placeholder)
-// const expresateScreens = [
-//   { name: "Acciones", component: SettingsScreen },
-//   { name: "Objetos", component: SettingsScreen },
-//   { name: "Preguntas", component: SettingsScreen },
-//   { name: "Animales", component: SettingsScreen },
-// ];
+const expresateScreens = [
+  { name: "Acciones", component: SettingsScreen },
+  { name: "Objetos", component: SettingsScreen },
+  { name: "Preguntas", component: SettingsScreen },
+  { name: "Animales", component: SettingsScreen },
+];
 
-// Subpantallas de la sección "Tarjetas"
-// const tarjetasScreens = [
-//   { name: "PersonalizaTusTarjetas", component: SettingsScreen },
-//   { name: "CreaNuevasTarjetas", component: SettingsScreen },
-// ];
+const tarjetasScreens = [
+  { name: "PersonalizaTusTarjetas", component: SettingsScreen },
+  { name: "CreaNuevasTarjetas", component: SettingsScreen },
+];
 
-// Subpantallas de la sección "Atajos"
-// const atajosScreens = [
-//   { name: "MisDatos", component: SettingsScreen },
-//   { name: "ComoMeSiento", component: SettingsScreen },
-//   { name: "Ubicaciones", component: SettingsScreen },
-//   { name: "YoQuiero", component: SettingsScreen },
-// ];
+const atajosScreens = [
+  { name: "MisDatos", component: SettingsScreen },
+  { name: "ComoMeSiento", component: SettingsScreen },
+  { name: "Ubicaciones", component: SettingsScreen },
+  { name: "YoQuiero", component: SettingsScreen },
+];
 
 // Navegador principal de la app.
 // Registra todas las pantallas del stack reutilizando las listas definidas arriba.
@@ -82,8 +84,11 @@ const StackNavigator = () => {
         component={CodeVerificationScreen}
       />
       <Stack.Screen name="PasswordSetup" component={PasswordSetupScreen} />
-      <Stack.Screen name="Home" component={HomeScreen} />
-      {/* 
+      <Stack.Screen
+        name="PersonalizationScreen"
+        component={PersonalizacionScreen}
+      />
+
       {mainScreens.map((screen) => (
         <Stack.Screen
           key={screen.name}
@@ -114,7 +119,7 @@ const StackNavigator = () => {
           name={screen.name as keyof RootStackParamsList}
           component={screen.component}
         />
-      ))} */}
+      ))}
     </Stack.Navigator>
   );
 };

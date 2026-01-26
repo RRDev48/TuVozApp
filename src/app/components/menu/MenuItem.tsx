@@ -1,5 +1,6 @@
+import CustomText from "@/src/app/components/CustomText";
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import { MenuItemProps } from "../../models/menu.props";
 
 const MenuItem = ({ name, image, styles, onPress }: MenuItemProps) => {
@@ -12,7 +13,7 @@ const MenuItem = ({ name, image, styles, onPress }: MenuItemProps) => {
       >
         <Image source={image} style={styles.icon} resizeMode="contain" />
       </TouchableOpacity>
-      <Text style={styles.textCard}>{name}</Text>
+      <CustomText style={styles.textCard}>{name}</CustomText>
     </View>
   );
 };
