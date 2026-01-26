@@ -1,6 +1,6 @@
 // Definición de los parámetros de cada ruta del stack principal.
 // Si una pantalla necesita props, se tipan aquí en lugar de `undefined`.
-export type RootStackParamsList = {
+type RootStackParamsList = {
   // Splash/Bienvenida
   Splash: undefined;
   Onboarding: undefined;
@@ -24,7 +24,7 @@ export type RootStackParamsList = {
   Expresate: undefined;
   Rutinas: undefined;
   Tarjetas: undefined;
-  Atajos: undefined;
+  Frases: undefined;
   Emergencias: undefined;
   Ajustes: undefined;
   PersonalizationScreen: undefined;
@@ -39,12 +39,11 @@ export type RootStackParamsList = {
   PersonalizaTusTarjetas: undefined;
   CreaNuevasTarjetas: undefined;
 
-  // Subrutas de "Atajos"
+  // Subrutas de "Frases"
   MisDatos: undefined;
   ComoMeSiento: undefined;
   Ubicaciones: undefined;
   YoQuiero: undefined;
 };
 
-// Export vacío para permitir importar el módulo sin miembros nombrados si se requiere.
-export default {};
+export default RootStackParamsList;

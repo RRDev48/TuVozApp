@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-export const achievementModalStyles = StyleSheet.create({
+const achievementModalStyles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
@@ -63,3 +63,5 @@ export const achievementModalStyles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default achievementModalStyles;

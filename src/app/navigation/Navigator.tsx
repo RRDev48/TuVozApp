@@ -29,7 +29,7 @@ const mainScreens = [
   { name: "Expresate", component: ExpresateScreen },
   { name: "Rutinas", component: RoutineScreen },
   { name: "Tarjetas", component: CardsScreen },
-  { name: "Atajos", component: ShortcutScreen },
+  { name: "Frases", component: ShortcutScreen },
   { name: "Emergencias", component: EmergencyScreen },
   { name: "Ajustes", component: SettingsScreen },
 ];
@@ -46,7 +46,7 @@ const tarjetasScreens = [
   { name: "CreaNuevasTarjetas", component: SettingsScreen },
 ];
 
-const atajosScreens = [
+const frasesScreens = [
   { name: "MisDatos", component: SettingsScreen },
   { name: "ComoMeSiento", component: SettingsScreen },
   { name: "Ubicaciones", component: SettingsScreen },
@@ -113,7 +113,7 @@ const StackNavigator = () => {
         />
       ))}
 
-      {atajosScreens.map((screen) => (
+      {frasesScreens.map((screen) => (
         <Stack.Screen
           key={screen.name}
           name={screen.name as keyof RootStackParamsList}

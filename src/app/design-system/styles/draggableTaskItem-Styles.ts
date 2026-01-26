@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const draggableTaskItemStyles = StyleSheet.create({
+const draggableTaskItemStyles = StyleSheet.create({
   taskContainer: {
     position: "absolute",
     paddingHorizontal: 2,
@@ -86,3 +86,5 @@ export const draggableTaskItemStyles = StyleSheet.create({
     borderRadius: 2,
   },
 });
+
+export default draggableTaskItemStyles;

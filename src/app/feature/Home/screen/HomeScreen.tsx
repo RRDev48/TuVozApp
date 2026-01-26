@@ -1,7 +1,7 @@
 import CustomText from "@/src/app/components/CustomText";
 import MenuItem from "@/src/app/components/menu/MenuItem";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { RootStackParamsList } from "@/src/app/navigation/navigation.types";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";

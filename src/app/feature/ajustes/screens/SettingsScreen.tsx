@@ -1,7 +1,7 @@
 import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useUserData } from "@/src/app/feature/Home/(hooks)/useUserData";
-import { RootStackParamsList } from "@/src/app/navigation/navigation.types";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";

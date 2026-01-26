@@ -11,12 +11,12 @@ interface CustomTextProps extends TextProps {
  * Componente Text personalizado que aplica automáticamente las preferencias de personalización
  * (mayúsculas, tamaño de letra y fuente para dislexia)
  */
-export const CustomText: React.FC<CustomTextProps> = ({
+export const CustomText = ({
   children,
   style,
   disablePersonalization = false,
   ...props
-}) => {
+}: CustomTextProps) => {
   const { transformText, getFontSize, soloMayusculas } = usePersonalization();
 
   // Si la personalización está deshabilitada, renderizar texto normal
@@ -48,14 +48,6 @@ export const CustomText: React.FC<CustomTextProps> = ({
   const customStyle: TextStyle = {
     fontSize: getFontSize(baseFontSize),
   };
-
-  // Log para debug
-  console.log("CustomText render:", {
-    original: children,
-    transformed: transformedChildren,
-    soloMayusculas,
-    fontSize: customStyle.fontSize,
-  });
 
   return (
     <RNText style={[style, customStyle]} {...props}>

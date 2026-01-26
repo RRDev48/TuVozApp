@@ -29,9 +29,11 @@ const STORAGE_KEYS = {
   TEMA_OSCURO: "@personalization_temaOscuro",
 };
 
-export const PersonalizationProvider: React.FC<{
+const PersonalizationProvider = ({
+  children,
+}: {
   children: React.ReactNode;
-}> = ({ children }) => {
+}) => {
   const [soloMayusculas, setSoloMayusculasState] = useState(false);
   const [tamanioLetra, setTamanioLetraState] = useState<
     "pequenia" | "mediana" | "grande"
@@ -65,13 +67,11 @@ export const PersonalizationProvider: React.FC<{
 
   const setSoloMayusculas = async (value: boolean) => {
     try {
-      console.log("Setting soloMayusculas to:", value);
       await AsyncStorage.setItem(
         STORAGE_KEYS.SOLO_MAYUSCULAS,
         JSON.stringify(value),
       );
       setSoloMayusculasState(value);
-      console.log("soloMayusculas updated to:", value);
     } catch (error) {
       console.error("Error saving soloMayusculas:", error);
     }
@@ -91,13 +91,11 @@ export const PersonalizationProvider: React.FC<{
 
   const setTemaOscuro = async (value: boolean) => {
     try {
-      console.log("Setting temaOscuro to:", value);
       await AsyncStorage.setItem(
         STORAGE_KEYS.TEMA_OSCURO,
         JSON.stringify(value),
       );
       setTemaOscuroState(value);
-      console.log("temaOscuro updated to:", value);
     } catch (error) {
       console.error("Error saving temaOscuro:", error);
     }
@@ -171,3 +169,5 @@ export const usePersonalization = () => {
   }
   return context;
 };
+
+export default PersonalizationProvider;
