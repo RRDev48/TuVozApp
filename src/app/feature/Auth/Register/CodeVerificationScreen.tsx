@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Image,
@@ -17,6 +17,7 @@ import {
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
+import RegisterSuccessAlert from "./components/RegisterSuccessAlert";
 
 type CodeVerificationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -31,7 +32,14 @@ type CodeVerificationScreenRouteProp = RouteProp<
 const CodeVerificationScreen = () => {
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
-  const { email = "", name = "", age = "", role = "self" } = route.params || {};
+  const {
+    email = "",
+    password = "",
+    name = "",
+    age = "",
+    role = "self",
+  } = route.params || {};
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   const verifyCode = async (fullCode: string) => {
     if (fullCode.length !== 6) {
@@ -42,21 +50,15 @@ const CodeVerificationScreen = () => {
     setIsVerifying(true);
 
     try {
-      // TEMPORAL: Aceptar 111111 hasta configurar SMTP
-      if (fullCode === "111111") {
-        navigation.navigate("PasswordSetup", { email, name, age, role });
-        return;
-      }
-
-      // Verificar el código OTP con Supabase
+      // Verificar el código OTP con Supabase (el usuario ya fue creado en PasswordSetup)
       const response = await authService.verifyOTP(email, fullCode);
 
       if (response.error) {
         Alert.alert("Error", "Código de verificación incorrecto");
         resetCode();
       } else {
-        // Navegar a la pantalla de contraseña
-        navigation.navigate("PasswordSetup", { email, name, age, role });
+        // Email verificado correctamente
+        setShowSuccessAlert(true);
       }
     } catch (error) {
       Alert.alert("Error", "Ocurrió un error al verificar el código");
@@ -81,6 +83,11 @@ const CodeVerificationScreen = () => {
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const handleSuccessAlertClose = () => {
+    setShowSuccessAlert(false);
+    navigation.navigate("Login");
   };
 
   return (
@@ -141,6 +148,12 @@ const CodeVerificationScreen = () => {
           />
         ))}
       </View>
+
+      {/* Modal de éxito */}
+      <RegisterSuccessAlert
+        visible={showSuccessAlert}
+        onClose={handleSuccessAlertClose}
+      />
     </View>
   );
 };

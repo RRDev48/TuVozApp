@@ -4,19 +4,18 @@ import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React from "react";
 import {
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { usePasswordSetup } from "../(hooks)/usePasswordSetup";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
-import RegisterSuccessAlert from "./components/RegisterSuccessAlert";
 
 type PasswordSetupScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -33,29 +32,31 @@ const PasswordSetupScreen = () => {
   const route = useRoute<PasswordSetupScreenRouteProp>();
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
 
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-
   const handleRegister = async (validPassword: string) => {
-    try {
-      // Completar registro con Supabase
-      const response = await authService.signUp(email, validPassword, {
-        full_name: name,
-        age: parseInt(age),
-        role: role,
-      });
+    // Crear usuario en Supabase - esto envía automáticamente el email de confirmación
+    const response = await authService.signUp(email, validPassword, {
+      full_name: name,
+      age: parseInt(age),
+      role: role,
+    });
 
-      if (response.success) {
-        setShowSuccessAlert(true);
-      } else {
-        Alert.alert(
-          "Error",
-          response.error || "Error al completar el registro",
-        );
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      Alert.alert("Error", "Ocurrió un error al completar el registro");
+    if (!response.success) {
+      Alert.alert(
+        "Error",
+        response.error ||
+          "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
+      );
+      return;
     }
+
+    // Navegar a CodeVerification - el email de confirmación ya fue enviado
+    navigation.navigate("CodeVerification", {
+      email,
+      password: validPassword,
+      name,
+      age,
+      role,
+    });
   };
 
   const {
@@ -82,11 +83,6 @@ const PasswordSetupScreen = () => {
 
   const handleContinue = () => {
     validatePasswords();
-  };
-
-  const handleSuccessAlertClose = () => {
-    setShowSuccessAlert(false);
-    navigation.navigate("Login");
   };
 
   const handlePrivacyPolicy = () => {
@@ -209,12 +205,6 @@ const PasswordSetupScreen = () => {
           Política de Privacidad y Seguridad
         </Text>
       </TouchableOpacity>
-
-      {/* Modal de éxito */}
-      <RegisterSuccessAlert
-        visible={showSuccessAlert}
-        onClose={handleSuccessAlertClose}
-      />
     </View>
   );
 };

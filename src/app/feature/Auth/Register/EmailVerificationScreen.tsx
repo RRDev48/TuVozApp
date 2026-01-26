@@ -41,14 +41,7 @@ const EmailVerificationScreen = () => {
     validateEmails,
   } = useEmailValidation({
     onValidationSuccess: (validatedEmail) => {
-      console.log("Skipping OTP send (development mode), navigating directly");
-      // TODO: Descomentar cuando configures SMTP en Supabase
-      // const response = await authService.sendOTP(email);
-      // if (!response.success) {
-      //   Alert.alert("Error", response.error || "No se pudo enviar el código");
-      //   return;
-      // }
-      navigation.navigate("CodeVerification", {
+      navigation.navigate("PasswordSetup", {
         email: validatedEmail,
         name,
         age,
@@ -62,7 +55,6 @@ const EmailVerificationScreen = () => {
   };
 
   const handleContinue = () => {
-    console.log("handleContinue called");
     validateEmails();
   };
 
