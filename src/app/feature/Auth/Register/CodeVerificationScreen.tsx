@@ -7,6 +7,9 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -60,70 +63,82 @@ const CodeVerificationScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.black} />
-          <Text style={styles.backText}>Atrás</Text>
-        </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      enabled
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* Header con botón atrás y logo */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={styles.backButton}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="chevron-back" size={24} color={colors.black} />
+            <Text style={styles.backText}>Atrás</Text>
+          </TouchableOpacity>
 
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
+          <View style={styles.headerLogoContainer}>
+            <AppLogo width={250} height={250} />
+          </View>
+
+          <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* Icono de correo */}
-      <View style={styles.iconContainer}>
-        <Image
-          source={require("../../../assets/gif/llave.gif")}
-          style={styles.mailIcon}
-          resizeMode="contain"
-        />
-      </View>
-
-      {/* Título */}
-      <Text style={styles.title}>
-        Introduce tu código de{"\n"}verificación.
-      </Text>
-
-      {/* Descripción */}
-      <Text style={styles.description}>
-        Hemos enviado un código de 6 dígitos a{"\n"}
-        <Text style={styles.email}>{email}</Text>
-      </Text>
-
-      {/* Campos de código */}
-      <View style={styles.codeContainer}>
-        {code.map((digit, index) => (
-          <TextInput
-            key={index}
-            ref={(ref) => {
-              inputRefs.current[index] = ref;
-            }}
-            style={styles.codeInput}
-            value={digit}
-            onChangeText={(value) => handleCodeChange(value, index)}
-            onKeyPress={(e) => handleKeyPress(e, index)}
-            keyboardType="number-pad"
-            maxLength={1}
-            selectTextOnFocus
+        {/* Icono de correo */}
+        <View style={styles.iconContainer}>
+          <Image
+            source={require("../../../assets/gif/llave.gif")}
+            style={styles.mailIcon}
+            resizeMode="contain"
           />
-        ))}
-      </View>
+        </View>
 
-      {/* Modal de éxito */}
-      <RegisterSuccessAlert
-        visible={showSuccessAlert}
-        onClose={handleSuccessAlertClose}
-      />
-    </View>
+        {/* Título */}
+        <Text style={styles.title}>
+          Introduce tu código de{"\n"}verificación.
+        </Text>
+
+        {/* Descripción */}
+        <Text style={styles.description}>
+          Hemos enviado un código de 6 dígitos a{"\n"}
+          <Text style={styles.email}>{email}</Text>
+        </Text>
+
+        {/* Campos de código */}
+        <View style={styles.codeContainer}>
+          {code.map((digit, index) => (
+            <TextInput
+              key={index}
+              ref={(ref) => {
+                inputRefs.current[index] = ref;
+              }}
+              style={styles.codeInput}
+              value={digit}
+              onChangeText={(value) => handleCodeChange(value, index)}
+              onKeyPress={(e) => handleKeyPress(e, index)}
+              keyboardType="number-pad"
+              maxLength={1}
+              selectTextOnFocus
+            />
+          ))}
+        </View>
+
+        {/* Modal de éxito */}
+        <RegisterSuccessAlert
+          visible={showSuccessAlert}
+          onClose={handleSuccessAlertClose}
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -131,6 +146,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 50,
     paddingBottom: 30,
