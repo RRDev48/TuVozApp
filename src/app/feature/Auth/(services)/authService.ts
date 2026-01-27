@@ -183,12 +183,13 @@ export const authService = {
       } = await supabase.auth.getUser();
 
       if (error) {
-        throw error;
+        // Si no hay sesión, retornar null sin lanzar error
+        return null;
       }
 
       return user;
     } catch (error: any) {
-      console.error("Error getting current user:", error);
+      // Si hay cualquier error, simplemente retornar null
       return null;
     }
   },

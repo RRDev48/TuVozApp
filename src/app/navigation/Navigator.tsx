@@ -1,8 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { colors } from "../design-system/themes/globalColors-theme";
+import NewSupportEntryScreen from "../feature/ajustes/screens/NewSupportEntryScreen";
 import PersonalizacionScreen from "../feature/ajustes/screens/PersonalizacionScreen";
 import SettingsScreen from "../feature/ajustes/screens/SettingsScreen";
+import SupportScreen from "../feature/ajustes/screens/SupportScreen";
 import ForgotPasswordScreen from "../feature/Auth/ForgotPassword/ForgotPasswordScreen";
 import LoginScreen from "../feature/Auth/Login/LoginScreen";
 import CodeVerificationScreen from "../feature/Auth/Register/CodeVerificationScreen";
@@ -87,6 +89,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="PersonalizationScreen"
         component={PersonalizacionScreen}
+      />
+      <Stack.Screen name="SupportScreen" component={SupportScreen} />
+      <Stack.Screen
+        name="NewSupportEntryScreen"
+        component={NewSupportEntryScreen}
       />
 
       {mainScreens.map((screen) => (

@@ -28,6 +28,9 @@ type RootStackParamsList = {
   Emergencias: undefined;
   Ajustes: undefined;
   PersonalizationScreen: undefined;
+  ProfilesConfigScreen: undefined;
+  SupportScreen: undefined;
+  NewSupportEntryScreen: undefined;
 
   // Subrutas de "Exprésate"
   Acciones: undefined;

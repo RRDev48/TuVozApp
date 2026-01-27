@@ -5,14 +5,33 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { authService } from "../../Auth/(services)/authService";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkCurrentUser();
+  }, []);
+
+  const checkCurrentUser = async () => {
+    try {
+      const user = await authService.getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      // Si no hay sesión activa, simplemente no hay usuario logueado
+      setCurrentUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -71,21 +90,42 @@ const SettingsScreen = () => {
       color: themedColors.text,
     },
     buttonsContainer: {
-      paddingHorizontal: 40,
+      paddingHorizontal: 20,
       gap: 16,
     },
     button: {
       backgroundColor: themedColors.cardBackground,
       paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderRadius: 25,
+      paddingHorizontal: 20,
+      borderRadius: 15,
+      flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
     },
-    buttonText: {
+    buttonIcon: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 16,
+    },
+    buttonTextContainer: {
+      flex: 1,
+    },
+    buttonTitle: {
       color: themedColors.background,
-      fontSize: 16,
-      fontWeight: "600",
+      fontSize: 18,
+      fontWeight: "700",
+    },
+    buttonSubtitle: {
+      color: themedColors.background,
+      fontSize: 14,
+      opacity: 0.8,
+      marginTop: 2,
+    },
+    buttonChevron: {
+      marginLeft: 10,
     },
   });
 
@@ -126,10 +166,26 @@ const SettingsScreen = () => {
 
       {/* Botones de configuración */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={0.8}>
-          <CustomText style={styles.buttonText}>
-            Configura los Perfiles
-          </CustomText>
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate("ProfilesConfigScreen")}
+        >
+          <View style={styles.buttonIcon}>
+            <Ionicons name="person" size={26} color={themedColors.background} />
+          </View>
+          <View style={styles.buttonTextContainer}>
+            <CustomText style={styles.buttonTitle}>Perfiles</CustomText>
+            <CustomText style={styles.buttonSubtitle}>
+              Configura tus perfiles
+            </CustomText>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={24}
+            color={themedColors.background}
+            style={styles.buttonChevron}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -137,8 +193,55 @@ const SettingsScreen = () => {
           activeOpacity={0.8}
           onPress={() => navigation.navigate("PersonalizationScreen")}
         >
-          <CustomText style={styles.buttonText}>Personalizar</CustomText>
+          <View style={styles.buttonIcon}>
+            <Ionicons
+              name="color-palette"
+              size={26}
+              color={themedColors.background}
+            />
+          </View>
+          <View style={styles.buttonTextContainer}>
+            <CustomText style={styles.buttonTitle}>Personalizar</CustomText>
+            <CustomText style={styles.buttonSubtitle}>
+              Configura colores y temas
+            </CustomText>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={24}
+            color={themedColors.background}
+            style={styles.buttonChevron}
+          />
         </TouchableOpacity>
+
+        {/* Botón de Soporte - Solo visible si hay usuario logueado */}
+        {!isLoading && currentUser && (
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate("SupportScreen")}
+          >
+            <View style={styles.buttonIcon}>
+              <Ionicons
+                name="help-circle"
+                size={26}
+                color={themedColors.background}
+              />
+            </View>
+            <View style={styles.buttonTextContainer}>
+              <CustomText style={styles.buttonTitle}>Soporte</CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                Ayuda y asistencia
+              </CustomText>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={themedColors.background}
+              style={styles.buttonChevron}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
