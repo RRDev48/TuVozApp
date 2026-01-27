@@ -49,13 +49,29 @@ export const useCodeVerification = ({
 
   const isCodeComplete = () => code.every((digit) => digit !== "");
 
+  // Usar useRef para evitar llamadas múltiples
+  const hasVerifiedRef = useRef(false);
+
   // Verificar automáticamente cuando se complete el código
   useEffect(() => {
     const fullCode = getFullCode();
-    if (fullCode.length === codeLength && !isVerifying && onComplete) {
+    if (
+      fullCode.length === codeLength &&
+      !isVerifying &&
+      !hasVerifiedRef.current &&
+      onComplete
+    ) {
+      hasVerifiedRef.current = true;
       onComplete(fullCode);
     }
-  }, [code, codeLength, isVerifying, onComplete]);
+  }, [code, codeLength, isVerifying]);
+
+  // Resetear el flag cuando el código cambia
+  useEffect(() => {
+    if (code.some((digit) => digit === "")) {
+      hasVerifiedRef.current = false;
+    }
+  }, [code]);
 
   return {
     code,

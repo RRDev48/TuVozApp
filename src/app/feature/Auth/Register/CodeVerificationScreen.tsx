@@ -50,19 +50,32 @@ const CodeVerificationScreen = () => {
     setIsVerifying(true);
 
     try {
-      // Verificar el código OTP con Supabase (el usuario ya fue creado en PasswordSetup)
-      const response = await authService.verifyOTP(email, fullCode);
+      console.log("Verifying code:", fullCode, "for email:", email);
 
-      if (response.error) {
-        Alert.alert("Error", "Código de verificación incorrecto");
+      // Verificar el código OTP con type 'signup' para nuevos usuarios
+      const verifyResponse = await authService.verifyOTP(
+        email,
+        fullCode,
+        "signup",
+      );
+
+      if (verifyResponse.error || !verifyResponse.success) {
+        console.log("Verification failed:", verifyResponse.error);
+        Alert.alert(
+          "Error",
+          verifyResponse.error || "Código de verificación incorrecto",
+        );
         resetCode();
-      } else {
-        // Email verificado correctamente
-        setShowSuccessAlert(true);
+        setIsVerifying(false);
+        return;
       }
+
+      console.log("Verification successful!");
+      // Todo exitoso - mostrar alerta de éxito
+      setShowSuccessAlert(true);
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error al verificar el código");
       console.error("Verification error:", error);
+      Alert.alert("Error", "Ocurrió un error al verificar el código");
     } finally {
       setIsVerifying(false);
     }

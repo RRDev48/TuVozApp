@@ -33,7 +33,7 @@ const PasswordSetupScreen = () => {
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
 
   const handleRegister = async (validPassword: string) => {
-    // Crear usuario en Supabase - esto envía automáticamente el email de confirmación
+    // Crear usuario en Supabase - esto envía automáticamente el código de verificación
     const response = await authService.signUp(email, validPassword, {
       full_name: name,
       age: parseInt(age),
@@ -49,7 +49,7 @@ const PasswordSetupScreen = () => {
       return;
     }
 
-    // Navegar a CodeVerification - el email de confirmación ya fue enviado
+    // Navegar a CodeVerification - el código de verificación ya fue enviado
     navigation.navigate("CodeVerification", {
       email,
       password: validPassword,

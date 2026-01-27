@@ -56,15 +56,16 @@ export const authService = {
   /**
    * Envía un código OTP de verificación al email
    * @param email - Email del usuario
+   * @param createUser - Si debe crear el usuario o solo enviar OTP
    * @returns Promise con resultado de la operación
    */
-  async sendOTP(email: string) {
+  async sendOTP(email: string, createUser: boolean = true) {
     try {
-      // Enviar OTP sin crear usuario aún
+      // Enviar OTP - shouldCreateUser permite registrar nuevos usuarios
       const { data, error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          shouldCreateUser: false, // No crear usuario todavía
+          shouldCreateUser: createUser,
           emailRedirectTo: undefined,
         },
       });
@@ -87,20 +88,28 @@ export const authService = {
    * Verifica el código OTP
    * @param email - Email del usuario
    * @param token - Código OTP de 6 dígitos
+   * @param type - Tipo de verificación (email, signup, magiclink)
    * @returns Promise con resultado de la operación
    */
-  async verifyOTP(email: string, token: string) {
+  async verifyOTP(
+    email: string,
+    token: string,
+    type: "email" | "signup" | "magiclink" = "email",
+  ) {
     try {
+      console.log("Verifying OTP with:", { email, token, type });
       const { data, error } = await supabase.auth.verifyOtp({
         email,
         token,
-        type: "email",
+        type,
       });
 
       if (error) {
+        console.error("Supabase verifyOtp error:", error);
         throw error;
       }
 
+      console.log("OTP verified successfully");
       return { success: true, data, error: null };
     } catch (error: any) {
       console.error("Error verifying OTP:", error);
@@ -108,6 +117,41 @@ export const authService = {
         success: false,
         data: null,
         error: error.message || "Código de verificación incorrecto",
+      };
+    }
+  },
+
+  /**
+   * Actualiza los metadatos del usuario después de la verificación OTP
+   * @param metadata - Datos adicionales del usuario (nombre, edad, rol, contraseña)
+   * @returns Promise con resultado de la operación
+   */
+  async updateUserMetadata(
+    metadata: { full_name: string; age: number; role: string },
+    password?: string,
+  ) {
+    try {
+      const updateData: any = {
+        data: metadata,
+      };
+
+      // Si se proporciona contraseña, actualizarla
+      if (password) {
+        updateData.password = password;
+      }
+
+      const { data, error } = await supabase.auth.updateUser(updateData);
+
+      if (error) {
+        throw error;
+      }
+
+      return { success: true, data };
+    } catch (error: any) {
+      console.error("Error updating user metadata:", error);
+      return {
+        success: false,
+        error: error.message || "Error al actualizar información del usuario",
       };
     }
   },
@@ -125,6 +169,7 @@ export const authService = {
     metadata?: { full_name: string; age: number; role: string },
   ) {
     try {
+      console.log("Signing up user:", email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -139,6 +184,7 @@ export const authService = {
         throw error;
       }
 
+      console.log("User signed up successfully:", data.user?.id);
       return { success: true, data };
     } catch (error: any) {
       console.error("Error signing up:", error);
