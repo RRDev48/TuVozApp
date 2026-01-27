@@ -29,15 +29,10 @@ const HomeScreen = () => {
     },
 
     headerContainer: {
+      flexDirection: "row",
       alignItems: "center",
       marginBottom: 20,
-    },
-
-    iconContainer: {
-      position: "absolute",
-      top: 0,
-      alignItems: "center",
-      justifyContent: "center",
+      gap: 15,
     },
 
     userIcon: {
@@ -47,16 +42,11 @@ const HomeScreen = () => {
       backgroundColor: themedColors.primary,
     },
 
-    textContainer: {
-      marginTop: 80,
-      alignItems: "center",
-    },
-
     greetingText: {
       fontSize: 24,
       color: themedColors.text,
       fontWeight: "bold",
-      textAlign: "center",
+      flex: 1,
     },
   });
 
@@ -93,17 +83,13 @@ const HomeScreen = () => {
   return (
     <View style={homeScreenStyles.screenContainer}>
       <View style={homeScreenStyles.headerContainer}>
-        <View style={homeScreenStyles.iconContainer}>
-          <Image
-            source={homeMenu.homeScreenMenu[0].icon}
-            style={homeScreenStyles.userIcon}
-          />
-        </View>
-        <View style={homeScreenStyles.textContainer}>
-          <CustomText style={homeScreenStyles.greetingText}>
-            {getGreeting(userName)}
-          </CustomText>
-        </View>
+        <Image
+          source={homeMenu.homeScreenMenu[0].icon}
+          style={homeScreenStyles.userIcon}
+        />
+        <CustomText style={homeScreenStyles.greetingText}>
+          {getGreeting(userName)}
+        </CustomText>
       </View>
 
       <FlatList
