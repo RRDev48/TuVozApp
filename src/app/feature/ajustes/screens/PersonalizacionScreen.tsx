@@ -1,6 +1,7 @@
 import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
@@ -36,22 +37,27 @@ const PersonalizacionScreen = () => {
       alignItems: "center",
       paddingHorizontal: 20,
       paddingTop: 60,
-      paddingBottom: 20,
+      paddingBottom: 10,
     },
     backButton: {
-      padding: 10,
+      flexDirection: "row",
+      alignItems: "center",
     },
-    backButtonText: {
-      fontSize: 24,
+    backText: {
+      fontSize: 16,
       fontWeight: "600",
       color: themedColors.text,
+      marginLeft: 4,
+    },
+    titleContainer: {
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+      alignItems: "center",
     },
     headerTitle: {
-      flex: 1,
-      fontSize: 20,
+      fontSize: 30,
       fontWeight: "bold",
       textAlign: "center",
-      marginRight: 40,
       color: themedColors.primary,
     },
     content: {
@@ -111,9 +117,15 @@ const PersonalizacionScreen = () => {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
         >
-          <Text style={styles.backButtonText}>{"<"}</Text>
+          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
+          <Text style={styles.backText}>Atrás</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* Título */}
+      <View style={styles.titleContainer}>
         <CustomText style={styles.headerTitle}>Personalización</CustomText>
       </View>
 
