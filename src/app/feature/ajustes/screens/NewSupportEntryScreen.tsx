@@ -6,14 +6,14 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const NewSupportEntryScreen = () => {
@@ -28,7 +28,6 @@ const NewSupportEntryScreen = () => {
       alert("Por favor completa todos los campos");
       return;
     }
-    console.log("Enviando informe:", { subject, query });
     // Aquí iría la lógica para enviar el informe
     navigation.goBack();
   };

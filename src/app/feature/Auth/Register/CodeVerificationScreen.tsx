@@ -6,7 +6,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -15,7 +14,7 @@ import {
   View,
 } from "react-native";
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
-import { authService } from "../(services)/authService";
+import { useOTPVerification } from "../(hooks)/useOTPVerification";
 import AppLogo from "../../../assets/image/AppLogo.svg";
 import RegisterSuccessAlert from "./components/RegisterSuccessAlert";
 
@@ -32,71 +31,28 @@ type CodeVerificationScreenRouteProp = RouteProp<
 const CodeVerificationScreen = () => {
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
-  const {
-    email = "",
-    password = "",
-    name = "",
-    age = "",
-    role = "self",
-  } = route.params || {};
+  const { email = "" } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const verifyCode = async (fullCode: string) => {
-    if (fullCode.length !== 6) {
-      Alert.alert("Error", "Por favor ingresa el código de 6 dígitos completo");
-      return;
-    }
-
-    setIsVerifying(true);
-
-    try {
-      console.log("Verifying code:", fullCode, "for email:", email);
-
-      // Verificar el código OTP con type 'signup' para nuevos usuarios
-      const verifyResponse = await authService.verifyOTP(
-        email,
-        fullCode,
-        "signup",
-      );
-
-      if (verifyResponse.error || !verifyResponse.success) {
-        console.log("Verification failed:", verifyResponse.error);
-        Alert.alert(
-          "Error",
-          verifyResponse.error || "Código de verificación incorrecto",
-        );
-        resetCode();
-        setIsVerifying(false);
-        return;
-      }
-
-      console.log("Verification successful!");
-      // Todo exitoso - mostrar alerta de éxito
-      setShowSuccessAlert(true);
-    } catch (error) {
-      console.error("Verification error:", error);
-      Alert.alert("Error", "Ocurrió un error al verificar el código");
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  const {
-    code,
-    inputRefs,
-    isVerifying,
-    setIsVerifying,
-    handleCodeChange,
-    handleKeyPress,
-    resetCode,
-  } = useCodeVerification({
-    codeLength: 6,
-    onComplete: verifyCode,
+  const { isVerifying, setIsVerifying, verifyCode } = useOTPVerification({
+    email,
+    onSuccess: () => setShowSuccessAlert(true),
   });
 
-  const handleBack = () => {
-    navigation.goBack();
+  const handleVerifyCode = async (fullCode: string) => {
+    const success = await verifyCode(fullCode);
+    if (!success) {
+      resetCode();
+    }
   };
+
+  const { code, inputRefs, handleCodeChange, handleKeyPress, resetCode } =
+    useCodeVerification({
+      codeLength: 6,
+      onComplete: handleVerifyCode,
+    });
+
+  const handleBack = () => navigation.goBack();
 
   const handleSuccessAlertClose = () => {
     setShowSuccessAlert(false);

@@ -59,7 +59,7 @@ const PersonalizationProvider = ({
       if (temaOscuroValue !== null)
         setTemaOscuroState(JSON.parse(temaOscuroValue));
     } catch (error) {
-      console.error("Error loading personalization preferences:", error);
+      // Error cargando preferencias
     } finally {
       setLoaded(true);
     }
@@ -73,7 +73,7 @@ const PersonalizationProvider = ({
       );
       setSoloMayusculasState(value);
     } catch (error) {
-      console.error("Error saving soloMayusculas:", error);
+      // Error guardando preferencia
     }
   };
 
@@ -85,7 +85,7 @@ const PersonalizationProvider = ({
       );
       setTamanioLetraState(value);
     } catch (error) {
-      console.error("Error saving tamanioLetra:", error);
+      // Error guardando preferencia
     }
   };
 
@@ -97,7 +97,7 @@ const PersonalizationProvider = ({
       );
       setTemaOscuroState(value);
     } catch (error) {
-      console.error("Error saving temaOscuro:", error);
+      // Error guardando preferencia
     }
   };
 

@@ -24,7 +24,6 @@ export const userService = {
 
       return { user, error: null };
     } catch (error) {
-      console.error("Error getting current user:", error);
       return { user: null, error };
     }
   },
@@ -46,7 +45,6 @@ export const userService = {
 
       return { data, error: null };
     } catch (error) {
-      console.error("Error fetching user data:", error);
       return { data: null, error };
     }
   },
@@ -84,7 +82,6 @@ export const userService = {
 
       return { fullName: data?.full_name || null, error: null };
     } catch (error) {
-      console.error("Error fetching user full name:", error);
       return { fullName: null, error };
     }
   },

@@ -5,11 +5,11 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
@@ -57,7 +57,6 @@ const LoginScreen = () => {
         setPasswordError("Credenciales incorrectas");
       }
     } catch (error) {
-      console.error("Login error:", error);
       setEmailError("Error al iniciar sesión");
       setPasswordError("Error al iniciar sesión");
     } finally {

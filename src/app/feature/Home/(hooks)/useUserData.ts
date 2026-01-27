@@ -38,7 +38,6 @@ export const useUserData = (
         setUserName(null);
       }
     } catch (err) {
-      console.error("Exception in useUserData:", err);
       setError(err);
       setUserName(null);
     } finally {

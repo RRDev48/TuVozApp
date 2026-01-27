@@ -18,7 +18,6 @@ export const authService = {
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Error sending password reset email:", error);
       return {
         success: false,
         error: error.message || "Error al enviar el correo de recuperación",
@@ -45,7 +44,6 @@ export const authService = {
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Error signing in:", error);
       return {
         success: false,
         error: error.message || "Error al iniciar sesión",
@@ -76,7 +74,6 @@ export const authService = {
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Error sending OTP:", error);
       return {
         success: false,
         error: error.message || "Error al enviar el código de verificación",
@@ -97,7 +94,6 @@ export const authService = {
     type: "email" | "signup" | "magiclink" = "email",
   ) {
     try {
-      console.log("Verifying OTP with:", { email, token, type });
       const { data, error } = await supabase.auth.verifyOtp({
         email,
         token,
@@ -105,14 +101,11 @@ export const authService = {
       });
 
       if (error) {
-        console.error("Supabase verifyOtp error:", error);
         throw error;
       }
 
-      console.log("OTP verified successfully");
       return { success: true, data, error: null };
     } catch (error: any) {
-      console.error("Error verifying OTP:", error);
       return {
         success: false,
         data: null,
@@ -148,7 +141,6 @@ export const authService = {
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Error updating user metadata:", error);
       return {
         success: false,
         error: error.message || "Error al actualizar información del usuario",
@@ -169,7 +161,6 @@ export const authService = {
     metadata?: { full_name: string; age: number; role: string },
   ) {
     try {
-      console.log("Signing up user:", email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -180,14 +171,11 @@ export const authService = {
       });
 
       if (error) {
-        console.error("Supabase signup error:", error);
         throw error;
       }
 
-      console.log("User signed up successfully:", data.user?.id);
       return { success: true, data };
     } catch (error: any) {
-      console.error("Error signing up:", error);
       return {
         success: false,
         error: error.message || "Error al registrar usuario",
@@ -209,7 +197,6 @@ export const authService = {
 
       return { success: true };
     } catch (error: any) {
-      console.error("Error signing out:", error);
       return {
         success: false,
         error: error.message || "Error al cerrar sesión",
