@@ -5,129 +5,137 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { authService } from "../../Auth/(services)/authService";
+import { useCurrentUser } from "../../(hooks)/useCurrentUser";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    checkCurrentUser();
-  }, []);
+  const { currentUser, isLoading } = useCurrentUser();
 
-  const checkCurrentUser = async () => {
-    try {
-      const user = await authService.getCurrentUser();
-      setCurrentUser(user);
-    } catch (error) {
-      // Si no hay sesión activa, simplemente no hay usuario logueado
-      setCurrentUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-    },
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    backText: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: themedColors.text,
-      marginLeft: 4,
-    },
-    titleContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      alignItems: "center",
-    },
-    headerTitle: {
-      fontSize: 30,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.primary,
-    },
-    avatarContainer: {
-      alignItems: "center",
-      marginBottom: 40,
-    },
-    avatarCircle: {
-      width: 120,
-      height: 120,
-      borderRadius: 60,
-      backgroundColor: themedColors.primary,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    avatarImage: {
-      width: 80,
-      height: 80,
-    },
-    greetingText: {
-      fontSize: 20,
-      fontWeight: "bold",
-      textAlign: "center",
-      marginBottom: 40,
-      color: themedColors.text,
-    },
-    buttonsContainer: {
-      paddingHorizontal: 20,
-      gap: 16,
-    },
-    button: {
-      backgroundColor: themedColors.cardBackground,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      borderRadius: 15,
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    buttonIcon: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      backgroundColor: "rgba(255, 255, 255, 0.2)",
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: 16,
-    },
-    buttonTextContainer: {
-      flex: 1,
-    },
-    buttonTitle: {
-      color: themedColors.background,
-      fontSize: 18,
-      fontWeight: "700",
-    },
-    buttonSubtitle: {
-      color: themedColors.background,
-      fontSize: 14,
-      opacity: 0.8,
-      marginTop: 2,
-    },
-    buttonChevron: {
-      marginLeft: 10,
-    },
-  });
+  const handleNavigateToProfiles = useCallback(() => {
+    navigation.navigate("ProfilesConfigScreen");
+  }, [navigation]);
+
+  const handleNavigateToPersonalization = useCallback(() => {
+    navigation.navigate("PersonalizationScreen");
+  }, [navigation]);
+
+  const handleNavigateToSupport = useCallback(() => {
+    navigation.navigate("SupportScreen");
+  }, [navigation]);
+
+  const handleNavigateToEmergency = useCallback(() => {
+    navigation.navigate("Emergencias");
+  }, [navigation]);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        header: {
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 20,
+          paddingTop: 60,
+          paddingBottom: 10,
+        },
+        backButton: {
+          flexDirection: "row",
+          alignItems: "center",
+        },
+        backText: {
+          fontSize: 16,
+          fontWeight: "600",
+          color: themedColors.text,
+          marginLeft: 4,
+        },
+        titleContainer: {
+          paddingHorizontal: 20,
+          paddingBottom: 20,
+          alignItems: "center",
+        },
+        headerTitle: {
+          fontSize: 30,
+          fontWeight: "bold",
+          textAlign: "center",
+          color: themedColors.primary,
+        },
+        avatarContainer: {
+          alignItems: "center",
+          marginBottom: 40,
+        },
+        avatarCircle: {
+          width: 120,
+          height: 120,
+          borderRadius: 60,
+          backgroundColor: themedColors.primary,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        avatarImage: {
+          width: 80,
+          height: 80,
+        },
+        greetingText: {
+          fontSize: 20,
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: 40,
+          color: themedColors.text,
+        },
+        buttonsContainer: {
+          paddingHorizontal: 20,
+          gap: 16,
+        },
+        button: {
+          backgroundColor: themedColors.cardBackground,
+          paddingVertical: 16,
+          paddingHorizontal: 20,
+          borderRadius: 15,
+          flexDirection: "row",
+          alignItems: "center",
+        },
+        buttonIcon: {
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+          backgroundColor: "rgba(255, 255, 255, 0.2)",
+          justifyContent: "center",
+          alignItems: "center",
+          marginRight: 16,
+        },
+        buttonTextContainer: {
+          flex: 1,
+        },
+        buttonTitle: {
+          color: themedColors.background,
+          fontSize: 18,
+          fontWeight: "700",
+        },
+        buttonSubtitle: {
+          color: themedColors.background,
+          fontSize: 14,
+          opacity: 0.8,
+          marginTop: 2,
+        },
+        buttonChevron: {
+          marginLeft: 10,
+        },
+      }),
+    [themedColors],
+  );
 
   return (
     <View style={styles.container}>
@@ -135,7 +143,7 @@ const SettingsScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
           activeOpacity={0.7}
         >
           <Ionicons name="chevron-back" size={24} color={themedColors.text} />
@@ -169,7 +177,7 @@ const SettingsScreen = () => {
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("ProfilesConfigScreen")}
+          onPress={handleNavigateToProfiles}
         >
           <View style={styles.buttonIcon}>
             <Ionicons name="person" size={26} color={themedColors.background} />
@@ -191,7 +199,7 @@ const SettingsScreen = () => {
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("PersonalizationScreen")}
+          onPress={handleNavigateToPersonalization}
         >
           <View style={styles.buttonIcon}>
             <Ionicons
@@ -219,7 +227,7 @@ const SettingsScreen = () => {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
-            onPress={() => navigation.navigate("SupportScreen")}
+            onPress={handleNavigateToSupport}
           >
             <View style={styles.buttonIcon}>
               <Ionicons
@@ -248,7 +256,7 @@ const SettingsScreen = () => {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
-            onPress={() => navigation.navigate("Emergencias")}
+            onPress={handleNavigateToEmergency}
           >
             <View style={styles.buttonIcon}>
               <Ionicons

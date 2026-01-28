@@ -1,10 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { colors } from "../design-system/themes/globalColors-theme";
-import NewSupportEntryScreen from "../feature/ajustes/screens/NewSupportEntryScreen";
-import PersonalizacionScreen from "../feature/ajustes/screens/PersonalizacionScreen";
-import SettingsScreen from "../feature/ajustes/screens/SettingsScreen";
-import SupportScreen from "../feature/ajustes/screens/SupportScreen";
+import SettingsScreen from "../feature/ajustes/screens/main/SettingsScreen";
+import PersonalizacionScreen from "../feature/ajustes/screens/personalization/PersonalizacionScreen";
+import NewSupportEntryScreen from "../feature/ajustes/screens/support/NewSupportEntryScreen";
+import SupportScreen from "../feature/ajustes/screens/support/SupportScreen";
 import ForgotPasswordScreen from "../feature/Auth/ForgotPassword/ForgotPasswordScreen";
 import LoginScreen from "../feature/Auth/Login/LoginScreen";
 import CodeVerificationScreen from "../feature/Auth/Register/CodeVerificationScreen";
@@ -13,17 +13,17 @@ import PasswordSetupScreen from "../feature/Auth/Register/PasswordSetupScreen";
 import RegisterInfoScreen from "../feature/Auth/Register/RegisterInfoScreen";
 import RoleSelectionScreen from "../feature/Auth/Register/RoleSelectionScreen";
 import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
-import AddAddressScreen from "../feature/emergencias/screens/AddAddressScreen";
-import AddAllergyScreen from "../feature/emergencias/screens/AddAllergyScreen";
-import AddMedicationScreen from "../feature/emergencias/screens/AddMedicationScreen";
-import AddressScreen from "../feature/emergencias/screens/AddressScreen";
-import AllergiesScreen from "../feature/emergencias/screens/AllergiesScreen";
-import BloodTypeSelectionScreen from "../feature/emergencias/screens/BloodTypeSelectionScreen";
-import EditAddressScreen from "../feature/emergencias/screens/EditAddressScreen";
-import EditAllergyScreen from "../feature/emergencias/screens/EditAllergyScreen";
-import EditMedicationScreen from "../feature/emergencias/screens/EditMedicationScreen";
-import EmergencyScreen from "../feature/emergencias/screens/EmergencyScreen";
-import MedicationsScreen from "../feature/emergencias/screens/MedicationsScreen";
+import AddAddressScreen from "../feature/emergencias/screens/address/AddAddressScreen";
+import AddressScreen from "../feature/emergencias/screens/address/AddressScreen";
+import EditAddressScreen from "../feature/emergencias/screens/address/EditAddressScreen";
+import AddAllergyScreen from "../feature/emergencias/screens/allergy/AddAllergyScreen";
+import AllergiesScreen from "../feature/emergencias/screens/allergy/AllergiesScreen";
+import EditAllergyScreen from "../feature/emergencias/screens/allergy/EditAllergyScreen";
+import BloodTypeSelectionScreen from "../feature/emergencias/screens/bloodType/BloodTypeSelectionScreen";
+import EmergencyScreen from "../feature/emergencias/screens/main/EmergencyScreen";
+import AddMedicationScreen from "../feature/emergencias/screens/medication/AddMedicationScreen";
+import EditMedicationScreen from "../feature/emergencias/screens/medication/EditMedicationScreen";
+import MedicationsScreen from "../feature/emergencias/screens/medication/MedicationsScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
@@ -35,6 +35,38 @@ import RootStackParamsList from "./navigation.types";
 
 // Definición del stack principal tipado con RootStackParamsList
 const Stack = createStackNavigator<RootStackParamsList>();
+
+const authScreens = [
+  { name: "Splash", component: SplashScreen },
+  { name: "Onboarding", component: OnboardingScreen },
+  { name: "Login", component: LoginScreen },
+  { name: "ForgotPassword", component: ForgotPasswordScreen },
+  { name: "UserType", component: UserTypeScreen },
+  { name: "RoleSelection", component: RoleSelectionScreen },
+  { name: "RegisterInfo", component: RegisterInfoScreen },
+  { name: "EmailVerification", component: EmailVerificationScreen },
+  { name: "CodeVerification", component: CodeVerificationScreen },
+  { name: "PasswordSetup", component: PasswordSetupScreen },
+];
+
+const emergencyScreens = [
+  { name: "BloodTypeSelection", component: BloodTypeSelectionScreen },
+  { name: "AllergiesSelection", component: AllergiesScreen },
+  { name: "AddAllergy", component: AddAllergyScreen },
+  { name: "EditAllergy", component: EditAllergyScreen },
+  { name: "MedicationsSelection", component: MedicationsScreen },
+  { name: "AddMedication", component: AddMedicationScreen },
+  { name: "EditMedication", component: EditMedicationScreen },
+  { name: "AddressSelection", component: AddressScreen },
+  { name: "AddAddress", component: AddAddressScreen },
+  { name: "EditAddress", component: EditAddressScreen },
+];
+
+const settingsScreens = [
+  { name: "PersonalizationScreen", component: PersonalizacionScreen },
+  { name: "SupportScreen", component: SupportScreen },
+  { name: "NewSupportEntryScreen", component: NewSupportEntryScreen },
+];
 
 const mainScreens = [
   { name: "Home", component: HomeScreen },
@@ -66,7 +98,6 @@ const frasesScreens = [
 ];
 
 // Navegador principal de la app.
-// Registra todas las pantallas del stack reutilizando las listas definidas arriba.
 const StackNavigator = () => {
   return (
     <Stack.Navigator
@@ -79,45 +110,29 @@ const StackNavigator = () => {
         headerTitle: "",
       }}
     >
-      {/* Pantalla de bienvenida */}
-      <Stack.Screen name="Splash" component={SplashScreen} />
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <Stack.Screen name="UserType" component={UserTypeScreen} />
-      <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
-      <Stack.Screen name="RegisterInfo" component={RegisterInfoScreen} />
-      <Stack.Screen
-        name="EmailVerification"
-        component={EmailVerificationScreen}
-      />
-      <Stack.Screen
-        name="CodeVerification"
-        component={CodeVerificationScreen}
-      />
-      <Stack.Screen name="PasswordSetup" component={PasswordSetupScreen} />
-      <Stack.Screen
-        name="PersonalizationScreen"
-        component={PersonalizacionScreen}
-      />
-      <Stack.Screen name="SupportScreen" component={SupportScreen} />
-      <Stack.Screen
-        name="NewSupportEntryScreen"
-        component={NewSupportEntryScreen}
-      />
-      <Stack.Screen
-        name="BloodTypeSelection"
-        component={BloodTypeSelectionScreen}
-      />
-      <Stack.Screen name="AllergiesSelection" component={AllergiesScreen} />
-      <Stack.Screen name="AddAllergy" component={AddAllergyScreen} />
-      <Stack.Screen name="EditAllergy" component={EditAllergyScreen} />
-      <Stack.Screen name="MedicationsSelection" component={MedicationsScreen} />
-      <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
-      <Stack.Screen name="EditMedication" component={EditMedicationScreen} />
-      <Stack.Screen name="AddressSelection" component={AddressScreen} />
-      <Stack.Screen name="AddAddress" component={AddAddressScreen} />
-      <Stack.Screen name="EditAddress" component={EditAddressScreen} />
+      {authScreens.map((screen) => (
+        <Stack.Screen
+          key={screen.name}
+          name={screen.name as keyof RootStackParamsList}
+          component={screen.component}
+        />
+      ))}
+
+      {emergencyScreens.map((screen) => (
+        <Stack.Screen
+          key={screen.name}
+          name={screen.name as keyof RootStackParamsList}
+          component={screen.component}
+        />
+      ))}
+
+      {settingsScreens.map((screen) => (
+        <Stack.Screen
+          key={screen.name}
+          name={screen.name as keyof RootStackParamsList}
+          component={screen.component}
+        />
+      ))}
 
       {mainScreens.map((screen) => (
         <Stack.Screen

@@ -14,8 +14,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEmergencyProfile } from "../(hooks)/useEmergencyProfile";
-import { EmergencyField } from "../components/EmergencyField";
+import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { EmergencyField } from "../../components/EmergencyField";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

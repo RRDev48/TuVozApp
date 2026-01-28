@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { RootStackParamsList } from "@/src/app/navigation/navigation.types";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";

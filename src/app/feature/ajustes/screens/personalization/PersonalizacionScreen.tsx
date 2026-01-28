@@ -3,12 +3,11 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -27,88 +26,108 @@ const PersonalizacionScreen = () => {
 
   const themedColors = getThemedColors();
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-    },
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    backText: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: themedColors.text,
-      marginLeft: 4,
-    },
-    titleContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      alignItems: "center",
-    },
-    headerTitle: {
-      fontSize: 30,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.primary,
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: 20,
-    },
-    optionContainer: {
-      marginBottom: 40,
-    },
-    optionRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    optionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.text,
-    },
-    sizeContainer: {
-      flexDirection: "row",
-      gap: 12,
-      marginTop: 16,
-    },
-    sizeButton: {
-      flex: 1,
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 20,
-      backgroundColor: themedColors.cardBackground,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    sizeButtonActive: {
-      backgroundColor: colors.yellow,
-    },
-    sizeText: {
-      fontSize: 14,
-      fontWeight: "600",
-      color: themedColors.background,
-    },
-    sizeTextActive: {
-      color: colors.black,
-    },
-    switchContainer: {
-      borderWidth: 2,
-      borderColor: themedColors.primary,
-      borderRadius: 20,
-      padding: 2,
-    },
-  });
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const handleSetTamanioPequenia = useCallback(() => {
+    setTamanioLetra("pequenia");
+  }, [setTamanioLetra]);
+
+  const handleSetTamanioMediana = useCallback(() => {
+    setTamanioLetra("mediana");
+  }, [setTamanioLetra]);
+
+  const handleSetTamanioGrande = useCallback(() => {
+    setTamanioLetra("grande");
+  }, [setTamanioLetra]);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        header: {
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 20,
+          paddingTop: 60,
+          paddingBottom: 10,
+        },
+        backButton: {
+          flexDirection: "row",
+          alignItems: "center",
+        },
+        backText: {
+          fontSize: 16,
+          fontWeight: "600",
+          color: themedColors.text,
+          marginLeft: 4,
+        },
+        titleContainer: {
+          paddingHorizontal: 20,
+          paddingBottom: 20,
+          alignItems: "center",
+        },
+        headerTitle: {
+          fontSize: 30,
+          fontWeight: "bold",
+          textAlign: "center",
+          color: themedColors.primary,
+        },
+        content: {
+          flex: 1,
+          paddingHorizontal: 20,
+        },
+        optionContainer: {
+          marginBottom: 40,
+        },
+        optionRow: {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+        optionTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.text,
+        },
+        sizeContainer: {
+          flexDirection: "row",
+          gap: 12,
+          marginTop: 16,
+        },
+        sizeButton: {
+          flex: 1,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+          borderRadius: 20,
+          backgroundColor: themedColors.cardBackground,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        sizeButtonActive: {
+          backgroundColor: colors.yellow,
+        },
+        sizeText: {
+          fontSize: 14,
+          fontWeight: "600",
+          color: themedColors.background,
+        },
+        sizeTextActive: {
+          color: colors.black,
+        },
+        switchContainer: {
+          borderWidth: 2,
+          borderColor: themedColors.primary,
+          borderRadius: 20,
+          padding: 2,
+        },
+      }),
+    [themedColors],
+  );
 
   return (
     <View style={styles.container}>
@@ -116,11 +135,11 @@ const PersonalizacionScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
           activeOpacity={0.7}
         >
           <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <Text style={styles.backText}>Atrás</Text>
+          <CustomText style={styles.backText}>Atrás</CustomText>
         </TouchableOpacity>
       </View>
 
@@ -154,7 +173,7 @@ const PersonalizacionScreen = () => {
                 styles.sizeButton,
                 tamanioLetra === "pequenia" && styles.sizeButtonActive,
               ]}
-              onPress={() => setTamanioLetra("pequenia")}
+              onPress={handleSetTamanioPequenia}
               activeOpacity={0.8}
             >
               <CustomText
@@ -172,7 +191,7 @@ const PersonalizacionScreen = () => {
                 styles.sizeButton,
                 tamanioLetra === "mediana" && styles.sizeButtonActive,
               ]}
-              onPress={() => setTamanioLetra("mediana")}
+              onPress={handleSetTamanioMediana}
               activeOpacity={0.8}
             >
               <CustomText
@@ -190,7 +209,7 @@ const PersonalizacionScreen = () => {
                 styles.sizeButton,
                 tamanioLetra === "grande" && styles.sizeButtonActive,
               ]}
-              onPress={() => setTamanioLetra("grande")}
+              onPress={handleSetTamanioGrande}
               activeOpacity={0.8}
             >
               <CustomText

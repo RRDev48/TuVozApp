@@ -4,7 +4,7 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { FlatList, Image, StyleSheet, View } from "react-native";
 import getGreeting from "../(actions)/actions";
 import { useUserData } from "../(hooks)/useUserData";
@@ -17,68 +17,94 @@ const HomeScreen = () => {
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
-  const handleMenuPress = (route: string) => {
-    navigation.navigate(route as any);
-  };
+  const handleMenuPress = useCallback(
+    (route: string) => {
+      navigation.navigate(route as any);
+    },
+    [navigation],
+  );
 
-  const homeScreenStyles = StyleSheet.create({
-    screenContainer: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: themedColors.background,
-    },
+  const homeScreenStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        screenContainer: {
+          flex: 1,
+          padding: 20,
+          backgroundColor: themedColors.background,
+        },
 
-    headerContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 20,
-      gap: 15,
-    },
+        headerContainer: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 20,
+          gap: 15,
+        },
 
-    userIcon: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      backgroundColor: themedColors.primary,
-    },
+        userIcon: {
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          backgroundColor: themedColors.primary,
+        },
 
-    greetingText: {
-      fontSize: 24,
-      color: themedColors.text,
-      fontWeight: "bold",
-      flex: 1,
-    },
-  });
+        greetingText: {
+          fontSize: 24,
+          color: themedColors.text,
+          fontWeight: "bold",
+          flex: 1,
+        },
+      }),
+    [themedColors],
+  );
 
-  const homeMenuItemStyles = StyleSheet.create({
-    itemContainer: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      marginVertical: 10,
-    },
+  const homeMenuItemStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        itemContainer: {
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          marginVertical: 10,
+        },
 
-    buttonContainer: {
-      width: 130,
-      height: 130,
-      backgroundColor: themedColors.cardBackground,
-      borderRadius: 30,
-      alignItems: "center",
-      justifyContent: "center",
-    },
+        buttonContainer: {
+          width: 130,
+          height: 130,
+          backgroundColor: themedColors.cardBackground,
+          borderRadius: 30,
+          alignItems: "center",
+          justifyContent: "center",
+        },
 
-    textCard: {
-      fontSize: 20,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.text,
-      marginTop: 5,
-    },
-    icon: {
-      width: 70,
-      height: 70,
-    },
-  });
+        textCard: {
+          fontSize: 20,
+          fontWeight: "bold",
+          textAlign: "center",
+          color: themedColors.text,
+          marginTop: 5,
+        },
+        icon: {
+          width: 70,
+          height: 70,
+        },
+      }),
+    [themedColors],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: any) => (
+      <MenuItem
+        name={item.name}
+        route={item.component}
+        image={item.icon}
+        styles={homeMenuItemStyles}
+        onPress={() => handleMenuPress(item.component)}
+      />
+    ),
+    [homeMenuItemStyles, handleMenuPress],
+  );
+
+  const keyExtractor = useCallback((item: any) => item.component, []);
 
   return (
     <View style={homeScreenStyles.screenContainer}>
@@ -94,16 +120,8 @@ const HomeScreen = () => {
 
       <FlatList
         data={homeMenu.homeMenuItems}
-        renderItem={({ item }) => (
-          <MenuItem
-            name={item.name}
-            route={item.component}
-            image={item.icon}
-            styles={homeMenuItemStyles}
-            onPress={() => handleMenuPress(item.component)}
-          />
-        )}
-        keyExtractor={(item) => item.component}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
         numColumns={2}
         contentContainerStyle={{ padding: 10, flexGrow: 0 }}
         columnWrapperStyle={{
