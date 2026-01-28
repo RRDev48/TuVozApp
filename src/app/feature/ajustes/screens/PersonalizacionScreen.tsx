@@ -138,8 +138,8 @@ const PersonalizacionScreen = () => {
               <Switch
                 value={soloMayusculas}
                 onValueChange={setSoloMayusculas}
-                trackColor={{ false: colors.lightGray, true: colors.blue }}
-                thumbColor={colors.white}
+                trackColor={{ true: colors.green }}
+                thumbColor={colors.gray}
               />
             </View>
           </View>
@@ -214,8 +214,8 @@ const PersonalizacionScreen = () => {
               <Switch
                 value={temaOscuro}
                 onValueChange={setTemaOscuro}
-                trackColor={{ false: colors.lightGray, true: colors.blue }}
-                thumbColor={colors.white}
+                trackColor={{ true: colors.green }}
+                thumbColor={colors.gray}
               />
             </View>
           </View>

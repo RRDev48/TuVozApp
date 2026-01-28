@@ -7,7 +7,6 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Linking,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -98,27 +97,14 @@ const EmergencyScreen = () => {
     );
   };
 
-  const handleEmergencyCall = () => {
-    if (!profile?.emergency_contact_phone) {
-      Alert.alert(
-        transformText("Error"),
-        transformText("No hay número de contacto de emergencia configurado"),
-      );
-      return;
-    }
-
-    if (profile.alert_type === "call") {
-      // Realizar llamada
-      Linking.openURL(`tel:${profile.emergency_contact_phone}`);
-    } else {
-      // Abrir WhatsApp con ubicación
-      const message = encodeURIComponent(
-        `¡EMERGENCIA! ${userFullName} necesita ayuda urgente.`,
-      );
-      Linking.openURL(
-        `whatsapp://send?phone=${profile.emergency_contact_phone}&text=${message}`,
-      );
-    }
+  const handleSaveEmergencyData = () => {
+    Alert.alert(
+      transformText("Datos guardados"),
+      transformText(
+        "La información de emergencia ha sido actualizada correctamente",
+      ),
+      [{ text: transformText("OK") }],
+    );
   };
 
   const getFieldLabel = (field: string): string => {
@@ -188,7 +174,7 @@ const EmergencyScreen = () => {
       bottom: 20,
       left: 20,
       right: 20,
-      backgroundColor: colors.darkGray,
+      backgroundColor: colors.green,
       borderRadius: 16,
       paddingVertical: 16,
       flexDirection: "row",
@@ -206,6 +192,7 @@ const EmergencyScreen = () => {
     emergencyText: {
       color: colors.white,
       fontWeight: "bold",
+      fontSize: 16,
     },
   });
 
@@ -338,16 +325,16 @@ const EmergencyScreen = () => {
 
       <TouchableOpacity
         style={styles.emergencyButton}
-        onPress={handleEmergencyCall}
+        onPress={handleSaveEmergencyData}
       >
         <Ionicons
-          name="call"
+          name="save"
           size={24}
           color={colors.white}
           style={styles.emergencyIcon}
         />
         <CustomText style={styles.emergencyText}>
-          {transformText("Llamada de emergencia")}
+          {transformText("Guardar datos emergencia")}
         </CustomText>
       </TouchableOpacity>
     </View>

@@ -1,5 +1,6 @@
 import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -141,7 +142,7 @@ const NewSupportEntryScreen = () => {
       paddingTop: 10,
     },
     submitButton: {
-      backgroundColor: themedColors.cardBackground,
+      backgroundColor: colors.green,
       borderRadius: 25,
       paddingVertical: 16,
       paddingHorizontal: 24,
@@ -151,7 +152,7 @@ const NewSupportEntryScreen = () => {
     submitButtonText: {
       fontSize: 16,
       fontWeight: "600",
-      color: themedColors.background,
+      color: colors.white,
     },
   });
 
