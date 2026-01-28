@@ -6,12 +6,13 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
 
 const SupportScreen = () => {
   const { getThemedColors } = usePersonalization();
@@ -114,6 +115,11 @@ const SupportScreen = () => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
+        <ZenithXAnimado
+          width={120}
+          height={120}
+          style={{ marginBottom: 20, marginTop: -100 }}
+        />
         <CustomText style={styles.emptyStateTitle}>
           Aún no hay entradas
         </CustomText>

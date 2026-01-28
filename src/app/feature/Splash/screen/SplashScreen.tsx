@@ -1,11 +1,11 @@
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "../../../assets/image/tuvoz.svg";
-import ZenithXLogo from "../../../assets/image/zenithX.svg";
 import { colors } from "../../../design-system/themes/globalColors-theme";
-import type { RootStackParamsList } from "../../../navigation/navigation.types";
 
 type SplashScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -35,8 +35,8 @@ const SplashScreen = () => {
         {/* Powered by section */}
         <View style={styles.poweredByContainer}>
           <Text style={styles.poweredByText}>Powered by</Text>
-          {/* Icono ZenithX */}
-          <ZenithXLogo width={60} height={60} />
+          {/* Icono ZenithX Animado */}
+          <ZenithXAnimado width={60} height={60} />
         </View>
       </View>
     </View>

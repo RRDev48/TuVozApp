@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { authService } from "../../Auth/(services)/authService";
 
 const SettingsScreen = () => {
@@ -139,7 +139,7 @@ const SettingsScreen = () => {
           activeOpacity={0.7}
         >
           <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <Text style={styles.backText}>Atrás</Text>
+          <CustomText style={styles.backText}>Atrás</CustomText>
         </TouchableOpacity>
       </View>
 
@@ -232,6 +232,37 @@ const SettingsScreen = () => {
               <CustomText style={styles.buttonTitle}>Soporte</CustomText>
               <CustomText style={styles.buttonSubtitle}>
                 Ayuda y asistencia
+              </CustomText>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={themedColors.background}
+              style={styles.buttonChevron}
+            />
+          </TouchableOpacity>
+        )}
+
+        {/* Botón de Editar Emergencia - Solo visible si hay usuario logueado */}
+        {!isLoading && currentUser && (
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate("Emergencias")}
+          >
+            <View style={styles.buttonIcon}>
+              <Ionicons
+                name="alert-circle"
+                size={26}
+                color={themedColors.background}
+              />
+            </View>
+            <View style={styles.buttonTextContainer}>
+              <CustomText style={styles.buttonTitle}>
+                Editar Emergencia
+              </CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                Configura tu informacion de emergencia
               </CustomText>
             </View>
             <Ionicons
