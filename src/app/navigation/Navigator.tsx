@@ -13,6 +13,10 @@ import PasswordSetupScreen from "../feature/Auth/Register/PasswordSetupScreen";
 import RegisterInfoScreen from "../feature/Auth/Register/RegisterInfoScreen";
 import RoleSelectionScreen from "../feature/Auth/Register/RoleSelectionScreen";
 import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
+import AddAllergyScreen from "../feature/emergencias/screens/AddAllergyScreen";
+import AllergiesScreen from "../feature/emergencias/screens/AllergiesScreen";
+import BloodTypeSelectionScreen from "../feature/emergencias/screens/BloodTypeSelectionScreen";
+import EditAllergyScreen from "../feature/emergencias/screens/EditAllergyScreen";
 import EmergencyScreen from "../feature/emergencias/screens/EmergencyScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
@@ -95,6 +99,13 @@ const StackNavigator = () => {
         name="NewSupportEntryScreen"
         component={NewSupportEntryScreen}
       />
+      <Stack.Screen
+        name="BloodTypeSelection"
+        component={BloodTypeSelectionScreen}
+      />
+      <Stack.Screen name="AllergiesSelection" component={AllergiesScreen} />
+      <Stack.Screen name="AddAllergy" component={AddAllergyScreen} />
+      <Stack.Screen name="EditAllergy" component={EditAllergyScreen} />
 
       {mainScreens.map((screen) => (
         <Stack.Screen

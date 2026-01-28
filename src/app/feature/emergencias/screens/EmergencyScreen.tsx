@@ -1,8 +1,10 @@
 import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -15,8 +17,13 @@ import {
 import { useEmergencyProfile } from "../(hooks)/useEmergencyProfile";
 import { EmergencyField } from "../components/EmergencyField";
 
+type EmergencyScreenNavigationProp = StackNavigationProp<
+  RootStackParamsList,
+  "Emergencias"
+>;
+
 const EmergencyScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EmergencyScreenNavigationProp>();
   const { getThemedColors, transformText, getFontSize } = usePersonalization();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading, updateField } = useEmergencyProfile();
@@ -56,6 +63,50 @@ const EmergencyScreen = () => {
       "plain-text",
       currentValue || "",
     );
+  };
+
+  const handleBloodTypeEdit = () => {
+    navigation.navigate("BloodTypeSelection", {
+      currentBloodType: profile?.blood_type || "O-",
+      onSelect: async (bloodType: string) => {
+        try {
+          await updateField("blood_type", bloodType);
+          console.log("Tipo de sangre actualizado:", bloodType);
+        } catch (error) {
+          console.error("Error al actualizar tipo de sangre:", error);
+          Alert.alert(
+            transformText("Error"),
+            transformText(
+              error instanceof Error
+                ? error.message
+                : "No se pudo actualizar el tipo de sangre",
+            ),
+          );
+        }
+      },
+    });
+  };
+
+  const handleAllergiesEdit = () => {
+    navigation.navigate("AllergiesSelection", {
+      currentAllergies: profile?.allergies || "",
+      onSelect: async (allergies: string) => {
+        try {
+          await updateField("allergies", allergies);
+          console.log("Alergias actualizadas:", allergies);
+        } catch (error) {
+          console.error("Error al actualizar alergias:", error);
+          Alert.alert(
+            transformText("Error"),
+            transformText(
+              error instanceof Error
+                ? error.message
+                : "No se pudo actualizar las alergias",
+            ),
+          );
+        }
+      },
+    });
   };
 
   const handleAlertTypeEdit = () => {
@@ -243,7 +294,7 @@ const EmergencyScreen = () => {
           }
           label="Tipo de sangre"
           value={profile?.blood_type || ""}
-          onPress={() => handleEdit("blood_type", profile?.blood_type || "")}
+          onPress={handleBloodTypeEdit}
         />
 
         <EmergencyField
@@ -256,7 +307,7 @@ const EmergencyScreen = () => {
           }
           label="Alergias"
           value={profile?.allergies || ""}
-          onPress={() => handleEdit("allergies", profile?.allergies || "")}
+          onPress={handleAllergiesEdit}
         />
 
         <EmergencyField

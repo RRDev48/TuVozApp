@@ -26,6 +26,22 @@ type RootStackParamsList = {
   Tarjetas: undefined;
   Frases: undefined;
   Emergencias: undefined;
+  BloodTypeSelection: {
+    currentBloodType?: string;
+    onSelect: (bloodType: string) => void;
+  };
+  AllergiesSelection: {
+    currentAllergies?: string;
+    onSelect: (allergies: string) => void;
+  };
+  AddAllergy: {
+    onAdd: (allergy: string) => void;
+  };
+  EditAllergy: {
+    allergy: string;
+    onUpdate: (allergy: string) => void;
+    onDelete: () => void;
+  };
   Ajustes: undefined;
   PersonalizationScreen: undefined;
   ProfilesConfigScreen: undefined;
