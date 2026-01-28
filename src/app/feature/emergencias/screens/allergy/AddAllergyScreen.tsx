@@ -5,15 +5,14 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { SEVERITY_LEVELS, useAllergyForm } from "../../(hooks)/useAllergyForm";
 
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
 
@@ -22,37 +21,23 @@ type AddAllergyScreenNavigationProp = StackNavigationProp<
   "AddAllergy"
 >;
 
-const SEVERITY_LEVELS = ["Leve", "Moderada", "Grave"];
-
 const AddAllergyScreen = () => {
   const navigation = useNavigation<AddAllergyScreenNavigationProp>();
   const route = useRoute<AddAllergyScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [allergyName, setAllergyName] = useState("");
-  const [selectedSeverity, setSelectedSeverity] = useState("Leve");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleSelectSeverity = (severity: string) => {
-    setSelectedSeverity(severity);
-    setIsDropdownOpen(false);
-  };
-
-  const handleSave = () => {
-    if (allergyName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la alergia"),
-      );
-      return;
-    }
-
-    if (route.params?.onAdd) {
-      route.params.onAdd(`${allergyName} (${selectedSeverity})`);
-    }
-    navigation.goBack();
-  };
+  const {
+    allergyName,
+    setAllergyName,
+    selectedSeverity,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    handleSelectSeverity,
+    handleSave,
+  } = useAllergyForm({
+    onAdd: route.params?.onAdd,
+  });
 
   const styles = StyleSheet.create({
     container: {

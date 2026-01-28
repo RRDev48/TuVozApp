@@ -5,15 +5,17 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import {
+  FREQUENCY_OPTIONS,
+  useMedicationForm,
+} from "../../(hooks)/useMedicationForm";
 
 type AddMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -25,43 +27,23 @@ type AddMedicationScreenNavigationProp = StackNavigationProp<
   "AddMedication"
 >;
 
-const FREQUENCY_OPTIONS = [
-  "Diaria",
-  "Cada 12 horas",
-  "Cada 8 horas",
-  "Semanal",
-  "Mensual",
-];
-
 const AddMedicationScreen = () => {
   const navigation = useNavigation<AddMedicationScreenNavigationProp>();
   const route = useRoute<AddMedicationScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [medicationName, setMedicationName] = useState("");
-  const [selectedFrequency, setSelectedFrequency] = useState("Diaria");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleSelectFrequency = (frequency: string) => {
-    setSelectedFrequency(frequency);
-    setIsDropdownOpen(false);
-  };
-
-  const handleSave = () => {
-    if (medicationName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la medicación"),
-      );
-      return;
-    }
-
-    if (route.params?.onAdd) {
-      route.params.onAdd(`${medicationName} (${selectedFrequency})`);
-    }
-    navigation.goBack();
-  };
+  const {
+    medicationName,
+    setMedicationName,
+    selectedFrequency,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    handleSelectFrequency,
+    handleSave,
+  } = useMedicationForm({
+    onAdd: route.params?.onAdd,
+  });
 
   const styles = StyleSheet.create({
     container: {

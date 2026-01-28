@@ -5,15 +5,14 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useAddressForm } from "../../(hooks)/useAddressForm";
 
 type EditAddressScreenRouteProp = RouteProp<RootStackParamsList, "EditAddress">;
 
@@ -28,45 +27,11 @@ const EditAddressScreen = () => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [address, setAddress] = useState(route.params?.address || "");
-
-  const handleSave = () => {
-    if (address.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese una dirección"),
-      );
-      return;
-    }
-
-    if (route.params?.onUpdate) {
-      route.params.onUpdate(address);
-    }
-    navigation.goBack();
-  };
-
-  const handleDelete = () => {
-    Alert.alert(
-      transformText("Eliminar dirección"),
-      transformText("¿Estás seguro de que deseas eliminar esta dirección?"),
-      [
-        {
-          text: transformText("Cancelar"),
-          style: "cancel",
-        },
-        {
-          text: transformText("Eliminar"),
-          style: "destructive",
-          onPress: () => {
-            if (route.params?.onDelete) {
-              route.params.onDelete();
-            }
-            navigation.goBack();
-          },
-        },
-      ],
-    );
-  };
+  const { address, setAddress, handleSave, handleDelete } = useAddressForm({
+    initialAddress: route.params?.address || "",
+    onUpdate: route.params?.onUpdate,
+    onDelete: route.params?.onDelete,
+  });
 
   const styles = StyleSheet.create({
     container: {

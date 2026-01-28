@@ -5,15 +5,14 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { SEVERITY_LEVELS, useAllergyForm } from "../../(hooks)/useAllergyForm";
 
 type EditAllergyScreenRouteProp = RouteProp<RootStackParamsList, "EditAllergy">;
 
@@ -22,54 +21,26 @@ type EditAllergyScreenNavigationProp = StackNavigationProp<
   "EditAllergy"
 >;
 
-const SEVERITY_LEVELS = ["Leve", "Moderada", "Grave"];
-
 const EditAllergyScreen = () => {
   const navigation = useNavigation<EditAllergyScreenNavigationProp>();
   const route = useRoute<EditAllergyScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  // Parse allergy name and severity
-  const parseAllergy = (allergyString: string) => {
-    const match = allergyString.match(/^(.+)\s*\((.+)\)$/);
-    if (match) {
-      return { name: match[1].trim(), severity: match[2].trim() };
-    }
-    return { name: allergyString, severity: "Leve" };
-  };
-
-  const parsed = parseAllergy(route.params?.allergy || "");
-  const [allergyName, setAllergyName] = useState(parsed.name);
-  const [selectedSeverity, setSelectedSeverity] = useState(parsed.severity);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleSelectSeverity = (severity: string) => {
-    setSelectedSeverity(severity);
-    setIsDropdownOpen(false);
-  };
-
-  const handleSave = () => {
-    if (allergyName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la alergia"),
-      );
-      return;
-    }
-
-    if (route.params?.onUpdate) {
-      route.params.onUpdate(`${allergyName} (${selectedSeverity})`);
-    }
-    navigation.goBack();
-  };
-
-  const handleDelete = () => {
-    if (route.params?.onDelete) {
-      route.params.onDelete();
-    }
-    navigation.goBack();
-  };
+  const {
+    allergyName,
+    setAllergyName,
+    selectedSeverity,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    handleSelectSeverity,
+    handleSave,
+    handleDelete,
+  } = useAllergyForm({
+    initialAllergy: route.params?.allergy || "",
+    onUpdate: route.params?.onUpdate,
+    onDelete: route.params?.onDelete,
+  });
 
   const styles = StyleSheet.create({
     container: {

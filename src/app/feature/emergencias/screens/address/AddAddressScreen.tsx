@@ -5,15 +5,14 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useAddressForm } from "../../(hooks)/useAddressForm";
 
 type AddAddressScreenRouteProp = RouteProp<RootStackParamsList, "AddAddress">;
 
@@ -28,22 +27,9 @@ const AddAddressScreen = () => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [address, setAddress] = useState("");
-
-  const handleSave = () => {
-    if (address.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese una dirección"),
-      );
-      return;
-    }
-
-    if (route.params?.onAdd) {
-      route.params.onAdd(address);
-    }
-    navigation.goBack();
-  };
+  const { address, setAddress, handleSave } = useAddressForm({
+    onAdd: route.params?.onAdd,
+  });
 
   const styles = StyleSheet.create({
     container: {

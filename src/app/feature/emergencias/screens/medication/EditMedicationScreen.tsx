@@ -5,15 +5,17 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import {
+  FREQUENCY_OPTIONS,
+  useMedicationForm,
+} from "../../(hooks)/useMedicationForm";
 
 type EditMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -25,59 +27,26 @@ type EditMedicationScreenNavigationProp = StackNavigationProp<
   "EditMedication"
 >;
 
-const FREQUENCY_OPTIONS = [
-  "Diaria",
-  "Cada 12 horas",
-  "Cada 8 horas",
-  "Semanal",
-  "Mensual",
-];
-
 const EditMedicationScreen = () => {
   const navigation = useNavigation<EditMedicationScreenNavigationProp>();
   const route = useRoute<EditMedicationScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const parseMedication = (medicationString: string) => {
-    const match = medicationString.match(/^(.+)\s*\((.+)\)$/);
-    if (match) {
-      return { name: match[1].trim(), frequency: match[2].trim() };
-    }
-    return { name: medicationString, frequency: "Diaria" };
-  };
-
-  const parsed = parseMedication(route.params?.medication || "");
-  const [medicationName, setMedicationName] = useState(parsed.name);
-  const [selectedFrequency, setSelectedFrequency] = useState(parsed.frequency);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const handleSelectFrequency = (frequency: string) => {
-    setSelectedFrequency(frequency);
-    setIsDropdownOpen(false);
-  };
-
-  const handleSave = () => {
-    if (medicationName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la medicación"),
-      );
-      return;
-    }
-
-    if (route.params?.onUpdate) {
-      route.params.onUpdate(`${medicationName} (${selectedFrequency})`);
-    }
-    navigation.goBack();
-  };
-
-  const handleDelete = () => {
-    if (route.params?.onDelete) {
-      route.params.onDelete();
-    }
-    navigation.goBack();
-  };
+  const {
+    medicationName,
+    setMedicationName,
+    selectedFrequency,
+    isDropdownOpen,
+    setIsDropdownOpen,
+    handleSelectFrequency,
+    handleSave,
+    handleDelete,
+  } = useMedicationForm({
+    initialMedication: route.params?.medication || "",
+    onUpdate: route.params?.onUpdate,
+    onDelete: route.params?.onDelete,
+  });
 
   const styles = StyleSheet.create({
     container: {
