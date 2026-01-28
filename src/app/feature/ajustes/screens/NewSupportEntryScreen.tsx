@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { supportService } from "../(services)/supportService";
 
 const NewSupportEntryScreen = () => {
   const { getThemedColors } = usePersonalization();
@@ -22,14 +24,45 @@ const NewSupportEntryScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const [subject, setSubject] = useState("");
   const [query, setQuery] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!subject.trim() || !query.trim()) {
-      alert("Por favor completa todos los campos");
+      Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
-    // Aquí iría la lógica para enviar el informe
-    navigation.goBack();
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await supportService.createTicket({
+        subject: subject.trim(),
+        message: query.trim(),
+        priority: "normal",
+      });
+
+      if (response.success) {
+        Alert.alert(
+          "Éxito",
+          "Tu consulta ha sido enviada. Te contactaremos pronto.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.goBack(),
+            },
+          ],
+        );
+      } else {
+        Alert.alert(
+          "Error",
+          response.error || "No se pudo enviar tu consulta. Intenta de nuevo.",
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error inesperado. Intenta de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const styles = StyleSheet.create({
@@ -183,12 +216,13 @@ const NewSupportEntryScreen = () => {
       {/* Botón Enviar informe */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.submitButton}
+          style={[styles.submitButton, isSubmitting && { opacity: 0.6 }]}
           activeOpacity={0.8}
           onPress={handleSubmit}
+          disabled={isSubmitting}
         >
           <CustomText style={styles.submitButtonText}>
-            Enviar informe
+            {isSubmitting ? "Enviando..." : "Enviar informe"}
           </CustomText>
         </TouchableOpacity>
       </View>
