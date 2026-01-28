@@ -13,11 +13,17 @@ import PasswordSetupScreen from "../feature/Auth/Register/PasswordSetupScreen";
 import RegisterInfoScreen from "../feature/Auth/Register/RegisterInfoScreen";
 import RoleSelectionScreen from "../feature/Auth/Register/RoleSelectionScreen";
 import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
+import AddAddressScreen from "../feature/emergencias/screens/AddAddressScreen";
 import AddAllergyScreen from "../feature/emergencias/screens/AddAllergyScreen";
+import AddMedicationScreen from "../feature/emergencias/screens/AddMedicationScreen";
+import AddressScreen from "../feature/emergencias/screens/AddressScreen";
 import AllergiesScreen from "../feature/emergencias/screens/AllergiesScreen";
 import BloodTypeSelectionScreen from "../feature/emergencias/screens/BloodTypeSelectionScreen";
+import EditAddressScreen from "../feature/emergencias/screens/EditAddressScreen";
 import EditAllergyScreen from "../feature/emergencias/screens/EditAllergyScreen";
+import EditMedicationScreen from "../feature/emergencias/screens/EditMedicationScreen";
 import EmergencyScreen from "../feature/emergencias/screens/EmergencyScreen";
+import MedicationsScreen from "../feature/emergencias/screens/MedicationsScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
@@ -106,6 +112,12 @@ const StackNavigator = () => {
       <Stack.Screen name="AllergiesSelection" component={AllergiesScreen} />
       <Stack.Screen name="AddAllergy" component={AddAllergyScreen} />
       <Stack.Screen name="EditAllergy" component={EditAllergyScreen} />
+      <Stack.Screen name="MedicationsSelection" component={MedicationsScreen} />
+      <Stack.Screen name="AddMedication" component={AddMedicationScreen} />
+      <Stack.Screen name="EditMedication" component={EditMedicationScreen} />
+      <Stack.Screen name="AddressSelection" component={AddressScreen} />
+      <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+      <Stack.Screen name="EditAddress" component={EditAddressScreen} />
 
       {mainScreens.map((screen) => (
         <Stack.Screen

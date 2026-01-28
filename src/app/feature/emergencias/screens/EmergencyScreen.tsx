@@ -109,6 +109,50 @@ const EmergencyScreen = () => {
     });
   };
 
+  const handleMedicationsEdit = () => {
+    navigation.navigate("MedicationsSelection", {
+      currentMedications: profile?.medications || "",
+      onSelect: async (medications: string) => {
+        try {
+          await updateField("medications", medications);
+          console.log("Medicaciones actualizadas:", medications);
+        } catch (error) {
+          console.error("Error al actualizar medicaciones:", error);
+          Alert.alert(
+            transformText("Error"),
+            transformText(
+              error instanceof Error
+                ? error.message
+                : "No se pudo actualizar las medicaciones",
+            ),
+          );
+        }
+      },
+    });
+  };
+
+  const handleAddressEdit = () => {
+    navigation.navigate("AddressSelection", {
+      currentAddress: profile?.address || "",
+      onSelect: async (address: string) => {
+        try {
+          await updateField("address", address);
+          console.log("Dirección actualizada:", address);
+        } catch (error) {
+          console.error("Error al actualizar dirección:", error);
+          Alert.alert(
+            transformText("Error"),
+            transformText(
+              error instanceof Error
+                ? error.message
+                : "No se pudo actualizar la dirección",
+            ),
+          );
+        }
+      },
+    });
+  };
+
   const handleAlertTypeEdit = () => {
     Alert.alert(
       transformText("Modo de alerta"),
@@ -320,7 +364,7 @@ const EmergencyScreen = () => {
           }
           label="Medicaciones"
           value={profile?.medications || ""}
-          onPress={() => handleEdit("medications", profile?.medications || "")}
+          onPress={handleMedicationsEdit}
         />
 
         <EmergencyField
@@ -342,7 +386,7 @@ const EmergencyScreen = () => {
           }
           label="Dirección"
           value={profile?.address || ""}
-          onPress={() => handleEdit("address", profile?.address || "")}
+          onPress={handleAddressEdit}
         />
 
         <EmergencyField

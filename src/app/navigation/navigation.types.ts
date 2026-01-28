@@ -42,6 +42,30 @@ type RootStackParamsList = {
     onUpdate: (allergy: string) => void;
     onDelete: () => void;
   };
+  MedicationsSelection: {
+    currentMedications?: string;
+    onSelect: (medications: string) => void;
+  };
+  AddMedication: {
+    onAdd: (medication: string) => void;
+  };
+  EditMedication: {
+    medication: string;
+    onUpdate: (medication: string) => void;
+    onDelete: () => void;
+  };
+  AddressSelection: {
+    currentAddress?: string;
+    onSelect: (address: string) => void;
+  };
+  AddAddress: {
+    onAdd: (address: string) => void;
+  };
+  EditAddress: {
+    address: string;
+    onUpdate: (address: string) => void;
+    onDelete: () => void;
+  };
   Ajustes: undefined;
   PersonalizationScreen: undefined;
   ProfilesConfigScreen: undefined;
