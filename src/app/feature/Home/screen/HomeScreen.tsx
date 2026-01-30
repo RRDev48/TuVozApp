@@ -4,18 +4,40 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, Image, StyleSheet, View } from "react-native";
 import getGreeting from "../(actions)/actions";
 import { useUserData } from "../(hooks)/useUserData";
+import { userService } from "../(services)/userService";
 import homeMenu from "../constants/home.menu";
 
 const HomeScreen = () => {
   const { userName } = useUserData();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { user } = await userService.getCurrentUser();
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+  }, []);
+
+  // Filter menu items based on authentication
+  const filteredMenuItems = useMemo(() => {
+    if (isAuthenticated) {
+      return homeMenu.homeMenuItems;
+    }
+    // Hide Emergencias and Rutinas if not authenticated
+    return homeMenu.homeMenuItems.filter(
+      (item) => item.name !== "Emergencias" && item.name !== "Rutinas",
+    );
+  }, [isAuthenticated]);
 
   const handleMenuPress = useCallback(
     (route: string) => {
@@ -119,7 +141,7 @@ const HomeScreen = () => {
       </View>
 
       <FlatList
-        data={homeMenu.homeMenuItems}
+        data={filteredMenuItems}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         numColumns={2}
