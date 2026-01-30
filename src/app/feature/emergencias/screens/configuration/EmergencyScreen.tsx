@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { parsePhoneNumber } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
@@ -55,42 +56,6 @@ const EmergencyScreen = () => {
       }
     }
   }, [loading, profile, navigation, fromSettings]);
-
-  const handleEdit = (fieldName: string, currentValue: string) => {
-    Alert.prompt(
-      transformText(getFieldLabel(fieldName)),
-      transformText("Ingrese el nuevo valor"),
-      [
-        {
-          text: transformText("Cancelar"),
-          style: "cancel",
-        },
-        {
-          text: transformText("Guardar"),
-          onPress: async (value?: string) => {
-            if (value !== undefined) {
-              try {
-                await updateField(
-                  fieldName as keyof Omit<
-                    typeof profile,
-                    "id" | "user_id" | "full_name" | "created_at" | "updated_at"
-                  >,
-                  value,
-                );
-              } catch (error) {
-                Alert.alert(
-                  transformText("Error"),
-                  transformText("No se pudo actualizar el campo"),
-                );
-              }
-            }
-          },
-        },
-      ],
-      "plain-text",
-      currentValue || "",
-    );
-  };
 
   const handleBloodTypeEdit = () => {
     navigation.navigate("BloodTypeSelection", {
@@ -202,62 +167,9 @@ const EmergencyScreen = () => {
     });
   };
 
-  const handleNotesEdit = () => {
-    navigation.navigate("NotesSelection", {
-      currentNotes: profile?.notes || "",
-      onSelect: async (notes: string) => {
-        try {
-          await updateField("notes", notes);
-          console.log("Notas actualizadas:", notes);
-        } catch (error) {
-          console.error("Error al actualizar notas:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las notas",
-            ),
-          );
-        }
-      },
-    });
-  };
-
   const handleEmergencyContactEdit = () => {
-    // Extraer código de país y número del phone completo
     const fullPhone = profile?.emergency_contact_phone || "";
-
-    // Buscar el código de país más largo que coincida
-    const sortedCodes = [
-      ...[
-        "+1",
-        "+52",
-        "+54",
-        "+55",
-        "+56",
-        "+57",
-        "+58",
-        "+51",
-        "+593",
-        "+34",
-        "+44",
-        "+33",
-        "+49",
-        "+39",
-      ],
-    ].sort((a, b) => b.length - a.length);
-
-    let countryCode = "+54";
-    let phoneNumber = fullPhone;
-
-    for (const code of sortedCodes) {
-      if (fullPhone.startsWith(code)) {
-        countryCode = code;
-        phoneNumber = fullPhone.substring(code.length).trim();
-        break;
-      }
-    }
+    const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
 
     navigation.navigate("EmergencyContactSelection", {
       currentContactName: profile?.emergency_contact_name || "",
@@ -281,36 +193,6 @@ const EmergencyScreen = () => {
         }
       },
     });
-  };
-
-  const handleSaveEmergencyData = () => {
-    Alert.alert(
-      transformText("Datos guardados"),
-      transformText(
-        "La información de emergencia ha sido actualizada correctamente",
-      ),
-      [{ text: transformText("OK") }],
-    );
-  };
-
-  const getFieldLabel = (field: string): string => {
-    const labels: { [key: string]: string } = {
-      blood_type: "Tipo de sangre",
-      allergies: "Alergias",
-      medications: "Medicaciones",
-      notes: "Notas",
-      address: "Dirección",
-      emergency_contact_name: "Nombre de contacto",
-      emergency_contact_phone: "Número de contacto",
-      alert_type: "Modo de alerta",
-    };
-    return labels[field] || field;
-  };
-
-  const getAlertTypeLabel = (alertType?: string): string => {
-    if (alertType === "call") return "Llamada";
-    if (alertType === "whatsapp_location") return "WhatsApp con ubicación";
-    return "No configurado";
   };
 
   const handleCancel = () => {

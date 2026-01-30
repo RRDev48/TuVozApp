@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { parsePhoneNumber } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
@@ -79,39 +80,8 @@ const EmergencyScreen2 = () => {
   };
 
   const handleEmergencyContactEdit = () => {
-    // Extraer código de país y número del phone completo
     const fullPhone = profile?.emergency_contact_phone || "";
-
-    // Buscar el código de país más largo que coincida
-    const sortedCodes = [
-      ...[
-        "+1",
-        "+52",
-        "+54",
-        "+55",
-        "+56",
-        "+57",
-        "+58",
-        "+51",
-        "+593",
-        "+34",
-        "+44",
-        "+33",
-        "+49",
-        "+39",
-      ],
-    ].sort((a, b) => b.length - a.length);
-
-    let countryCode = "+54";
-    let phoneNumber = fullPhone;
-
-    for (const code of sortedCodes) {
-      if (fullPhone.startsWith(code)) {
-        countryCode = code;
-        phoneNumber = fullPhone.substring(code.length).trim();
-        break;
-      }
-    }
+    const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
 
     navigation.navigate("EmergencyContactSelection", {
       currentContactName: profile?.emergency_contact_name || "",
