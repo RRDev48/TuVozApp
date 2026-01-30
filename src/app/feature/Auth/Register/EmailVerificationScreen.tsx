@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useEmailValidation } from "../(hooks)/useEmailValidation";
 import AppLogo from "../../../assets/image/AppLogo.svg";
+import BackButton from "../../components/BackButton";
 
 type EmailVerificationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -50,10 +51,6 @@ const EmailVerificationScreen = () => {
     },
   });
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
   const handleContinue = () => {
     validateEmails();
   };
@@ -66,14 +63,7 @@ const EmailVerificationScreen = () => {
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.black} />
-          <Text style={styles.backText}>Atrás</Text>
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} />
 
         <View style={styles.headerLogoContainer}>
           <AppLogo width={250} height={250} />
@@ -190,15 +180,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 60,
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
+
   headerLogoContainer: {
     position: "absolute",
     left: 0,

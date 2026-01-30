@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../assets/image/AppLogo.svg";
+import BackButton from "../../components/BackButton";
 import SuccessAlert from "./components/SuccessAlert";
 
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<
@@ -79,14 +80,7 @@ const ForgotPasswordScreen = () => {
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.black} />
-          <Text style={styles.backText}>Atrás</Text>
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} />
 
         <View style={styles.headerLogoContainer}>
           <AppLogo width={250} height={250} />

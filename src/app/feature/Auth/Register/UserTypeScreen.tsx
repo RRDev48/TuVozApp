@@ -1,11 +1,11 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AppLogo from "../../../assets/image/AppLogo.svg";
+import BackButton from "../../components/BackButton";
 
 type UserTypeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -17,10 +17,6 @@ type UserTypeOption = "self" | "other" | null;
 const UserTypeScreen = () => {
   const navigation = useNavigation<UserTypeScreenNavigationProp>();
   const [selectedType, setSelectedType] = useState<UserTypeOption>(null);
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
 
   const handleContinue = () => {
     if (!selectedType) {
@@ -37,14 +33,7 @@ const UserTypeScreen = () => {
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={colors.black} />
-          <Text style={styles.backText}>Atrás</Text>
-        </TouchableOpacity>
+        <BackButton onPress={() => navigation.goBack()} />
 
         <View style={styles.headerLogoContainer}>
           <AppLogo width={250} height={250} />
@@ -128,15 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 60,
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
+
   headerLogoContainer: {
     position: "absolute",
     left: 0,

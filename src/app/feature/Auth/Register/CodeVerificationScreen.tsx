@@ -1,6 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
@@ -13,12 +12,12 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
 import { useOTPVerification } from "../(hooks)/useOTPVerification";
 import AppLogo from "../../../assets/image/AppLogo.svg";
+import BackButton from "../../components/BackButton";
 import RegisterSuccessAlert from "./components/RegisterSuccessAlert";
 
 type CodeVerificationScreenNavigationProp = StackNavigationProp<
@@ -55,8 +54,6 @@ const CodeVerificationScreen = () => {
       onComplete: handleVerifyCode,
     });
 
-  const handleBack = () => navigation.goBack();
-
   const handleSuccessAlertClose = () => {
     setShowSuccessAlert(false);
     navigation.navigate("Login");
@@ -77,14 +74,7 @@ const CodeVerificationScreen = () => {
       >
         {/* Header con botón atrás y logo */}
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={styles.backButton}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="chevron-back" size={24} color={colors.black} />
-            <Text style={styles.backText}>Atrás</Text>
-          </TouchableOpacity>
+          <BackButton onPress={() => navigation.goBack()} />
 
           <View style={styles.headerLogoContainer}>
             <AppLogo width={250} height={250} />
@@ -159,15 +149,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 40,
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
+
   headerLogoContainer: {
     position: "absolute",
     left: 0,
