@@ -17,7 +17,7 @@ import {
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
-import CancelConfirmationModal from "../../components/CancelConfirmationModal";
+import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
 import { EmergencyField } from "../../components/EmergencyField";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<

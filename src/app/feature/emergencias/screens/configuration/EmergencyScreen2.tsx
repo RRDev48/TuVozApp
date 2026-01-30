@@ -7,19 +7,19 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
-import CancelConfirmationModal from "../../components/CancelConfirmationModal";
+import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
+import EmergencySuccessModal from "../../components/alerts/EmergencySuccessModal";
 import { EmergencyField } from "../../components/EmergencyField";
-import EmergencySuccessModal from "../../components/EmergencySuccessModal";
 
 type EmergencyScreen2NavigationProp = StackNavigationProp<
   RootStackParamsList,
