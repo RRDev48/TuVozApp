@@ -21,10 +21,10 @@ import AddAllergyScreen from "../feature/emergencias/screens/allergy/AddAllergyS
 import AllergiesScreen from "../feature/emergencias/screens/allergy/AllergiesScreen";
 import EditAllergyScreen from "../feature/emergencias/screens/allergy/EditAllergyScreen";
 import BloodTypeSelectionScreen from "../feature/emergencias/screens/bloodType/BloodTypeSelectionScreen";
+import EmergencyScreen from "../feature/emergencias/screens/configuration/EmergencyScreen";
+import EmergencyScreen2 from "../feature/emergencias/screens/configuration/EmergencyScreen2";
 import EmergencyContactScreen from "../feature/emergencias/screens/emergencyContact/EmergencyContactScreen";
 import EmergencyProfileScreen from "../feature/emergencias/screens/main/EmergencyProfileScreen";
-import EmergencyScreen from "../feature/emergencias/screens/main/EmergencyScreen";
-import EmergencyScreen2 from "../feature/emergencias/screens/main/EmergencyScreen2";
 import AddMedicationScreen from "../feature/emergencias/screens/medication/AddMedicationScreen";
 import EditMedicationScreen from "../feature/emergencias/screens/medication/EditMedicationScreen";
 import MedicationsScreen from "../feature/emergencias/screens/medication/MedicationsScreen";
