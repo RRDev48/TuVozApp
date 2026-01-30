@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { useSupportTickets } from "../../(hooks)/useSupportTickets";
-import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
+import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
 
 const SupportScreen = () => {
   const { getThemedColors } = usePersonalization();

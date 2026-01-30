@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSupportForm } from "../(hooks)/useSupportForm";
+import { useSupportForm } from "../../(hooks)/useSupportForm";
 
 const NewSupportEntryScreen = () => {
   const { getThemedColors } = usePersonalization();

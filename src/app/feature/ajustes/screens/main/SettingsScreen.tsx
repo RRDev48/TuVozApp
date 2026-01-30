@@ -160,7 +160,7 @@ const SettingsScreen = () => {
       <View style={styles.avatarContainer}>
         <View style={styles.avatarCircle}>
           <Image
-            source={require("../../../assets/image/adip_icon.png")}
+            source={require("../../../../assets/image/adip_icon.png")}
             style={styles.avatarImage}
             resizeMode="contain"
           />
