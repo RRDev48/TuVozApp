@@ -5,6 +5,8 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import * as Location from "expo-location";
+import { useState } from "react";
 import {
     ActivityIndicator,
     Alert,
@@ -28,6 +30,7 @@ const EmergencyProfileScreen = () => {
   const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading } = useEmergencyProfile();
+  const [sendingAlert, setSendingAlert] = useState(false);
 
   const handleEmergencyCall = () => {
     Alert.alert(
@@ -48,35 +51,101 @@ const EmergencyProfileScreen = () => {
     );
   };
 
-  const handleSendAlert = () => {
-    const alertType = profile?.alert_type || "call";
+  const getLocation = async () => {
+    try {
+      // Solicitar permisos de ubicación
+      const { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (alertType === "call") {
-      // Llamada al contacto de emergencia
-      const phone = profile?.emergency_contact_phone || "";
-      if (phone) {
-        Linking.openURL(`tel:${phone}`);
-      } else {
+      if (status !== "granted") {
         Alert.alert(
           transformText("Error"),
-          transformText("No hay contacto de emergencia configurado"),
+          transformText(
+            "Se necesitan permisos de ubicación para enviar la alerta",
+          ),
         );
+        return null;
       }
-    } else if (alertType === "whatsapp_location") {
-      // WhatsApp con ubicación
-      const phone = profile?.emergency_contact_phone?.replace(/\+/g, "") || "";
-      if (phone) {
-        // Aquí se podría agregar la lógica para obtener la ubicación y enviarla
-        const message = `¡Emergencia! Necesito ayuda. ${profile?.notes || ""}`;
-        Linking.openURL(
-          `whatsapp://send?phone=${phone}&text=${encodeURIComponent(message)}`,
-        );
-      } else {
-        Alert.alert(
-          transformText("Error"),
-          transformText("No hay contacto de emergencia configurado"),
-        );
+
+      // Obtener ubicación actual
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      return location;
+    } catch (error) {
+      console.error("Error obteniendo ubicación:", error);
+      Alert.alert(
+        transformText("Error"),
+        transformText("No se pudo obtener la ubicación"),
+      );
+      return null;
+    }
+  };
+
+  const handleSendAlert = async () => {
+    const alertType = profile?.alert_type || "call";
+    const phone = profile?.emergency_contact_phone || "";
+
+    if (!phone) {
+      Alert.alert(
+        transformText("Error"),
+        transformText("No hay contacto de emergencia configurado"),
+      );
+      return;
+    }
+
+    setSendingAlert(true);
+
+    try {
+      if (alertType === "call") {
+        // Llamada al contacto de emergencia
+        await Linking.openURL(`tel:${phone}`);
+      } else if (alertType === "whatsapp_location") {
+        // Obtener ubicación
+        const location = await getLocation();
+
+        if (!location) {
+          setSendingAlert(false);
+          return;
+        }
+
+        const { latitude, longitude } = location.coords;
+        const contactName = profile?.emergency_contact_name || "Contacto";
+        const userName = userFullName || "Usuario";
+
+        // Crear mensaje con ubicación
+        const message = `🚨 ¡ALERTA DE EMERGENCIA! 🚨\n\n${userName} necesita ayuda urgente.\n\n📍 Mi ubicación actual:\nhttps://maps.google.com/?q=${latitude},${longitude}\n\n${profile?.notes ? `Información adicional: ${profile.notes}` : ""}`;
+
+        // Remover el símbolo + del número para WhatsApp
+        const whatsappPhone = phone.replace(/\+/g, "");
+
+        const url = `whatsapp://send?phone=${whatsappPhone}&text=${encodeURIComponent(message)}`;
+
+        try {
+          await Linking.openURL(url);
+        } catch (urlError) {
+          // Si falla con whatsapp://, intentar con https://wa.me/
+          const waUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
+          try {
+            await Linking.openURL(waUrl);
+          } catch (waError) {
+            Alert.alert(
+              transformText("Error"),
+              transformText(
+                "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
+              ),
+            );
+          }
+        }
       }
+    } catch (error) {
+      console.error("Error enviando alerta:", error);
+      Alert.alert(
+        transformText("Error"),
+        transformText("No se pudo enviar la alerta"),
+      );
+    } finally {
+      setSendingAlert(false);
     }
   };
 
@@ -290,11 +359,21 @@ const EmergencyProfileScreen = () => {
           </CustomText>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.alertButton} onPress={handleSendAlert}>
-          <Ionicons name="notifications" size={24} color={colors.white} />
-          <CustomText style={styles.alertButtonText}>
-            {transformText("Enviar Alerta")}
-          </CustomText>
+        <TouchableOpacity
+          style={styles.alertButton}
+          onPress={handleSendAlert}
+          disabled={sendingAlert}
+        >
+          {sendingAlert ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            <>
+              <Ionicons name="notifications" size={24} color={colors.white} />
+              <CustomText style={styles.alertButtonText}>
+                {transformText("Enviar Alerta")}
+              </CustomText>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
