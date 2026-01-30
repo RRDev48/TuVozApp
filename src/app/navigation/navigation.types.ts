@@ -43,7 +43,7 @@ type RootStackParamsList = {
   Rutinas: undefined;
   Tarjetas: undefined;
   Frases: undefined;
-  Emergencias: undefined;
+  Emergencias: { fromSettings?: boolean };
   EmergenciasParte2: undefined;
   EmergencyProfile: undefined;
 

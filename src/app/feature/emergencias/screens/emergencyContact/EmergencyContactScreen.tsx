@@ -192,7 +192,10 @@ const EmergencyContactScreen = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      zIndex: 1,
+      backgroundColor: "transparent",
+    },
+    dropdownWrapper: {
+      marginBottom: 20,
     },
   });
 
@@ -248,33 +251,34 @@ const EmergencyContactScreen = () => {
             style={styles.phoneInput}
           />
         </View>
-
         {isDropdownOpen && (
-          <ScrollView style={styles.countryCodeList}>
-            {COUNTRY_CODES.map((country, index) => (
-              <TouchableOpacity
-                key={`${country.code}-${country.country}`}
-                style={[
-                  styles.countryCodeItem,
-                  index === COUNTRY_CODES.length - 1 &&
-                    styles.countryCodeItemLast,
-                ]}
-                onPress={() => handleSelectCountryCode(country.code)}
-              >
-                <CustomText style={styles.countryFlag}>
-                  {country.flag}
-                </CustomText>
-                <View style={styles.countryInfo}>
-                  <CustomText style={styles.countryName}>
-                    {country.country}
+          <View style={styles.dropdownWrapper}>
+            <ScrollView style={styles.countryCodeList}>
+              {COUNTRY_CODES.map((country, index) => (
+                <TouchableOpacity
+                  key={`${country.code}-${country.country}-${index}`}
+                  style={[
+                    styles.countryCodeItem,
+                    index === COUNTRY_CODES.length - 1 &&
+                      styles.countryCodeItemLast,
+                  ]}
+                  onPress={() => handleSelectCountryCode(country.code)}
+                >
+                  <CustomText style={styles.countryFlag}>
+                    {country.flag}
                   </CustomText>
-                  <CustomText style={styles.countryCode}>
-                    {country.code}
-                  </CustomText>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                  <View style={styles.countryInfo}>
+                    <CustomText style={styles.countryName}>
+                      {country.country}
+                    </CustomText>
+                    <CustomText style={styles.countryCode}>
+                      {country.code}
+                    </CustomText>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         )}
       </ScrollView>
 

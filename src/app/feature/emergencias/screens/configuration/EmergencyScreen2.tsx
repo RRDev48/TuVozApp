@@ -81,9 +81,37 @@ const EmergencyScreen2 = () => {
   const handleEmergencyContactEdit = () => {
     // Extraer código de país y número del phone completo
     const fullPhone = profile?.emergency_contact_phone || "";
-    const countryCodeMatch = fullPhone.match(/^(\+\d+)/);
-    const countryCode = countryCodeMatch ? countryCodeMatch[1] : "+52";
-    const phoneNumber = fullPhone.replace(countryCode, "");
+
+    // Buscar el código de país más largo que coincida
+    const sortedCodes = [
+      ...[
+        "+1",
+        "+52",
+        "+54",
+        "+55",
+        "+56",
+        "+57",
+        "+58",
+        "+51",
+        "+593",
+        "+34",
+        "+44",
+        "+33",
+        "+49",
+        "+39",
+      ],
+    ].sort((a, b) => b.length - a.length);
+
+    let countryCode = "+54";
+    let phoneNumber = fullPhone;
+
+    for (const code of sortedCodes) {
+      if (fullPhone.startsWith(code)) {
+        countryCode = code;
+        phoneNumber = fullPhone.substring(code.length).trim();
+        break;
+      }
+    }
 
     navigation.navigate("EmergencyContactSelection", {
       currentContactName: profile?.emergency_contact_name || "",
@@ -155,7 +183,7 @@ const EmergencyScreen2 = () => {
     try {
       await clearProfile();
       setShowCancelModal(false);
-      navigation.navigate("Emergencias");
+      navigation.navigate("Emergencias", { fromSettings: undefined });
     } catch (error) {
       setShowCancelModal(false);
       Alert.alert(

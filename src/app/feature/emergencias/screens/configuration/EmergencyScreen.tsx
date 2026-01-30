@@ -3,7 +3,7 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useState } from "react";
 import {
@@ -25,17 +25,23 @@ type EmergencyScreenNavigationProp = StackNavigationProp<
   "Emergencias"
 >;
 
+type EmergencyScreenRouteProp = RouteProp<RootStackParamsList, "Emergencias">;
+
 const EmergencyScreen = () => {
   const navigation = useNavigation<EmergencyScreenNavigationProp>();
+  const route = useRoute<EmergencyScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading, updateField, clearProfile } =
     useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  // Verificar si el perfil está completo y redirigir
+  // Obtener el parámetro fromSettings
+  const fromSettings = route.params?.fromSettings;
+
+  // Verificar si el perfil está completo y redirigir solo si NO viene de Settings
   useEffect(() => {
-    if (!loading && profile) {
+    if (!loading && profile && !fromSettings) {
       // Verificar si los campos principales están completos
       const isProfileComplete =
         profile.blood_type &&
@@ -48,7 +54,7 @@ const EmergencyScreen = () => {
         navigation.replace("EmergencyProfile");
       }
     }
-  }, [loading, profile, navigation]);
+  }, [loading, profile, navigation, fromSettings]);
 
   const handleEdit = (fieldName: string, currentValue: string) => {
     Alert.prompt(
@@ -221,9 +227,37 @@ const EmergencyScreen = () => {
   const handleEmergencyContactEdit = () => {
     // Extraer código de país y número del phone completo
     const fullPhone = profile?.emergency_contact_phone || "";
-    const countryCodeMatch = fullPhone.match(/^(\+\d+)/);
-    const countryCode = countryCodeMatch ? countryCodeMatch[1] : "+52";
-    const phoneNumber = fullPhone.replace(countryCode, "");
+
+    // Buscar el código de país más largo que coincida
+    const sortedCodes = [
+      ...[
+        "+1",
+        "+52",
+        "+54",
+        "+55",
+        "+56",
+        "+57",
+        "+58",
+        "+51",
+        "+593",
+        "+34",
+        "+44",
+        "+33",
+        "+49",
+        "+39",
+      ],
+    ].sort((a, b) => b.length - a.length);
+
+    let countryCode = "+54";
+    let phoneNumber = fullPhone;
+
+    for (const code of sortedCodes) {
+      if (fullPhone.startsWith(code)) {
+        countryCode = code;
+        phoneNumber = fullPhone.substring(code.length).trim();
+        break;
+      }
+    }
 
     navigation.navigate("EmergencyContactSelection", {
       currentContactName: profile?.emergency_contact_name || "",

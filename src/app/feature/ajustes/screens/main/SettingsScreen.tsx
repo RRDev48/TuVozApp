@@ -34,7 +34,7 @@ const SettingsScreen = () => {
   }, [navigation]);
 
   const handleNavigateToEmergency = useCallback(() => {
-    navigation.navigate("Emergencias");
+    navigation.navigate("Emergencias", { fromSettings: true });
   }, [navigation]);
 
   const styles = useMemo(
