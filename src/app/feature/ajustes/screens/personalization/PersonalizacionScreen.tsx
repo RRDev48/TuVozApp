@@ -121,9 +121,14 @@ const PersonalizacionScreen = () => {
         },
         switchContainer: {
           borderWidth: 2,
-          borderColor: themedColors.primary,
           borderRadius: 20,
           padding: 2,
+        },
+        switchContainerActive: {
+          borderColor: colors.green,
+        },
+        switchContainerInactive: {
+          borderColor: colors.red,
         },
       }),
     [themedColors],
@@ -153,7 +158,14 @@ const PersonalizacionScreen = () => {
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>Solo mayúsculas</CustomText>
-            <View style={styles.switchContainer}>
+            <View
+              style={[
+                styles.switchContainer,
+                soloMayusculas
+                  ? styles.switchContainerActive
+                  : styles.switchContainerInactive,
+              ]}
+            >
               <Switch
                 value={soloMayusculas}
                 onValueChange={setSoloMayusculas}
@@ -229,7 +241,14 @@ const PersonalizacionScreen = () => {
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>Tema oscuro</CustomText>
-            <View style={styles.switchContainer}>
+            <View
+              style={[
+                styles.switchContainer,
+                temaOscuro
+                  ? styles.switchContainerActive
+                  : styles.switchContainerInactive,
+              ]}
+            >
               <Switch
                 value={temaOscuro}
                 onValueChange={setTemaOscuro}

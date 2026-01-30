@@ -1,8 +1,8 @@
 import { supabase } from "@/src/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import {
-    EmergencyProfile,
-    emergencyService,
+  EmergencyProfile,
+  emergencyService,
 } from "../(services)/emergencyService";
 
 export const useEmergencyProfile = () => {
@@ -89,6 +89,21 @@ export const useEmergencyProfile = () => {
     fetchProfile();
   }, []);
 
+  const clearProfile = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuario no autenticado");
+
+      await emergencyService.clearEmergencyProfile(user.id);
+      await fetchProfile(); // Refrescar datos
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al limpiar");
+      throw err;
+    }
+  };
+
   return {
     profile,
     userFullName,
@@ -96,5 +111,6 @@ export const useEmergencyProfile = () => {
     error,
     updateField,
     refetch: fetchProfile,
+    clearProfile,
   };
 };

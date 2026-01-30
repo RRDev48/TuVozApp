@@ -16,14 +16,19 @@ import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
 import AddAddressScreen from "../feature/emergencias/screens/address/AddAddressScreen";
 import AddressScreen from "../feature/emergencias/screens/address/AddressScreen";
 import EditAddressScreen from "../feature/emergencias/screens/address/EditAddressScreen";
+import AlertModeSelectionScreen from "../feature/emergencias/screens/alertMode/AlertModeSelectionScreen";
 import AddAllergyScreen from "../feature/emergencias/screens/allergy/AddAllergyScreen";
 import AllergiesScreen from "../feature/emergencias/screens/allergy/AllergiesScreen";
 import EditAllergyScreen from "../feature/emergencias/screens/allergy/EditAllergyScreen";
 import BloodTypeSelectionScreen from "../feature/emergencias/screens/bloodType/BloodTypeSelectionScreen";
+import EmergencyContactScreen from "../feature/emergencias/screens/emergencyContact/EmergencyContactScreen";
+import EmergencyProfileScreen from "../feature/emergencias/screens/main/EmergencyProfileScreen";
 import EmergencyScreen from "../feature/emergencias/screens/main/EmergencyScreen";
+import EmergencyScreen2 from "../feature/emergencias/screens/main/EmergencyScreen2";
 import AddMedicationScreen from "../feature/emergencias/screens/medication/AddMedicationScreen";
 import EditMedicationScreen from "../feature/emergencias/screens/medication/EditMedicationScreen";
 import MedicationsScreen from "../feature/emergencias/screens/medication/MedicationsScreen";
+import NotesScreen from "../feature/emergencias/screens/notes/NotesScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
@@ -60,6 +65,9 @@ const emergencyScreens = [
   { name: "AddressSelection", component: AddressScreen },
   { name: "AddAddress", component: AddAddressScreen },
   { name: "EditAddress", component: EditAddressScreen },
+  { name: "AlertModeSelection", component: AlertModeSelectionScreen },
+  { name: "NotesSelection", component: NotesScreen },
+  { name: "EmergencyContactSelection", component: EmergencyContactScreen },
 ];
 
 const settingsScreens = [
@@ -75,6 +83,8 @@ const mainScreens = [
   { name: "Tarjetas", component: CardsScreen },
   { name: "Frases", component: ShortcutScreen },
   { name: "Emergencias", component: EmergencyScreen },
+  { name: "EmergenciasParte2", component: EmergencyScreen2 },
+  { name: "EmergencyProfile", component: EmergencyProfileScreen },
   { name: "Ajustes", component: SettingsScreen },
 ];
 

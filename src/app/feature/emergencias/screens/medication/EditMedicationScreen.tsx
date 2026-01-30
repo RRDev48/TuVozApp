@@ -6,22 +6,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
-  ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
 } from "../../(hooks)/useMedicationForm";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
+import DropdownList from "../../components/DropdownList";
+import SaveButton from "../../components/SaveButton";
+import ThemedTextInput from "../../components/ThemedTextInput";
 
 type EditMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
   "EditMedication"
 >;
-
 type EditMedicationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "EditMedication"
@@ -30,7 +33,7 @@ type EditMedicationScreenNavigationProp = StackNavigationProp<
 const EditMedicationScreen = () => {
   const navigation = useNavigation<EditMedicationScreenNavigationProp>();
   const route = useRoute<EditMedicationScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const {
@@ -53,57 +56,20 @@ const EditMedicationScreen = () => {
       flex: 1,
       backgroundColor: themedColors.background,
     },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-    },
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    backText: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: themedColors.text,
-      marginLeft: 4,
-    },
-    titleContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      alignItems: "center",
-    },
-    headerTitle: {
-      fontSize: 30,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.primary,
-    },
     contentContainer: {
       flex: 1,
       paddingHorizontal: 20,
       paddingTop: 20,
-      paddingBottom: 180,
+      paddingBottom: 200,
     },
     sectionTitle: {
       fontSize: 18,
-      fontWeight: "600",
+      fontWeight: "bold",
       color: themedColors.text,
       marginBottom: 15,
     },
-    input: {
-      backgroundColor: colors.darkGray,
-      borderRadius: 12,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      fontSize: 16,
-      color: themedColors.text,
-      marginBottom: 30,
-    },
     dropdownButton: {
-      backgroundColor: colors.white,
+      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
@@ -114,51 +80,14 @@ const EditMedicationScreen = () => {
     },
     dropdownButtonText: {
       fontSize: 20,
-      fontWeight: "600",
-      color: colors.darkGray,
-    },
-    frequencyList: {
-      width: "100%",
-      backgroundColor: colors.white,
-      borderRadius: 16,
-      paddingVertical: 8,
-      marginBottom: 20,
-      maxHeight: 250,
-    },
-    frequencyItem: {
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.lightGray,
-    },
-    frequencyItemLast: {
-      borderBottomWidth: 0,
-    },
-    frequencyText: {
-      fontSize: 18,
-      fontWeight: "500",
-      color: colors.darkGray,
-    },
-    buttonsContainer: {
-      position: "absolute",
-      bottom: 40,
-      left: 20,
-      right: 20,
-    },
-    saveButton: {
-      backgroundColor: colors.green,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 10,
-    },
-    saveButtonText: {
-      color: colors.black,
-      fontSize: 18,
       fontWeight: "bold",
+      color: temaOscuro ? colors.blue : colors.white,
     },
     deleteButton: {
+      position: "absolute",
+      bottom: 28,
+      left: 20,
+      right: 20,
       backgroundColor: "transparent",
       borderWidth: 2,
       borderColor: colors.red,
@@ -172,37 +101,34 @@ const EditMedicationScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
     },
+    overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
   });
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>
-            {transformText("Atrás")}
-          </CustomText>
-        </TouchableOpacity>
-      </View>
+      {isDropdownOpen && (
+        <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
 
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>
-          {transformText("Agrega tu medicación")}
-        </CustomText>
-      </View>
+      <BackButton onPress={() => navigation.goBack()} />
 
-      <ScrollView style={styles.contentContainer}>
+      <ScreenTitle text={transformText("Editar medicación")} />
+
+      <View style={styles.contentContainer}>
         <CustomText style={styles.sectionTitle}>
           {transformText("¿Qué medicación tomas?")}
         </CustomText>
 
-        <TextInput
-          style={styles.input}
+        <ThemedTextInput
           placeholder={transformText("Nombre de la medicación")}
-          placeholderTextColor={colors.gray}
           value={medicationName}
           onChangeText={setMedicationName}
         />
@@ -221,44 +147,26 @@ const EditMedicationScreen = () => {
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
             size={24}
-            color={colors.darkGray}
+            color={temaOscuro ? colors.blue : colors.white}
           />
         </TouchableOpacity>
 
         {isDropdownOpen && (
-          <ScrollView style={styles.frequencyList}>
-            {FREQUENCY_OPTIONS.map((frequency, index) => (
-              <TouchableOpacity
-                key={frequency}
-                style={[
-                  styles.frequencyItem,
-                  index === FREQUENCY_OPTIONS.length - 1 &&
-                    styles.frequencyItemLast,
-                ]}
-                onPress={() => handleSelectFrequency(frequency)}
-              >
-                <CustomText style={styles.frequencyText}>
-                  {frequency}
-                </CustomText>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <DropdownList
+            items={FREQUENCY_OPTIONS}
+            onSelectItem={handleSelectFrequency}
+            maxHeight={210}
+          />
         )}
-      </ScrollView>
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <CustomText style={styles.saveButtonText}>
-            {transformText("Guardar cambios")}
-          </CustomText>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <CustomText style={styles.deleteButtonText}>
-            {transformText("Eliminar")}
-          </CustomText>
-        </TouchableOpacity>
       </View>
+
+      <SaveButton onPress={handleSave} bottom={110} />
+
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        <CustomText style={styles.deleteButtonText}>
+          {transformText("Eliminar")}
+        </CustomText>
+      </TouchableOpacity>
     </View>
   );
 };

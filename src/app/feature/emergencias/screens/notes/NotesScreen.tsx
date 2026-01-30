@@ -3,28 +3,33 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useAddressForm } from "../../(hooks)/useAddressForm";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 
-type AddAddressScreenRouteProp = RouteProp<RootStackParamsList, "AddAddress">;
-type AddAddressScreenNavigationProp = StackNavigationProp<
+type NotesScreenRouteProp = RouteProp<RootStackParamsList, "NotesSelection">;
+type NotesScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
-  "AddAddress"
+  "NotesSelection"
 >;
 
-const AddAddressScreen = () => {
-  const navigation = useNavigation<AddAddressScreenNavigationProp>();
-  const route = useRoute<AddAddressScreenRouteProp>();
+const NotesScreen = () => {
+  const navigation = useNavigation<NotesScreenNavigationProp>();
+  const route = useRoute<NotesScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const { address, setAddress, handleSave } = useAddressForm({
-    onAdd: route.params?.onAdd,
-  });
+  const [notes, setNotes] = useState(route.params?.currentNotes || "");
+
+  const handleSave = () => {
+    if (route.params?.onSelect) {
+      route.params.onSelect(notes);
+    }
+    navigation.goBack();
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -49,19 +54,20 @@ const AddAddressScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Agregar dirección")} />
+      <ScreenTitle text={transformText("Notas")} />
 
       <ScrollView style={styles.contentContainer}>
         <CustomText style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu dirección?")}
+          {transformText("Información adicional")}
         </CustomText>
 
         <ThemedTextInput
-          placeholder={transformText("Escribe tu dirección completa")}
-          value={address}
-          onChangeText={setAddress}
+          placeholder={transformText("Escribe notas adicionales...")}
+          value={notes}
+          onChangeText={setNotes}
           multiline
-          numberOfLines={4}
+          numberOfLines={10}
+          minHeight={200}
         />
       </ScrollView>
 
@@ -70,4 +76,4 @@ const AddAddressScreen = () => {
   );
 };
 
-export default AddAddressScreen;
+export default NotesScreen;

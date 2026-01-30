@@ -10,45 +10,53 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 
-type BloodTypeSelectionScreenRouteProp = RouteProp<
+type AlertModeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
-  "BloodTypeSelection"
+  "AlertModeSelection"
 >;
-type BloodTypeSelectionScreenNavigationProp = StackNavigationProp<
+type AlertModeSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
-  "BloodTypeSelection"
+  "AlertModeSelection"
 >;
 
-const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const ALERT_MODES = [
+  { value: "call", label: "Llamada" },
+  { value: "whatsapp_location", label: "WhatsApp con ubicación" },
+];
 
-const BloodTypeSelectionScreen = () => {
-  const navigation = useNavigation<BloodTypeSelectionScreenNavigationProp>();
-  const route = useRoute<BloodTypeSelectionScreenRouteProp>();
+const AlertModeSelectionScreen = () => {
+  const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
+  const route = useRoute<AlertModeSelectionScreenRouteProp>();
   const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [selectedBloodType, setSelectedBloodType] = useState<string>(
-    route.params?.currentBloodType || "O-",
+  const [selectedAlertMode, setSelectedAlertMode] = useState<string>(
+    route.params?.currentAlertMode || "call",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleSelectBloodType = (type: string) => {
-    setSelectedBloodType(type);
+  const handleSelectAlertMode = (value: string) => {
+    setSelectedAlertMode(value);
     setIsDropdownOpen(false);
   };
 
   const handleSave = () => {
     if (route.params?.onSelect) {
-      route.params.onSelect(selectedBloodType);
+      route.params.onSelect(selectedAlertMode);
     }
     navigation.goBack();
+  };
+
+  const getAlertModeLabel = (value: string): string => {
+    const mode = ALERT_MODES.find((m) => m.value === value);
+    return mode ? mode.label : value;
   };
 
   const styles = StyleSheet.create({
@@ -105,11 +113,11 @@ const BloodTypeSelectionScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Tipo de sangre")} />
+      <ScreenTitle text={transformText("Modo de alerta")} />
 
       <View style={styles.contentContainer}>
         <CustomText style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu tipo\nde sangre?")}
+          {transformText("¿Cómo deseas activar\nla alerta?")}
         </CustomText>
 
         <TouchableOpacity
@@ -117,7 +125,7 @@ const BloodTypeSelectionScreen = () => {
           onPress={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           <CustomText style={styles.dropdownButtonText}>
-            {selectedBloodType}
+            {getAlertModeLabel(selectedAlertMode)}
           </CustomText>
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
@@ -128,9 +136,11 @@ const BloodTypeSelectionScreen = () => {
 
         {isDropdownOpen && (
           <DropdownList
-            items={BLOOD_TYPES}
-            onSelectItem={handleSelectBloodType}
-            maxHeight={250}
+            items={ALERT_MODES.map((mode) => mode.label)}
+            onSelectItem={(label) => {
+              const mode = ALERT_MODES.find((m) => m.label === label);
+              if (mode) handleSelectAlertMode(mode.value);
+            }}
           />
         )}
       </View>
@@ -140,4 +150,4 @@ const BloodTypeSelectionScreen = () => {
   );
 };
 
-export default BloodTypeSelectionScreen;
+export default AlertModeSelectionScreen;

@@ -8,20 +8,23 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import {
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
 } from "../../(hooks)/useMedicationForm";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
+import SaveButton from "../../components/SaveButton";
+import ThemedTextInput from "../../components/ThemedTextInput";
 
 type AddMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
   "AddMedication"
 >;
-
 type AddMedicationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "AddMedication"
@@ -30,7 +33,7 @@ type AddMedicationScreenNavigationProp = StackNavigationProp<
 const AddMedicationScreen = () => {
   const navigation = useNavigation<AddMedicationScreenNavigationProp>();
   const route = useRoute<AddMedicationScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const {
@@ -50,34 +53,6 @@ const AddMedicationScreen = () => {
       flex: 1,
       backgroundColor: themedColors.background,
     },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-    },
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    backText: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: themedColors.text,
-      marginLeft: 4,
-    },
-    titleContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      alignItems: "center",
-    },
-    headerTitle: {
-      fontSize: 30,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.primary,
-    },
     contentContainer: {
       flex: 1,
       paddingHorizontal: 20,
@@ -90,17 +65,8 @@ const AddMedicationScreen = () => {
       color: themedColors.text,
       marginBottom: 15,
     },
-    input: {
-      backgroundColor: colors.darkGray,
-      borderRadius: 12,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      fontSize: 16,
-      color: themedColors.text,
-      marginBottom: 30,
-    },
     dropdownButton: {
-      backgroundColor: colors.white,
+      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
@@ -111,78 +77,59 @@ const AddMedicationScreen = () => {
     },
     dropdownButtonText: {
       fontSize: 20,
-      fontWeight: "600",
-      color: colors.darkGray,
+      fontWeight: "bold",
+      color: temaOscuro ? colors.blue : colors.white,
     },
     frequencyList: {
       width: "100%",
-      backgroundColor: colors.white,
+      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
       borderRadius: 16,
       paddingVertical: 8,
       marginBottom: 20,
-      maxHeight: 250,
+      maxHeight: 180,
     },
     frequencyItem: {
       paddingVertical: 16,
       paddingHorizontal: 24,
       borderBottomWidth: 1,
-      borderBottomColor: colors.lightGray,
+      borderBottomColor: temaOscuro ? colors.blue : colors.white,
     },
     frequencyItemLast: {
       borderBottomWidth: 0,
     },
     frequencyText: {
       fontSize: 18,
-      fontWeight: "500",
-      color: colors.darkGray,
-    },
-    saveButton: {
-      position: "absolute",
-      bottom: 40,
-      left: 20,
-      right: 20,
-      backgroundColor: colors.green,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    saveButtonText: {
-      color: colors.black,
-      fontSize: 18,
       fontWeight: "bold",
+      color: temaOscuro ? colors.blue : colors.white,
+    },
+    overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
     },
   });
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>
-            {transformText("Atrás")}
-          </CustomText>
-        </TouchableOpacity>
-      </View>
+      {isDropdownOpen && (
+        <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
 
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>
-          {transformText("Agrega tu medicación")}
-        </CustomText>
-      </View>
+      <BackButton onPress={() => navigation.goBack()} />
 
-      <ScrollView style={styles.contentContainer}>
+      <ScreenTitle text={transformText("Agrega tu medicación")} />
+
+      <View style={styles.contentContainer}>
         <CustomText style={styles.sectionTitle}>
           {transformText("¿Qué medicación tomas?")}
         </CustomText>
 
-        <TextInput
-          style={styles.input}
+        <ThemedTextInput
           placeholder={transformText("Nombre de la medicación")}
-          placeholderTextColor={colors.gray}
           value={medicationName}
           onChangeText={setMedicationName}
         />
@@ -201,12 +148,16 @@ const AddMedicationScreen = () => {
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
             size={24}
-            color={colors.darkGray}
+            color={temaOscuro ? colors.blue : colors.white}
           />
         </TouchableOpacity>
 
         {isDropdownOpen && (
-          <ScrollView style={styles.frequencyList}>
+          <ScrollView
+            style={styles.frequencyList}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+          >
             {FREQUENCY_OPTIONS.map((frequency, index) => (
               <TouchableOpacity
                 key={frequency}
@@ -224,13 +175,9 @@ const AddMedicationScreen = () => {
             ))}
           </ScrollView>
         )}
-      </ScrollView>
+      </View>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <CustomText style={styles.saveButtonText}>
-          {transformText("Guardar cambios")}
-        </CustomText>
-      </TouchableOpacity>
+      <SaveButton onPress={handleSave} />
     </View>
   );
 };

@@ -5,152 +5,34 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import CancelConfirmationModal from "../../components/CancelConfirmationModal";
 import { EmergencyField } from "../../components/EmergencyField";
+import EmergencySuccessModal from "../../components/EmergencySuccessModal";
 
-type EmergencyScreenNavigationProp = StackNavigationProp<
+type EmergencyScreen2NavigationProp = StackNavigationProp<
   RootStackParamsList,
-  "Emergencias"
+  "EmergenciasParte2"
 >;
 
-const EmergencyScreen = () => {
-  const navigation = useNavigation<EmergencyScreenNavigationProp>();
+const EmergencyScreen2 = () => {
+  const navigation = useNavigation<EmergencyScreen2NavigationProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
-  const { profile, userFullName, loading, updateField, clearProfile } =
-    useEmergencyProfile();
+  const { profile, loading, updateField, clearProfile } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
-
-  // Verificar si el perfil está completo y redirigir
-  useEffect(() => {
-    if (!loading && profile) {
-      // Verificar si los campos principales están completos
-      const isProfileComplete =
-        profile.blood_type &&
-        profile.emergency_contact_name &&
-        profile.emergency_contact_phone &&
-        profile.alert_type;
-
-      if (isProfileComplete) {
-        // Si el perfil está completo, redirigir a EmergencyProfileScreen
-        navigation.replace("EmergencyProfile");
-      }
-    }
-  }, [loading, profile, navigation]);
-
-  const handleEdit = (fieldName: string, currentValue: string) => {
-    Alert.prompt(
-      transformText(getFieldLabel(fieldName)),
-      transformText("Ingrese el nuevo valor"),
-      [
-        {
-          text: transformText("Cancelar"),
-          style: "cancel",
-        },
-        {
-          text: transformText("Guardar"),
-          onPress: async (value?: string) => {
-            if (value !== undefined) {
-              try {
-                await updateField(
-                  fieldName as keyof Omit<
-                    typeof profile,
-                    "id" | "user_id" | "full_name" | "created_at" | "updated_at"
-                  >,
-                  value,
-                );
-              } catch (error) {
-                Alert.alert(
-                  transformText("Error"),
-                  transformText("No se pudo actualizar el campo"),
-                );
-              }
-            }
-          },
-        },
-      ],
-      "plain-text",
-      currentValue || "",
-    );
-  };
-
-  const handleBloodTypeEdit = () => {
-    navigation.navigate("BloodTypeSelection", {
-      currentBloodType: profile?.blood_type || "O-",
-      onSelect: async (bloodType: string) => {
-        try {
-          await updateField("blood_type", bloodType);
-          console.log("Tipo de sangre actualizado:", bloodType);
-        } catch (error) {
-          console.error("Error al actualizar tipo de sangre:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el tipo de sangre",
-            ),
-          );
-        }
-      },
-    });
-  };
-
-  const handleAllergiesEdit = () => {
-    navigation.navigate("AllergiesSelection", {
-      currentAllergies: profile?.allergies || "",
-      onSelect: async (allergies: string) => {
-        try {
-          await updateField("allergies", allergies);
-          console.log("Alergias actualizadas:", allergies);
-        } catch (error) {
-          console.error("Error al actualizar alergias:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las alergias",
-            ),
-          );
-        }
-      },
-    });
-  };
-
-  const handleMedicationsEdit = () => {
-    navigation.navigate("MedicationsSelection", {
-      currentMedications: profile?.medications || "",
-      onSelect: async (medications: string) => {
-        try {
-          await updateField("medications", medications);
-          console.log("Medicaciones actualizadas:", medications);
-        } catch (error) {
-          console.error("Error al actualizar medicaciones:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las medicaciones",
-            ),
-          );
-        }
-      },
-    });
-  };
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleAddressEdit = () => {
     navigation.navigate("AddressSelection", {
@@ -167,28 +49,6 @@ const EmergencyScreen = () => {
               error instanceof Error
                 ? error.message
                 : "No se pudo actualizar la dirección",
-            ),
-          );
-        }
-      },
-    });
-  };
-
-  const handleAlertTypeEdit = () => {
-    navigation.navigate("AlertModeSelection", {
-      currentAlertMode: profile?.alert_type || "call",
-      onSelect: async (alertMode: string) => {
-        try {
-          await updateField("alert_type", alertMode);
-          console.log("Modo de alerta actualizado:", alertMode);
-        } catch (error) {
-          console.error("Error al actualizar modo de alerta:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el modo de alerta",
             ),
           );
         }
@@ -249,28 +109,36 @@ const EmergencyScreen = () => {
     });
   };
 
-  const handleSaveEmergencyData = () => {
-    Alert.alert(
-      transformText("Datos guardados"),
-      transformText(
-        "La información de emergencia ha sido actualizada correctamente",
-      ),
-      [{ text: transformText("OK") }],
-    );
+  const handleAlertTypeEdit = () => {
+    navigation.navigate("AlertModeSelection", {
+      currentAlertMode: profile?.alert_type || "call",
+      onSelect: async (alertMode: string) => {
+        try {
+          await updateField("alert_type", alertMode);
+          console.log("Modo de alerta actualizado:", alertMode);
+        } catch (error) {
+          console.error("Error al actualizar modo de alerta:", error);
+          Alert.alert(
+            transformText("Error"),
+            transformText(
+              error instanceof Error
+                ? error.message
+                : "No se pudo actualizar el modo de alerta",
+            ),
+          );
+        }
+      },
+    });
   };
 
-  const getFieldLabel = (field: string): string => {
-    const labels: { [key: string]: string } = {
-      blood_type: "Tipo de sangre",
-      allergies: "Alergias",
-      medications: "Medicaciones",
-      notes: "Notas",
-      address: "Dirección",
-      emergency_contact_name: "Nombre de contacto",
-      emergency_contact_phone: "Número de contacto",
-      alert_type: "Modo de alerta",
-    };
-    return labels[field] || field;
+  const handleSaveEmergencyData = () => {
+    setShowSuccessModal(true);
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    // Navegar directamente al Home
+    navigation.navigate("Home");
   };
 
   const getAlertTypeLabel = (alertType?: string): string => {
@@ -287,7 +155,7 @@ const EmergencyScreen = () => {
     try {
       await clearProfile();
       setShowCancelModal(false);
-      navigation.goBack();
+      navigation.navigate("Emergencias");
     } catch (error) {
       setShowCancelModal(false);
       Alert.alert(
@@ -338,7 +206,7 @@ const EmergencyScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
     },
-    nextButton: {
+    saveButton: {
       flex: 1,
       backgroundColor: colors.green,
       borderRadius: 16,
@@ -346,7 +214,7 @@ const EmergencyScreen = () => {
       alignItems: "center",
       justifyContent: "center",
     },
-    nextButtonText: {
+    saveButtonText: {
       color: colors.black,
       fontSize: 18,
       fontWeight: "bold",
@@ -365,7 +233,7 @@ const EmergencyScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Emergencias")} />
+      <ScreenTitle text={transformText("Emergencias (2/2)")} />
 
       <ScrollView
         style={styles.container}
@@ -373,46 +241,52 @@ const EmergencyScreen = () => {
       >
         <EmergencyField
           icon={
-            <Ionicons name="person" size={26} color={themedColors.background} />
+            <Ionicons
+              name="document-text"
+              size={26}
+              color={themedColors.background}
+            />
           }
-          label="Nombre completo"
-          value={userFullName}
-          showArrow={false}
+          label="Notas"
+          value={profile?.notes || ""}
+          onPress={handleNotesEdit}
         />
 
         <EmergencyField
           icon={
-            <Ionicons name="water" size={26} color={themedColors.background} />
+            <Ionicons name="home" size={26} color={themedColors.background} />
           }
-          label="Tipo de sangre"
-          value={profile?.blood_type || ""}
-          onPress={handleBloodTypeEdit}
+          label="Dirección"
+          value={profile?.address || ""}
+          onPress={handleAddressEdit}
+        />
+
+        <EmergencyField
+          icon={
+            <Ionicons name="call" size={26} color={themedColors.background} />
+          }
+          label="Contacto de emergencia"
+          value={
+            profile?.emergency_contact_name && profile?.emergency_contact_phone
+              ? `${profile.emergency_contact_name} - ${profile.emergency_contact_phone}`
+              : profile?.emergency_contact_name ||
+                profile?.emergency_contact_phone ||
+                ""
+          }
+          onPress={handleEmergencyContactEdit}
         />
 
         <EmergencyField
           icon={
             <Ionicons
-              name="warning"
+              name="notifications"
               size={26}
               color={themedColors.background}
             />
           }
-          label="Alergias"
-          value={profile?.allergies || ""}
-          onPress={handleAllergiesEdit}
-        />
-
-        <EmergencyField
-          icon={
-            <Ionicons
-              name="medical"
-              size={26}
-              color={themedColors.background}
-            />
-          }
-          label="Medicaciones"
-          value={profile?.medications || ""}
-          onPress={handleMedicationsEdit}
+          label="Modo de alerta"
+          value={getAlertTypeLabel(profile?.alert_type)}
+          onPress={handleAlertTypeEdit}
         />
       </ScrollView>
 
@@ -424,11 +298,11 @@ const EmergencyScreen = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.nextButton}
-          onPress={() => navigation.navigate("EmergenciasParte2")}
+          style={styles.saveButton}
+          onPress={handleSaveEmergencyData}
         >
-          <CustomText style={styles.nextButtonText}>
-            {transformText("Siguiente")}
+          <CustomText style={styles.saveButtonText}>
+            {transformText("Guardar datos")}
           </CustomText>
         </TouchableOpacity>
       </View>
@@ -438,8 +312,13 @@ const EmergencyScreen = () => {
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelModal}
       />
+
+      <EmergencySuccessModal
+        visible={showSuccessModal}
+        onClose={handleSuccessModalClose}
+      />
     </View>
   );
 };
 
-export default EmergencyScreen;
+export default EmergencyScreen2;

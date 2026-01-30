@@ -44,6 +44,8 @@ type RootStackParamsList = {
   Tarjetas: undefined;
   Frases: undefined;
   Emergencias: undefined;
+  EmergenciasParte2: undefined;
+  EmergencyProfile: undefined;
 
   // Pantallas de emergencias - Tipo de sangre
   BloodTypeSelection: {
@@ -85,6 +87,26 @@ type RootStackParamsList = {
     address: string;
     onUpdate: (address: string) => void;
     onDelete: () => void;
+  };
+
+  // Pantallas de emergencias - Modo de alerta
+  AlertModeSelection: {
+    currentAlertMode?: string;
+    onSelect: (alertMode: string) => void;
+  };
+
+  // Pantallas de emergencias - Notas
+  NotesSelection: {
+    currentNotes?: string;
+    onSelect: (notes: string) => void;
+  };
+
+  // Pantallas de emergencias - Contacto de emergencia
+  EmergencyContactSelection: {
+    currentContactName?: string;
+    currentCountryCode?: string;
+    currentPhoneNumber?: string;
+    onSelect: (name: string, phone: string) => void;
   };
 
   // Ajustes

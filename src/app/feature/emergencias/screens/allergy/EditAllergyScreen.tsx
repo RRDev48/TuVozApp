@@ -6,16 +6,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
-  ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../(hooks)/useAllergyForm";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
+import DropdownList from "../../components/DropdownList";
+import SaveButton from "../../components/SaveButton";
+import ThemedTextInput from "../../components/ThemedTextInput";
 
 type EditAllergyScreenRouteProp = RouteProp<RootStackParamsList, "EditAllergy">;
-
 type EditAllergyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "EditAllergy"
@@ -24,7 +27,7 @@ type EditAllergyScreenNavigationProp = StackNavigationProp<
 const EditAllergyScreen = () => {
   const navigation = useNavigation<EditAllergyScreenNavigationProp>();
   const route = useRoute<EditAllergyScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const {
@@ -47,34 +50,6 @@ const EditAllergyScreen = () => {
       flex: 1,
       backgroundColor: themedColors.background,
     },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingTop: 60,
-      paddingBottom: 10,
-    },
-    backButton: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    backText: {
-      fontSize: 16,
-      fontWeight: "600",
-      color: themedColors.text,
-      marginLeft: 4,
-    },
-    titleContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-      alignItems: "center",
-    },
-    headerTitle: {
-      fontSize: 30,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: themedColors.primary,
-    },
     contentContainer: {
       flex: 1,
       paddingHorizontal: 20,
@@ -87,17 +62,8 @@ const EditAllergyScreen = () => {
       color: themedColors.text,
       marginBottom: 15,
     },
-    input: {
-      backgroundColor: colors.darkGray,
-      borderRadius: 12,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      fontSize: 16,
-      color: themedColors.text,
-      marginBottom: 30,
-    },
     dropdownButton: {
-      backgroundColor: colors.white,
+      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
@@ -108,51 +74,14 @@ const EditAllergyScreen = () => {
     },
     dropdownButtonText: {
       fontSize: 20,
-      fontWeight: "600",
-      color: colors.darkGray,
-    },
-    severityList: {
-      width: "100%",
-      backgroundColor: colors.white,
-      borderRadius: 16,
-      paddingVertical: 8,
-      marginBottom: 20,
-      maxHeight: 200,
-    },
-    severityItem: {
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.lightGray,
-    },
-    severityItemLast: {
-      borderBottomWidth: 0,
-    },
-    severityText: {
-      fontSize: 18,
-      fontWeight: "500",
-      color: colors.darkGray,
-    },
-    buttonsContainer: {
-      position: "absolute",
-      bottom: 40,
-      left: 20,
-      right: 20,
-    },
-    saveButton: {
-      backgroundColor: colors.green,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 10,
-    },
-    saveButtonText: {
-      color: colors.black,
-      fontSize: 18,
       fontWeight: "bold",
+      color: temaOscuro ? colors.blue : colors.white,
     },
     deleteButton: {
+      position: "absolute",
+      bottom: 28,
+      left: 20,
+      right: 20,
       backgroundColor: "transparent",
       borderWidth: 2,
       borderColor: colors.red,
@@ -166,37 +95,34 @@ const EditAllergyScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
     },
+    overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
   });
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>
-            {transformText("Atrás")}
-          </CustomText>
-        </TouchableOpacity>
-      </View>
+      {isDropdownOpen && (
+        <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+      )}
 
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>
-          {transformText("Agrega tu alergia")}
-        </CustomText>
-      </View>
+      <BackButton onPress={() => navigation.goBack()} />
 
-      <ScrollView style={styles.contentContainer}>
+      <ScreenTitle text={transformText("Editar alergia")} />
+
+      <View style={styles.contentContainer}>
         <CustomText style={styles.sectionTitle}>
           {transformText("¿Qué tipo de alergia presentas?")}
         </CustomText>
 
-        <TextInput
-          style={styles.input}
+        <ThemedTextInput
           placeholder={transformText("Nombre de la alergia")}
-          placeholderTextColor={colors.gray}
           value={allergyName}
           onChangeText={setAllergyName}
         />
@@ -215,42 +141,26 @@ const EditAllergyScreen = () => {
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
             size={24}
-            color={colors.darkGray}
+            color={temaOscuro ? colors.blue : colors.white}
           />
         </TouchableOpacity>
 
         {isDropdownOpen && (
-          <ScrollView style={styles.severityList}>
-            {SEVERITY_LEVELS.map((severity, index) => (
-              <TouchableOpacity
-                key={severity}
-                style={[
-                  styles.severityItem,
-                  index === SEVERITY_LEVELS.length - 1 &&
-                    styles.severityItemLast,
-                ]}
-                onPress={() => handleSelectSeverity(severity)}
-              >
-                <CustomText style={styles.severityText}>{severity}</CustomText>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <DropdownList
+            items={SEVERITY_LEVELS}
+            onSelectItem={handleSelectSeverity}
+            maxHeight={160}
+          />
         )}
-      </ScrollView>
-
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <CustomText style={styles.saveButtonText}>
-            {transformText("Guardar cambios")}
-          </CustomText>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <CustomText style={styles.deleteButtonText}>
-            {transformText("Eliminar")}
-          </CustomText>
-        </TouchableOpacity>
       </View>
+
+      <SaveButton onPress={handleSave} bottom={110} />
+
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        <CustomText style={styles.deleteButtonText}>
+          {transformText("Eliminar")}
+        </CustomText>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -82,4 +82,24 @@ export const emergencyService = {
 
     return data.full_name || "";
   },
+
+  // Limpiar datos del perfil de emergencia
+  async clearEmergencyProfile(userId: string): Promise<void> {
+    const { error } = await supabase
+      .from("emergency_profiles")
+      .update({
+        blood_type: "",
+        allergies: "",
+        medications: "",
+        notes: "",
+        address: "",
+        emergency_contact_name: "",
+        emergency_contact_phone: "",
+        alert_type: "call",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId);
+
+    if (error) throw error;
+  },
 };
