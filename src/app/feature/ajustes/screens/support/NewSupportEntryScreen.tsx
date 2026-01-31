@@ -1,8 +1,6 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
@@ -11,14 +9,17 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useSupportForm } from "../../(hooks)/useSupportForm";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
 
 const NewSupportEntryScreen = () => {
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
@@ -32,33 +33,16 @@ const NewSupportEntryScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        header: {
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-          paddingTop: 60,
-          paddingBottom: 10,
-        },
-        backButton: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        backText: {
-          fontSize: 16,
-          fontWeight: "600",
-          color: themedColors.text,
-          marginLeft: 4,
-        },
         titleContainer: {
           paddingHorizontal: 20,
           paddingBottom: 20,
           alignItems: "center",
         },
         headerTitle: {
-          fontSize: 30,
+          fontSize: 18,
           fontWeight: "bold",
           textAlign: "center",
-          color: themedColors.primary,
+          color: themedColors.text,
         },
         contentContainer: {
           paddingHorizontal: 20,
@@ -66,11 +50,11 @@ const NewSupportEntryScreen = () => {
           flex: 1,
         },
         questionTitle: {
-          fontSize: 28,
+          fontSize: 18,
           fontWeight: "bold",
           color: themedColors.text,
           marginBottom: 40,
-          textAlign: "left",
+          textAlign: "center",
         },
         fieldContainer: {
           marginBottom: 30,
@@ -111,7 +95,7 @@ const NewSupportEntryScreen = () => {
           justifyContent: "center",
         },
         submitButtonText: {
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: "600",
           color: colors.white,
         },
@@ -124,39 +108,26 @@ const NewSupportEntryScreen = () => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Header con botón de volver */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>Atrás</CustomText>
-        </TouchableOpacity>
-      </View>
+      <BackButton onPress={() => navigation.goBack()} />
 
-      {/* Título */}
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>Soporte</CustomText>
-      </View>
+      <ScreenTitle text={transformText("Soporte")} />
 
       {/* Contenido */}
       <ScrollView
         style={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <CustomText style={styles.questionTitle}>
-          ¿Cómo podemos ayudarte?
-        </CustomText>
+        <Text style={styles.questionTitle}>
+          {transformText("¿Cómo podemos ayudarte?")}
+        </Text>
 
         {/* Campo Asunto */}
         <View style={styles.fieldContainer}>
-          <CustomText style={styles.label}>Asunto*</CustomText>
+          <Text style={styles.label}>{transformText("Asunto*")}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Escribe un asunto"
-            placeholderTextColor={`${themedColors.background}80`}
+            placeholder={transformText("Escribe un asunto")}
+            placeholderTextColor={themedColors.background}
             value={subject}
             onChangeText={setSubject}
           />
@@ -164,11 +135,11 @@ const NewSupportEntryScreen = () => {
 
         {/* Campo Consulta */}
         <View style={styles.fieldContainer}>
-          <CustomText style={styles.label}>Consulta*</CustomText>
+          <Text style={styles.label}>{transformText("Consulta*")}</Text>
           <TextInput
             style={styles.textArea}
-            placeholder="Escribe tu consulta*"
-            placeholderTextColor={`${themedColors.background}80`}
+            placeholder={transformText("Escribe tu consulta*")}
+            placeholderTextColor={themedColors.background}
             value={query}
             onChangeText={setQuery}
             multiline
@@ -185,9 +156,11 @@ const NewSupportEntryScreen = () => {
           onPress={handleSubmit}
           disabled={isSubmitting}
         >
-          <CustomText style={styles.submitButtonText}>
-            {isSubmitting ? "Enviando..." : "Enviar informe"}
-          </CustomText>
+          <Text style={styles.submitButtonText}>
+            {isSubmitting
+              ? transformText("Enviando...")
+              : transformText("Enviar informe")}
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

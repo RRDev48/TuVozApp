@@ -1,7 +1,5 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
@@ -9,14 +7,17 @@ import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useSupportTickets } from "../../(hooks)/useSupportTickets";
 import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
 
 const SupportScreen = () => {
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
@@ -38,22 +39,22 @@ const SupportScreen = () => {
 
   const statusColors = useMemo(
     () => ({
-      open: { bg: "#FFA50080", text: "#CC8400" },
-      in_progress: { bg: "#4A90E280", text: "#2E5A9E" },
-      resolved: { bg: "#4CAF5080", text: "#357A38" },
-      closed: { bg: "#9E9E9E80", text: "#616161" },
+      open: { bg: "#FFFFFF", text: "#CC8400", border: "#CC8400" },
+      in_progress: { bg: "#FFFFFF", text: "#2E5A9E", border: "#2E5A9E" },
+      resolved: { bg: "#FFFFFF", text: "#357A38", border: "#357A38" },
+      closed: { bg: "#FFFFFF", text: "#616161", border: "#616161" },
     }),
     [],
   );
 
   const statusLabels = useMemo(
     () => ({
-      open: "Abierto",
-      in_progress: "En progreso",
-      resolved: "Resuelto",
-      closed: "Cerrado",
+      open: transformText("Abierto"),
+      in_progress: transformText("En progreso"),
+      resolved: transformText("Resuelto"),
+      closed: transformText("Cerrado"),
     }),
-    [],
+    [transformText],
   );
 
   const styles = useMemo(
@@ -63,33 +64,16 @@ const SupportScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        header: {
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-          paddingTop: 60,
-          paddingBottom: 10,
-        },
-        backButton: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        backText: {
-          fontSize: 16,
-          fontWeight: "600",
-          color: themedColors.text,
-          marginLeft: 4,
-        },
         titleContainer: {
           paddingHorizontal: 20,
           paddingBottom: 20,
           alignItems: "center",
         },
         headerTitle: {
-          fontSize: 30,
+          fontSize: 18,
           fontWeight: "bold",
           textAlign: "center",
-          color: themedColors.primary,
+          color: themedColors.text,
         },
         contentContainer: {
           flex: 1,
@@ -98,7 +82,7 @@ const SupportScreen = () => {
           paddingHorizontal: 40,
         },
         emptyStateTitle: {
-          fontSize: 24,
+          fontSize: 18,
           fontWeight: "bold",
           color: themedColors.text,
           textAlign: "center",
@@ -124,9 +108,9 @@ const SupportScreen = () => {
           justifyContent: "center",
         },
         newEntryButtonText: {
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: "600",
-          color: themedColors.background,
+          color: themedColors.secondary,
         },
         ticketCard: {
           backgroundColor: themedColors.cardBackground,
@@ -143,7 +127,7 @@ const SupportScreen = () => {
         ticketSubject: {
           fontSize: 16,
           fontWeight: "700",
-          color: themedColors.background,
+          color: themedColors.secondary,
           flex: 1,
           marginRight: 8,
         },
@@ -151,20 +135,21 @@ const SupportScreen = () => {
           paddingHorizontal: 12,
           paddingVertical: 4,
           borderRadius: 12,
+          borderWidth: 2,
         },
         ticketStatusText: {
           fontSize: 12,
-          fontWeight: "600",
+          fontWeight: "bold",
         },
         ticketMessage: {
           fontSize: 14,
-          color: themedColors.background,
+          color: themedColors.secondary,
           opacity: 0.8,
           marginBottom: 8,
         },
         ticketDate: {
           fontSize: 12,
-          color: themedColors.background,
+          color: themedColors.secondary,
           opacity: 0.6,
         },
         ticketsContainer: {
@@ -177,22 +162,9 @@ const SupportScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header con botón de volver */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleGoBack}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>Atrás</CustomText>
-        </TouchableOpacity>
-      </View>
+      <BackButton onPress={handleGoBack} />
 
-      {/* Título */}
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>Mis entradas</CustomText>
-      </View>
+      <ScreenTitle text={transformText("Mis entradas")} />
 
       {/* Contenido */}
       {isLoading ? (
@@ -209,12 +181,12 @@ const SupportScreen = () => {
             height={120}
             style={{ marginBottom: 20, marginTop: -100 }}
           />
-          <CustomText style={styles.emptyStateTitle}>
-            Aún no hay entradas
-          </CustomText>
-          <CustomText style={styles.emptyStateText}>
-            Cuando hagas uno, aparecerá aquí.
-          </CustomText>
+          <Text style={styles.emptyStateTitle}>
+            {transformText("Aún no hay entradas")}
+          </Text>
+          <Text style={styles.emptyStateText}>
+            {transformText("Cuando hagas uno, aparecerá aquí.")}
+          </Text>
         </ScrollView>
       ) : (
         <ScrollView
@@ -227,39 +199,40 @@ const SupportScreen = () => {
             return (
               <View key={ticket.id} style={styles.ticketCard}>
                 <View style={styles.ticketHeader}>
-                  <CustomText style={styles.ticketSubject}>
-                    {ticket.subject}
-                  </CustomText>
+                  <Text style={styles.ticketSubject}>{ticket.subject}</Text>
                   <View
                     style={[
                       styles.ticketStatus,
-                      { backgroundColor: statusColor.bg },
+                      {
+                        backgroundColor: statusColor.bg,
+                        borderColor: statusColor.border,
+                      },
                     ]}
                   >
-                    <CustomText
+                    <Text
                       style={[
                         styles.ticketStatusText,
                         { color: statusColor.text },
                       ]}
                     >
                       {statusLabels[ticket.status]}
-                    </CustomText>
+                    </Text>
                   </View>
                 </View>
-                <CustomText
+                <Text
                   style={styles.ticketMessage}
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {ticket.message}
-                </CustomText>
-                <CustomText style={styles.ticketDate}>
+                </Text>
+                <Text style={styles.ticketDate}>
                   {new Date(ticket.created_at).toLocaleDateString("es-ES", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
                   })}
-                </CustomText>
+                </Text>
               </View>
             );
           })}
@@ -273,9 +246,9 @@ const SupportScreen = () => {
           activeOpacity={0.8}
           onPress={handleNewEntry}
         >
-          <CustomText style={styles.newEntryButtonText}>
-            Nueva entrada
-          </CustomText>
+          <Text style={styles.newEntryButtonText}>
+            {transformText("Nueva entrada")}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

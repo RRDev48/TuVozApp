@@ -1,4 +1,3 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -6,11 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useEmergencyActions } from "../../(hooks)/useEmergencyActions";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
@@ -24,7 +23,7 @@ type EmergencyProfileScreenNavigationProp = StackNavigationProp<
 
 const EmergencyProfileScreen = () => {
   const navigation = useNavigation<EmergencyProfileScreenNavigationProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading } = useEmergencyProfile();
   const { sendingAlert, handleEmergencyCall, sendAlert } =
@@ -51,16 +50,17 @@ const EmergencyProfileScreen = () => {
       alignItems: "center",
     },
     section: {
-      backgroundColor: temaOscuro ? colors.white : colors.blue,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       padding: 20,
-      marginBottom: 16,
+      marginBottom: 5,
     },
     sectionTitle: {
       fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
       marginBottom: 12,
+      textAlign: "center",
     },
     infoRow: {
       flexDirection: "row",
@@ -68,21 +68,21 @@ const EmergencyProfileScreen = () => {
       marginBottom: 8,
     },
     infoLabel: {
-      fontSize: 14,
-      fontWeight: "600",
-      color: temaOscuro ? colors.blue : colors.white,
+      fontSize: 16,
+      fontWeight: "medium",
+      color: themedColors.secondary,
       marginLeft: 8,
     },
     infoValue: {
-      fontSize: 14,
-      color: temaOscuro ? colors.blue : colors.white,
+      fontSize: 16,
+      color: themedColors.secondary,
       marginLeft: 8,
       flex: 1,
       textAlign: "right",
     },
     buttonsContainer: {
       position: "absolute",
-      bottom: 40,
+      bottom: 25,
       left: 20,
       right: 20,
       gap: 12,
@@ -131,109 +131,78 @@ const EmergencyProfileScreen = () => {
 
       <ScreenTitle text={transformText("Perfil de Emergencia")} />
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <View style={styles.scrollContent}>
         {/* Nombre */}
         <View style={styles.section}>
-          <CustomText style={styles.sectionTitle}>
-            {transformText("Nombre")}
-          </CustomText>
+          <Text style={styles.sectionTitle}>{transformText("Nombre")}</Text>
           <View style={styles.infoRow}>
-            <Ionicons
-              name="person"
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-            <CustomText style={styles.infoValue}>{userFullName}</CustomText>
+            <Ionicons name="person" size={20} color={themedColors.secondary} />
+            <Text style={styles.infoValue}>{userFullName}</Text>
           </View>
         </View>
 
         {/* Información Médica */}
         <View style={styles.section}>
-          <CustomText style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle}>
             {transformText("Información Médica")}
-          </CustomText>
+          </Text>
 
           <View style={styles.infoRow}>
-            <Ionicons
-              name="water"
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-            <CustomText style={styles.infoLabel}>
+            <Ionicons name="water" size={20} color={themedColors.secondary} />
+            <Text style={styles.infoLabel}>
               {transformText("Tipo de sangre:")}
-            </CustomText>
-            <CustomText style={styles.infoValue}>
+            </Text>
+            <Text style={styles.infoValue}>
               {profile?.blood_type || "No configurado"}
-            </CustomText>
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons
-              name="warning"
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-            <CustomText style={styles.infoLabel}>
-              {transformText("Alergias:")}
-            </CustomText>
-            <CustomText style={styles.infoValue}>
+            <Ionicons name="warning" size={20} color={themedColors.secondary} />
+            <Text style={styles.infoLabel}>{transformText("Alergias:")}</Text>
+            <Text style={styles.infoValue}>
               {profile?.allergies || "Ninguna"}
-            </CustomText>
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons
-              name="medical"
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-            <CustomText style={styles.infoLabel}>
+            <Ionicons name="medical" size={20} color={themedColors.secondary} />
+            <Text style={styles.infoLabel}>
               {transformText("Medicaciones:")}
-            </CustomText>
-            <CustomText style={styles.infoValue}>
+            </Text>
+            <Text style={styles.infoValue}>
               {profile?.medications || "Ninguna"}
-            </CustomText>
+            </Text>
           </View>
         </View>
 
         {/* Notas y Dirección */}
         <View style={styles.section}>
-          <CustomText style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle}>
             {transformText("Notas y Dirección")}
-          </CustomText>
+          </Text>
 
           <View style={styles.infoRow}>
             <Ionicons
               name="document-text"
               size={20}
-              color={temaOscuro ? colors.blue : colors.white}
+              color={themedColors.secondary}
             />
-            <CustomText style={styles.infoLabel}>
-              {transformText("Notas:")}
-            </CustomText>
-            <CustomText style={styles.infoValue}>
+            <Text style={styles.infoLabel}>{transformText("Notas:")}</Text>
+            <Text style={styles.infoValue}>
               {profile?.notes || "Sin notas"}
-            </CustomText>
+            </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Ionicons
-              name="home"
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-            <CustomText style={styles.infoLabel}>
-              {transformText("Dirección:")}
-            </CustomText>
-            <CustomText style={styles.infoValue}>
+            <Ionicons name="home" size={20} color={themedColors.secondary} />
+            <Text style={styles.infoLabel}>{transformText("Dirección:")}</Text>
+            <Text style={styles.infoValue}>
               {profile?.address || "No configurada"}
-            </CustomText>
+            </Text>
           </View>
         </View>
-      </ScrollView>
+      </View>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
@@ -241,9 +210,9 @@ const EmergencyProfileScreen = () => {
           onPress={handleEmergencyCall}
         >
           <Ionicons name="call" size={24} color={colors.white} />
-          <CustomText style={styles.emergencyButtonText}>
+          <Text style={styles.emergencyButtonText}>
             {transformText("Emergencia (911)")}
-          </CustomText>
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -256,9 +225,9 @@ const EmergencyProfileScreen = () => {
           ) : (
             <>
               <Ionicons name="notifications" size={24} color={colors.white} />
-              <CustomText style={styles.alertButtonText}>
+              <Text style={styles.alertButtonText}>
                 {transformText("Enviar Alerta")}
-              </CustomText>
+              </Text>
             </>
           )}
         </TouchableOpacity>

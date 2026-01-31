@@ -1,8 +1,6 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface ListItemProps {
   iconName: keyof typeof Ionicons.glyphMap;
@@ -19,7 +17,7 @@ const ListItem = ({ iconName, title, subtitle, onPress }: ListItemProps) => {
     item: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: temaOscuro ? colors.darkGray : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 16,
       paddingHorizontal: 16,
@@ -29,7 +27,7 @@ const ListItem = ({ iconName, title, subtitle, onPress }: ListItemProps) => {
       width: 60,
       height: 60,
       borderRadius: 12,
-      backgroundColor: temaOscuro ? colors.blue : "rgba(255, 255, 255, 0.2)",
+      backgroundColor: themedColors.transparent,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 15,
@@ -39,29 +37,31 @@ const ListItem = ({ iconName, title, subtitle, onPress }: ListItemProps) => {
     },
     title: {
       fontSize: 18,
-      fontWeight: "600",
-      color: colors.white,
+      fontWeight: "bold",
+      color: themedColors.secondary,
       marginBottom: subtitle ? 4 : 0,
     },
     subtitle: {
       fontSize: 14,
-      fontWeight: "400",
-      color: colors.white,
+      fontWeight: "normal",
+      color: themedColors.secondary,
     },
   });
 
   return (
     <TouchableOpacity style={styles.item} onPress={onPress}>
       <View style={styles.icon}>
-        <Ionicons name={iconName} size={30} color={colors.white} />
+        <Ionicons name={iconName} size={30} color={themedColors.secondary} />
       </View>
       <View style={styles.info}>
-        <CustomText style={styles.title}>{title}</CustomText>
-        {subtitle && (
-          <CustomText style={styles.subtitle}>{subtitle}</CustomText>
-        )}
+        <Text style={styles.title}>{title}</Text>
+        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
-      <Ionicons name="chevron-forward" size={24} color={colors.white} />
+      <Ionicons
+        name="chevron-forward"
+        size={24}
+        color={themedColors.secondary}
+      />
     </TouchableOpacity>
   );
 };

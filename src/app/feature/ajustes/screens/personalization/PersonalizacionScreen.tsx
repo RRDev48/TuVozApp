@@ -1,16 +1,17 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useCallback, useMemo } from "react";
 import {
   ScrollView,
   StyleSheet,
   Switch,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
 
 const PersonalizacionScreen = () => {
   const navigation = useNavigation();
@@ -22,6 +23,7 @@ const PersonalizacionScreen = () => {
     setTamanioLetra,
     setTemaOscuro,
     getThemedColors,
+    transformText,
   } = usePersonalization();
 
   const themedColors = getThemedColors();
@@ -49,33 +51,16 @@ const PersonalizacionScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        header: {
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-          paddingTop: 60,
-          paddingBottom: 10,
-        },
-        backButton: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        backText: {
-          fontSize: 16,
-          fontWeight: "600",
-          color: themedColors.text,
-          marginLeft: 4,
-        },
         titleContainer: {
           paddingHorizontal: 20,
           paddingBottom: 20,
           alignItems: "center",
         },
         headerTitle: {
-          fontSize: 30,
+          fontSize: 18,
           fontWeight: "bold",
           textAlign: "center",
-          color: themedColors.primary,
+          color: themedColors.text,
         },
         content: {
           flex: 1,
@@ -136,28 +121,17 @@ const PersonalizacionScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header con botón de volver */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleGoBack}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>Atrás</CustomText>
-        </TouchableOpacity>
-      </View>
+      <BackButton onPress={handleGoBack} />
 
-      {/* Título */}
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>Personalización</CustomText>
-      </View>
+      <ScreenTitle text={transformText("Personalización")} />
 
       <ScrollView style={styles.content}>
         {/* Opción: Solo Mayúsculas */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
-            <CustomText style={styles.optionTitle}>Solo mayúsculas</CustomText>
+            <Text style={styles.optionTitle}>
+              {transformText("Solo mayúsculas")}
+            </Text>
             <View
               style={[
                 styles.switchContainer,
@@ -178,7 +152,9 @@ const PersonalizacionScreen = () => {
 
         {/* Opción: Tamaño de Letra */}
         <View style={styles.optionContainer}>
-          <CustomText style={styles.optionTitle}>Tamaño de la letra</CustomText>
+          <Text style={styles.optionTitle}>
+            {transformText("Tamaño de la letra")}
+          </Text>
           <View style={styles.sizeContainer}>
             <TouchableOpacity
               style={[
@@ -188,15 +164,14 @@ const PersonalizacionScreen = () => {
               onPress={handleSetTamanioPequenia}
               activeOpacity={0.8}
             >
-              <CustomText
-                disablePersonalization={true}
+              <Text
                 style={[
                   styles.sizeText,
                   tamanioLetra === "pequenia" && styles.sizeTextActive,
                 ]}
               >
-                Pequeña
-              </CustomText>
+                {transformText("Pequeña")}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -206,15 +181,14 @@ const PersonalizacionScreen = () => {
               onPress={handleSetTamanioMediana}
               activeOpacity={0.8}
             >
-              <CustomText
-                disablePersonalization={true}
+              <Text
                 style={[
                   styles.sizeText,
                   tamanioLetra === "mediana" && styles.sizeTextActive,
                 ]}
               >
-                Mediana
-              </CustomText>
+                {transformText("Mediana")}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -224,15 +198,14 @@ const PersonalizacionScreen = () => {
               onPress={handleSetTamanioGrande}
               activeOpacity={0.8}
             >
-              <CustomText
-                disablePersonalization={true}
+              <Text
                 style={[
                   styles.sizeText,
                   tamanioLetra === "grande" && styles.sizeTextActive,
                 ]}
               >
-                Grande
-              </CustomText>
+                {transformText("Grande")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -240,7 +213,9 @@ const PersonalizacionScreen = () => {
         {/* Opción: Tema Oscuro */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
-            <CustomText style={styles.optionTitle}>Tema oscuro</CustomText>
+            <Text style={styles.optionTitle}>
+              {transformText("Tema oscuro")}
+            </Text>
             <View
               style={[
                 styles.switchContainer,

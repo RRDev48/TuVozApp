@@ -1,9 +1,8 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useAddressForm } from "../../(hooks)/useAddressForm";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -41,7 +40,8 @@ const AddAddressScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
     },
   });
 
@@ -52,9 +52,9 @@ const AddAddressScreen = () => {
       <ScreenTitle text={transformText("Agregar dirección")} />
 
       <ScrollView style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
+        <Text style={styles.sectionTitle}>
           {transformText("¿Cuál es tu dirección?")}
-        </CustomText>
+        </Text>
 
         <ThemedTextInput
           placeholder={transformText("Escribe tu dirección completa")}

@@ -1,6 +1,5 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 interface ScreenTitleProps {
   text: string;
@@ -17,7 +16,7 @@ const ScreenTitle = ({ text }: ScreenTitleProps) => {
       alignItems: "center",
     },
     headerTitle: {
-      fontSize: 30,
+      fontSize: 24,
       fontWeight: "bold",
       textAlign: "center",
       color: themedColors.primary,
@@ -26,7 +25,7 @@ const ScreenTitle = ({ text }: ScreenTitleProps) => {
 
   return (
     <View style={styles.titleContainer}>
-      <CustomText style={styles.headerTitle}>{text}</CustomText>
+      <Text style={styles.headerTitle}>{text}</Text>
     </View>
   );
 };

@@ -1,6 +1,4 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -10,6 +8,7 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -32,7 +31,7 @@ type EmergencyContactScreenNavigationProp = StackNavigationProp<
 const EmergencyContactScreen = () => {
   const navigation = useNavigation<EmergencyContactScreenNavigationProp>();
   const route = useRoute<EmergencyContactScreenRouteProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [contactName, setContactName] = useState(
@@ -97,7 +96,11 @@ const EmergencyContactScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
+    },
+    firstSection: {
+      marginBottom: 30,
     },
     phoneContainer: {
       flexDirection: "row",
@@ -105,7 +108,7 @@ const EmergencyContactScreen = () => {
       marginBottom: 30,
     },
     countryCodeButton: {
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 12,
       paddingVertical: 16,
       paddingHorizontal: 15,
@@ -120,21 +123,21 @@ const EmergencyContactScreen = () => {
     countryCodeText: {
       fontSize: 16,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
       marginRight: 4,
     },
     phoneInput: {
       flex: 1,
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 12,
       paddingVertical: 16,
       paddingHorizontal: 20,
       fontSize: 16,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     countryCodeList: {
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 8,
       marginBottom: 20,
@@ -146,7 +149,7 @@ const EmergencyContactScreen = () => {
       flexDirection: "row",
       alignItems: "center",
       borderBottomWidth: 1,
-      borderBottomColor: temaOscuro ? colors.blue : colors.white,
+      borderBottomColor: themedColors.secondary,
     },
     countryCodeItemLast: {
       borderBottomWidth: 0,
@@ -161,13 +164,13 @@ const EmergencyContactScreen = () => {
     countryName: {
       fontSize: 16,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
       marginBottom: 2,
     },
     countryCode: {
       fontSize: 14,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     overlay: {
       position: "absolute",
@@ -195,74 +198,68 @@ const EmergencyContactScreen = () => {
       <ScreenTitle text={transformText("Contacto de emergencia")} />
 
       <ScrollView style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
-          {transformText("Nombre del contacto")}
-        </CustomText>
-
-        <ThemedTextInput
-          placeholder={transformText("Nombre completo")}
-          value={contactName}
-          onChangeText={setContactName}
-        />
-
-        <CustomText style={styles.sectionTitle}>
-          {transformText("Número de teléfono")}
-        </CustomText>
-
-        <View style={styles.phoneContainer}>
-          <TouchableOpacity
-            style={styles.countryCodeButton}
-            onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            <CustomText style={styles.flagText}>
-              {getSelectedCountry().flag}
-            </CustomText>
-            <CustomText style={styles.countryCodeText}>
-              {selectedCountryCode}
-            </CustomText>
-            <Ionicons
-              name={isDropdownOpen ? "chevron-up" : "chevron-down"}
-              size={20}
-              color={temaOscuro ? colors.blue : colors.white}
-            />
-          </TouchableOpacity>
+        <View style={styles.firstSection}>
+          <Text style={styles.sectionTitle}>
+            {transformText("Nombre del contacto")}
+          </Text>
 
           <ThemedTextInput
-            placeholder={transformText("Número")}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            style={styles.phoneInput}
+            placeholder={transformText("Nombre completo")}
+            value={contactName}
+            onChangeText={setContactName}
           />
         </View>
-        {isDropdownOpen && (
-          <View style={styles.dropdownWrapper}>
-            <ScrollView style={styles.countryCodeList}>
-              {COUNTRY_CODES.map((country, index) => (
-                <TouchableOpacity
-                  key={`${country.code}-${country.country}-${index}`}
-                  style={[
-                    styles.countryCodeItem,
-                    index === COUNTRY_CODES.length - 1 &&
-                      styles.countryCodeItemLast,
-                  ]}
-                  onPress={() => handleSelectCountryCode(country.code)}
-                >
-                  <CustomText style={styles.countryFlag}>
-                    {country.flag}
-                  </CustomText>
-                  <View style={styles.countryInfo}>
-                    <CustomText style={styles.countryName}>
-                      {country.country}
-                    </CustomText>
-                    <CustomText style={styles.countryCode}>
-                      {country.code}
-                    </CustomText>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+
+        <View>
+          <Text style={styles.sectionTitle}>
+            {transformText("Número de teléfono")}
+          </Text>
+
+          <View style={styles.phoneContainer}>
+            <TouchableOpacity
+              style={styles.countryCodeButton}
+              onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <Text style={styles.flagText}>{getSelectedCountry().flag}</Text>
+              <Text style={styles.countryCodeText}>{selectedCountryCode}</Text>
+              <Ionicons
+                name={isDropdownOpen ? "chevron-up" : "chevron-down"}
+                size={20}
+                color={themedColors.secondary}
+              />
+            </TouchableOpacity>
+
+            <ThemedTextInput
+              placeholder={transformText("Número")}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              style={styles.phoneInput}
+            />
           </View>
-        )}
+          {isDropdownOpen && (
+            <View style={styles.dropdownWrapper}>
+              <ScrollView style={styles.countryCodeList}>
+                {COUNTRY_CODES.map((country, index) => (
+                  <TouchableOpacity
+                    key={`${country.code}-${country.country}-${index}`}
+                    style={[
+                      styles.countryCodeItem,
+                      index === COUNTRY_CODES.length - 1 &&
+                        styles.countryCodeItemLast,
+                    ]}
+                    onPress={() => handleSelectCountryCode(country.code)}
+                  >
+                    <Text style={styles.countryFlag}>{country.flag}</Text>
+                    <View style={styles.countryInfo}>
+                      <Text style={styles.countryName}>{country.country}</Text>
+                      <Text style={styles.countryCode}>{country.code}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       <SaveButton onPress={handleSave} />

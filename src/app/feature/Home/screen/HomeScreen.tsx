@@ -1,11 +1,10 @@
-import CustomText from "@/src/app/components/CustomText";
 import MenuItem from "@/src/app/components/menu/MenuItem";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, Image, StyleSheet, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import getGreeting from "../(actions)/actions";
 import { useUserData } from "../(hooks)/useUserData";
 import { userService } from "../(services)/userService";
@@ -13,7 +12,7 @@ import homeMenu from "../constants/home.menu";
 
 const HomeScreen = () => {
   const { userName } = useUserData();
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -135,9 +134,9 @@ const HomeScreen = () => {
           source={homeMenu.homeScreenMenu[0].icon}
           style={homeScreenStyles.userIcon}
         />
-        <CustomText style={homeScreenStyles.greetingText}>
+        <Text style={homeScreenStyles.greetingText}>
           {getGreeting(userName)}
-        </CustomText>
+        </Text>
       </View>
 
       <FlatList

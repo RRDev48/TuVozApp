@@ -1,6 +1,4 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -8,9 +6,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
   StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -64,7 +63,7 @@ const BloodTypeSelectionScreen = () => {
       alignItems: "center",
     },
     sectionTitle: {
-      fontSize: 28,
+      fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
       textAlign: "center",
@@ -72,7 +71,7 @@ const BloodTypeSelectionScreen = () => {
     },
     dropdownButton: {
       width: "100%",
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
@@ -82,9 +81,9 @@ const BloodTypeSelectionScreen = () => {
       marginBottom: 10,
     },
     dropdownButtonText: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     overlay: {
       position: "absolute",
@@ -108,21 +107,19 @@ const BloodTypeSelectionScreen = () => {
       <ScreenTitle text={transformText("Tipo de sangre")} />
 
       <View style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
+        <Text style={styles.sectionTitle}>
           {transformText("¿Cuál es tu tipo\nde sangre?")}
-        </CustomText>
+        </Text>
 
         <TouchableOpacity
           style={styles.dropdownButton}
           onPress={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <CustomText style={styles.dropdownButtonText}>
-            {selectedBloodType}
-          </CustomText>
+          <Text style={styles.dropdownButtonText}>{selectedBloodType}</Text>
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
             size={24}
-            color={temaOscuro ? colors.blue : colors.white}
+            color={themedColors.secondary}
           />
         </TouchableOpacity>
 

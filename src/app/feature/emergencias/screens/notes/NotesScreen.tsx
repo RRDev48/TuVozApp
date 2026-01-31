@@ -1,10 +1,9 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
@@ -46,7 +45,8 @@ const NotesScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
     },
   });
 
@@ -57,9 +57,9 @@ const NotesScreen = () => {
       <ScreenTitle text={transformText("Notas")} />
 
       <ScrollView style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
+        <Text style={styles.sectionTitle}>
           {transformText("Información adicional")}
-        </CustomText>
+        </Text>
 
         <ThemedTextInput
           placeholder={transformText("Escribe notas adicionales...")}

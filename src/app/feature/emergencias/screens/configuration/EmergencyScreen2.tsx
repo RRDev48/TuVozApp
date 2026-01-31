@@ -1,4 +1,3 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -11,6 +10,7 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -290,18 +290,18 @@ const EmergencyScreen2 = () => {
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-          <CustomText style={styles.cancelButtonText}>
+          <Text style={styles.cancelButtonText}>
             {transformText("Cancelar")}
-          </CustomText>
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.saveButton}
           onPress={handleSaveEmergencyData}
         >
-          <CustomText style={styles.saveButtonText}>
+          <Text style={styles.saveButtonText}>
             {transformText("Guardar datos")}
-          </CustomText>
+          </Text>
         </TouchableOpacity>
       </View>
 

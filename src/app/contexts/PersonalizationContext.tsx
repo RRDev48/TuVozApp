@@ -14,8 +14,10 @@ interface PersonalizationContextType {
   getThemedColors: () => {
     background: string;
     primary: string;
+    secondary: string;
     text: string;
     cardBackground: string;
+    transparent: string;
   };
 }
 
@@ -123,16 +125,20 @@ const PersonalizationProvider = ({
     if (temaOscuro) {
       return {
         background: colors.darkBlue, // azul oscuro
-        primary: colors.white, // blanco
-        text: colors.white, // blanco
         cardBackground: colors.white, // blanco
+        primary: colors.white, // blanco
+        secondary: colors.secondBlue, // gris claro
+        text: colors.white, // blanco
+        transparent: colors.transparent,
       };
     } else {
       return {
         background: colors.white, // blanco
-        primary: colors.blue, // azul
-        text: colors.black, // negro
         cardBackground: colors.blue, // azul
+        primary: colors.blue, // azul
+        secondary: colors.white, // gris claro
+        text: colors.black, // negro
+        transparent: colors.transparent,
       };
     }
   };

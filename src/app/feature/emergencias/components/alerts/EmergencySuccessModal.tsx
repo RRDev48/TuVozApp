@@ -1,9 +1,6 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { Image, Modal, StyleSheet, Text, View } from "react-native";
 
 interface EmergencySuccessModalProps {
   visible: boolean;
@@ -14,7 +11,32 @@ const EmergencySuccessModal = ({
   visible,
   onClose,
 }: EmergencySuccessModalProps) => {
-  const { transformText } = usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: themedColors.background,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 24,
+    },
+    iconContainer: {
+      marginBottom: 30,
+    },
+    gifImage: {
+      width: 120,
+      height: 120,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: themedColors.text,
+      textAlign: "center",
+      lineHeight: 28,
+    },
+  });
 
   React.useEffect(() => {
     if (visible) {
@@ -37,35 +59,18 @@ const EmergencySuccessModal = ({
       <View style={styles.container}>
         {/* Icono de check animado */}
         <View style={styles.iconContainer}>
-          <Ionicons name="checkmark-circle" size={120} color={colors.green} />
+          <Image
+            source={require("@/src/app/assets/gif/verificado.gif")}
+            style={styles.gifImage}
+          />
         </View>
 
-        <CustomText style={styles.title}>
+        <Text style={styles.title}>
           {transformText("Información de emergencia guardada con éxito")}
-        </CustomText>
+        </Text>
       </View>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-  },
-  iconContainer: {
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: colors.black,
-    textAlign: "center",
-    lineHeight: 28,
-  },
-});
 
 export default EmergencySuccessModal;

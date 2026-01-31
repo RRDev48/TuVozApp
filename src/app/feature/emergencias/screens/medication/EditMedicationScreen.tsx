@@ -1,4 +1,3 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -7,6 +6,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
   StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -33,7 +33,7 @@ type EditMedicationScreenNavigationProp = StackNavigationProp<
 const EditMedicationScreen = () => {
   const navigation = useNavigation<EditMedicationScreenNavigationProp>();
   const route = useRoute<EditMedicationScreenRouteProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
   const {
@@ -66,22 +66,25 @@ const EditMedicationScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
+    },
+    firstSection: {
+      marginBottom: 30,
     },
     dropdownButton: {
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 10,
     },
     dropdownButtonText: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     deleteButton: {
       position: "absolute",
@@ -123,49 +126,49 @@ const EditMedicationScreen = () => {
       <ScreenTitle text={transformText("Editar medicación")} />
 
       <View style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
-          {transformText("¿Qué medicación tomas?")}
-        </CustomText>
+        <View style={styles.firstSection}>
+          <Text style={styles.sectionTitle}>
+            {transformText("¿Qué medicación tomas?")}
+          </Text>
 
-        <ThemedTextInput
-          placeholder={transformText("Nombre de la medicación")}
-          value={medicationName}
-          onChangeText={setMedicationName}
-        />
-
-        <CustomText style={styles.sectionTitle}>
-          {transformText("¿Con qué frecuencia?")}
-        </CustomText>
-
-        <TouchableOpacity
-          style={styles.dropdownButton}
-          onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          <CustomText style={styles.dropdownButtonText}>
-            {selectedFrequency}
-          </CustomText>
-          <Ionicons
-            name={isDropdownOpen ? "chevron-up" : "chevron-down"}
-            size={24}
-            color={temaOscuro ? colors.blue : colors.white}
+          <ThemedTextInput
+            placeholder={transformText("Nombre de la medicación")}
+            value={medicationName}
+            onChangeText={setMedicationName}
           />
-        </TouchableOpacity>
+        </View>
 
-        {isDropdownOpen && (
-          <DropdownList
-            items={FREQUENCY_OPTIONS}
-            onSelectItem={handleSelectFrequency}
-            maxHeight={210}
-          />
-        )}
+        <View>
+          <Text style={styles.sectionTitle}>
+            {transformText("¿Con qué frecuencia?")}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.dropdownButton}
+            onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <Text style={styles.dropdownButtonText}>{selectedFrequency}</Text>
+            <Ionicons
+              name={isDropdownOpen ? "chevron-up" : "chevron-down"}
+              size={24}
+              color={themedColors.secondary}
+            />
+          </TouchableOpacity>
+
+          {isDropdownOpen && (
+            <DropdownList
+              items={FREQUENCY_OPTIONS}
+              onSelectItem={handleSelectFrequency}
+              maxHeight={210}
+            />
+          )}
+        </View>
       </View>
 
       <SaveButton onPress={handleSave} bottom={110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <CustomText style={styles.deleteButtonText}>
-          {transformText("Eliminar")}
-        </CustomText>
+        <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>
       </TouchableOpacity>
     </View>
   );

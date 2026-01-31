@@ -1,7 +1,6 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface EmergencyFieldProps {
   icon: React.ReactNode;
@@ -11,13 +10,13 @@ interface EmergencyFieldProps {
   showArrow?: boolean;
 }
 
-export const EmergencyField: React.FC<EmergencyFieldProps> = ({
+export const EmergencyField = ({
   icon,
   label,
   value,
   onPress,
   showArrow = true,
-}) => {
+}: EmergencyFieldProps) => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -28,35 +27,35 @@ export const EmergencyField: React.FC<EmergencyFieldProps> = ({
       backgroundColor: themedColors.cardBackground,
       padding: 16,
       borderRadius: 15,
-      marginBottom: 16,
+      marginBottom: 20,
     },
     iconContainer: {
       width: 50,
       height: 50,
       borderRadius: 25,
-      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      backgroundColor: themedColors.transparent,
       justifyContent: "center",
       alignItems: "center",
-      marginRight: 16,
+      marginRight: 20,
     },
     textContainer: {
       flex: 1,
     },
     label: {
-      color: themedColors.background,
-      fontWeight: "700",
+      color: themedColors.secondary,
+      fontWeight: "bold",
       fontSize: 18,
-      marginBottom: 2,
+      marginBottom: 4,
     },
     value: {
-      color: themedColors.background,
+      color: themedColors.secondary,
       fontSize: 14,
       opacity: 0.8,
     },
     arrow: {
-      color: themedColors.background,
-      fontSize: 24,
-      marginLeft: 10,
+      color: themedColors.secondary,
+      fontSize: 30,
+      fontWeight: "bold",
     },
   });
 
@@ -64,10 +63,10 @@ export const EmergencyField: React.FC<EmergencyFieldProps> = ({
     <View style={styles.container}>
       <View style={styles.iconContainer}>{icon}</View>
       <View style={styles.textContainer}>
-        <CustomText style={styles.label}>{transformText(label)}</CustomText>
-        <CustomText style={styles.value}>{value || "Ninguna"}</CustomText>
+        <Text style={styles.label}>{transformText(label)}</Text>
+        <Text style={styles.value}>{value || "Ninguna"}</Text>
       </View>
-      {showArrow && <CustomText style={styles.arrow}>›</CustomText>}
+      {showArrow && <Text style={styles.arrow}>›</Text>}
     </View>
   );
 

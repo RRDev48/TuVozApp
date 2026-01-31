@@ -1,15 +1,14 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import {
   StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../(hooks)/useAllergyForm";
 import BackButton from "../../../components/BackButton";
@@ -55,24 +54,27 @@ const AddAllergyScreen = () => {
     },
     sectionTitle: {
       fontSize: 18,
-      fontWeight: "600",
+      fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
+    },
+    firstSection: {
+      marginBottom: 30,
     },
     dropdownButton: {
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 10,
     },
     dropdownButtonText: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     overlay: {
       position: "absolute",
@@ -96,41 +98,43 @@ const AddAllergyScreen = () => {
       <ScreenTitle text={transformText("Agrega tu alergia")} />
 
       <View style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
-          {transformText("¿Qué tipo de alergia presentas?")}
-        </CustomText>
+        <View style={styles.firstSection}>
+          <Text style={styles.sectionTitle}>
+            {transformText("¿Qué tipo de alergia presentas?")}
+          </Text>
 
-        <ThemedTextInput
-          placeholder={transformText("Nombre de la alergia")}
-          value={allergyName}
-          onChangeText={setAllergyName}
-        />
-
-        <CustomText style={styles.sectionTitle}>
-          {transformText("¿Cuál es el grado?")}
-        </CustomText>
-
-        <TouchableOpacity
-          style={styles.dropdownButton}
-          onPress={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          <CustomText style={styles.dropdownButtonText}>
-            {selectedSeverity}
-          </CustomText>
-          <Ionicons
-            name={isDropdownOpen ? "chevron-up" : "chevron-down"}
-            size={24}
-            color={temaOscuro ? colors.blue : colors.white}
+          <ThemedTextInput
+            placeholder={transformText("Nombre de la alergia")}
+            value={allergyName}
+            onChangeText={setAllergyName}
           />
-        </TouchableOpacity>
+        </View>
 
-        {isDropdownOpen && (
-          <DropdownList
-            items={SEVERITY_LEVELS}
-            onSelectItem={handleSelectSeverity}
-            maxHeight={160}
-          />
-        )}
+        <View>
+          <Text style={styles.sectionTitle}>
+            {transformText("¿Cuál es el grado?")}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.dropdownButton}
+            onPress={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <Text style={styles.dropdownButtonText}>{selectedSeverity}</Text>
+            <Ionicons
+              name={isDropdownOpen ? "chevron-up" : "chevron-down"}
+              size={24}
+              color={themedColors.secondary}
+            />
+          </TouchableOpacity>
+
+          {isDropdownOpen && (
+            <DropdownList
+              items={SEVERITY_LEVELS}
+              onSelectItem={handleSelectSeverity}
+              maxHeight={160}
+            />
+          )}
+        </View>
       </View>
 
       <SaveButton onPress={handleSave} />

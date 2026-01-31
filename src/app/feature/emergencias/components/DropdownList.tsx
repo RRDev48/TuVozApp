@@ -1,7 +1,5 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface DropdownListProps {
   items: string[];
@@ -14,13 +12,13 @@ const DropdownList = ({
   onSelectItem,
   maxHeight = 200,
 }: DropdownListProps) => {
-  const { getThemedColors, temaOscuro } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({
     list: {
       width: "100%",
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 8,
       marginBottom: 20,
@@ -30,7 +28,7 @@ const DropdownList = ({
       paddingVertical: 16,
       paddingHorizontal: 24,
       borderBottomWidth: 1,
-      borderBottomColor: temaOscuro ? colors.blue : colors.white,
+      borderBottomColor: themedColors.secondary,
     },
     itemLast: {
       borderBottomWidth: 0,
@@ -38,7 +36,7 @@ const DropdownList = ({
     itemText: {
       fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
   });
 
@@ -54,7 +52,7 @@ const DropdownList = ({
           style={[styles.item, index === items.length - 1 && styles.itemLast]}
           onPress={() => onSelectItem(item)}
         >
-          <CustomText style={styles.itemText}>{item}</CustomText>
+          <Text style={styles.itemText}>{item}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>

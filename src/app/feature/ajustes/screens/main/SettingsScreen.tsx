@@ -1,4 +1,3 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useUserData } from "@/src/app/feature/Home/(hooks)/useUserData";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -6,12 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useCurrentUser } from "../../(hooks)/useCurrentUser";
+import BackButton from "../../../components/BackButton";
+import ScreenTitle from "../../../components/ScreenTitle";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
@@ -44,56 +45,43 @@ const SettingsScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        header: {
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-          paddingTop: 60,
-          paddingBottom: 10,
-        },
-        backButton: {
-          flexDirection: "row",
-          alignItems: "center",
-        },
-        backText: {
-          fontSize: 16,
-          fontWeight: "600",
-          color: themedColors.text,
-          marginLeft: 4,
-        },
         titleContainer: {
           paddingHorizontal: 20,
           paddingBottom: 20,
           alignItems: "center",
         },
         headerTitle: {
-          fontSize: 30,
+          fontSize: 18,
           fontWeight: "bold",
           textAlign: "center",
-          color: themedColors.primary,
+          color: themedColors.text,
         },
-        avatarContainer: {
+        userInfoContainer: {
+          flexDirection: "row",
           alignItems: "center",
+          paddingHorizontal: 20,
           marginBottom: 40,
         },
+        avatarContainer: {
+          marginRight: 20,
+        },
         avatarCircle: {
-          width: 120,
-          height: 120,
-          borderRadius: 60,
+          width: 80,
+          height: 80,
+          borderRadius: 40,
           backgroundColor: themedColors.primary,
           justifyContent: "center",
           alignItems: "center",
         },
         avatarImage: {
-          width: 80,
-          height: 80,
+          width: 60,
+          height: 60,
         },
         greetingText: {
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: "bold",
-          textAlign: "center",
-          marginBottom: 40,
           color: themedColors.text,
+          flex: 1,
         },
         buttonsContainer: {
           paddingHorizontal: 20,
@@ -111,7 +99,7 @@ const SettingsScreen = () => {
           width: 50,
           height: 50,
           borderRadius: 25,
-          backgroundColor: "rgba(255, 255, 255, 0.2)",
+          backgroundColor: themedColors.transparent,
           justifyContent: "center",
           alignItems: "center",
           marginRight: 16,
@@ -122,7 +110,7 @@ const SettingsScreen = () => {
         buttonTitle: {
           color: themedColors.background,
           fontSize: 18,
-          fontWeight: "700",
+          fontWeight: "bold",
         },
         buttonSubtitle: {
           color: themedColors.background,
@@ -139,38 +127,25 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header con botón de volver */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleGoBack}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={24} color={themedColors.text} />
-          <CustomText style={styles.backText}>Atrás</CustomText>
-        </TouchableOpacity>
-      </View>
+      <BackButton onPress={handleGoBack} />
 
-      {/* Título */}
-      <View style={styles.titleContainer}>
-        <CustomText style={styles.headerTitle}>Ajustes</CustomText>
-      </View>
+      <ScreenTitle text={transformText("Ajustes")} />
 
-      {/* Avatar del usuario */}
-      <View style={styles.avatarContainer}>
-        <View style={styles.avatarCircle}>
-          <Image
-            source={require("../../../../assets/image/adip_icon.png")}
-            style={styles.avatarImage}
-            resizeMode="contain"
-          />
+      {/* Avatar y saludo del usuario */}
+      <View style={styles.userInfoContainer}>
+        <View style={styles.avatarContainer}>
+          <View style={styles.avatarCircle}>
+            <Image
+              source={require("../../../../assets/image/adip_icon.png")}
+              style={styles.avatarImage}
+              resizeMode="contain"
+            />
+          </View>
         </View>
+        <Text style={styles.greetingText}>
+          {userName ? `¡Hola ${userName}!` : "¡Hola!"}
+        </Text>
       </View>
-
-      {/* Saludo */}
-      <CustomText style={styles.greetingText}>
-        {userName ? `¡Hola ${userName}!` : "¡Hola!"}
-      </CustomText>
 
       {/* Botones de configuración */}
       <View style={styles.buttonsContainer}>
@@ -183,10 +158,10 @@ const SettingsScreen = () => {
             <Ionicons name="person" size={26} color={themedColors.background} />
           </View>
           <View style={styles.buttonTextContainer}>
-            <CustomText style={styles.buttonTitle}>Perfiles</CustomText>
-            <CustomText style={styles.buttonSubtitle}>
-              Configura tus perfiles
-            </CustomText>
+            <Text style={styles.buttonTitle}>{transformText("Perfiles")}</Text>
+            <Text style={styles.buttonSubtitle}>
+              {transformText("Configura tus perfiles")}
+            </Text>
           </View>
           <Ionicons
             name="chevron-forward"
@@ -209,10 +184,12 @@ const SettingsScreen = () => {
             />
           </View>
           <View style={styles.buttonTextContainer}>
-            <CustomText style={styles.buttonTitle}>Personalizar</CustomText>
-            <CustomText style={styles.buttonSubtitle}>
-              Configura colores y temas
-            </CustomText>
+            <Text style={styles.buttonTitle}>
+              {transformText("Personalizar")}
+            </Text>
+            <Text style={styles.buttonSubtitle}>
+              {transformText("Configura colores y temas")}
+            </Text>
           </View>
           <Ionicons
             name="chevron-forward"
@@ -237,10 +214,10 @@ const SettingsScreen = () => {
               />
             </View>
             <View style={styles.buttonTextContainer}>
-              <CustomText style={styles.buttonTitle}>Soporte</CustomText>
-              <CustomText style={styles.buttonSubtitle}>
-                Ayuda y asistencia
-              </CustomText>
+              <Text style={styles.buttonTitle}>{transformText("Soporte")}</Text>
+              <Text style={styles.buttonSubtitle}>
+                {transformText("Ayuda y asistencia")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -266,12 +243,12 @@ const SettingsScreen = () => {
               />
             </View>
             <View style={styles.buttonTextContainer}>
-              <CustomText style={styles.buttonTitle}>
-                Editar Emergencia
-              </CustomText>
-              <CustomText style={styles.buttonSubtitle}>
-                Configura tu informacion de emergencia
-              </CustomText>
+              <Text style={styles.buttonTitle}>
+                {transformText("Editar Emergencia")}
+              </Text>
+              <Text style={styles.buttonSubtitle}>
+                {transformText("Configura tu informacion de emergencia")}
+              </Text>
             </View>
             <Ionicons
               name="chevron-forward"

@@ -1,5 +1,4 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { StyleSheet, TextInput, TextInputProps } from "react-native";
 
 interface ThemedTextInputProps extends TextInputProps {
@@ -25,13 +24,13 @@ const ThemedTextInput = ({
 
   const styles = StyleSheet.create({
     input: {
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 12,
       paddingVertical: 16,
       paddingHorizontal: 20,
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
       minHeight: minHeight || (multiline ? 100 : undefined),
       textAlignVertical: multiline ? "top" : "center",
     },
@@ -41,7 +40,7 @@ const ThemedTextInput = ({
     <TextInput
       style={styles.input}
       placeholder={placeholder}
-      placeholderTextColor={temaOscuro ? colors.blue : colors.white}
+      placeholderTextColor={themedColors.secondary}
       value={value}
       onChangeText={onChangeText}
       multiline={multiline}

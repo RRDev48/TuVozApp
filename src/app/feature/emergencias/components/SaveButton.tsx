@@ -1,7 +1,6 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface SaveButtonProps {
   onPress: () => void;
@@ -33,9 +32,9 @@ const SaveButton = ({ onPress, text, bottom = 40 }: SaveButtonProps) => {
 
   return (
     <TouchableOpacity style={styles.saveButton} onPress={onPress}>
-      <CustomText style={styles.saveButtonText}>
+      <Text style={styles.saveButtonText}>
         {text || transformText("Guardar cambios")}
-      </CustomText>
+      </Text>
     </TouchableOpacity>
   );
 };

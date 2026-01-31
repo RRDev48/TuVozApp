@@ -1,10 +1,15 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useAddressForm } from "../../(hooks)/useAddressForm";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -44,7 +49,8 @@ const EditAddressScreen = () => {
       fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
-      marginBottom: 15,
+      marginBottom: 20,
+      textAlign: "center",
     },
     deleteButton: {
       position: "absolute",
@@ -72,9 +78,9 @@ const EditAddressScreen = () => {
       <ScreenTitle text={transformText("Editar dirección")} />
 
       <ScrollView style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
+        <Text style={styles.sectionTitle}>
           {transformText("¿Cuál es tu dirección?")}
-        </CustomText>
+        </Text>
 
         <ThemedTextInput
           placeholder={transformText("Escribe tu dirección completa")}
@@ -88,9 +94,9 @@ const EditAddressScreen = () => {
       <SaveButton onPress={handleSave} bottom={110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <CustomText style={styles.deleteButtonText}>
+        <Text style={styles.deleteButtonText}>
           {transformText("Eliminar dirección")}
-        </CustomText>
+        </Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,6 +1,4 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -8,6 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
   StyleSheet,
+  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -34,7 +33,7 @@ const ALERT_MODES = [
 const AlertModeSelectionScreen = () => {
   const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
   const route = useRoute<AlertModeSelectionScreenRouteProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [selectedAlertMode, setSelectedAlertMode] = useState<string>(
@@ -72,7 +71,7 @@ const AlertModeSelectionScreen = () => {
       alignItems: "center",
     },
     sectionTitle: {
-      fontSize: 28,
+      fontSize: 18,
       fontWeight: "bold",
       color: themedColors.text,
       textAlign: "center",
@@ -80,7 +79,7 @@ const AlertModeSelectionScreen = () => {
     },
     dropdownButton: {
       width: "100%",
-      backgroundColor: temaOscuro ? colors.white : themedColors.primary,
+      backgroundColor: themedColors.primary,
       borderRadius: 16,
       paddingVertical: 18,
       paddingHorizontal: 24,
@@ -90,9 +89,9 @@ const AlertModeSelectionScreen = () => {
       marginBottom: 10,
     },
     dropdownButtonText: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "bold",
-      color: temaOscuro ? colors.blue : colors.white,
+      color: themedColors.secondary,
     },
     overlay: {
       position: "absolute",
@@ -116,21 +115,21 @@ const AlertModeSelectionScreen = () => {
       <ScreenTitle text={transformText("Modo de alerta")} />
 
       <View style={styles.contentContainer}>
-        <CustomText style={styles.sectionTitle}>
+        <Text style={styles.sectionTitle}>
           {transformText("¿Cómo deseas activar\nla alerta?")}
-        </CustomText>
+        </Text>
 
         <TouchableOpacity
           style={styles.dropdownButton}
           onPress={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <CustomText style={styles.dropdownButtonText}>
+          <Text style={styles.dropdownButtonText}>
             {getAlertModeLabel(selectedAlertMode)}
-          </CustomText>
+          </Text>
           <Ionicons
             name={isDropdownOpen ? "chevron-up" : "chevron-down"}
             size={24}
-            color={temaOscuro ? colors.blue : colors.white}
+            color={themedColors.secondary}
           />
         </TouchableOpacity>
 
