@@ -35,19 +35,13 @@ const RoleSelectionScreen = () => {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
+    <ScrollView style={styles.container}>
       {/* Header con botón atrás y logo */}
+      <BackButton onPress={() => navigation.goBack()} />
+
+      {/* Header con logo */}
       <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
-
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
+        <AppLogo width={200} height={200} />
       </View>
 
       {/* Título */}
@@ -71,17 +65,19 @@ const RoleSelectionScreen = () => {
       </View>
 
       {/* Botón Continuar */}
-      <TouchableOpacity
-        style={[
-          styles.continueButton,
-          !isRoleSelected && styles.buttonDisabled,
-        ]}
-        onPress={handleContinue}
-        activeOpacity={0.8}
-        disabled={!selectedRole}
-      >
-        <Text style={styles.continueButtonText}>Continuar</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[
+            styles.continueButton,
+            !isRoleSelected && styles.buttonDisabled,
+          ]}
+          onPress={handleContinue}
+          activeOpacity={0.8}
+          disabled={!isRoleSelected}
+        >
+          <Text style={styles.continueButtonText}>Continuar</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -91,36 +87,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  contentContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 30,
-  },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 40,
-  },
-  headerLogoContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  placeholder: {
-    width: 80,
+    marginTop: -60,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#000000",
+    color: colors.black,
     textAlign: "center",
-    marginBottom: 40,
+    marginBottom: 30,
   },
   rolesContainer: {
     gap: 16,
     marginBottom: 40,
+    paddingHorizontal: 20,
   },
   roleButton: {
     backgroundColor: colors.blue,
@@ -138,20 +119,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.white,
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginTop: 100,
+  },
   continueButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
-    marginTop: "auto",
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   continueButtonText: {
     color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

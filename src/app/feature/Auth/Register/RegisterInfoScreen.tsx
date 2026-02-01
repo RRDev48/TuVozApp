@@ -39,30 +39,19 @@ const RegisterInfoScreen = () => {
       },
     });
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
   const handleContinue = () => {
     validateForm();
-  };
-
-  const handlePrivacyPolicy = () => {
-    // TODO: Abrir política de privacidad
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
+        <BackButton onPress={() => navigation.goBack()} />
+
+        {/* Header con logo */}
         <View style={styles.header}>
-          <BackButton onPress={() => navigation.goBack()} />
-
-          <View style={styles.headerLogoContainer}>
-            <AppLogo width={250} height={250} />
-          </View>
-
-          <View style={styles.placeholder} />
+          <AppLogo width={200} height={200} />
         </View>
 
         {/* Título */}
@@ -104,25 +93,19 @@ const RegisterInfoScreen = () => {
         </View>
 
         {/* Botón Continuar */}
-        <TouchableOpacity
-          style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
-          onPress={handleContinue}
-          activeOpacity={0.8}
-          disabled={!isFormValid}
-        >
-          <Text style={styles.continueButtonText}>Continuar</Text>
-        </TouchableOpacity>
-
-        {/* Link Política de Privacidad */}
-        <TouchableOpacity
-          onPress={handlePrivacyPolicy}
-          style={styles.privacyContainer}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.privacyText}>
-            Política de Privacidad y Seguridad
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.continueButton,
+              !isFormValid && styles.buttonDisabled,
+            ]}
+            onPress={handleContinue}
+            activeOpacity={0.8}
+            disabled={!isFormValid}
+          >
+            <Text style={styles.continueButtonText}>Continuar</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -132,54 +115,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 30,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 60,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  headerLogoContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    marginTop: 30,
-  },
-  placeholder: {
-    width: 80,
+    marginTop: -60,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#000000",
+    color: colors.black,
     textAlign: "center",
-    marginBottom: 50,
-    lineHeight: 28,
+    marginBottom: 30,
   },
   form: {
     gap: 20,
     marginBottom: 30,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 18,
     color: colors.black,
-    fontWeight: "700",
+    fontWeight: "500",
   },
   inputContainer: {
     flexDirection: "row",
@@ -191,34 +151,28 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.white,
     fontWeight: "500",
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginTop: 100,
+  },
   continueButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: 20,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   continueButtonText: {
     color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  privacyContainer: {
-    alignItems: "center",
-    marginTop: "auto",
-    paddingVertical: 12,
-  },
-  privacyText: {
-    fontSize: 14,
-    color: colors.lightBlue,
-    fontWeight: "400",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

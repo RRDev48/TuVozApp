@@ -67,20 +67,16 @@ const CodeVerificationScreen = () => {
       enabled
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
         {/* Header con botón atrás y logo */}
+        <BackButton onPress={() => navigation.goBack()} />
+
+        {/* Header con logo */}
         <View style={styles.header}>
-          <BackButton onPress={() => navigation.goBack()} />
-
-          <View style={styles.headerLogoContainer}>
-            <AppLogo width={250} height={250} />
-          </View>
-
-          <View style={styles.placeholder} />
+          <AppLogo width={200} height={200} />
         </View>
 
         {/* Icono de correo */}
@@ -137,28 +133,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 30,
-  },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 40,
-  },
-
-  headerLogoContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    marginTop: 30,
-  },
-  placeholder: {
-    width: 80,
+    marginTop: -60,
   },
   iconContainer: {
     alignItems: "center",

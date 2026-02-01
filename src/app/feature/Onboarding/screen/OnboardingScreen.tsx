@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   description: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "400",
     color: colors.gray,
     textAlign: "center",
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
   },
   skipContainer: {

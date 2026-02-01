@@ -79,14 +79,11 @@ const LoginScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
+        <BackButton onPress={() => navigation.goBack()} />
+
+        {/* Header con logo */}
         <View style={styles.header}>
-          <BackButton onPress={() => navigation.goBack()} />
-
-          <View style={styles.headerLogoContainer}>
-            <AppLogo width={250} height={250} />
-          </View>
-
-          <View style={styles.placeholder} />
+          <AppLogo width={200} height={200} />
         </View>
 
         {/* Título */}
@@ -181,16 +178,18 @@ const LoginScreen = () => {
         </View>
 
         {/* Botón Continuar */}
-        <TouchableOpacity
-          style={[styles.continueButton, isLoading && styles.buttonDisabled]}
-          onPress={handleContinue}
-          activeOpacity={0.8}
-          disabled={isLoading}
-        >
-          <Text style={styles.continueButtonText}>
-            {isLoading ? "Iniciando sesión..." : "Continuar"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.continueButton, isLoading && styles.buttonDisabled]}
+            onPress={handleContinue}
+            activeOpacity={0.8}
+            disabled={isLoading}
+          >
+            <Text style={styles.continueButtonText}>
+              {isLoading ? "Iniciando sesión..." : "Continuar"}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Ayuda */}
         <View style={styles.helpContainer}>
@@ -208,54 +207,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 30,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 60,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  headerLogoContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    marginTop: 30,
-  },
-  placeholder: {
-    width: 80,
+    marginTop: -60,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#000000",
+    color: colors.black,
     textAlign: "center",
-    marginBottom: 50,
-    lineHeight: 28,
+    marginBottom: 30,
   },
   form: {
     gap: 20,
     marginBottom: 30,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 18,
     color: colors.black,
-    fontWeight: "700",
+    fontWeight: "500",
   },
   inputContainer: {
     flexDirection: "row",
@@ -267,11 +243,11 @@ const styles = StyleSheet.create({
   },
   inputContainerError: {
     borderWidth: 2,
-    borderColor: "#FF3B30",
+    borderColor: colors.red,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.white,
     fontWeight: "500",
   },
@@ -285,7 +261,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: "#FF3B30",
+    color: colors.red,
     marginTop: 4,
     marginLeft: 10,
   },
@@ -298,20 +274,23 @@ const styles = StyleSheet.create({
     color: colors.lightBlue,
     fontWeight: "400",
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    marginTop: 80,
+  },
   continueButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: 20,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   continueButtonText: {
     color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   helpContainer: {
     flexDirection: "row",
