@@ -1,3 +1,4 @@
+import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -9,10 +10,9 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { useSupportForm } from "../../(hooks)/useSupportForm";
 import BackButton from "../../../components/BackButton";
@@ -117,13 +117,15 @@ const NewSupportEntryScreen = () => {
         style={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.questionTitle}>
+        <CustomText style={styles.questionTitle}>
           {transformText("¿Cómo podemos ayudarte?")}
-        </Text>
+        </CustomText>
 
         {/* Campo Asunto */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>{transformText("Asunto*")}</Text>
+          <CustomText style={styles.label}>
+            {transformText("Asunto*")}
+          </CustomText>
           <TextInput
             style={styles.input}
             placeholder={transformText("Escribe un asunto")}
@@ -135,7 +137,9 @@ const NewSupportEntryScreen = () => {
 
         {/* Campo Consulta */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>{transformText("Consulta*")}</Text>
+          <CustomText style={styles.label}>
+            {transformText("Consulta*")}
+          </CustomText>
           <TextInput
             style={styles.textArea}
             placeholder={transformText("Escribe tu consulta*")}
@@ -156,11 +160,11 @@ const NewSupportEntryScreen = () => {
           onPress={handleSubmit}
           disabled={isSubmitting}
         >
-          <Text style={styles.submitButtonText}>
+          <CustomText style={styles.submitButtonText}>
             {isSubmitting
               ? transformText("Enviando...")
               : transformText("Enviar informe")}
-          </Text>
+          </CustomText>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

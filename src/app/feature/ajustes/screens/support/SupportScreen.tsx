@@ -1,3 +1,4 @@
+import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -7,9 +8,8 @@ import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { useSupportTickets } from "../../(hooks)/useSupportTickets";
 import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
@@ -181,12 +181,12 @@ const SupportScreen = () => {
             height={120}
             style={{ marginBottom: 20, marginTop: -100 }}
           />
-          <Text style={styles.emptyStateTitle}>
+          <CustomText style={styles.emptyStateTitle}>
             {transformText("Aún no hay entradas")}
-          </Text>
-          <Text style={styles.emptyStateText}>
+          </CustomText>
+          <CustomText style={styles.emptyStateText}>
             {transformText("Cuando hagas uno, aparecerá aquí.")}
-          </Text>
+          </CustomText>
         </ScrollView>
       ) : (
         <ScrollView
@@ -199,7 +199,9 @@ const SupportScreen = () => {
             return (
               <View key={ticket.id} style={styles.ticketCard}>
                 <View style={styles.ticketHeader}>
-                  <Text style={styles.ticketSubject}>{ticket.subject}</Text>
+                  <CustomText style={styles.ticketSubject}>
+                    {ticket.subject}
+                  </CustomText>
                   <View
                     style={[
                       styles.ticketStatus,
@@ -209,30 +211,30 @@ const SupportScreen = () => {
                       },
                     ]}
                   >
-                    <Text
+                    <CustomText
                       style={[
                         styles.ticketStatusText,
                         { color: statusColor.text },
                       ]}
                     >
                       {statusLabels[ticket.status]}
-                    </Text>
+                    </CustomText>
                   </View>
                 </View>
-                <Text
+                <CustomText
                   style={styles.ticketMessage}
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {ticket.message}
-                </Text>
-                <Text style={styles.ticketDate}>
+                </CustomText>
+                <CustomText style={styles.ticketDate}>
                   {new Date(ticket.created_at).toLocaleDateString("es-ES", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
                   })}
-                </Text>
+                </CustomText>
               </View>
             );
           })}
@@ -246,9 +248,9 @@ const SupportScreen = () => {
           activeOpacity={0.8}
           onPress={handleNewEntry}
         >
-          <Text style={styles.newEntryButtonText}>
+          <CustomText style={styles.newEntryButtonText}>
             {transformText("Nueva entrada")}
-          </Text>
+          </CustomText>
         </TouchableOpacity>
       </View>
     </View>

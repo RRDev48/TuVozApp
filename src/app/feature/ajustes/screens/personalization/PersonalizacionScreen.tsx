@@ -1,3 +1,4 @@
+import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useNavigation } from "@react-navigation/native";
@@ -6,7 +7,6 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -64,7 +64,7 @@ const PersonalizacionScreen = () => {
         },
         content: {
           flex: 1,
-          paddingHorizontal: 20,
+          paddingHorizontal: 16,
         },
         optionContainer: {
           marginBottom: 40,
@@ -81,17 +81,26 @@ const PersonalizacionScreen = () => {
         },
         sizeContainer: {
           flexDirection: "row",
-          gap: 12,
+          gap: 8,
           marginTop: 16,
+        },
+        sizeContainerColumn: {
+          flexDirection: "column",
+          gap: 12,
         },
         sizeButton: {
           flex: 1,
           paddingVertical: 12,
-          paddingHorizontal: 16,
+          paddingHorizontal: 10,
           borderRadius: 20,
           backgroundColor: themedColors.cardBackground,
           alignItems: "center",
           justifyContent: "center",
+          minHeight: 44,
+        },
+        sizeButtonColumn: {
+          flex: 0,
+          width: "100%",
         },
         sizeButtonActive: {
           backgroundColor: colors.yellow,
@@ -100,6 +109,7 @@ const PersonalizacionScreen = () => {
           fontSize: 14,
           fontWeight: "600",
           color: themedColors.background,
+          textAlign: "center",
         },
         sizeTextActive: {
           color: colors.black,
@@ -129,9 +139,9 @@ const PersonalizacionScreen = () => {
         {/* Opción: Solo Mayúsculas */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
-            <Text style={styles.optionTitle}>
+            <CustomText style={styles.optionTitle}>
               {transformText("Solo mayúsculas")}
-            </Text>
+            </CustomText>
             <View
               style={[
                 styles.switchContainer,
@@ -152,60 +162,68 @@ const PersonalizacionScreen = () => {
 
         {/* Opción: Tamaño de Letra */}
         <View style={styles.optionContainer}>
-          <Text style={styles.optionTitle}>
+          <CustomText style={styles.optionTitle}>
             {transformText("Tamaño de la letra")}
-          </Text>
-          <View style={styles.sizeContainer}>
+          </CustomText>
+          <View
+            style={[
+              styles.sizeContainer,
+              tamanioLetra === "grande" && styles.sizeContainerColumn,
+            ]}
+          >
             <TouchableOpacity
               style={[
                 styles.sizeButton,
+                tamanioLetra === "grande" && styles.sizeButtonColumn,
                 tamanioLetra === "pequenia" && styles.sizeButtonActive,
               ]}
               onPress={handleSetTamanioPequenia}
               activeOpacity={0.8}
             >
-              <Text
+              <CustomText
                 style={[
                   styles.sizeText,
                   tamanioLetra === "pequenia" && styles.sizeTextActive,
                 ]}
               >
                 {transformText("Pequeña")}
-              </Text>
+              </CustomText>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.sizeButton,
+                tamanioLetra === "grande" && styles.sizeButtonColumn,
                 tamanioLetra === "mediana" && styles.sizeButtonActive,
               ]}
               onPress={handleSetTamanioMediana}
               activeOpacity={0.8}
             >
-              <Text
+              <CustomText
                 style={[
                   styles.sizeText,
                   tamanioLetra === "mediana" && styles.sizeTextActive,
                 ]}
               >
                 {transformText("Mediana")}
-              </Text>
+              </CustomText>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.sizeButton,
+                tamanioLetra === "grande" && styles.sizeButtonColumn,
                 tamanioLetra === "grande" && styles.sizeButtonActive,
               ]}
               onPress={handleSetTamanioGrande}
               activeOpacity={0.8}
             >
-              <Text
+              <CustomText
                 style={[
                   styles.sizeText,
                   tamanioLetra === "grande" && styles.sizeTextActive,
                 ]}
               >
                 {transformText("Grande")}
-              </Text>
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -213,9 +231,9 @@ const PersonalizacionScreen = () => {
         {/* Opción: Tema Oscuro */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
-            <Text style={styles.optionTitle}>
+            <CustomText style={styles.optionTitle}>
               {transformText("Tema oscuro")}
-            </Text>
+            </CustomText>
             <View
               style={[
                 styles.switchContainer,

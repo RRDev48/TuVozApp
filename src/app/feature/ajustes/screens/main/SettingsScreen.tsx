@@ -1,3 +1,4 @@
+import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useUserData } from "@/src/app/feature/Home/(hooks)/useUserData";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -5,14 +6,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useCurrentUser } from "../../(hooks)/useCurrentUser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, tamanioLetra } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
@@ -85,6 +92,9 @@ const SettingsScreen = () => {
         },
         buttonsContainer: {
           paddingHorizontal: 20,
+        },
+        buttonsContainerView: {
+          paddingHorizontal: 20,
           gap: 16,
         },
         button: {
@@ -142,82 +152,36 @@ const SettingsScreen = () => {
             />
           </View>
         </View>
-        <Text style={styles.greetingText}>
+        <CustomText style={styles.greetingText}>
           {userName ? `¡Hola ${userName}!` : "¡Hola!"}
-        </Text>
+        </CustomText>
       </View>
 
       {/* Botones de configuración */}
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.8}
-          onPress={handleNavigateToProfiles}
+      {tamanioLetra === "grande" ? (
+        <ScrollView
+          style={styles.buttonsContainer}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.buttonIcon}>
-            <Ionicons name="person" size={26} color={themedColors.background} />
-          </View>
-          <View style={styles.buttonTextContainer}>
-            <Text style={styles.buttonTitle}>{transformText("Perfiles")}</Text>
-            <Text style={styles.buttonSubtitle}>
-              {transformText("Configura tus perfiles")}
-            </Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={24}
-            color={themedColors.background}
-            style={styles.buttonChevron}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.8}
-          onPress={handleNavigateToPersonalization}
-        >
-          <View style={styles.buttonIcon}>
-            <Ionicons
-              name="color-palette"
-              size={26}
-              color={themedColors.background}
-            />
-          </View>
-          <View style={styles.buttonTextContainer}>
-            <Text style={styles.buttonTitle}>
-              {transformText("Personalizar")}
-            </Text>
-            <Text style={styles.buttonSubtitle}>
-              {transformText("Configura colores y temas")}
-            </Text>
-          </View>
-          <Ionicons
-            name="chevron-forward"
-            size={24}
-            color={themedColors.background}
-            style={styles.buttonChevron}
-          />
-        </TouchableOpacity>
-
-        {/* Botón de Soporte - Solo visible si hay usuario logueado */}
-        {!isLoading && currentUser && (
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, { marginBottom: 5 }]}
             activeOpacity={0.8}
-            onPress={handleNavigateToSupport}
+            onPress={handleNavigateToProfiles}
           >
             <View style={styles.buttonIcon}>
               <Ionicons
-                name="help-circle"
+                name="person"
                 size={26}
                 color={themedColors.background}
               />
             </View>
             <View style={styles.buttonTextContainer}>
-              <Text style={styles.buttonTitle}>{transformText("Soporte")}</Text>
-              <Text style={styles.buttonSubtitle}>
-                {transformText("Ayuda y asistencia")}
-              </Text>
+              <CustomText style={styles.buttonTitle}>
+                {transformText("Perfiles")}
+              </CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                {transformText("Configura tus perfiles")}
+              </CustomText>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -226,29 +190,26 @@ const SettingsScreen = () => {
               style={styles.buttonChevron}
             />
           </TouchableOpacity>
-        )}
 
-        {/* Botón de Editar Emergencia - Solo visible si hay usuario logueado */}
-        {!isLoading && currentUser && (
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, { marginBottom: 5 }]}
             activeOpacity={0.8}
-            onPress={handleNavigateToEmergency}
+            onPress={handleNavigateToPersonalization}
           >
             <View style={styles.buttonIcon}>
               <Ionicons
-                name="alert-circle"
+                name="color-palette"
                 size={26}
                 color={themedColors.background}
               />
             </View>
             <View style={styles.buttonTextContainer}>
-              <Text style={styles.buttonTitle}>
-                {transformText("Editar Emergencia")}
-              </Text>
-              <Text style={styles.buttonSubtitle}>
-                {transformText("Configura tu informacion de emergencia")}
-              </Text>
+              <CustomText style={styles.buttonTitle}>
+                {transformText("Personalizar")}
+              </CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                {transformText("Configura colores y temas")}
+              </CustomText>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -257,8 +218,186 @@ const SettingsScreen = () => {
               style={styles.buttonChevron}
             />
           </TouchableOpacity>
-        )}
-      </View>
+
+          {!isLoading && currentUser && (
+            <TouchableOpacity
+              style={[styles.button, { marginBottom: 5 }]}
+              activeOpacity={0.8}
+              onPress={handleNavigateToSupport}
+            >
+              <View style={styles.buttonIcon}>
+                <Ionicons
+                  name="help-circle"
+                  size={26}
+                  color={themedColors.background}
+                />
+              </View>
+              <View style={styles.buttonTextContainer}>
+                <CustomText style={styles.buttonTitle}>
+                  {transformText("Soporte")}
+                </CustomText>
+                <CustomText style={styles.buttonSubtitle}>
+                  {transformText("Ayuda y asistencia")}
+                </CustomText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={themedColors.background}
+                style={styles.buttonChevron}
+              />
+            </TouchableOpacity>
+          )}
+
+          {!isLoading && currentUser && (
+            <TouchableOpacity
+              style={[styles.button, { marginBottom: 10 }]}
+              activeOpacity={0.8}
+              onPress={handleNavigateToEmergency}
+            >
+              <View style={styles.buttonIcon}>
+                <Ionicons
+                  name="alert-circle"
+                  size={26}
+                  color={themedColors.background}
+                />
+              </View>
+              <View style={styles.buttonTextContainer}>
+                <CustomText style={styles.buttonTitle}>
+                  {transformText("Editar Emergencia")}
+                </CustomText>
+                <CustomText style={styles.buttonSubtitle}>
+                  {transformText("Configura tu informacion de emergencia")}
+                </CustomText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={themedColors.background}
+                style={styles.buttonChevron}
+              />
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      ) : (
+        <View style={styles.buttonsContainerView}>
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={handleNavigateToProfiles}
+          >
+            <View style={styles.buttonIcon}>
+              <Ionicons
+                name="person"
+                size={26}
+                color={themedColors.background}
+              />
+            </View>
+            <View style={styles.buttonTextContainer}>
+              <CustomText style={styles.buttonTitle}>
+                {transformText("Perfiles")}
+              </CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                {transformText("Configura tus perfiles")}
+              </CustomText>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={themedColors.background}
+              style={styles.buttonChevron}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={handleNavigateToPersonalization}
+          >
+            <View style={styles.buttonIcon}>
+              <Ionicons
+                name="color-palette"
+                size={26}
+                color={themedColors.background}
+              />
+            </View>
+            <View style={styles.buttonTextContainer}>
+              <CustomText style={styles.buttonTitle}>
+                {transformText("Personalizar")}
+              </CustomText>
+              <CustomText style={styles.buttonSubtitle}>
+                {transformText("Configura colores y temas")}
+              </CustomText>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={themedColors.background}
+              style={styles.buttonChevron}
+            />
+          </TouchableOpacity>
+
+          {!isLoading && currentUser && (
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={handleNavigateToSupport}
+            >
+              <View style={styles.buttonIcon}>
+                <Ionicons
+                  name="help-circle"
+                  size={26}
+                  color={themedColors.background}
+                />
+              </View>
+              <View style={styles.buttonTextContainer}>
+                <CustomText style={styles.buttonTitle}>
+                  {transformText("Soporte")}
+                </CustomText>
+                <CustomText style={styles.buttonSubtitle}>
+                  {transformText("Ayuda y asistencia")}
+                </CustomText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={themedColors.background}
+                style={styles.buttonChevron}
+              />
+            </TouchableOpacity>
+          )}
+
+          {!isLoading && currentUser && (
+            <TouchableOpacity
+              style={styles.button}
+              activeOpacity={0.8}
+              onPress={handleNavigateToEmergency}
+            >
+              <View style={styles.buttonIcon}>
+                <Ionicons
+                  name="alert-circle"
+                  size={26}
+                  color={themedColors.background}
+                />
+              </View>
+              <View style={styles.buttonTextContainer}>
+                <CustomText style={styles.buttonTitle}>
+                  {transformText("Editar Emergencia")}
+                </CustomText>
+                <CustomText style={styles.buttonSubtitle}>
+                  {transformText("Configura tu informacion de emergencia")}
+                </CustomText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={themedColors.background}
+                style={styles.buttonChevron}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </View>
   );
 };
