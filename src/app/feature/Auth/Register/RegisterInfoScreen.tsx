@@ -5,10 +5,12 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useRegisterInfo } from "../(hooks)/useRegisterInfo";
@@ -50,77 +52,79 @@ const RegisterInfoScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        {/* Header con botón atrás y logo */}
+        <View style={styles.header}>
+          <BackButton onPress={() => navigation.goBack()} />
 
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
+          <View style={styles.headerLogoContainer}>
+            <AppLogo width={250} height={250} />
+          </View>
+
+          <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.placeholder} />
-      </View>
+        {/* Título */}
+        <Text style={styles.title}>Comencemos a conocernos{"\n"}un poco!!</Text>
 
-      {/* Título */}
-      <Text style={styles.title}>Comencemos a conocernos{"\n"}un poco!!</Text>
+        {/* Formulario */}
+        <View style={styles.form}>
+          {/* Campo Nombre */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Como quieres que te llamemos?</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Nombre*"
+                placeholderTextColor={colors.white}
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
+          </View>
 
-      {/* Formulario */}
-      <View style={styles.form}>
-        {/* Campo Nombre */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Como quieres que te llamemos?</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre*"
-              placeholderTextColor={colors.white}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              autoComplete="name"
-            />
+          {/* Campo Edad */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Cuantos años tienes?</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Edad*"
+                placeholderTextColor={colors.white}
+                value={age}
+                onChangeText={setAge}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+            </View>
           </View>
         </View>
 
-        {/* Campo Edad */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Cuantos años tienes?</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Edad*"
-              placeholderTextColor={colors.white}
-              value={age}
-              onChangeText={setAge}
-              keyboardType="numeric"
-              maxLength={3}
-            />
-          </View>
-        </View>
+        {/* Botón Continuar */}
+        <TouchableOpacity
+          style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
+          onPress={handleContinue}
+          activeOpacity={0.8}
+          disabled={!isFormValid}
+        >
+          <Text style={styles.continueButtonText}>Continuar</Text>
+        </TouchableOpacity>
+
+        {/* Link Política de Privacidad */}
+        <TouchableOpacity
+          onPress={handlePrivacyPolicy}
+          style={styles.privacyContainer}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.privacyText}>
+            Política de Privacidad y Seguridad
+          </Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Botón Continuar */}
-      <TouchableOpacity
-        style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
-        onPress={handleContinue}
-        activeOpacity={0.8}
-        disabled={!isFormValid}
-      >
-        <Text style={styles.continueButtonText}>Continuar</Text>
-      </TouchableOpacity>
-
-      {/* Link Política de Privacidad */}
-      <TouchableOpacity
-        onPress={handlePrivacyPolicy}
-        style={styles.privacyContainer}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.privacyText}>
-          Política de Privacidad y Seguridad
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -152,6 +156,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
+    marginTop: 30,
   },
   placeholder: {
     width: 80,

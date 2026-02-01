@@ -6,10 +6,12 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useEmailValidation } from "../(hooks)/useEmailValidation";
@@ -60,109 +62,111 @@ const EmailVerificationScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        {/* Header con botón atrás y logo */}
+        <View style={styles.header}>
+          <BackButton onPress={() => navigation.goBack()} />
 
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* Título */}
-      <Text style={styles.title}>
-        Para continuar, necesitamos{"\n"}un correo electrónico válido.
-      </Text>
-
-      {/* Formulario */}
-      <View style={styles.form}>
-        {/* Campo Email */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Ingresa tu Email*</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              emailError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="micorreo64@gmail.com"
-              placeholderTextColor={colors.white}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={colors.white}
-              style={styles.inputIcon}
-            />
+          <View style={styles.headerLogoContainer}>
+            <AppLogo width={250} height={250} />
           </View>
-          {emailError ? (
-            <Text style={styles.errorText}>{emailError}</Text>
-          ) : null}
+
+          <View style={styles.placeholder} />
         </View>
 
-        {/* Campo Confirmar Email */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Repite tu Email*</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              confirmEmailError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="micorreo64@gmail.com"
-              placeholderTextColor={colors.white}
-              value={confirmEmail}
-              onChangeText={setConfirmEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={colors.white}
-              style={styles.inputIcon}
-            />
-          </View>
-          {confirmEmailError ? (
-            <Text style={styles.errorText}>{confirmEmailError}</Text>
-          ) : null}
-        </View>
-      </View>
-
-      {/* Botón Continuar */}
-      <TouchableOpacity
-        style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
-        onPress={handleContinue}
-        activeOpacity={0.8}
-        disabled={!isFormValid}
-      >
-        <Text style={styles.continueButtonText}>Continuar</Text>
-      </TouchableOpacity>
-
-      {/* Link Política de Privacidad */}
-      <TouchableOpacity
-        onPress={handlePrivacyPolicy}
-        style={styles.privacyContainer}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.privacyText}>
-          Política de Privacidad y Seguridad
+        {/* Título */}
+        <Text style={styles.title}>
+          Para continuar, necesitamos{"\n"}un correo electrónico válido.
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        {/* Formulario */}
+        <View style={styles.form}>
+          {/* Campo Email */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Ingresa tu Email*</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                emailError ? styles.inputContainerError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="micorreo64@gmail.com"
+                placeholderTextColor={colors.white}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+              <Ionicons
+                name="mail-outline"
+                size={20}
+                color={colors.white}
+                style={styles.inputIcon}
+              />
+            </View>
+            {emailError ? (
+              <Text style={styles.errorText}>{emailError}</Text>
+            ) : null}
+          </View>
+
+          {/* Campo Confirmar Email */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Repite tu Email*</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                confirmEmailError ? styles.inputContainerError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="micorreo64@gmail.com"
+                placeholderTextColor={colors.white}
+                value={confirmEmail}
+                onChangeText={setConfirmEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+              <Ionicons
+                name="mail-outline"
+                size={20}
+                color={colors.white}
+                style={styles.inputIcon}
+              />
+            </View>
+            {confirmEmailError ? (
+              <Text style={styles.errorText}>{confirmEmailError}</Text>
+            ) : null}
+          </View>
+        </View>
+
+        {/* Botón Continuar */}
+        <TouchableOpacity
+          style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
+          onPress={handleContinue}
+          activeOpacity={0.8}
+          disabled={!isFormValid}
+        >
+          <Text style={styles.continueButtonText}>Continuar</Text>
+        </TouchableOpacity>
+
+        {/* Link Política de Privacidad */}
+        <TouchableOpacity
+          onPress={handlePrivacyPolicy}
+          style={styles.privacyContainer}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.privacyText}>
+            Política de Privacidad y Seguridad
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -180,12 +184,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 60,
   },
-
   headerLogoContainer: {
     position: "absolute",
     left: 0,
     right: 0,
     alignItems: "center",
+    marginTop: 30,
   },
   placeholder: {
     width: 80,
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
   },
   inputContainerError: {
     borderWidth: 2,
-    borderColor: "#FF3B30",
+    borderColor: colors.red,
   },
   input: {
     flex: 1,
@@ -234,12 +238,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: "#FF3B30",
+    color: colors.red,
     marginTop: 4,
     marginLeft: 10,
   },
   continueButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",

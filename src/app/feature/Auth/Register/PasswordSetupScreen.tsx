@@ -7,10 +7,12 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
   Alert,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { usePasswordSetup } from "../(hooks)/usePasswordSetup";
@@ -91,115 +93,117 @@ const PasswordSetupScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        {/* Header con botón atrás y logo */}
+        <View style={styles.header}>
+          <BackButton onPress={() => navigation.goBack()} />
 
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* Título */}
-      <Text style={styles.title}>
-        Para continuar, necesitamos{"\n"}una contraseña segura.
-      </Text>
-
-      {/* Formulario */}
-      <View style={styles.form}>
-        {/* Campo Contraseña */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Ingresa tu Contraseña*</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              passwordError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Mínimo 8 caracteres"
-              placeholderTextColor={colors.white}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              onPress={togglePasswordVisibility}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name={showPassword ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color={colors.white}
-              />
-            </TouchableOpacity>
+          <View style={styles.headerLogoContainer}>
+            <AppLogo width={250} height={250} />
           </View>
-          {passwordError ? (
-            <Text style={styles.errorText}>{passwordError}</Text>
-          ) : null}
+
+          <View style={styles.placeholder} />
         </View>
 
-        {/* Campo Confirmar Contraseña */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Repite tu Contraseña*</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              confirmPasswordError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Confirma tu contraseña"
-              placeholderTextColor={colors.white}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry={!showConfirmPassword}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              onPress={toggleConfirmPasswordVisibility}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
-                size={20}
-                color={colors.white}
-              />
-            </TouchableOpacity>
-          </View>
-          {confirmPasswordError ? (
-            <Text style={styles.errorText}>{confirmPasswordError}</Text>
-          ) : null}
-        </View>
-      </View>
-
-      {/* Botón Continuar */}
-      <TouchableOpacity
-        style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
-        onPress={handleContinue}
-        activeOpacity={0.8}
-        disabled={!isFormValid}
-      >
-        <Text style={styles.continueButtonText}>Continuar</Text>
-      </TouchableOpacity>
-
-      {/* Link Política de Privacidad */}
-      <TouchableOpacity
-        onPress={handlePrivacyPolicy}
-        style={styles.privacyContainer}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.privacyText}>
-          Política de Privacidad y Seguridad
+        {/* Título */}
+        <Text style={styles.title}>
+          Para continuar, necesitamos{"\n"}una contraseña segura.
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        {/* Formulario */}
+        <View style={styles.form}>
+          {/* Campo Contraseña */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Ingresa tu Contraseña*</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                passwordError ? styles.inputContainerError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="Mínimo 8 caracteres"
+                placeholderTextColor={colors.white}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={togglePasswordVisibility}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={20}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
+          </View>
+
+          {/* Campo Confirmar Contraseña */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Repite tu Contraseña*</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                confirmPasswordError ? styles.inputContainerError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="Confirma tu contraseña"
+                placeholderTextColor={colors.white}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={toggleConfirmPasswordVisibility}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
+                  size={20}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+            {confirmPasswordError ? (
+              <Text style={styles.errorText}>{confirmPasswordError}</Text>
+            ) : null}
+          </View>
+        </View>
+
+        {/* Botón Continuar */}
+        <TouchableOpacity
+          style={[styles.continueButton, !isFormValid && styles.buttonDisabled]}
+          onPress={handleContinue}
+          activeOpacity={0.8}
+          disabled={!isFormValid}
+        >
+          <Text style={styles.continueButtonText}>Continuar</Text>
+        </TouchableOpacity>
+
+        {/* Link Política de Privacidad */}
+        <TouchableOpacity
+          onPress={handlePrivacyPolicy}
+          style={styles.privacyContainer}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.privacyText}>
+            Política de Privacidad y Seguridad
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -231,6 +235,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
+    marginTop: 30,
   },
   placeholder: {
     width: 80,
@@ -265,7 +270,7 @@ const styles = StyleSheet.create({
   },
   inputContainerError: {
     borderWidth: 2,
-    borderColor: "#FF3B30",
+    borderColor: colors.red,
   },
   input: {
     flex: 1,
@@ -275,12 +280,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: "#FF3B30",
+    color: colors.red,
     marginTop: 4,
     marginLeft: 10,
   },
   continueButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",

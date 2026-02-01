@@ -5,10 +5,12 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { authService } from "../(services)/authService";
@@ -74,129 +76,131 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        {/* Header con botón atrás y logo */}
+        <View style={styles.header}>
+          <BackButton onPress={() => navigation.goBack()} />
 
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* Título */}
-      <Text style={styles.title}>
-        Completa tus datos para{"\n"}iniciar sesión
-      </Text>
-
-      {/* Formulario */}
-      <View style={styles.form}>
-        {/* Campo Email */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Como es tu correo electronico?</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              emailError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Email*"
-              placeholderTextColor={colors.white}
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                setEmailError("");
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={colors.white}
-              style={styles.inputIcon}
-            />
+          <View style={styles.headerLogoContainer}>
+            <AppLogo width={250} height={250} />
           </View>
-          {emailError ? (
-            <Text style={styles.errorText}>{emailError}</Text>
-          ) : null}
+
+          <View style={styles.placeholder} />
         </View>
 
-        {/* Campo Contraseña */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Y tu contraseña?</Text>
-          <View
-            style={[
-              styles.inputContainer,
-              passwordError ? styles.inputContainerError : null,
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña*"
-              placeholderTextColor={colors.white}
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                setPasswordError("");
-              }}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoComplete="password"
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.inputIconButton}
+        {/* Título */}
+        <Text style={styles.title}>
+          Completa tus datos para{"\n"}iniciar sesión
+        </Text>
+
+        {/* Formulario */}
+        <View style={styles.form}>
+          {/* Campo Email */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Como es tu correo electronico?</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                emailError ? styles.inputContainerError : null,
+              ]}
             >
+              <TextInput
+                style={styles.input}
+                placeholder="Email*"
+                placeholderTextColor={colors.white}
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  setEmailError("");
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
               <Ionicons
-                name={showPassword ? "eye-outline" : "eye-off-outline"}
+                name="mail-outline"
                 size={20}
                 color={colors.white}
+                style={styles.inputIcon}
               />
-            </TouchableOpacity>
+            </View>
+            {emailError ? (
+              <Text style={styles.errorText}>{emailError}</Text>
+            ) : null}
           </View>
-          {passwordError ? (
-            <Text style={styles.errorText}>{passwordError}</Text>
-          ) : null}
+
+          {/* Campo Contraseña */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Y tu contraseña?</Text>
+            <View
+              style={[
+                styles.inputContainer,
+                passwordError ? styles.inputContainerError : null,
+              ]}
+            >
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña*"
+                placeholderTextColor={colors.white}
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setPasswordError("");
+                }}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.inputIconButton}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
+                  size={20}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
+          </View>
+
+          {/* Link olvidaste contraseña */}
+          <TouchableOpacity
+            onPress={handleForgotPassword}
+            style={styles.forgotPasswordContainer}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.forgotPasswordText}>
+              ¿Olvidaste tu contraseña?
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Link olvidaste contraseña */}
+        {/* Botón Continuar */}
         <TouchableOpacity
-          onPress={handleForgotPassword}
-          style={styles.forgotPasswordContainer}
-          activeOpacity={0.7}
+          style={[styles.continueButton, isLoading && styles.buttonDisabled]}
+          onPress={handleContinue}
+          activeOpacity={0.8}
+          disabled={isLoading}
         >
-          <Text style={styles.forgotPasswordText}>
-            ¿Olvidaste tu contraseña?
+          <Text style={styles.continueButtonText}>
+            {isLoading ? "Iniciando sesión..." : "Continuar"}
           </Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Botón Continuar */}
-      <TouchableOpacity
-        style={[styles.continueButton, isLoading && styles.buttonDisabled]}
-        onPress={handleContinue}
-        activeOpacity={0.8}
-        disabled={isLoading}
-      >
-        <Text style={styles.continueButtonText}>
-          {isLoading ? "Iniciando sesión..." : "Continuar"}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Ayuda */}
-      <View style={styles.helpContainer}>
-        <Text style={styles.helpText}>¿Problemas para iniciar sesion? </Text>
-        <TouchableOpacity onPress={handleHelp} activeOpacity={0.7}>
-          <Text style={styles.helpLink}>Ayuda</Text>
-        </TouchableOpacity>
+        {/* Ayuda */}
+        <View style={styles.helpContainer}>
+          <Text style={styles.helpText}>¿Problemas para iniciar sesion? </Text>
+          <TouchableOpacity onPress={handleHelp} activeOpacity={0.7}>
+            <Text style={styles.helpLink}>Ayuda</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -228,6 +232,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
+    marginTop: 30,
   },
   placeholder: {
     width: 80,
