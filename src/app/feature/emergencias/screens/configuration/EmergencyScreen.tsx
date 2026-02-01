@@ -9,12 +9,12 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { useEmergencyScreenStyles } from "../../(hooks)/useEmergencyScreensStyles";
 import { parsePhoneNumber } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -31,7 +31,8 @@ type EmergencyScreenRouteProp = RouteProp<RootStackParamsList, "Emergencias">;
 const EmergencyScreen = () => {
   const navigation = useNavigation<EmergencyScreenNavigationProp>();
   const route = useRoute<EmergencyScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
+  const styles = useEmergencyScreenStyles();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading, updateField, clearProfile } =
     useEmergencyProfile();
@@ -216,58 +217,6 @@ const EmergencyScreen = () => {
   const handleCancelModal = () => {
     setShowCancelModal(false);
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    scrollContent: {
-      padding: 20,
-      paddingBottom: 120,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    buttonsContainer: {
-      position: "absolute",
-      bottom: 40,
-      left: 20,
-      right: 20,
-      flexDirection: "row",
-      gap: 12,
-    },
-    cancelButton: {
-      flex: 1,
-      backgroundColor: "transparent",
-      borderWidth: 2,
-      borderColor: colors.red,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    cancelButtonText: {
-      color: colors.red,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    nextButton: {
-      flex: 1,
-      backgroundColor: colors.green,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    nextButtonText: {
-      color: colors.black,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-  });
 
   if (loading) {
     return (

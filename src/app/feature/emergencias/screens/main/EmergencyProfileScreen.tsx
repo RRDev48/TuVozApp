@@ -4,15 +4,10 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { useEmergencyActions } from "../../(hooks)/useEmergencyActions";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { useEmergencyProfileScreenStyles } from "../../(hooks)/useEmergencyScreensStyles";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 
@@ -23,7 +18,8 @@ type EmergencyProfileScreenNavigationProp = StackNavigationProp<
 
 const EmergencyProfileScreen = () => {
   const navigation = useNavigation<EmergencyProfileScreenNavigationProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
+  const styles = useEmergencyProfileScreenStyles();
   const themedColors = getThemedColors();
   const { profile, userFullName, loading } = useEmergencyProfile();
   const { sendingAlert, handleEmergencyCall, sendAlert } =
@@ -34,88 +30,6 @@ const EmergencyProfileScreen = () => {
       sendAlert(profile, userFullName || undefined);
     }
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    scrollContent: {
-      padding: 20,
-      paddingBottom: 150,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    section: {
-      backgroundColor: themedColors.primary,
-      borderRadius: 16,
-      padding: 20,
-      marginBottom: 5,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-      marginBottom: 12,
-      textAlign: "center",
-    },
-    infoRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 8,
-    },
-    infoLabel: {
-      fontSize: 16,
-      fontWeight: "medium",
-      color: themedColors.secondary,
-      marginLeft: 8,
-    },
-    infoValue: {
-      fontSize: 16,
-      color: themedColors.secondary,
-      marginLeft: 8,
-      flex: 1,
-      textAlign: "right",
-    },
-    buttonsContainer: {
-      position: "absolute",
-      bottom: 25,
-      left: 20,
-      right: 20,
-      gap: 12,
-    },
-    emergencyButton: {
-      backgroundColor: colors.red,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "row",
-      gap: 8,
-    },
-    emergencyButtonText: {
-      color: colors.white,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    alertButton: {
-      backgroundColor: colors.blue,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-      flexDirection: "row",
-      gap: 8,
-    },
-    alertButtonText: {
-      color: colors.white,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-  });
 
   if (loading) {
     return (

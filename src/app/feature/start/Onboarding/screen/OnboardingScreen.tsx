@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import AppLogo from "../../../assets/image/AppLogo.svg";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
 
 type OnboardingScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

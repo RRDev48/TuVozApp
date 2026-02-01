@@ -115,22 +115,6 @@ type RootStackParamsList = {
   ProfilesConfigScreen: undefined;
   SupportScreen: undefined;
   NewSupportEntryScreen: undefined;
-
-  // Subrutas de "Exprésate"
-  Acciones: undefined;
-  Objetos: undefined;
-  Preguntas: undefined;
-  Animales: undefined;
-
-  // Subrutas de "Tarjetas"
-  PersonalizaTusTarjetas: undefined;
-  CreaNuevasTarjetas: undefined;
-
-  // Subrutas de "Frases"
-  MisDatos: undefined;
-  ComoMeSiento: undefined;
-  Ubicaciones: undefined;
-  YoQuiero: undefined;
 };
 
 export default RootStackParamsList;

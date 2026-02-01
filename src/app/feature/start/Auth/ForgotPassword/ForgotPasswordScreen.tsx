@@ -14,8 +14,8 @@ import {
   View,
 } from "react-native";
 import { authService } from "../(services)/authService";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 import SuccessAlert from "./components/SuccessAlert";
 
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<
@@ -28,10 +28,6 @@ const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
 
   const handleSend = async () => {
     if (!email.trim()) {

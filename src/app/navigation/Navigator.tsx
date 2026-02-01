@@ -5,14 +5,6 @@ import SettingsScreen from "../feature/ajustes/screens/main/SettingsScreen";
 import PersonalizacionScreen from "../feature/ajustes/screens/personalization/PersonalizacionScreen";
 import NewSupportEntryScreen from "../feature/ajustes/screens/support/NewSupportEntryScreen";
 import SupportScreen from "../feature/ajustes/screens/support/SupportScreen";
-import ForgotPasswordScreen from "../feature/Auth/ForgotPassword/ForgotPasswordScreen";
-import LoginScreen from "../feature/Auth/Login/LoginScreen";
-import CodeVerificationScreen from "../feature/Auth/Register/CodeVerificationScreen";
-import EmailVerificationScreen from "../feature/Auth/Register/EmailVerificationScreen";
-import PasswordSetupScreen from "../feature/Auth/Register/PasswordSetupScreen";
-import RegisterInfoScreen from "../feature/Auth/Register/RegisterInfoScreen";
-import RoleSelectionScreen from "../feature/Auth/Register/RoleSelectionScreen";
-import UserTypeScreen from "../feature/Auth/Register/UserTypeScreen";
 import AddAddressScreen from "../feature/emergencias/screens/address/AddAddressScreen";
 import AddressScreen from "../feature/emergencias/screens/address/AddressScreen";
 import EditAddressScreen from "../feature/emergencias/screens/address/EditAddressScreen";
@@ -32,9 +24,17 @@ import NotesScreen from "../feature/emergencias/screens/notes/NotesScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
-import OnboardingScreen from "../feature/Onboarding/screen/OnboardingScreen";
 import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
-import SplashScreen from "../feature/Splash/screen/SplashScreen";
+import ForgotPasswordScreen from "../feature/start/Auth/ForgotPassword/ForgotPasswordScreen";
+import LoginScreen from "../feature/start/Auth/Login/LoginScreen";
+import CodeVerificationScreen from "../feature/start/Auth/Register/CodeVerificationScreen";
+import EmailVerificationScreen from "../feature/start/Auth/Register/EmailVerificationScreen";
+import PasswordSetupScreen from "../feature/start/Auth/Register/PasswordSetupScreen";
+import RegisterInfoScreen from "../feature/start/Auth/Register/RegisterInfoScreen";
+import RoleSelectionScreen from "../feature/start/Auth/Register/RoleSelectionScreen";
+import UserTypeScreen from "../feature/start/Auth/Register/UserTypeScreen";
+import OnboardingScreen from "../feature/start/Onboarding/screen/OnboardingScreen";
+import SplashScreen from "../feature/start/Splash/screen/SplashScreen";
 import CardsScreen from "../feature/tarjetas/screens/TarjetasScreen";
 import RootStackParamsList from "./navigation.types";
 
@@ -95,18 +95,6 @@ const expresateScreens = [
   { name: "Animales", component: SettingsScreen },
 ];
 
-const tarjetasScreens = [
-  { name: "PersonalizaTusTarjetas", component: SettingsScreen },
-  { name: "CreaNuevasTarjetas", component: SettingsScreen },
-];
-
-const frasesScreens = [
-  { name: "MisDatos", component: SettingsScreen },
-  { name: "ComoMeSiento", component: SettingsScreen },
-  { name: "Ubicaciones", component: SettingsScreen },
-  { name: "YoQuiero", component: SettingsScreen },
-];
-
 // Navegador principal de la app.
 const StackNavigator = () => {
   return (
@@ -153,22 +141,6 @@ const StackNavigator = () => {
       ))}
 
       {expresateScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
-
-      {tarjetasScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
-
-      {frasesScreens.map((screen) => (
         <Stack.Screen
           key={screen.name}
           name={screen.name as keyof RootStackParamsList}

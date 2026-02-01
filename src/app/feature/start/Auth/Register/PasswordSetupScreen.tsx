@@ -17,8 +17,8 @@ import {
 } from "react-native";
 import { usePasswordSetup } from "../(hooks)/usePasswordSetup";
 import { authService } from "../(services)/authService";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 
 type PasswordSetupScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

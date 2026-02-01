@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { ROLE_OPTIONS } from "../(constants)/roles";
 import { useRoleSelection } from "../(hooks)/useRoleSelection";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 
 type RoleSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

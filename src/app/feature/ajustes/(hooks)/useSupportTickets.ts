@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supportService, SupportTicket } from "../(services)/supportService";
 
 export const useSupportTickets = () => {
@@ -13,6 +13,10 @@ export const useSupportTickets = () => {
     }
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   return {
     tickets,

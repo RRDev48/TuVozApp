@@ -14,8 +14,8 @@ import {
   View,
 } from "react-native";
 import { authService } from "../(services)/authService";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

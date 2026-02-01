@@ -36,7 +36,7 @@ const SuccessAlert = ({
       <View style={styles.container}>
         {/* GIF animado de llave */}
         <Image
-          source={require("../../../../assets/gif/llave.gif")}
+          source={require("../../../../../assets/gif/llave.gif")}
           style={styles.gif}
           resizeMode="contain"
         />

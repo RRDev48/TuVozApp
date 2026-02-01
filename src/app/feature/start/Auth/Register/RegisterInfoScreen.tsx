@@ -14,8 +14,8 @@ import {
   View,
 } from "react-native";
 import { useRegisterInfo } from "../(hooks)/useRegisterInfo";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 
 type RegisterInfoScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

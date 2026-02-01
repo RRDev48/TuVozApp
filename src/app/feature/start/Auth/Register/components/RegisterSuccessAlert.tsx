@@ -32,7 +32,7 @@ const RegisterSuccessAlert = ({
       <View style={styles.container}>
         {/* GIF animado de verificado */}
         <Image
-          source={require("../../../../assets/gif/verificado.gif")}
+          source={require("../../../../../assets/gif/verificado.gif")}
           style={styles.gif}
           resizeMode="contain"
         />

@@ -3,7 +3,8 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
+import { useAddressScreenStyles } from "../../(hooks)/useAddressScreenStyles";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
 import AddButton from "../../components/AddButton";
@@ -22,8 +23,8 @@ type AddressScreenNavigationProp = StackNavigationProp<
 const AddressScreen = () => {
   const navigation = useNavigation<AddressScreenNavigationProp>();
   const route = useRoute<AddressScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
-  const themedColors = getThemedColors();
+  const { transformText } = usePersonalization();
+  const styles = useAddressScreenStyles();
 
   const [addresses, setAddresses] = useState<string[]>(
     route.params?.currentAddress
@@ -61,26 +62,6 @@ const AddressScreen = () => {
     }
     navigation.goBack();
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    contentContainer: {
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 120,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.text,
-      textAlign: "center",
-      marginBottom: 30,
-    },
-  });
 
   return (
     <View style={styles.container}>

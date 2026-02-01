@@ -7,12 +7,12 @@ import { useState } from "react";
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useEmergencyContactScreenStyles } from "../../(hooks)/useEmergencyScreensStyles";
 import { COUNTRY_CODES } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -31,7 +31,8 @@ type EmergencyContactScreenNavigationProp = StackNavigationProp<
 const EmergencyContactScreen = () => {
   const navigation = useNavigation<EmergencyContactScreenNavigationProp>();
   const route = useRoute<EmergencyContactScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
+  const styles = useEmergencyContactScreenStyles();
   const themedColors = getThemedColors();
 
   const [contactName, setContactName] = useState(
@@ -80,110 +81,6 @@ const EmergencyContactScreen = () => {
     const country = COUNTRY_CODES.find((c) => c.code === selectedCountryCode);
     return country || COUNTRY_CODES[2]; // Default to México
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    contentContainer: {
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 120,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.text,
-      marginBottom: 20,
-      textAlign: "center",
-    },
-    firstSection: {
-      marginBottom: 30,
-    },
-    phoneContainer: {
-      flexDirection: "row",
-      gap: 10,
-      marginBottom: 30,
-    },
-    countryCodeButton: {
-      backgroundColor: themedColors.primary,
-      borderRadius: 12,
-      paddingVertical: 16,
-      paddingHorizontal: 15,
-      flexDirection: "row",
-      alignItems: "center",
-      minWidth: 120,
-    },
-    flagText: {
-      fontSize: 24,
-      marginRight: 8,
-    },
-    countryCodeText: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-      marginRight: 4,
-    },
-    phoneInput: {
-      flex: 1,
-      backgroundColor: themedColors.primary,
-      borderRadius: 12,
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      fontSize: 16,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-    },
-    countryCodeList: {
-      backgroundColor: themedColors.primary,
-      borderRadius: 16,
-      paddingVertical: 8,
-      marginBottom: 20,
-      maxHeight: 300,
-    },
-    countryCodeItem: {
-      paddingVertical: 12,
-      paddingHorizontal: 20,
-      flexDirection: "row",
-      alignItems: "center",
-      borderBottomWidth: 1,
-      borderBottomColor: themedColors.secondary,
-    },
-    countryCodeItemLast: {
-      borderBottomWidth: 0,
-    },
-    countryFlag: {
-      fontSize: 24,
-      marginRight: 12,
-    },
-    countryInfo: {
-      flex: 1,
-    },
-    countryName: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-      marginBottom: 2,
-    },
-    countryCode: {
-      fontSize: 14,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-    },
-    overlay: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "transparent",
-    },
-    dropdownWrapper: {
-      marginBottom: 20,
-    },
-  });
 
   return (
     <View style={styles.container}>

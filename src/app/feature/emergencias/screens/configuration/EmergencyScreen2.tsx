@@ -9,12 +9,12 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
+import { useEmergencyScreen2Styles } from "../../(hooks)/useEmergencyScreensStyles";
 import { parsePhoneNumber } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -29,7 +29,8 @@ type EmergencyScreen2NavigationProp = StackNavigationProp<
 
 const EmergencyScreen2 = () => {
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
+  const styles = useEmergencyScreen2Styles();
   const themedColors = getThemedColors();
   const { profile, loading, updateField, clearProfile } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -166,58 +167,6 @@ const EmergencyScreen2 = () => {
   const handleCancelModal = () => {
     setShowCancelModal(false);
   };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    scrollContent: {
-      padding: 20,
-      paddingBottom: 120,
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    buttonsContainer: {
-      position: "absolute",
-      bottom: 40,
-      left: 20,
-      right: 20,
-      flexDirection: "row",
-      gap: 12,
-    },
-    cancelButton: {
-      flex: 1,
-      backgroundColor: "transparent",
-      borderWidth: 2,
-      borderColor: colors.red,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    cancelButtonText: {
-      color: colors.red,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    saveButton: {
-      flex: 1,
-      backgroundColor: colors.green,
-      borderRadius: 16,
-      paddingVertical: 16,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    saveButtonText: {
-      color: colors.black,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-  });
 
   if (loading) {
     return (

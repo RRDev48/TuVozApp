@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { authService } from "../../Auth/(services)/authService";
+import { authService } from "../../start/Auth/(services)/authService";
 
 export const useCurrentUser = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);

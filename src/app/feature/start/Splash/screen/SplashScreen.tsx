@@ -1,11 +1,11 @@
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
-import TuvozLogo from "../../../assets/image/tuvoz.svg";
-import { colors } from "../../../design-system/themes/globalColors-theme";
+import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
+import TuvozLogo from "../../../../assets/image/tuvoz.svg";
 
 type SplashScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,

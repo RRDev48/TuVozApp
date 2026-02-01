@@ -4,8 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 
 type UserTypeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -56,7 +56,7 @@ const UserTypeScreen = () => {
           >
             <View style={styles.iconContainer}>
               <Image
-                source={require("../../../assets/icon/parami.png")}
+                source={require("../../../../assets/icon/parami.png")}
                 style={styles.icon}
                 resizeMode="contain"
               />
@@ -77,7 +77,7 @@ const UserTypeScreen = () => {
           >
             <View style={styles.iconContainer}>
               <Image
-                source={require("../../../assets/icon/paraotro.png")}
+                source={require("../../../../assets/icon/paraotro.png")}
                 style={styles.icon}
                 resizeMode="contain"
               />

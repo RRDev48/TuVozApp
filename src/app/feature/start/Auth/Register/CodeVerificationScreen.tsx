@@ -16,8 +16,8 @@ import {
 } from "react-native";
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
 import { useOTPVerification } from "../(hooks)/useOTPVerification";
-import AppLogo from "../../../assets/image/AppLogo.svg";
-import BackButton from "../../components/BackButton";
+import AppLogo from "../../../../assets/image/AppLogo.svg";
+import BackButton from "../../../components/BackButton";
 import RegisterSuccessAlert from "./components/RegisterSuccessAlert";
 
 type CodeVerificationScreenNavigationProp = StackNavigationProp<
@@ -82,7 +82,7 @@ const CodeVerificationScreen = () => {
         {/* Icono de correo */}
         <View style={styles.iconContainer}>
           <Image
-            source={require("../../../assets/gif/llave.gif")}
+            source={require("../../../../assets/gif/llave.gif")}
             style={styles.mailIcon}
             resizeMode="contain"
           />
