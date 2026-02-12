@@ -2,13 +2,13 @@ import { supabase } from "@/src/lib/supabaseClient";
 
 export interface EmergencyProfile {
   id?: string;
-  user_id: string;
+  profile_id: string;
   full_name: string;
-  blood_type: string;
-  allergies: string;
-  medications: string;
-  notes: string;
-  address: string;
+  blood_type: string | null;
+  allergies: string | null;
+  medications: string | null;
+  notes: string | null;
+  address: string | null;
   emergency_contact_name: string;
   emergency_contact_phone: string;
   alert_type: "call" | "whatsapp_location";
@@ -17,17 +17,40 @@ export interface EmergencyProfile {
 }
 
 export const emergencyService = {
-  // Obtener perfil de emergencia del usuario
-  async getEmergencyProfile(userId: string): Promise<EmergencyProfile | null> {
+  /**
+   * Get the profile_id for the current authenticated user
+   * Returns the profile where the user is the owner
+   */
+  async getCurrentUserProfileId(userId: string): Promise<string | null> {
     const { data, error } = await supabase
-      .from("emergency_profiles")
-      .select("*")
+      .from("user_profiles")
+      .select("profile_id")
       .eq("user_id", userId)
+      .eq("is_owner", true)
       .single();
 
     if (error) {
       if (error.code === "PGRST116") {
-        // No existe perfil
+        return null;
+      }
+      throw error;
+    }
+
+    return data.profile_id;
+  },
+
+  // Obtener perfil de emergencia del usuario
+  async getEmergencyProfile(
+    profileId: string,
+  ): Promise<EmergencyProfile | null> {
+    const { data, error } = await supabase
+      .from("emergency_profiles")
+      .select("*")
+      .eq("profile_id", profileId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
         return null;
       }
       throw error;
@@ -36,32 +59,51 @@ export const emergencyService = {
     return data;
   },
 
-  // Crear perfil de emergencia
+  // Crear perfil de emergencia usando función RPC para bypass RLS
   async createEmergencyProfile(
     profile: Omit<EmergencyProfile, "id" | "created_at" | "updated_at">,
   ): Promise<EmergencyProfile> {
-    const { data, error } = await supabase
-      .from("emergency_profiles")
-      .insert([profile])
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc("create_emergency_profile", {
+      p_profile_id: profile.profile_id,
+      p_full_name: profile.full_name,
+      p_blood_type: profile.blood_type,
+      p_allergies: profile.allergies,
+      p_medications: profile.medications,
+      p_notes: profile.notes,
+      p_address: profile.address,
+      p_emergency_contact_name: profile.emergency_contact_name,
+      p_emergency_contact_phone: profile.emergency_contact_phone,
+      p_alert_type: profile.alert_type,
+    });
 
-    if (error) throw error;
+    if (error) {
+      console.error("RPC error creating emergency profile:", error);
+      throw error;
+    }
 
-    return data;
+    // Check if the function returned success
+    if (data && typeof data === "object" && "success" in data) {
+      if (data.success) {
+        return data.data as EmergencyProfile;
+      } else {
+        throw new Error(data.error || "Error creating emergency profile");
+      }
+    }
+
+    throw new Error("Unexpected response from create_emergency_profile");
   },
 
   // Actualizar perfil de emergencia
   async updateEmergencyProfile(
-    userId: string,
+    profileId: string,
     updates: Partial<
-      Omit<EmergencyProfile, "id" | "user_id" | "created_at" | "updated_at">
+      Omit<EmergencyProfile, "id" | "profile_id" | "created_at" | "updated_at">
     >,
   ): Promise<EmergencyProfile> {
     const { data, error } = await supabase
       .from("emergency_profiles")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq("user_id", userId)
+      .eq("profile_id", profileId)
       .select()
       .single();
 
@@ -70,12 +112,12 @@ export const emergencyService = {
     return data;
   },
 
-  // Obtener nombre completo del usuario desde la tabla users
-  async getUserFullName(userId: string): Promise<string> {
+  // Obtener nombre completo del perfil
+  async getProfileFullName(profileId: string): Promise<string> {
     const { data, error } = await supabase
-      .from("users")
+      .from("profiles")
       .select("full_name")
-      .eq("id", userId)
+      .eq("id", profileId)
       .single();
 
     if (error) throw error;
@@ -84,21 +126,21 @@ export const emergencyService = {
   },
 
   // Limpiar datos del perfil de emergencia
-  async clearEmergencyProfile(userId: string): Promise<void> {
+  async clearEmergencyProfile(profileId: string): Promise<void> {
     const { error } = await supabase
       .from("emergency_profiles")
       .update({
-        blood_type: "",
-        allergies: "",
-        medications: "",
-        notes: "",
-        address: "",
+        blood_type: null,
+        allergies: null,
+        medications: null,
+        notes: null,
+        address: null,
         emergency_contact_name: "",
         emergency_contact_phone: "",
         alert_type: "call",
         updated_at: new Date().toISOString(),
       })
-      .eq("user_id", userId);
+      .eq("profile_id", profileId);
 
     if (error) throw error;
   },

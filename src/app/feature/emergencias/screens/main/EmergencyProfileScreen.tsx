@@ -21,13 +21,14 @@ const EmergencyProfileScreen = () => {
   const { transformText, getThemedColors } = usePersonalization();
   const styles = useEmergencyProfileScreenStyles();
   const themedColors = getThemedColors();
-  const { profile, userFullName, loading } = useEmergencyProfile();
+  const { profile, profileFullName, loading } = useEmergencyProfile();
   const { sendingAlert, handleEmergencyCall, sendAlert } =
     useEmergencyActions();
 
+  // Enviar alerta de emergencia al contacto configurado
   const handleSendAlert = () => {
     if (profile) {
-      sendAlert(profile, userFullName || undefined);
+      sendAlert(profile, profileFullName || undefined);
     }
   };
 
@@ -51,7 +52,7 @@ const EmergencyProfileScreen = () => {
           <Text style={styles.sectionTitle}>{transformText("Nombre")}</Text>
           <View style={styles.infoRow}>
             <Ionicons name="person" size={20} color={themedColors.secondary} />
-            <Text style={styles.infoValue}>{userFullName}</Text>
+            <Text style={styles.infoValue}>{profileFullName}</Text>
           </View>
         </View>
 

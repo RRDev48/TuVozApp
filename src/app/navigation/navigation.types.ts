@@ -46,7 +46,18 @@ type RootStackParamsList = {
   Tarjetas: undefined;
   Frases: undefined;
   Emergencias: { fromSettings?: boolean };
-  EmergenciasParte2: undefined;
+  EmergenciasParte2: {
+    formData: {
+      blood_type: string;
+      allergies: string;
+      medications: string;
+      address: string;
+      alert_type: string;
+      emergency_contact_name: string;
+      emergency_contact_phone: string;
+      notes: string;
+    };
+  };
   EmergencyProfile: undefined;
 
   // Pantallas de emergencias - Tipo de sangre

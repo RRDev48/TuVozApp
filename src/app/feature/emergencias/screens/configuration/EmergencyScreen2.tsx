@@ -2,7 +2,7 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
 import { useEmergencyScreen2Styles } from "../../(hooks)/useEmergencyScreensStyles";
+import { emergencyService } from "../../(services)/emergencyService";
 import { parsePhoneNumber } from "../../(services)/phoneParser";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -27,111 +28,138 @@ type EmergencyScreen2NavigationProp = StackNavigationProp<
   "EmergenciasParte2"
 >;
 
+type EmergencyScreen2RouteProp = RouteProp<
+  RootStackParamsList,
+  "EmergenciasParte2"
+>;
+
 const EmergencyScreen2 = () => {
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
+  const route = useRoute<EmergencyScreen2RouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
   const styles = useEmergencyScreen2Styles();
   const themedColors = getThemedColors();
-  const { profile, loading, updateField, clearProfile } = useEmergencyProfile();
+  const { profile, profileId, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Obtener los datos del formulario desde la navegación
+  const [formData, setFormData] = useState(route.params.formData);
 
   const handleAddressEdit = () => {
     navigation.navigate("AddressSelection", {
-      currentAddress: profile?.address || "",
-      onSelect: async (address: string) => {
-        try {
-          await updateField("address", address);
-          console.log("Dirección actualizada:", address);
-        } catch (error) {
-          console.error("Error al actualizar dirección:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar la dirección",
-            ),
-          );
-        }
+      currentAddress: formData.address || "",
+      onSelect: (address: string) => {
+        setFormData((prev) => ({ ...prev, address }));
       },
     });
   };
 
   const handleNotesEdit = () => {
     navigation.navigate("NotesSelection", {
-      currentNotes: profile?.notes || "",
-      onSelect: async (notes: string) => {
-        try {
-          await updateField("notes", notes);
-          console.log("Notas actualizadas:", notes);
-        } catch (error) {
-          console.error("Error al actualizar notas:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las notas",
-            ),
-          );
-        }
+      currentNotes: formData.notes || "",
+      onSelect: (notes: string) => {
+        setFormData((prev) => ({ ...prev, notes }));
       },
     });
   };
 
   const handleEmergencyContactEdit = () => {
-    const fullPhone = profile?.emergency_contact_phone || "";
+    const fullPhone = formData.emergency_contact_phone || "";
     const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
 
     navigation.navigate("EmergencyContactSelection", {
-      currentContactName: profile?.emergency_contact_name || "",
+      currentContactName: formData.emergency_contact_name || "",
       currentCountryCode: countryCode,
       currentPhoneNumber: phoneNumber,
-      onSelect: async (name: string, phone: string) => {
-        try {
-          await updateField("emergency_contact_name", name);
-          await updateField("emergency_contact_phone", phone);
-          console.log("Contacto de emergencia actualizado:", name, phone);
-        } catch (error) {
-          console.error("Error al actualizar contacto de emergencia:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el contacto de emergencia",
-            ),
-          );
-        }
+      onSelect: (name: string, phone: string) => {
+        setFormData((prev) => ({
+          ...prev,
+          emergency_contact_name: name,
+          emergency_contact_phone: phone,
+        }));
       },
     });
   };
 
   const handleAlertTypeEdit = () => {
     navigation.navigate("AlertModeSelection", {
-      currentAlertMode: profile?.alert_type || "call",
-      onSelect: async (alertMode: string) => {
-        try {
-          await updateField("alert_type", alertMode);
-          console.log("Modo de alerta actualizado:", alertMode);
-        } catch (error) {
-          console.error("Error al actualizar modo de alerta:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el modo de alerta",
-            ),
-          );
-        }
+      currentAlertMode: formData.alert_type || "call",
+      onSelect: (alertMode: string) => {
+        setFormData((prev) => ({ ...prev, alert_type: alertMode }));
       },
     });
   };
 
-  const handleSaveEmergencyData = () => {
-    setShowSuccessModal(true);
+  const handleSaveEmergencyData = async () => {
+    setIsSaving(true);
+    try {
+      // Verificar que los campos requeridos estén completos
+      if (
+        !formData.blood_type ||
+        !formData.emergency_contact_name ||
+        !formData.emergency_contact_phone ||
+        !formData.alert_type
+      ) {
+        Alert.alert(
+          transformText("Datos incompletos"),
+          transformText(
+            "Por favor completa los campos obligatorios: tipo de sangre, contacto de emergencia y modo de alerta.",
+          ),
+        );
+        setIsSaving(false);
+        return;
+      }
+
+      // Si ya existe un perfil, actualizar; si no, crear uno nuevo
+      if (profile && profileId) {
+        await emergencyService.updateEmergencyProfile(profileId, {
+          blood_type: formData.blood_type,
+          allergies: formData.allergies || null,
+          medications: formData.medications || null,
+          address: formData.address || null,
+          alert_type: formData.alert_type as "call" | "whatsapp_location",
+          emergency_contact_name: formData.emergency_contact_name,
+          emergency_contact_phone: formData.emergency_contact_phone,
+          notes: formData.notes || null,
+        });
+      } else {
+        // Obtener el profileId y full_name del perfil actual
+        if (!profileId) {
+          throw new Error("No se encontró el ID del perfil");
+        }
+
+        const fullName = await emergencyService.getProfileFullName(profileId);
+
+        await emergencyService.createEmergencyProfile({
+          profile_id: profileId,
+          full_name: fullName,
+          blood_type: formData.blood_type,
+          allergies: formData.allergies || null,
+          medications: formData.medications || null,
+          address: formData.address || null,
+          alert_type: formData.alert_type as "call" | "whatsapp_location",
+          emergency_contact_name: formData.emergency_contact_name,
+          emergency_contact_phone: formData.emergency_contact_phone,
+          notes: formData.notes || null,
+        });
+      }
+
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Error al guardar perfil de emergencia:", error);
+      Alert.alert(
+        transformText("Error"),
+        transformText(
+          error instanceof Error
+            ? error.message
+            : "No se pudo guardar el perfil de emergencia",
+        ),
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSuccessModalClose = () => {
@@ -150,18 +178,20 @@ const EmergencyScreen2 = () => {
     setShowCancelModal(true);
   };
 
-  const handleConfirmCancel = async () => {
-    try {
-      await clearProfile();
-      setShowCancelModal(false);
-      navigation.navigate("Emergencias", { fromSettings: undefined });
-    } catch (error) {
-      setShowCancelModal(false);
-      Alert.alert(
-        transformText("Error"),
-        transformText("No se pudo cancelar la configuración"),
-      );
-    }
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false);
+    // Limpiar el estado local
+    setFormData({
+      blood_type: "",
+      allergies: "",
+      medications: "",
+      address: "",
+      alert_type: "call",
+      emergency_contact_name: "",
+      emergency_contact_phone: "",
+      notes: "",
+    });
+    navigation.navigate("Home");
   };
 
   const handleCancelModal = () => {
@@ -195,7 +225,7 @@ const EmergencyScreen2 = () => {
             />
           }
           label="Notas"
-          value={profile?.notes || ""}
+          value={formData.notes || ""}
           onPress={handleNotesEdit}
         />
 
@@ -204,7 +234,7 @@ const EmergencyScreen2 = () => {
             <Ionicons name="home" size={26} color={themedColors.background} />
           }
           label="Dirección"
-          value={profile?.address || ""}
+          value={formData.address || ""}
           onPress={handleAddressEdit}
         />
 
@@ -214,10 +244,10 @@ const EmergencyScreen2 = () => {
           }
           label="Contacto de emergencia"
           value={
-            profile?.emergency_contact_name && profile?.emergency_contact_phone
-              ? `${profile.emergency_contact_name} - ${profile.emergency_contact_phone}`
-              : profile?.emergency_contact_name ||
-                profile?.emergency_contact_phone ||
+            formData.emergency_contact_name && formData.emergency_contact_phone
+              ? `${formData.emergency_contact_name} - ${formData.emergency_contact_phone}`
+              : formData.emergency_contact_name ||
+                formData.emergency_contact_phone ||
                 ""
           }
           onPress={handleEmergencyContactEdit}
@@ -232,7 +262,7 @@ const EmergencyScreen2 = () => {
             />
           }
           label="Modo de alerta"
-          value={getAlertTypeLabel(profile?.alert_type)}
+          value={getAlertTypeLabel(formData.alert_type)}
           onPress={handleAlertTypeEdit}
         />
       </ScrollView>
@@ -245,12 +275,17 @@ const EmergencyScreen2 = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.saveButton}
+          style={[styles.saveButton, isSaving && { opacity: 0.7 }]}
           onPress={handleSaveEmergencyData}
+          disabled={isSaving}
         >
-          <Text style={styles.saveButtonText}>
-            {transformText("Guardar datos")}
-          </Text>
+          {isSaving ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            <Text style={styles.saveButtonText}>
+              {transformText("Guardar datos")}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 

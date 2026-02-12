@@ -7,7 +7,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -34,12 +33,39 @@ const EmergencyScreen = () => {
   const { transformText, getThemedColors } = usePersonalization();
   const styles = useEmergencyScreenStyles();
   const themedColors = getThemedColors();
-  const { profile, userFullName, loading, updateField, clearProfile } =
-    useEmergencyProfile();
+  const { profile, profileFullName, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Estado local para los datos del formulario
+  const [formData, setFormData] = useState({
+    blood_type: "",
+    allergies: "",
+    medications: "",
+    address: "",
+    alert_type: "call",
+    emergency_contact_name: "",
+    emergency_contact_phone: "",
+    notes: "",
+  });
 
   // Obtener el parámetro fromSettings
   const fromSettings = route.params?.fromSettings;
+
+  // Inicializar el estado local con los datos del perfil si existe
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        blood_type: profile.blood_type || "",
+        allergies: profile.allergies || "",
+        medications: profile.medications || "",
+        address: profile.address || "",
+        alert_type: profile.alert_type || "call",
+        emergency_contact_name: profile.emergency_contact_name || "",
+        emergency_contact_phone: profile.emergency_contact_phone || "",
+        notes: profile.notes || "",
+      });
+    }
+  }, [profile]);
 
   // Verificar si el perfil está completo y redirigir solo si NO viene de Settings
   useEffect(() => {
@@ -60,138 +86,63 @@ const EmergencyScreen = () => {
 
   const handleBloodTypeEdit = () => {
     navigation.navigate("BloodTypeSelection", {
-      currentBloodType: profile?.blood_type || "O-",
-      onSelect: async (bloodType: string) => {
-        try {
-          await updateField("blood_type", bloodType);
-          console.log("Tipo de sangre actualizado:", bloodType);
-        } catch (error) {
-          console.error("Error al actualizar tipo de sangre:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el tipo de sangre",
-            ),
-          );
-        }
+      currentBloodType: formData.blood_type || "O-",
+      onSelect: (bloodType: string) => {
+        setFormData((prev) => ({ ...prev, blood_type: bloodType }));
       },
     });
   };
 
   const handleAllergiesEdit = () => {
     navigation.navigate("AllergiesSelection", {
-      currentAllergies: profile?.allergies || "",
-      onSelect: async (allergies: string) => {
-        try {
-          await updateField("allergies", allergies);
-          console.log("Alergias actualizadas:", allergies);
-        } catch (error) {
-          console.error("Error al actualizar alergias:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las alergias",
-            ),
-          );
-        }
+      currentAllergies: formData.allergies || "",
+      onSelect: (allergies: string) => {
+        setFormData((prev) => ({ ...prev, allergies }));
       },
     });
   };
 
   const handleMedicationsEdit = () => {
     navigation.navigate("MedicationsSelection", {
-      currentMedications: profile?.medications || "",
-      onSelect: async (medications: string) => {
-        try {
-          await updateField("medications", medications);
-          console.log("Medicaciones actualizadas:", medications);
-        } catch (error) {
-          console.error("Error al actualizar medicaciones:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar las medicaciones",
-            ),
-          );
-        }
+      currentMedications: formData.medications || "",
+      onSelect: (medications: string) => {
+        setFormData((prev) => ({ ...prev, medications }));
       },
     });
   };
 
   const handleAddressEdit = () => {
     navigation.navigate("AddressSelection", {
-      currentAddress: profile?.address || "",
-      onSelect: async (address: string) => {
-        try {
-          await updateField("address", address);
-          console.log("Dirección actualizada:", address);
-        } catch (error) {
-          console.error("Error al actualizar dirección:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar la dirección",
-            ),
-          );
-        }
+      currentAddress: formData.address || "",
+      onSelect: (address: string) => {
+        setFormData((prev) => ({ ...prev, address }));
       },
     });
   };
 
   const handleAlertTypeEdit = () => {
     navigation.navigate("AlertModeSelection", {
-      currentAlertMode: profile?.alert_type || "call",
-      onSelect: async (alertMode: string) => {
-        try {
-          await updateField("alert_type", alertMode);
-          console.log("Modo de alerta actualizado:", alertMode);
-        } catch (error) {
-          console.error("Error al actualizar modo de alerta:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el modo de alerta",
-            ),
-          );
-        }
+      currentAlertMode: formData.alert_type || "call",
+      onSelect: (alertMode: string) => {
+        setFormData((prev) => ({ ...prev, alert_type: alertMode }));
       },
     });
   };
 
   const handleEmergencyContactEdit = () => {
-    const fullPhone = profile?.emergency_contact_phone || "";
+    const fullPhone = formData.emergency_contact_phone || "";
     const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
 
     navigation.navigate("EmergencyContactSelection", {
-      currentContactName: profile?.emergency_contact_name || "",
+      currentContactName: formData.emergency_contact_name || "",
       currentCountryCode: countryCode,
       currentPhoneNumber: phoneNumber,
-      onSelect: async (name: string, phone: string) => {
-        try {
-          await updateField("emergency_contact_name", name);
-          await updateField("emergency_contact_phone", phone);
-          console.log("Contacto de emergencia actualizado:", name, phone);
-        } catch (error) {
-          console.error("Error al actualizar contacto de emergencia:", error);
-          Alert.alert(
-            transformText("Error"),
-            transformText(
-              error instanceof Error
-                ? error.message
-                : "No se pudo actualizar el contacto de emergencia",
-            ),
-          );
-        }
+      onSelect: (name: string, phone: string) => {
+        setFormData((prev) => ({
+          ...prev,
+          emergency_contact_name: name,
+          emergency_contact_phone: phone,
+        }));
       },
     });
   };
@@ -200,18 +151,20 @@ const EmergencyScreen = () => {
     setShowCancelModal(true);
   };
 
-  const handleConfirmCancel = async () => {
-    try {
-      await clearProfile();
-      setShowCancelModal(false);
-      navigation.goBack();
-    } catch (error) {
-      setShowCancelModal(false);
-      Alert.alert(
-        transformText("Error"),
-        transformText("No se pudo cancelar la configuración"),
-      );
-    }
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false);
+    // Limpiar el estado local
+    setFormData({
+      blood_type: "",
+      allergies: "",
+      medications: "",
+      address: "",
+      alert_type: "call",
+      emergency_contact_name: "",
+      emergency_contact_phone: "",
+      notes: "",
+    });
+    navigation.goBack();
   };
 
   const handleCancelModal = () => {
@@ -241,7 +194,7 @@ const EmergencyScreen = () => {
             <Ionicons name="person" size={26} color={themedColors.background} />
           }
           label="Nombre completo"
-          value={userFullName}
+          value={profileFullName}
           showArrow={false}
         />
 
@@ -250,7 +203,7 @@ const EmergencyScreen = () => {
             <Ionicons name="water" size={26} color={themedColors.background} />
           }
           label="Tipo de sangre"
-          value={profile?.blood_type || ""}
+          value={formData.blood_type || ""}
           onPress={handleBloodTypeEdit}
         />
 
@@ -263,7 +216,7 @@ const EmergencyScreen = () => {
             />
           }
           label="Alergias"
-          value={profile?.allergies || ""}
+          value={formData.allergies || ""}
           onPress={handleAllergiesEdit}
         />
 
@@ -276,7 +229,7 @@ const EmergencyScreen = () => {
             />
           }
           label="Medicaciones"
-          value={profile?.medications || ""}
+          value={formData.medications || ""}
           onPress={handleMedicationsEdit}
         />
       </ScrollView>
@@ -290,7 +243,7 @@ const EmergencyScreen = () => {
 
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate("EmergenciasParte2")}
+          onPress={() => navigation.navigate("EmergenciasParte2", { formData })}
         >
           <Text style={styles.nextButtonText}>
             {transformText("Siguiente")}

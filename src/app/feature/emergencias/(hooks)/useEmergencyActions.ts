@@ -1,13 +1,7 @@
 import * as Location from "expo-location";
 import { useState } from "react";
 import { Alert, Linking } from "react-native";
-
-interface EmergencyProfile {
-  alert_type?: string;
-  emergency_contact_phone?: string;
-  emergency_contact_name?: string;
-  notes?: string;
-}
+import { EmergencyProfile } from "../(services)/emergencyService";
 
 export const useEmergencyActions = () => {
   const [sendingAlert, setSendingAlert] = useState(false);
