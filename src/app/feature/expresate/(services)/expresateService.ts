@@ -40,8 +40,6 @@ export const expresateService = {
         throw error;
       }
 
-      console.log(`Fetched ${data?.length} pictograms, total count: ${count}`);
-
       // Deduplicar por category_slug - mantiene el primer registro de cada categoría
       const categoryMap = new Map<string, PictogramCategory>();
 
@@ -55,11 +53,6 @@ export const expresateService = {
 
       const uniqueCategories = Array.from(categoryMap.values()).sort((a, b) =>
         a.category_slug.localeCompare(b.category_slug),
-      );
-
-      console.log(
-        `Found ${uniqueCategories.length} unique categories:`,
-        uniqueCategories.map((c) => c.category_slug),
       );
 
       return { data: uniqueCategories, error: null };

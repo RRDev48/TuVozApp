@@ -16,8 +16,6 @@ export const profileService = {
    */
   async createProfile(profileData: ProfileInsert) {
     try {
-      console.log("Attempting to create profile:", profileData);
-
       // Don't use .select() because RLS policy requires profile to be linked first
       const { data, error } = await supabase
         .from("profiles")
@@ -30,7 +28,6 @@ export const profileService = {
         throw error;
       }
 
-      console.log("Profile created successfully:", data);
       return { success: true, data: data as Profile };
     } catch (error: any) {
       console.error("Exception creating profile:", error);
@@ -60,8 +57,6 @@ export const profileService = {
         is_owner: isOwner,
       };
 
-      console.log("Attempting to link user to profile:", userProfileData);
-
       const { data, error } = await supabase
         .from("user_profiles")
         .insert(userProfileData)
@@ -73,7 +68,6 @@ export const profileService = {
         throw error;
       }
 
-      console.log("User linked to profile successfully:", data);
       return { success: true, data: data as UserProfile };
     } catch (error: any) {
       console.error("Exception linking user to profile:", error);
@@ -99,8 +93,6 @@ export const profileService = {
     isOwner: boolean = true,
   ) {
     try {
-      console.log("Creating profile for user:", userId);
-
       // Insert profile without selecting (to avoid RLS policy issue)
       const { data: insertedProfile, error: insertError } = await supabase
         .from("profiles")
@@ -114,7 +106,6 @@ export const profileService = {
       }
 
       const profileId = insertedProfile.id;
-      console.log("Profile inserted with ID:", profileId);
 
       // Link the user to the profile
       const linkResult = await this.linkUserToProfile(
@@ -127,8 +118,6 @@ export const profileService = {
         console.error("Error linking user to profile:", linkResult.error);
         throw new Error(linkResult.error);
       }
-
-      console.log("User linked to profile successfully");
 
       // Now we can select the full profile data (after linking, RLS allows it)
       const { data: fullProfile, error: selectError } = await supabase
@@ -152,7 +141,6 @@ export const profileService = {
         };
       }
 
-      console.log("Profile created and linked successfully:", fullProfile);
       return { success: true, data: fullProfile as Profile };
     } catch (error: any) {
       console.error("Exception in createProfileForUser:", error);

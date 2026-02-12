@@ -50,14 +50,6 @@ const PersonalizationProvider = ({
     isAuthenticated,
   } = useCurrentUserProfile();
 
-  // Debug: verificar valores
-  console.log("🔍 PersonalizationContext Debug:", {
-    userId,
-    profileId,
-    isAuthenticated,
-    userLoading,
-  });
-
   const {
     settings,
     loading: settingsLoading,
@@ -67,12 +59,6 @@ const PersonalizationProvider = ({
     getThemeForApp,
     getUppercaseForApp,
   } = useProfileSettings(profileId || undefined);
-
-  // Debug: verificar configuraciones
-  console.log("⚙️ Settings Debug:", {
-    settings,
-    settingsLoading,
-  });
 
   // Estado local para usuarios no autenticados
   const [localSoloMayusculas, setLocalSoloMayusculasState] = useState(false);
@@ -113,7 +99,6 @@ const PersonalizationProvider = ({
 
   // Funciones para usuarios autenticados
   const setSoloMayusculasAuthenticated = async (value: boolean) => {
-    console.log("💾 Guardando uppercase:", value, "profileId:", profileId);
     await updateSetting("uppercase", value);
   };
 
@@ -121,27 +106,11 @@ const PersonalizationProvider = ({
     value: "pequenia" | "mediana" | "grande",
   ) => {
     const fontSize = ProfileSettingsService.mapAppSizeToFontSize(value);
-    console.log(
-      "💾 Guardando font_size:",
-      fontSize,
-      "para tamaño:",
-      value,
-      "profileId:",
-      profileId,
-    );
     await updateSetting("font_size", fontSize);
   };
 
   const setTemaOscuroAuthenticated = async (value: boolean) => {
     const theme = ProfileSettingsService.mapAppThemeToDbTheme(value);
-    console.log(
-      "💾 Guardando theme:",
-      theme,
-      "para temaOscuro:",
-      value,
-      "profileId:",
-      profileId,
-    );
     await updateSetting("theme", theme);
   };
 

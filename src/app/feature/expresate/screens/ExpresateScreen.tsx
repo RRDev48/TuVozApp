@@ -3,11 +3,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-  ViewToken,
+    Dimensions,
+    FlatList,
+    StyleSheet,
+    View,
+    ViewToken,
 } from "react-native";
 
 // Componentes
@@ -46,9 +46,7 @@ const ExpresateScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
-  const handleMenuItemPress = useCallback((categorySlug: string) => {
-    console.log("Selected category:", categorySlug);
-  }, []);
+  const handleMenuItemPress = useCallback((categorySlug: string) => {}, []);
 
   const normalizeCategoryName = useCallback((slug: string) => {
     return slug

@@ -127,11 +127,6 @@ export const authService = {
     userData: { full_name: string; role: string; email: string; age: number },
   ) {
     try {
-      console.log("Creating user and profile via RPC:", {
-        userId,
-        ...userData,
-      });
-
       const { data, error } = await supabase.rpc("create_user_with_profile", {
         p_user_id: userId,
         p_full_name: userData.full_name,
@@ -144,8 +139,6 @@ export const authService = {
         console.error("Supabase RPC error:", error);
         throw error;
       }
-
-      console.log("RPC result:", data);
 
       // Check if the function returned success
       if (data && typeof data === "object" && "success" in data) {
@@ -184,12 +177,6 @@ export const authService = {
         ...userData,
       };
 
-      console.log("Attempting to create user record:", {
-        userId,
-        email: userData.email,
-        role: userData.role,
-      });
-
       const { data, error } = await supabase
         .from("users")
         .insert(userRecord)
@@ -201,7 +188,6 @@ export const authService = {
         throw error;
       }
 
-      console.log("User record created successfully:", data);
       return { success: true, data };
     } catch (error: any) {
       console.error("Exception creating user record:", error);

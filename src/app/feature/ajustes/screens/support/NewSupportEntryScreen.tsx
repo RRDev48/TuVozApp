@@ -197,7 +197,6 @@ const NewSupportEntryScreen = () => {
         onClose={setShowErrorModal}
         onDismiss={() => {
           // Log adicional cuando el usuario cierra el modal de error
-          console.log("User dismissed error modal");
         }}
         showDelay={200} // Se muestra con un delay de 200ms
         autoCloseDelay={0} // Sin auto-cierre (requiere interacción del usuario)

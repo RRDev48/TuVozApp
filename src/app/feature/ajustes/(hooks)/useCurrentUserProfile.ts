@@ -8,15 +8,7 @@ export const useCurrentUserProfile = () => {
   const { currentUser, isLoading: userLoading } = useCurrentUser();
   const userId = currentUser?.id || null;
 
-  console.log(
-    "🔍 useCurrentUserProfile - currentUser:",
-    currentUser,
-    "userId extracted:",
-    userId,
-  );
-
   const fetchProfileId = useCallback(async () => {
-    console.log("🔍 fetchProfileId - userId:", userId);
     if (!userId) {
       setProfileId(null);
       setLoading(false);
@@ -27,7 +19,6 @@ export const useCurrentUserProfile = () => {
     try {
       const userProfileId =
         await emergencyService.getCurrentUserProfileId(userId);
-      console.log("🎯 ProfileId obtenido:", userProfileId);
       setProfileId(userProfileId);
     } catch (error) {
       console.error("Error obteniendo profile_id:", error);

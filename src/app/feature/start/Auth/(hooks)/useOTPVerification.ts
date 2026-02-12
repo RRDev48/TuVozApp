@@ -56,15 +56,11 @@ export const useOTPVerification = ({
       if (userData && response.data?.user) {
         const userId = response.data.user.id;
 
-        console.log("Starting user record and profile creation for:", userId);
-        console.log("Session data:", response.data.session);
-
         // Small delay to ensure session is fully established
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Verify we have a session (user is authenticated)
         const currentUser = await authService.getCurrentUser();
-        console.log("Current user after verification:", currentUser);
 
         if (!currentUser) {
           console.error("No authenticated session after OTP verification");
@@ -81,8 +77,6 @@ export const useOTPVerification = ({
           onSuccess();
           return true;
         }
-
-        console.log("User authenticated, creating records...");
 
         // Create user record and profile using RPC function (bypasses RLS)
         const result = await authService.createUserWithProfile(userId, {
@@ -103,7 +97,6 @@ export const useOTPVerification = ({
             },
           );
         } else {
-          console.log("User and profile created successfully");
         }
       }
 

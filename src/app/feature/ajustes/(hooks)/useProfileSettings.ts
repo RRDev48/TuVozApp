@@ -35,7 +35,6 @@ export const useProfileSettings = (profileId?: string) => {
 
   // Verificar si hay usuario autenticado
   useEffect(() => {
-    console.log("🎯 useProfileSettings - profileId recibido:", profileId);
     setIsAuthenticated(!!profileId);
     if (profileId) {
       loadSettings();
@@ -56,10 +55,8 @@ export const useProfileSettings = (profileId?: string) => {
 
     setLoading(true);
     try {
-      console.log("📥 Cargando settings para profileId:", profileId);
       const profileSettings =
         await ProfileSettingsService.getProfileSettings(profileId);
-      console.log("📊 Settings cargados:", profileSettings);
       setSettings(profileSettings);
 
       // Auditar carga de configuración (temporalmente deshabilitado por RLS)
@@ -96,27 +93,17 @@ export const useProfileSettings = (profileId?: string) => {
       value: ProfileSettingsInput[K],
     ): Promise<void> => {
       if (!profileId) {
-        console.log("❌ No profileId disponible para guardar setting");
         // Usuario no autenticado, no guardar en DB
         return;
       }
 
       try {
-        console.log(
-          "📤 Actualizando setting:",
-          key,
-          "=",
-          value,
-          "para profileId:",
-          profileId,
-        );
         const updatedSettings =
           await ProfileSettingsService.updateProfileSetting(
             profileId,
             key,
             value,
           );
-        console.log("✅ Setting actualizado:", updatedSettings);
         setSettings(updatedSettings);
 
         // Auditar actualización (temporalmente deshabilitado por RLS)
