@@ -1,4 +1,5 @@
 import { supabase } from "@/src/lib/supabaseClient";
+import type { UserInsert } from "@/src/types/database.types";
 
 export const authService = {
   /**
@@ -115,27 +116,121 @@ export const authService = {
   },
 
   /**
-   * Actualiza los metadatos del usuario después de la verificación OTP
-   * @param metadata - Datos adicionales del usuario (nombre, edad, rol, contraseña)
-   * @returns Promise con resultado de la operación
+   * Creates a user record and profile in a single atomic operation
+   * Uses a database function to bypass RLS issues during registration
+   * @param userId - Auth user ID
+   * @param userData - User data (full_name, role, email, age)
+   * @returns Promise with result
    */
-  async updateUserMetadata(
-    metadata: { full_name: string; age: number; role: string },
-    password?: string,
+  async createUserWithProfile(
+    userId: string,
+    userData: { full_name: string; role: string; email: string; age: number },
   ) {
     try {
-      const updateData: any = {
-        data: metadata,
-      };
+      console.log("Creating user and profile via RPC:", {
+        userId,
+        ...userData,
+      });
 
-      // Si se proporciona contraseña, actualizarla
-      if (password) {
-        updateData.password = password;
-      }
-
-      const { data, error } = await supabase.auth.updateUser(updateData);
+      const { data, error } = await supabase.rpc("create_user_with_profile", {
+        p_user_id: userId,
+        p_full_name: userData.full_name,
+        p_role: userData.role,
+        p_email: userData.email,
+        p_age: userData.age,
+      });
 
       if (error) {
+        console.error("Supabase RPC error:", error);
+        throw error;
+      }
+
+      console.log("RPC result:", data);
+
+      // Check if the function returned success
+      if (data && typeof data === "object" && "success" in data) {
+        if (data.success) {
+          return { success: true, data };
+        } else {
+          throw new Error(data.error || "Error en la función de base de datos");
+        }
+      }
+
+      return { success: true, data };
+    } catch (error: any) {
+      console.error("Exception creating user with profile:", error);
+      return {
+        success: false,
+        error: error.message || error.hint || "Error al crear usuario y perfil",
+      };
+    }
+  },
+
+  /**
+   * @deprecated Use createUserWithProfile() instead
+   * Creates a user record in the public.users table
+   * This should be called after successful authentication
+   * @param userId - Auth user ID
+   * @param userData - User data (full_name, role, email)
+   * @returns Promise with result
+   */
+  async createUserRecord(userId: string, userData: Omit<UserInsert, "id">) {
+    console.warn(
+      "createUserRecord is deprecated. Use createUserWithProfile() instead.",
+    );
+    try {
+      const userRecord: UserInsert = {
+        id: userId,
+        ...userData,
+      };
+
+      console.log("Attempting to create user record:", {
+        userId,
+        email: userData.email,
+        role: userData.role,
+      });
+
+      const { data, error } = await supabase
+        .from("users")
+        .insert(userRecord)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Supabase error creating user record:", error);
+        throw error;
+      }
+
+      console.log("User record created successfully:", data);
+      return { success: true, data };
+    } catch (error: any) {
+      console.error("Exception creating user record:", error);
+      return {
+        success: false,
+        error:
+          error.message || error.hint || "Error al crear registro de usuario",
+      };
+    }
+  },
+
+  /**
+   * Gets user record from public.users table
+   * @param userId - User ID
+   * @returns User record or null
+   */
+  async getUserRecord(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        // If user not found, return null without throwing
+        if (error.code === "PGRST116") {
+          return { success: true, data: null };
+        }
         throw error;
       }
 
@@ -143,7 +238,7 @@ export const authService = {
     } catch (error: any) {
       return {
         success: false,
-        error: error.message || "Error al actualizar información del usuario",
+        error: error.message || "Error al obtener registro de usuario",
       };
     }
   },

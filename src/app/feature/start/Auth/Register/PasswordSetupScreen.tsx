@@ -36,30 +36,35 @@ const PasswordSetupScreen = () => {
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
 
   const handleRegister = async (validPassword: string) => {
-    // Crear usuario en Supabase - esto envía automáticamente el código de verificación
-    const response = await authService.signUp(email, validPassword, {
-      full_name: name,
-      age: parseInt(age),
-      role: role,
-    });
+    try {
+      // Step 1: Create authentication user in Supabase Auth
+      // Note: signUp automatically sends verification code and may auto-login depending on config
+      const authResponse = await authService.signUp(email, validPassword);
 
-    if (!response.success) {
+      if (!authResponse.success || !authResponse.data?.user) {
+        Alert.alert(
+          "Error",
+          authResponse.error ||
+            "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
+        );
+        return;
+      }
+
+      // Step 2: Navigate to code verification (verification code already sent by signUp)
+      // User and profile creation happens after OTP verification
+      navigation.navigate("CodeVerification", {
+        email,
+        password: validPassword,
+        name,
+        age,
+        role,
+      });
+    } catch (error: any) {
       Alert.alert(
         "Error",
-        response.error ||
-          "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
+        error.message || "Ocurrió un error durante el registro.",
       );
-      return;
     }
-
-    // Navegar a CodeVerification - el código de verificación ya fue enviado
-    navigation.navigate("CodeVerification", {
-      email,
-      password: validPassword,
-      name,
-      age,
-      role,
-    });
   };
 
   const {
@@ -79,10 +84,6 @@ const PasswordSetupScreen = () => {
     minLength: 8,
     onValidationSuccess: handleRegister,
   });
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
 
   const handleContinue = () => {
     validatePasswords();

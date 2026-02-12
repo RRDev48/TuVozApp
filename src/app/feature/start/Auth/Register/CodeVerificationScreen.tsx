@@ -33,12 +33,13 @@ type CodeVerificationScreenRouteProp = RouteProp<
 const CodeVerificationScreen = () => {
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
-  const { email = "" } = route.params || {};
+  const { email = "", name = "", age = "", role = "self" } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const { isVerifying, setIsVerifying, verifyCode } = useOTPVerification({
+  const { verifyCode } = useOTPVerification({
     email,
     onSuccess: () => setShowSuccessAlert(true),
+    userData: { name, age, role },
   });
 
   const handleVerifyCode = async (fullCode: string) => {
