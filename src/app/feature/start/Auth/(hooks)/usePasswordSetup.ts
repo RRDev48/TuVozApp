@@ -1,9 +1,5 @@
 import { useState } from "react";
-
-interface UsePasswordSetupProps {
-  minLength?: number;
-  onValidationSuccess?: (password: string) => void;
-}
+import { UsePasswordSetupProps } from "../(models)/hook.types";
 
 export const usePasswordSetup = ({
   minLength = 8,

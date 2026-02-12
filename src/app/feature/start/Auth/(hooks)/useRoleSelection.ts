@@ -1,8 +1,5 @@
 import { useState } from "react";
-
-interface UseRoleSelectionProps {
-  onRoleSelected?: (roleId: string) => void;
-}
+import { UseRoleSelectionProps } from "../(models)/hook.types";
 
 export const useRoleSelection = ({
   onRoleSelected,

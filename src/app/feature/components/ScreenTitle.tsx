@@ -1,9 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { StyleSheet, Text, View } from "react-native";
-
-interface ScreenTitleProps {
-  text: string;
-}
+import { ScreenTitleProps } from "./(models)/component.types";
 
 const ScreenTitle = ({ text }: ScreenTitleProps) => {
   const { getThemedColors } = usePersonalization();

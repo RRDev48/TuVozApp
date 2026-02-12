@@ -1,14 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { StyleSheet, TextInput, TextInputProps } from "react-native";
-
-interface ThemedTextInputProps extends TextInputProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder: string;
-  multiline?: boolean;
-  numberOfLines?: number;
-  minHeight?: number;
-}
+import { StyleSheet, TextInput } from "react-native";
+import { ThemedTextInputProps } from "../(models)/component.props";
 
 const ThemedTextInput = ({
   value,
@@ -19,7 +11,7 @@ const ThemedTextInput = ({
   minHeight,
   ...rest
 }: ThemedTextInputProps) => {
-  const { temaOscuro, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({

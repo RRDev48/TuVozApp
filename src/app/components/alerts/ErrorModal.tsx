@@ -2,24 +2,14 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
 import {
-    Image,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
-interface ErrorModalProps {
-  visible: boolean;
-  title: string;
-  message?: string;
-  buttonText?: string;
-  onClose: () => void;
-  showDelay?: number; // delay before showing modal (ms)
-  autoCloseDelay?: number; // auto close after delay (ms), 0 = no auto close
-  onDismiss?: () => void; // callback when modal is dismissed (for additional logging)
-}
+import { ErrorModalProps } from "./(models)/alert.types";
 
 const ErrorModal = ({
   visible,

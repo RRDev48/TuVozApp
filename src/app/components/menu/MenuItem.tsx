@@ -1,7 +1,7 @@
 import CustomText from "@/src/app/components/CustomText";
 import React from "react";
 import { Image, TouchableOpacity, View } from "react-native";
-import { MenuItemProps } from "../../models/menu.props";
+import { MenuItemProps } from "../../feature/models/menu.props";
 
 const MenuItem = ({ name, image, styles, onPress }: MenuItemProps) => {
   return (

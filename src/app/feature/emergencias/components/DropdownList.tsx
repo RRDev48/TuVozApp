@@ -1,11 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-
-interface DropdownListProps {
-  items: string[];
-  onSelectItem: (item: string) => void;
-  maxHeight?: number;
-}
+import { DropdownListProps } from "../(models)/component.props";
 
 const DropdownList = ({
   items,

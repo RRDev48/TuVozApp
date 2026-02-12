@@ -1,16 +1,10 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-interface ListItemProps {
-  iconName: keyof typeof Ionicons.glyphMap;
-  title: string;
-  subtitle?: string;
-  onPress: () => void;
-}
+import { ListItemProps } from "../(models)/component.props";
 
 const ListItem = ({ iconName, title, subtitle, onPress }: ListItemProps) => {
-  const { temaOscuro, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({

@@ -1,8 +1,5 @@
 import { useState } from "react";
-
-interface UseRegisterInfoProps {
-  onValidationSuccess?: (data: { name: string; age: string }) => void;
-}
+import { UseRegisterInfoProps } from "../(models)/hook.types";
 
 export const useRegisterInfo = ({
   onValidationSuccess,

@@ -1,14 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-interface EmergencyFieldProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  onPress?: () => void;
-  showArrow?: boolean;
-}
+import { EmergencyFieldProps } from "../(models)/component.props";
 
 export const EmergencyField = ({
   icon,

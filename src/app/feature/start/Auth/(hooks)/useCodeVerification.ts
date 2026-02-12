@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Keyboard, TextInput } from "react-native";
-
-interface UseCodeVerificationProps {
-  codeLength?: number;
-  onComplete?: (code: string) => void;
-}
+import { UseCodeVerificationProps } from "../(models)/hook.types";
 
 export const useCodeVerification = ({
   codeLength = 6,

@@ -1,8 +1,5 @@
 import { useState } from "react";
-
-interface UseEmailValidationProps {
-  onValidationSuccess?: (email: string) => void;
-}
+import { UseEmailValidationProps } from "../(models)/hook.types";
 
 export const useEmailValidation = ({
   onValidationSuccess,

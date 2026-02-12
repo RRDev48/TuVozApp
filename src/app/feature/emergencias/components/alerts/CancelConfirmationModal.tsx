@@ -8,12 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-interface CancelConfirmationModalProps {
-  visible: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
+import { CancelConfirmationModalProps } from "../../(models)/modal.props";
 
 const CancelConfirmationModal = ({
   visible,

@@ -2,24 +2,14 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
 import {
-    Image,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
-interface ConfirmationModalProps {
-  visible: boolean;
-  title: string;
-  confirmText?: string;
-  cancelText?: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-  showDelay?: number; // delay before showing modal (ms)
-  confirmDelay?: number; // delay before executing confirm action (ms)
-}
+import { ConfirmationModalProps } from "./(models)/alert.types";
 
 const ConfirmationModal = ({
   visible,

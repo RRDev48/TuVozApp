@@ -1,11 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
-
-interface EmergencySuccessModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
+import { EmergencySuccessModalProps } from "../../(models)/modal.props";
 
 const EmergencySuccessModal = ({
   visible,

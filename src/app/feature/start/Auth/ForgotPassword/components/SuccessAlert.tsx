@@ -1,13 +1,7 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
-
-interface SuccessAlertProps {
-  visible: boolean;
-  title: string;
-  message?: string;
-  onClose?: () => void;
-}
+import { SuccessAlertProps } from "../../(models)/component.props";
 
 const SuccessAlert = ({
   visible,

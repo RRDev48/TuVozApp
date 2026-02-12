@@ -2,10 +2,7 @@ import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity } from "react-native";
-
-interface BackButtonProps {
-  onPress: () => void;
-}
+import { BackButtonProps } from "./(models)/component.types";
 
 const BackButton = ({ onPress }: BackButtonProps) => {
   const { getThemedColors, transformText } = usePersonalization();

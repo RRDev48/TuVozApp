@@ -1,17 +1,8 @@
 import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import type { UserRole } from "@/src/types/database.types";
 import { useState } from "react";
+import { UseOTPVerificationProps } from "../(models)/hook.types";
 import { authService } from "../(services)/authService";
-
-interface UseOTPVerificationProps {
-  email: string;
-  onSuccess: () => void;
-  userData?: {
-    name: string;
-    age: string;
-    role: string;
-  };
-}
 
 export const useOTPVerification = ({
   email,

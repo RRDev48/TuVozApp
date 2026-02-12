@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
+import { UseUserDataReturn } from "../(models)/userData.types";
 import { userService } from "../(services)/userService";
-
-interface UseUserDataReturn {
-  userName: string | null;
-  loading: boolean;
-  error: any;
-  refreshUser: () => Promise<void>;
-}
 
 /**
  * Hook personalizado para obtener y gestionar los datos del usuario autenticado

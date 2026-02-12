@@ -1,14 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React, { useEffect, useState } from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
-
-interface SuccessModalProps {
-  visible: boolean;
-  title: string;
-  onClose: () => void;
-  autoCloseDelay?: number; // en milisegundos, default 3000
-  showDelay?: number; // delay before showing modal (ms)
-}
+import { SuccessModalProps } from "./(models)/alert.types";
 
 const SuccessModal = ({
   visible,
