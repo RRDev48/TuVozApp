@@ -26,6 +26,8 @@ import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
 import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
 import ForgotPasswordScreen from "../feature/start/Auth/ForgotPassword/ForgotPasswordScreen";
+import NewPasswordScreen from "../feature/start/Auth/ForgotPassword/NewPasswordScreen";
+import RecoveryCodeScreen from "../feature/start/Auth/ForgotPassword/RecoveryCodeScreen";
 import LoginScreen from "../feature/start/Auth/Login/LoginScreen";
 import CodeVerificationScreen from "../feature/start/Auth/Register/CodeVerificationScreen";
 import EmailVerificationScreen from "../feature/start/Auth/Register/EmailVerificationScreen";
@@ -46,6 +48,8 @@ const authScreens = [
   { name: "Onboarding", component: OnboardingScreen },
   { name: "Login", component: LoginScreen },
   { name: "ForgotPassword", component: ForgotPasswordScreen },
+  { name: "RecoveryCode", component: RecoveryCodeScreen },
+  { name: "NewPassword", component: NewPasswordScreen },
   { name: "UserType", component: UserTypeScreen },
   { name: "RoleSelection", component: RoleSelectionScreen },
   { name: "RegisterInfo", component: RegisterInfoScreen },

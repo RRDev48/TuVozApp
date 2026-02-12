@@ -3,47 +3,48 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { useCodeVerification } from "../(hooks)/useCodeVerification";
-import { useOTPVerification } from "../(hooks)/useOTPVerification";
+import { usePasswordRecovery } from "../(hooks)/usePasswordRecovery";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../components/BackButton";
 
-type CodeVerificationScreenNavigationProp = StackNavigationProp<
+type RecoveryCodeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
-  "CodeVerification"
+  "RecoveryCode"
 >;
 
-type CodeVerificationScreenRouteProp = RouteProp<
+type RecoveryCodeScreenRouteProp = RouteProp<
   RootStackParamsList,
-  "CodeVerification"
+  "RecoveryCode"
 >;
 
-const CodeVerificationScreen = () => {
-  const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
-  const route = useRoute<CodeVerificationScreenRouteProp>();
-  const { email = "", name = "", age = "", role = "self" } = route.params || {};
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+const RecoveryCodeScreen = () => {
+  const navigation = useNavigation<RecoveryCodeScreenNavigationProp>();
+  const route = useRoute<RecoveryCodeScreenRouteProp>();
+  const { email = "" } = route.params || {};
 
-  const { verifyCode } = useOTPVerification({
-    email,
-    onSuccess: () => setShowSuccessAlert(true),
-    userData: { name, age, role },
-  });
+  const { verifyRecoveryCode } = usePasswordRecovery();
 
   const handleVerifyCode = async (fullCode: string) => {
-    const success = await verifyCode(fullCode);
-    if (!success) {
+    const result = await verifyRecoveryCode(email, fullCode);
+
+    if (result.success) {
+      // Navegar a la pantalla de nueva contraseña
+      navigation.navigate("NewPassword", { email });
+    } else {
+      Alert.alert("Error", result.error || "Código de verificación incorrecto");
       resetCode();
     }
   };
@@ -53,11 +54,6 @@ const CodeVerificationScreen = () => {
       codeLength: 6,
       onComplete: handleVerifyCode,
     });
-
-  const handleSuccessAlertClose = () => {
-    setShowSuccessAlert(false);
-    navigation.navigate("Login");
-  };
 
   return (
     <KeyboardAvoidingView
@@ -178,4 +174,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CodeVerificationScreen;
+export default RecoveryCodeScreen;

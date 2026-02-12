@@ -279,6 +279,30 @@ export const authService = {
   },
 
   /**
+   * Actualiza la contraseña del usuario autenticado
+   * @param newPassword - Nueva contraseña
+   * @returns Promise con resultado de la operación
+   */
+  async updatePassword(newPassword: string) {
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return { success: true, data };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || "Error al actualizar contraseña",
+      };
+    }
+  },
+
+  /**
    * Cierra la sesión actual
    * @returns Promise con resultado de la operación
    */

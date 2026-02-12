@@ -5,18 +5,17 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../components/BackButton";
-import SuccessAlert from "./components/SuccessAlert";
 
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -27,7 +26,6 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSend = async () => {
     if (!email.trim()) {
@@ -45,14 +43,16 @@ const ForgotPasswordScreen = () => {
     setLoading(true);
 
     try {
-      const result = await authService.sendPasswordResetEmail(email);
+      // Enviar OTP para recuperación de contraseña
+      const result = await authService.sendOTP(email, false);
 
       if (result.success) {
-        setShowSuccess(true);
+        // Navegar a la pantalla de verificación de código
+        navigation.navigate("RecoveryCode", { email });
       } else {
         Alert.alert(
           "Error",
-          result.error || "No se pudo enviar el correo de recuperación",
+          result.error || "No se pudo enviar el código de verificación",
         );
       }
     } catch (error) {
@@ -60,12 +60,6 @@ const ForgotPasswordScreen = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCloseSuccess = () => {
-    setShowSuccess(false);
-    // Regresar a la pantalla de login después de cerrar el alert
-    navigation.goBack();
   };
 
   const handleHelp = () => {
@@ -140,13 +134,6 @@ const ForgotPasswordScreen = () => {
           <Text style={styles.helpLink}>Ayuda</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Alert de éxito */}
-      <SuccessAlert
-        visible={showSuccess}
-        title="Recuperación de Contraseña enviada"
-        onClose={handleCloseSuccess}
-      />
     </View>
   );
 };

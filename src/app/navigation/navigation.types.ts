@@ -24,6 +24,8 @@ type RootStackParamsList = {
   Onboarding: undefined;
   Login: undefined;
   ForgotPassword: undefined;
+  RecoveryCode: { email: string };
+  NewPassword: { email: string };
   UserType: undefined;
   RoleSelection: undefined;
   RegisterInfo: { role?: string };
