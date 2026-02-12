@@ -3,7 +3,6 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback, useState } from "react";
-import { Alert } from "react-native";
 
 type AddressFormParams = {
   initialAddress?: string;
@@ -22,13 +21,12 @@ export const useAddressForm = ({
   const { transformText } = usePersonalization();
 
   const [address, setAddress] = useState(initialAddress);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSave = useCallback(() => {
     if (address.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese una dirección"),
-      );
+      setShowErrorModal(true);
       return;
     }
 
@@ -38,35 +36,28 @@ export const useAddressForm = ({
       onUpdate(address);
     }
     navigation.goBack();
-  }, [address, onAdd, onUpdate, navigation, transformText]);
+  }, [address, onAdd, onUpdate, navigation]);
 
   const handleDelete = useCallback(() => {
-    Alert.alert(
-      transformText("Eliminar dirección"),
-      transformText("¿Estás seguro de que deseas eliminar esta dirección?"),
-      [
-        {
-          text: transformText("Cancelar"),
-          style: "cancel",
-        },
-        {
-          text: transformText("Eliminar"),
-          style: "destructive",
-          onPress: () => {
-            if (onDelete) {
-              onDelete();
-            }
-            navigation.goBack();
-          },
-        },
-      ],
-    );
-  }, [onDelete, navigation, transformText]);
+    setShowConfirmModal(true);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    if (onDelete) {
+      onDelete();
+    }
+    navigation.goBack();
+  }, [onDelete, navigation]);
 
   return {
     address,
     setAddress,
     handleSave,
     handleDelete,
+    confirmDelete,
+    showErrorModal,
+    setShowErrorModal,
+    showConfirmModal,
+    setShowConfirmModal,
   };
 };

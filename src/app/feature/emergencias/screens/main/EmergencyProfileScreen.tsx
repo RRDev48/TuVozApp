@@ -1,3 +1,5 @@
+import ConfirmationModal from "@/src/app/components/alerts/ConfirmationModal";
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -22,8 +24,17 @@ const EmergencyProfileScreen = () => {
   const styles = useEmergencyProfileScreenStyles();
   const themedColors = getThemedColors();
   const { profile, profileFullName, loading } = useEmergencyProfile();
-  const { sendingAlert, handleEmergencyCall, sendAlert } =
-    useEmergencyActions();
+  const {
+    sendingAlert,
+    handleEmergencyCall,
+    confirmEmergencyCall,
+    sendAlert,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
+    showConfirmModal,
+    setShowConfirmModal,
+  } = useEmergencyActions();
 
   // Enviar alerta de emergencia al contacto configurado
   const handleSendAlert = () => {
@@ -147,6 +158,22 @@ const EmergencyProfileScreen = () => {
           )}
         </TouchableOpacity>
       </View>
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
+
+      <ConfirmationModal
+        visible={showConfirmModal}
+        title={transformText("Llamada de emergencia ¿Deseas llamar al 911?")}
+        confirmText={transformText("Llamar")}
+        cancelText={transformText("Cancelar")}
+        onConfirm={confirmEmergencyCall}
+        onCancel={() => setShowConfirmModal(false)}
+      />
     </View>
   );
 };

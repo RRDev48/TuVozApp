@@ -1,12 +1,12 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useState } from "react";
 import {
-  Alert,
   Keyboard,
   StyleSheet,
   Text,
@@ -34,6 +34,8 @@ const PasswordSetupScreen = () => {
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async (validPassword: string) => {
     try {
@@ -42,11 +44,11 @@ const PasswordSetupScreen = () => {
       const authResponse = await authService.signUp(email, validPassword);
 
       if (!authResponse.success || !authResponse.data?.user) {
-        Alert.alert(
-          "Error",
+        setErrorMessage(
           authResponse.error ||
             "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
         );
+        setShowErrorModal(true);
         return;
       }
 
@@ -60,10 +62,8 @@ const PasswordSetupScreen = () => {
         role,
       });
     } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error.message || "Ocurrió un error durante el registro.",
-      );
+      setErrorMessage(error.message || "Ocurrió un error durante el registro.");
+      setShowErrorModal(true);
     }
   };
 
@@ -203,6 +203,13 @@ const PasswordSetupScreen = () => {
         >
           <Text style={styles.termsText}>Términos y Condiciones</Text>
         </TouchableOpacity>
+
+        <ErrorModal
+          visible={showErrorModal}
+          title="Error"
+          message={errorMessage}
+          onClose={() => setShowErrorModal(false)}
+        />
       </View>
     </TouchableWithoutFeedback>
   );

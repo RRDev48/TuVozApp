@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
@@ -18,6 +19,7 @@ import { useCodeVerification } from "../(hooks)/useCodeVerification";
 import { useOTPVerification } from "../(hooks)/useOTPVerification";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../components/BackButton";
+import SuccessAlert from "../ForgotPassword/components/SuccessAlert";
 
 type CodeVerificationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -35,7 +37,13 @@ const CodeVerificationScreen = () => {
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const { verifyCode } = useOTPVerification({
+  const {
+    verifyCode,
+    isVerifying,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
+  } = useOTPVerification({
     email,
     onSuccess: () => setShowSuccessAlert(true),
     userData: { name, age, role },
@@ -46,6 +54,12 @@ const CodeVerificationScreen = () => {
     if (!success) {
       resetCode();
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessAlert(false);
+    // Navigate to Home after successful registration
+    navigation.navigate("Home");
   };
 
   const { code, inputRefs, handleCodeChange, handleKeyPress, resetCode } =
@@ -117,6 +131,19 @@ const CodeVerificationScreen = () => {
             />
           ))}
         </View>
+
+        <ErrorModal
+          visible={showErrorModal}
+          title="Error"
+          message={errorMessage}
+          onClose={() => setShowErrorModal(false)}
+        />
+
+        <SuccessAlert
+          visible={showSuccessAlert}
+          title="Verificación exitosa"
+          onClose={handleSuccessModalClose}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

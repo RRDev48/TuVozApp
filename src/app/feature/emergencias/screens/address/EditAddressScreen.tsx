@@ -1,3 +1,5 @@
+import ConfirmationModal from "@/src/app/components/alerts/ConfirmationModal";
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -22,7 +24,17 @@ const EditAddressScreen = () => {
   const { transformText } = usePersonalization();
   const styles = useEditAddressScreenStyles();
 
-  const { address, setAddress, handleSave, handleDelete } = useAddressForm({
+  const {
+    address,
+    setAddress,
+    handleSave,
+    handleDelete,
+    confirmDelete,
+    showErrorModal,
+    setShowErrorModal,
+    showConfirmModal,
+    setShowConfirmModal,
+  } = useAddressForm({
     initialAddress: route.params?.address || "",
     onUpdate: route.params?.onUpdate,
     onDelete: route.params?.onDelete,
@@ -55,6 +67,22 @@ const EditAddressScreen = () => {
           {transformText("Eliminar dirección")}
         </Text>
       </TouchableOpacity>
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese una dirección"
+        onClose={() => setShowErrorModal(false)}
+      />
+
+      <ConfirmationModal
+        visible={showConfirmModal}
+        title="¿Estás seguro de que deseas eliminar esta dirección?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirmModal(false)}
+      />
     </View>
   );
 };

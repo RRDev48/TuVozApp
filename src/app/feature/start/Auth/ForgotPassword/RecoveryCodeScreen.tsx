@@ -1,11 +1,11 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useState } from "react";
 import {
-    Alert,
     Image,
     KeyboardAvoidingView,
     Platform,
@@ -34,6 +34,8 @@ const RecoveryCodeScreen = () => {
   const navigation = useNavigation<RecoveryCodeScreenNavigationProp>();
   const route = useRoute<RecoveryCodeScreenRouteProp>();
   const { email = "" } = route.params || {};
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { verifyRecoveryCode } = usePasswordRecovery();
 
@@ -44,7 +46,8 @@ const RecoveryCodeScreen = () => {
       // Navegar a la pantalla de nueva contraseña
       navigation.navigate("NewPassword", { email });
     } else {
-      Alert.alert("Error", result.error || "Código de verificación incorrecto");
+      setErrorMessage(result.error || "Código de verificación incorrecto");
+      setShowErrorModal(true);
       resetCode();
     }
   };
@@ -113,6 +116,13 @@ const RecoveryCodeScreen = () => {
             />
           ))}
         </View>
+
+        <ErrorModal
+          visible={showErrorModal}
+          title="Error"
+          message={errorMessage}
+          onClose={() => setShowErrorModal(false)}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

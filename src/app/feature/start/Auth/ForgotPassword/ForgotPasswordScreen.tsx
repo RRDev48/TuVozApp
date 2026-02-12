@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -6,7 +7,6 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -26,17 +26,21 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSend = async () => {
     if (!email.trim()) {
-      Alert.alert("Error", "Por favor ingresa tu correo electrónico");
+      setErrorMessage("Por favor ingresa tu correo electrónico");
+      setShowErrorModal(true);
       return;
     }
 
     // Validación básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Por favor ingresa un correo electrónico válido");
+      setErrorMessage("Por favor ingresa un correo electrónico válido");
+      setShowErrorModal(true);
       return;
     }
 
@@ -50,13 +54,14 @@ const ForgotPasswordScreen = () => {
         // Navegar a la pantalla de verificación de código
         navigation.navigate("RecoveryCode", { email });
       } else {
-        Alert.alert(
-          "Error",
+        setErrorMessage(
           result.error || "No se pudo enviar el código de verificación",
         );
+        setShowErrorModal(true);
       }
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error inesperado");
+      setErrorMessage("Ocurrió un error inesperado");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -133,6 +138,13 @@ const ForgotPasswordScreen = () => {
           <Text style={styles.helpLink}>Ayuda</Text>
         </TouchableOpacity>
       </View>
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

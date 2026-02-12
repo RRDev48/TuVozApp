@@ -1,15 +1,18 @@
 import { useCallback, useState } from "react";
-import { Alert } from "react-native";
 import { supportService } from "../(services)/supportService";
 
 export const useSupportForm = (navigation: any) => {
   const [subject, setSubject] = useState("");
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = useCallback(async () => {
     if (!subject.trim() || !query.trim()) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      setErrorMessage("Por favor completa todos los campos");
+      setShowErrorModal(true);
       return;
     }
 
@@ -23,28 +26,32 @@ export const useSupportForm = (navigation: any) => {
       });
 
       if (response.success) {
-        Alert.alert(
-          "Éxito",
-          "Tu consulta ha sido enviada. Te contactaremos pronto.",
-          [
-            {
-              text: "OK",
-              onPress: () => navigation.goBack(),
-            },
-          ],
-        );
+        // Resetear campos
+        setSubject("");
+        setQuery("");
+        // Mostrar mensaje de éxito primero
+        setShowSuccessModal(true);
+        // Navegar después de que se cierre el modal o después del autoCloseDelay
+        // El modal está configurado con autoCloseDelay, así que navegará automáticamente
       } else {
-        Alert.alert(
-          "Error",
+        setErrorMessage(
           response.error || "No se pudo enviar tu consulta. Intenta de nuevo.",
         );
+        setShowErrorModal(true);
       }
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error inesperado. Intenta de nuevo.");
+      setErrorMessage("Ocurrió un error inesperado. Intenta de nuevo.");
+      setShowErrorModal(true);
     } finally {
       setIsSubmitting(false);
     }
   }, [subject, query, navigation]);
+
+  const handleSuccessModalClose = useCallback(() => {
+    setShowSuccessModal(false);
+    // Navegar hacia atrás después de cerrar el modal
+    navigation.goBack();
+  }, [navigation]);
 
   return {
     subject,
@@ -53,5 +60,11 @@ export const useSupportForm = (navigation: any) => {
     setQuery,
     isSubmitting,
     handleSubmit,
+    showSuccessModal,
+    setShowSuccessModal,
+    handleSuccessModalClose,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
   };
 };

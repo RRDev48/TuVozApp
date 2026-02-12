@@ -1,6 +1,5 @@
 import type { UserRole } from "@/src/types/database.types";
 import { useState } from "react";
-import { Alert } from "react-native";
 import { authService } from "../(services)/authService";
 
 interface UseOTPVerificationProps {
@@ -19,10 +18,13 @@ export const useOTPVerification = ({
   userData,
 }: UseOTPVerificationProps) => {
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const verifyCode = async (code: string) => {
     if (code.length !== 6) {
-      Alert.alert("Error", "Por favor ingresa el código de 6 dígitos completo");
+      setErrorMessage("Por favor ingresa el código de 6 dígitos completo");
+      setShowErrorModal(true);
       return false;
     }
 
@@ -32,10 +34,8 @@ export const useOTPVerification = ({
       const response = await authService.verifyOTP(email, code, "signup");
 
       if (response.error || !response.success) {
-        Alert.alert(
-          "Error",
-          response.error || "Código de verificación incorrecto",
-        );
+        setErrorMessage(response.error || "Código de verificación incorrecto");
+        setShowErrorModal(true);
         return false;
       }
 
@@ -55,10 +55,10 @@ export const useOTPVerification = ({
 
         if (!currentUser) {
           console.error("No authenticated session after OTP verification");
-          Alert.alert(
-            "Advertencia",
+          setErrorMessage(
             "Verificación exitosa pero no se pudo autenticar. Por favor inicia sesión.",
           );
+          setShowErrorModal(true);
           onSuccess();
           return true;
         }
@@ -75,10 +75,8 @@ export const useOTPVerification = ({
 
         if (!result.success) {
           console.error("Error creating user and profile:", result.error);
-          Alert.alert(
-            "Advertencia",
-            `No se pudo completar el registro: ${result.error}`,
-          );
+          setErrorMessage(`No se pudo completar el registro: ${result.error}`);
+          setShowErrorModal(true);
         } else {
           console.log("User and profile created successfully");
         }
@@ -87,7 +85,8 @@ export const useOTPVerification = ({
       onSuccess();
       return true;
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error al verificar el código");
+      setErrorMessage("Ocurrió un error al verificar el código");
+      setShowErrorModal(true);
       return false;
     } finally {
       setIsVerifying(false);
@@ -96,5 +95,9 @@ export const useOTPVerification = ({
 
   return {
     verifyCode,
+    isVerifying,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
   };
 };

@@ -3,7 +3,6 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback, useState } from "react";
-import { Alert } from "react-native";
 
 export const SEVERITY_LEVELS = ["Leve", "Moderada", "Grave"];
 
@@ -35,6 +34,7 @@ export const useAllergyForm = ({
   const [allergyName, setAllergyName] = useState(parsed.name);
   const [selectedSeverity, setSelectedSeverity] = useState(parsed.severity);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSelectSeverity = useCallback((severity: string) => {
     setSelectedSeverity(severity);
@@ -43,10 +43,7 @@ export const useAllergyForm = ({
 
   const handleSave = useCallback(() => {
     if (allergyName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la alergia"),
-      );
+      setShowErrorModal(true);
       return;
     }
 
@@ -58,14 +55,7 @@ export const useAllergyForm = ({
       onUpdate(formattedAllergy);
     }
     navigation.goBack();
-  }, [
-    allergyName,
-    selectedSeverity,
-    onAdd,
-    onUpdate,
-    navigation,
-    transformText,
-  ]);
+  }, [allergyName, selectedSeverity, onAdd, onUpdate, navigation]);
 
   const handleDelete = useCallback(() => {
     if (onDelete) {
@@ -83,5 +73,7 @@ export const useAllergyForm = ({
     handleSelectSeverity,
     handleSave,
     handleDelete,
+    showErrorModal,
+    setShowErrorModal,
   };
 };

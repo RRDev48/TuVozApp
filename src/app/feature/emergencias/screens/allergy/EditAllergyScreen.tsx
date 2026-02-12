@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -39,6 +40,8 @@ const EditAllergyScreen = () => {
     handleSelectSeverity,
     handleSave,
     handleDelete,
+    showErrorModal,
+    setShowErrorModal,
   } = useAllergyForm({
     initialAllergy: route.params?.allergy || "",
     onUpdate: route.params?.onUpdate,
@@ -164,6 +167,13 @@ const EditAllergyScreen = () => {
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>
       </TouchableOpacity>
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese el nombre de la alergia"
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

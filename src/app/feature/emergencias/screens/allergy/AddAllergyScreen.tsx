@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,6 +38,8 @@ const AddAllergyScreen = () => {
     setIsDropdownOpen,
     handleSelectSeverity,
     handleSave,
+    showErrorModal,
+    setShowErrorModal,
   } = useAllergyForm({
     onAdd: route.params?.onAdd,
   });
@@ -138,6 +141,13 @@ const AddAllergyScreen = () => {
       </View>
 
       <SaveButton onPress={handleSave} />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese el nombre de la alergia"
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

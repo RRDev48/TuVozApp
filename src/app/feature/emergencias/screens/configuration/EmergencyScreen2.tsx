@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -7,7 +8,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -43,6 +43,8 @@ const EmergencyScreen2 = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Obtener los datos del formulario desde la navegación
   const [formData, setFormData] = useState(route.params.formData);
@@ -102,12 +104,12 @@ const EmergencyScreen2 = () => {
         !formData.emergency_contact_phone ||
         !formData.alert_type
       ) {
-        Alert.alert(
-          transformText("Datos incompletos"),
+        setErrorMessage(
           transformText(
             "Por favor completa los campos obligatorios: tipo de sangre, contacto de emergencia y modo de alerta.",
           ),
         );
+        setShowErrorModal(true);
         setIsSaving(false);
         return;
       }
@@ -149,14 +151,14 @@ const EmergencyScreen2 = () => {
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al guardar perfil de emergencia:", error);
-      Alert.alert(
-        transformText("Error"),
+      setErrorMessage(
         transformText(
           error instanceof Error
             ? error.message
             : "No se pudo guardar el perfil de emergencia",
         ),
       );
+      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
@@ -298,6 +300,13 @@ const EmergencyScreen2 = () => {
       <EmergencySuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
+      />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title={transformText("Error")}
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
       />
     </View>
   );

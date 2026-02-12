@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -22,9 +23,10 @@ const AddAddressScreen = () => {
   const { transformText } = usePersonalization();
   const styles = useAddressScreenStyles();
 
-  const { address, setAddress, handleSave } = useAddressForm({
-    onAdd: route.params?.onAdd,
-  });
+  const { address, setAddress, handleSave, showErrorModal, setShowErrorModal } =
+    useAddressForm({
+      onAdd: route.params?.onAdd,
+    });
 
   return (
     <View style={styles.container}>
@@ -47,6 +49,13 @@ const AddAddressScreen = () => {
       </ScrollView>
 
       <SaveButton onPress={handleSave} />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese una dirección"
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

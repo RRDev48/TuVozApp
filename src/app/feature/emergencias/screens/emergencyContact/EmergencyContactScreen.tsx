@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -5,7 +6,6 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useState } from "react";
 import {
-  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -45,6 +45,8 @@ const EmergencyContactScreen = () => {
     route.params?.currentPhoneNumber || "",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSelectCountryCode = (code: string) => {
     setSelectedCountryCode(code);
@@ -53,18 +55,14 @@ const EmergencyContactScreen = () => {
 
   const handleSave = () => {
     if (contactName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre del contacto"),
-      );
+      setErrorMessage("Por favor ingrese el nombre del contacto");
+      setShowErrorModal(true);
       return;
     }
 
     if (phoneNumber.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el número de teléfono"),
-      );
+      setErrorMessage("Por favor ingrese el número de teléfono");
+      setShowErrorModal(true);
       return;
     }
 
@@ -160,6 +158,13 @@ const EmergencyContactScreen = () => {
       </ScrollView>
 
       <SaveButton onPress={handleSave} />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -45,6 +46,8 @@ const EditMedicationScreen = () => {
     handleSelectFrequency,
     handleSave,
     handleDelete,
+    showErrorModal,
+    setShowErrorModal,
   } = useMedicationForm({
     initialMedication: route.params?.medication || "",
     onUpdate: route.params?.onUpdate,
@@ -170,6 +173,13 @@ const EditMedicationScreen = () => {
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>
       </TouchableOpacity>
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese el nombre de la medicación"
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

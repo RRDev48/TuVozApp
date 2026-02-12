@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -43,6 +44,8 @@ const AddMedicationScreen = () => {
     setIsDropdownOpen,
     handleSelectFrequency,
     handleSave,
+    showErrorModal,
+    setShowErrorModal,
   } = useMedicationForm({
     onAdd: route.params?.onAdd,
   });
@@ -180,6 +183,13 @@ const AddMedicationScreen = () => {
       </View>
 
       <SaveButton onPress={handleSave} />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message="Por favor ingrese el nombre de la medicación"
+        onClose={() => setShowErrorModal(false)}
+      />
     </View>
   );
 };

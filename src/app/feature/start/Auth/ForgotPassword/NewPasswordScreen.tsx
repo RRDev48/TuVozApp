@@ -1,3 +1,4 @@
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,7 +8,6 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
     ActivityIndicator,
-    Alert,
     StyleSheet,
     Text,
     TextInput,
@@ -36,23 +36,28 @@ const NewPasswordScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { updatePassword, isUpdating } = usePasswordRecovery();
 
   const handleUpdatePassword = async () => {
     // Validaciones
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      setErrorMessage("Por favor completa todos los campos");
+      setShowErrorModal(true);
       return;
     }
 
     if (newPassword.length < 6) {
-      Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
+      setErrorMessage("La contraseña debe tener al menos 6 caracteres");
+      setShowErrorModal(true);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden");
+      setErrorMessage("Las contraseñas no coinciden");
+      setShowErrorModal(true);
       return;
     }
 
@@ -62,10 +67,8 @@ const NewPasswordScreen = () => {
     if (result.success) {
       setShowSuccess(true);
     } else {
-      Alert.alert(
-        "Error",
-        result.error || "No se pudo actualizar la contraseña",
-      );
+      setErrorMessage(result.error || "No se pudo actualizar la contraseña");
+      setShowErrorModal(true);
     }
   };
 
@@ -169,6 +172,13 @@ const NewPasswordScreen = () => {
         visible={showSuccess}
         title="Contraseña actualizada"
         onClose={handleCloseSuccess}
+      />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
       />
     </View>
   );

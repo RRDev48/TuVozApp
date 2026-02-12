@@ -1,4 +1,6 @@
 import CustomText from "@/src/app/components/CustomText";
+import ErrorModal from "@/src/app/components/alerts/ErrorModal";
+import SuccessModal from "@/src/app/components/alerts/SuccessModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -12,7 +14,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useSupportForm } from "../../(hooks)/useSupportForm";
 import BackButton from "../../../components/BackButton";
@@ -23,8 +25,19 @@ const NewSupportEntryScreen = () => {
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
-  const { subject, setSubject, query, setQuery, isSubmitting, handleSubmit } =
-    useSupportForm(navigation);
+  const {
+    subject,
+    setSubject,
+    query,
+    setQuery,
+    isSubmitting,
+    handleSubmit,
+    showSuccessModal,
+    handleSuccessModalClose,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
+  } = useSupportForm(navigation);
 
   const styles = useMemo(
     () =>
@@ -167,6 +180,24 @@ const NewSupportEntryScreen = () => {
           </CustomText>
         </TouchableOpacity>
       </View>
+
+      {/* Modales */}
+      <SuccessModal
+        visible={showSuccessModal}
+        title="Tu consulta ha sido enviada. Te contactaremos pronto."
+        onClose={handleSuccessModalClose}
+        autoCloseDelay={4000} // Se cierra automáticamente después de 4 segundos
+        showDelay={300} // Se muestra con un delay de 300ms
+      />
+
+      <ErrorModal
+        visible={showErrorModal}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+        showDelay={200} // Se muestra con un delay de 200ms
+        autoCloseDelay={0} // Sin auto-cierre (requiere interacción del usuario)
+      />
     </KeyboardAvoidingView>
   );
 };

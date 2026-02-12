@@ -1,9 +1,9 @@
 import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { useSupportStyles } from "../../(hooks)/useSupportStyles";
-import { useSupportTickets } from "../../(hooks)/useSupportTickets";
+import { supportService, SupportTicket } from "../../(services)/supportService";
 import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
 import BackButton from "../../../components/BackButton";
 import ScreenTitle from "../../../components/ScreenTitle";
@@ -20,8 +20,24 @@ const SupportScreen = () => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const { tickets, isLoading } = useSupportTickets();
   const styles = useSupportStyles();
+
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTickets = async () => {
+        setIsLoading(true);
+        const response = await supportService.getUserTickets();
+        if (response.success && response.data) {
+          setTickets(response.data);
+        }
+        setIsLoading(false);
+      };
+      fetchTickets();
+    }, []),
+  );
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();

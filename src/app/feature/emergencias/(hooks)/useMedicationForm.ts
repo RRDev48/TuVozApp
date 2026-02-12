@@ -3,7 +3,6 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback, useState } from "react";
-import { Alert } from "react-native";
 
 export const FREQUENCY_OPTIONS = [
   "Diaria",
@@ -41,6 +40,7 @@ export const useMedicationForm = ({
   const [medicationName, setMedicationName] = useState(parsed.name);
   const [selectedFrequency, setSelectedFrequency] = useState(parsed.frequency);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSelectFrequency = useCallback((frequency: string) => {
     setSelectedFrequency(frequency);
@@ -49,10 +49,7 @@ export const useMedicationForm = ({
 
   const handleSave = useCallback(() => {
     if (medicationName.trim() === "") {
-      Alert.alert(
-        transformText("Error"),
-        transformText("Por favor ingrese el nombre de la medicación"),
-      );
+      setShowErrorModal(true);
       return;
     }
 
@@ -64,14 +61,7 @@ export const useMedicationForm = ({
       onUpdate(formattedMedication);
     }
     navigation.goBack();
-  }, [
-    medicationName,
-    selectedFrequency,
-    onAdd,
-    onUpdate,
-    navigation,
-    transformText,
-  ]);
+  }, [medicationName, selectedFrequency, onAdd, onUpdate, navigation]);
 
   const handleDelete = useCallback(() => {
     if (onDelete) {
@@ -89,5 +79,7 @@ export const useMedicationForm = ({
     handleSelectFrequency,
     handleSave,
     handleDelete,
+    showErrorModal,
+    setShowErrorModal,
   };
 };

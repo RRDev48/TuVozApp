@@ -1,10 +1,13 @@
 import * as Location from "expo-location";
 import { useState } from "react";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
 import { EmergencyProfile } from "../(services)/emergencyService";
 
 export const useEmergencyActions = () => {
   const [sendingAlert, setSendingAlert] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const getLocation = async () => {
     try {
@@ -12,10 +15,10 @@ export const useEmergencyActions = () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
-        Alert.alert(
-          "Error",
+        setErrorMessage(
           "Se necesitan permisos de ubicación para enviar la alerta",
         );
+        setShowErrorModal(true);
         return null;
       }
 
@@ -27,24 +30,19 @@ export const useEmergencyActions = () => {
       return location;
     } catch (error) {
       console.error("Error obteniendo ubicación:", error);
-      Alert.alert("Error", "No se pudo obtener la ubicación");
+      setErrorMessage("No se pudo obtener la ubicación");
+      setShowErrorModal(true);
       return null;
     }
   };
 
   const handleEmergencyCall = () => {
-    Alert.alert("Llamada de emergencia", "¿Deseas llamar al 911?", [
-      {
-        text: "Cancelar",
-        style: "cancel",
-      },
-      {
-        text: "Llamar",
-        onPress: () => {
-          Linking.openURL("tel:911");
-        },
-      },
-    ]);
+    setShowConfirmModal(true);
+  };
+
+  const confirmEmergencyCall = () => {
+    setShowConfirmModal(false);
+    Linking.openURL("tel:911");
   };
 
   const sendAlert = async (profile: EmergencyProfile, userName?: string) => {
@@ -52,7 +50,8 @@ export const useEmergencyActions = () => {
     const phone = profile?.emergency_contact_phone || "";
 
     if (!phone) {
-      Alert.alert("Error", "No hay contacto de emergencia configurado");
+      setErrorMessage("No hay contacto de emergencia configurado");
+      setShowErrorModal(true);
       return;
     }
 
@@ -90,16 +89,17 @@ export const useEmergencyActions = () => {
           try {
             await Linking.openURL(waUrl);
           } catch (waError) {
-            Alert.alert(
-              "Error",
+            setErrorMessage(
               "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
             );
+            setShowErrorModal(true);
           }
         }
       }
     } catch (error) {
       console.error("Error enviando alerta:", error);
-      Alert.alert("Error", "No se pudo enviar la alerta");
+      setErrorMessage("No se pudo enviar la alerta");
+      setShowErrorModal(true);
     } finally {
       setSendingAlert(false);
     }
@@ -108,7 +108,13 @@ export const useEmergencyActions = () => {
   return {
     sendingAlert,
     handleEmergencyCall,
+    confirmEmergencyCall,
     sendAlert,
     getLocation,
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
+    showConfirmModal,
+    setShowConfirmModal,
   };
 };
