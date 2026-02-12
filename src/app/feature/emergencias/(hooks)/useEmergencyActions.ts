@@ -1,3 +1,4 @@
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import * as Location from "expo-location";
 import { useState } from "react";
 import { Linking } from "react-native";
@@ -5,9 +6,10 @@ import { EmergencyProfile } from "../(services)/emergencyService";
 
 export const useEmergencyActions = () => {
   const [sendingAlert, setSendingAlert] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const getLocation = async () => {
     try {
@@ -15,10 +17,14 @@ export const useEmergencyActions = () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
-        setErrorMessage(
+        logAndShowError(
           "Se necesitan permisos de ubicación para enviar la alerta",
+          new Error("Se necesitan permisos de ubicación para enviar la alerta"),
+          {
+            context: "location_permission_denied",
+            metadata: { permission_status: status },
+          },
         );
-        setShowErrorModal(true);
         return null;
       }
 
@@ -30,8 +36,14 @@ export const useEmergencyActions = () => {
       return location;
     } catch (error) {
       console.error("Error obteniendo ubicación:", error);
-      setErrorMessage("No se pudo obtener la ubicación");
-      setShowErrorModal(true);
+      logAndShowError(
+        (error as Error).message || "Error obteniendo ubicación",
+        error as Error,
+        {
+          context: "location_fetch_failed",
+          metadata: { error_type: "location_retrieval" },
+        },
+      );
       return null;
     }
   };
@@ -50,8 +62,14 @@ export const useEmergencyActions = () => {
     const phone = profile?.emergency_contact_phone || "";
 
     if (!phone) {
-      setErrorMessage("No hay contacto de emergencia configurado");
-      setShowErrorModal(true);
+      logAndShowError(
+        "No hay contacto de emergencia configurado",
+        new Error("No hay contacto de emergencia configurado"),
+        {
+          context: "emergency_contact_missing",
+          metadata: { profile_id: profile?.id, alert_type: alertType },
+        },
+      );
       return;
     }
 
@@ -89,17 +107,29 @@ export const useEmergencyActions = () => {
           try {
             await Linking.openURL(waUrl);
           } catch (waError) {
-            setErrorMessage(
+            logAndShowError(
               "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
+              new Error(
+                "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
+              ),
+              {
+                context: "whatsapp_open_failed",
+                metadata: { phone, error_type: "whatsapp_unavailable" },
+              },
             );
-            setShowErrorModal(true);
           }
         }
       }
     } catch (error) {
       console.error("Error enviando alerta:", error);
-      setErrorMessage("No se pudo enviar la alerta");
-      setShowErrorModal(true);
+      logAndShowError(
+        (error as Error).message || "Error enviando alerta",
+        error as Error,
+        {
+          context: "emergency_alert_failed",
+          metadata: { alert_type: alertType, phone, user_name: userName },
+        },
+      );
     } finally {
       setSendingAlert(false);
     }
@@ -112,7 +142,7 @@ export const useEmergencyActions = () => {
     sendAlert,
     getLocation,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     errorMessage,
     showConfirmModal,
     setShowConfirmModal,

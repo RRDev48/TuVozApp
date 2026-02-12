@@ -45,7 +45,7 @@ const AddMedicationScreen = () => {
     handleSelectFrequency,
     handleSave,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
   } = useMedicationForm({
     onAdd: route.params?.onAdd,
   });
@@ -188,7 +188,7 @@ const AddMedicationScreen = () => {
         visible={showErrorModal}
         title="Error"
         message="Por favor ingrese el nombre de la medicación"
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

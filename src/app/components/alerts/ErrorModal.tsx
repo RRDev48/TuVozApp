@@ -18,6 +18,7 @@ interface ErrorModalProps {
   onClose: () => void;
   showDelay?: number; // delay before showing modal (ms)
   autoCloseDelay?: number; // auto close after delay (ms), 0 = no auto close
+  onDismiss?: () => void; // callback when modal is dismissed (for additional logging)
 }
 
 const ErrorModal = ({
@@ -28,6 +29,7 @@ const ErrorModal = ({
   onClose,
   showDelay = 0,
   autoCloseDelay = 0,
+  onDismiss,
 }: ErrorModalProps) => {
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
@@ -51,11 +53,17 @@ const ErrorModal = ({
   useEffect(() => {
     if (showModal && autoCloseDelay > 0) {
       const autoCloseTimer = setTimeout(() => {
+        if (onDismiss) onDismiss();
         onClose();
       }, autoCloseDelay);
       return () => clearTimeout(autoCloseTimer);
     }
-  }, [showModal, autoCloseDelay, onClose]);
+  }, [showModal, autoCloseDelay, onClose, onDismiss]);
+
+  const handleManualClose = () => {
+    if (onDismiss) onDismiss();
+    onClose();
+  };
 
   const styles = StyleSheet.create({
     container: {
@@ -108,7 +116,7 @@ const ErrorModal = ({
       visible={showModal}
       transparent={false}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={handleManualClose}
     >
       <View style={styles.container}>
         <View style={styles.iconContainer}>
@@ -123,7 +131,7 @@ const ErrorModal = ({
           <Text style={styles.message}>{transformText(message)}</Text>
         )}
 
-        <TouchableOpacity style={styles.button} onPress={onClose}>
+        <TouchableOpacity style={styles.button} onPress={handleManualClose}>
           <Text style={styles.buttonText}>{transformText(buttonText)}</Text>
         </TouchableOpacity>
       </View>

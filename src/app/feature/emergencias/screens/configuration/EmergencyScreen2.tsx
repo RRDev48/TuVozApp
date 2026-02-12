@@ -1,6 +1,7 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -43,11 +44,14 @@ const EmergencyScreen2 = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   // Obtener los datos del formulario desde la navegación
-  const [formData, setFormData] = useState(route.params.formData);
+  const [formData, setFormData] = useState<
+    RootStackParamsList["EmergenciasParte2"]["formData"]
+  >(route.params.formData);
 
   const handleAddressEdit = () => {
     navigation.navigate("AddressSelection", {
@@ -104,12 +108,20 @@ const EmergencyScreen2 = () => {
         !formData.emergency_contact_phone ||
         !formData.alert_type
       ) {
-        setErrorMessage(
+        logAndShowError(
           transformText(
             "Por favor completa los campos obligatorios: tipo de sangre, contacto de emergencia y modo de alerta.",
           ),
+          new Error("Campos obligatorios faltantes"),
+          {
+            context: "emergency_profile_validation_failed",
+            metadata: {
+              missing_blood_type: !formData.blood_type,
+              missing_contact: !formData.emergency_contact_name,
+              missing_alert_type: !formData.alert_type,
+            },
+          },
         );
-        setShowErrorModal(true);
         setIsSaving(false);
         return;
       }
@@ -151,14 +163,20 @@ const EmergencyScreen2 = () => {
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al guardar perfil de emergencia:", error);
-      setErrorMessage(
-        transformText(
-          error instanceof Error
-            ? error.message
-            : "No se pudo guardar el perfil de emergencia",
-        ),
+      logAndShowError(
+        error instanceof Error
+          ? error.message
+          : transformText("No se pudo guardar el perfil de emergencia"),
+        error instanceof Error ? error : new Error("Profile save error"),
+        {
+          context: "emergency_profile_save_failed",
+          metadata: {
+            profile_exists: !!profile,
+            profile_id: profileId,
+            form_data: formData,
+          },
+        },
       );
-      setShowErrorModal(true);
     } finally {
       setIsSaving(false);
     }
@@ -306,7 +324,7 @@ const EmergencyScreen2 = () => {
         visible={showErrorModal}
         title={transformText("Error")}
         message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

@@ -41,7 +41,7 @@ const EditAllergyScreen = () => {
     handleSave,
     handleDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
   } = useAllergyForm({
     initialAllergy: route.params?.allergy || "",
     onUpdate: route.params?.onUpdate,
@@ -172,7 +172,7 @@ const EditAllergyScreen = () => {
         visible={showErrorModal}
         title="Error"
         message="Por favor ingrese el nombre de la alergia"
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

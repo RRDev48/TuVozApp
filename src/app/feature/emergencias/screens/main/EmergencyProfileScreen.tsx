@@ -30,7 +30,7 @@ const EmergencyProfileScreen = () => {
     confirmEmergencyCall,
     sendAlert,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     errorMessage,
     showConfirmModal,
     setShowConfirmModal,
@@ -163,7 +163,7 @@ const EmergencyProfileScreen = () => {
         visible={showErrorModal}
         title="Error"
         message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
 
       <ConfirmationModal

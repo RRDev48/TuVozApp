@@ -1,10 +1,11 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React from "react";
 import {
     Image,
     KeyboardAvoidingView,
@@ -34,8 +35,9 @@ const RecoveryCodeScreen = () => {
   const navigation = useNavigation<RecoveryCodeScreenNavigationProp>();
   const route = useRoute<RecoveryCodeScreenRouteProp>();
   const { email = "" } = route.params || {};
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const { verifyRecoveryCode } = usePasswordRecovery();
 
@@ -46,8 +48,14 @@ const RecoveryCodeScreen = () => {
       // Navegar a la pantalla de nueva contraseña
       navigation.navigate("NewPassword", { email });
     } else {
-      setErrorMessage(result.error || "Código de verificación incorrecto");
-      setShowErrorModal(true);
+      logAndShowError(
+        result.error || "Código de verificación incorrecto",
+        new Error(result.error || "Código de verificación incorrecto"),
+        {
+          context: "recovery_code_verification_failed",
+          metadata: { email },
+        },
+      );
       resetCode();
     }
   };
@@ -121,7 +129,7 @@ const RecoveryCodeScreen = () => {
           visible={showErrorModal}
           title="Error"
           message={errorMessage}
-          onClose={() => setShowErrorModal(false)}
+          onClose={closeErrorModal}
         />
       </ScrollView>
     </KeyboardAvoidingView>

@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -20,13 +21,22 @@ export const useAddressForm = ({
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { transformText } = usePersonalization();
 
+  const { showErrorModal, logAndShowError, closeErrorModal } =
+    useErrorHandling();
+
   const [address, setAddress] = useState(initialAddress);
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSave = useCallback(() => {
     if (address.trim() === "") {
-      setShowErrorModal(true);
+      logAndShowError(
+        "La dirección no puede estar vacía",
+        new Error("La dirección no puede estar vacía"),
+        {
+          context: "address_validation_failed",
+          metadata: { action: "save_address", address_length: address.length },
+        },
+      );
       return;
     }
 
@@ -56,7 +66,7 @@ export const useAddressForm = ({
     handleDelete,
     confirmDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     showConfirmModal,
     setShowConfirmModal,
   };

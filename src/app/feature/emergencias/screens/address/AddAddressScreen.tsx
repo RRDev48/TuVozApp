@@ -23,7 +23,7 @@ const AddAddressScreen = () => {
   const { transformText } = usePersonalization();
   const styles = useAddressScreenStyles();
 
-  const { address, setAddress, handleSave, showErrorModal, setShowErrorModal } =
+  const { address, setAddress, handleSave, showErrorModal, closeErrorModal } =
     useAddressForm({
       onAdd: route.params?.onAdd,
     });
@@ -54,7 +54,7 @@ const AddAddressScreen = () => {
         visible={showErrorModal}
         title="Error"
         message="Por favor ingrese una dirección"
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

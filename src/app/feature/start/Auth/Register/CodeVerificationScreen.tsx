@@ -41,7 +41,7 @@ const CodeVerificationScreen = () => {
     verifyCode,
     isVerifying,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     errorMessage,
   } = useOTPVerification({
     email,
@@ -136,7 +136,7 @@ const CodeVerificationScreen = () => {
           visible={showErrorModal}
           title="Error"
           message={errorMessage}
-          onClose={() => setShowErrorModal(false)}
+          onClose={closeErrorModal}
         />
 
         <SuccessAlert

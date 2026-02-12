@@ -31,7 +31,7 @@ const EditAddressScreen = () => {
     handleDelete,
     confirmDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     showConfirmModal,
     setShowConfirmModal,
   } = useAddressForm({
@@ -72,7 +72,7 @@ const EditAddressScreen = () => {
         visible={showErrorModal}
         title="Error"
         message="Por favor ingrese una dirección"
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
 
       <ConfirmationModal

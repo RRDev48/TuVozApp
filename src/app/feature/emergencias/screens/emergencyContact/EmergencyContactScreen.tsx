@@ -1,5 +1,6 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -45,8 +46,9 @@ const EmergencyContactScreen = () => {
     route.params?.currentPhoneNumber || "",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const handleSelectCountryCode = (code: string) => {
     setSelectedCountryCode(code);
@@ -55,14 +57,29 @@ const EmergencyContactScreen = () => {
 
   const handleSave = () => {
     if (contactName.trim() === "") {
-      setErrorMessage("Por favor ingrese el nombre del contacto");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor ingrese el nombre del contacto",
+        new Error("Por favor ingrese el nombre del contacto"),
+        {
+          context: "emergency_contact_name_empty",
+          metadata: { contact_name_length: contactName.length },
+        },
+      );
       return;
     }
 
     if (phoneNumber.trim() === "") {
-      setErrorMessage("Por favor ingrese el número de teléfono");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor ingrese el número de teléfono",
+        new Error("Por favor ingrese el número de teléfono"),
+        {
+          context: "emergency_contact_phone_empty",
+          metadata: {
+            phone_number_length: phoneNumber.length,
+            country_code: selectedCountryCode,
+          },
+        },
+      );
       return;
     }
 
@@ -163,7 +180,7 @@ const EmergencyContactScreen = () => {
         visible={showErrorModal}
         title="Error"
         message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

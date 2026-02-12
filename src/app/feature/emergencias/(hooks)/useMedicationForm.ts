@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -36,11 +37,13 @@ export const useMedicationForm = ({
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { transformText } = usePersonalization();
 
+  const { showErrorModal, logAndShowError, closeErrorModal } =
+    useErrorHandling();
+
   const parsed = parseMedication(initialMedication);
   const [medicationName, setMedicationName] = useState(parsed.name);
   const [selectedFrequency, setSelectedFrequency] = useState(parsed.frequency);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSelectFrequency = useCallback((frequency: string) => {
     setSelectedFrequency(frequency);
@@ -49,7 +52,17 @@ export const useMedicationForm = ({
 
   const handleSave = useCallback(() => {
     if (medicationName.trim() === "") {
-      setShowErrorModal(true);
+      logAndShowError(
+        "El nombre del medicamento no puede estar vacío",
+        new Error("El nombre del medicamento no puede estar vacío"),
+        {
+          context: "medication_name_empty",
+          metadata: {
+            medication_name_length: medicationName.length,
+            selected_frequency: selectedFrequency,
+          },
+        },
+      );
       return;
     }
 
@@ -80,6 +93,6 @@ export const useMedicationForm = ({
     handleSave,
     handleDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
   };
 };

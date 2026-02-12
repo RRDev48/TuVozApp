@@ -47,7 +47,7 @@ const EditMedicationScreen = () => {
     handleSave,
     handleDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
   } = useMedicationForm({
     initialMedication: route.params?.medication || "",
     onUpdate: route.params?.onUpdate,
@@ -178,7 +178,7 @@ const EditMedicationScreen = () => {
         visible={showErrorModal}
         title="Error"
         message="Por favor ingrese el nombre de la medicación"
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

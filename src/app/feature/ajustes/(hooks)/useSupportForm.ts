@@ -1,18 +1,30 @@
 import { useCallback, useState } from "react";
+import { auditLogService } from "../(services)/auditLogService";
 import { supportService } from "../(services)/supportService";
+import { useErrorHandling } from "./useErrorHandling";
 
 export const useSupportForm = (navigation: any) => {
   const [subject, setSubject] = useState("");
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  // Usar el hook de error handling con auditoría habilitada
+  const {
+    showErrorModal,
+    setShowErrorModal,
+    errorMessage,
+    logAndShowValidationError,
+    logAndShowServerError,
+    closeErrorModal,
+  } = useErrorHandling({
+    source: "support_form",
+    enableAuditLogging: true,
+  });
 
   const handleSubmit = useCallback(async () => {
     if (!subject.trim() || !query.trim()) {
-      setErrorMessage("Por favor completa todos los campos");
-      setShowErrorModal(true);
+      logAndShowValidationError("Por favor completa todos los campos");
       return;
     }
 
@@ -26,22 +38,43 @@ export const useSupportForm = (navigation: any) => {
       });
 
       if (response.success) {
+        // Log de auditoría para ticket creado
+        try {
+          await auditLogService.logSupportTicketCreated(
+            response.data?.id || "unknown",
+            subject.trim(),
+          );
+        } catch (auditError) {
+          console.warn("Failed to log audit event:", auditError);
+        }
+
         // Resetear campos
         setSubject("");
         setQuery("");
-        // Mostrar mensaje de éxito primero
+        // Mostrar mensaje de éxito
         setShowSuccessModal(true);
-        // Navegar después de que se cierre el modal o después del autoCloseDelay
-        // El modal está configurado con autoCloseDelay, así que navegará automáticamente
       } else {
-        setErrorMessage(
-          response.error || "No se pudo enviar tu consulta. Intenta de nuevo.",
+        // Log del error con contexto
+        const errorContext = {
+          subject: subject.trim(),
+          queryLength: query.trim().length,
+          response_error: response.error,
+        };
+
+        logAndShowServerError(
+          new Error(response.error || "Failed to create support ticket"),
+          errorContext,
         );
-        setShowErrorModal(true);
       }
-    } catch (error) {
-      setErrorMessage("Ocurrió un error inesperado. Intenta de nuevo.");
-      setShowErrorModal(true);
+    } catch (error: any) {
+      // Log del error de excepción
+      const errorContext = {
+        subject: subject.trim(),
+        queryLength: query.trim().length,
+        error_type: "exception",
+      };
+
+      logAndShowServerError(error, errorContext);
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +97,7 @@ export const useSupportForm = (navigation: any) => {
     setShowSuccessModal,
     handleSuccessModalClose,
     showErrorModal,
-    setShowErrorModal,
+    setShowErrorModal: closeErrorModal,
     errorMessage,
   };
 };

@@ -1,3 +1,4 @@
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import type { UserRole } from "@/src/types/database.types";
 import { useState } from "react";
 import { authService } from "../(services)/authService";
@@ -18,13 +19,19 @@ export const useOTPVerification = ({
   userData,
 }: UseOTPVerificationProps) => {
   const [isVerifying, setIsVerifying] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const verifyCode = async (code: string) => {
     if (code.length !== 6) {
-      setErrorMessage("Por favor ingresa el código de 6 dígitos completo");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor ingresa el código de 6 dígitos completo",
+        new Error("Por favor ingresa el código de 6 dígitos completo"),
+        {
+          context: "otp_validation_failed",
+          metadata: { email, code_length: code.length },
+        },
+      );
       return false;
     }
 
@@ -34,8 +41,14 @@ export const useOTPVerification = ({
       const response = await authService.verifyOTP(email, code, "signup");
 
       if (response.error || !response.success) {
-        setErrorMessage(response.error || "Código de verificación incorrecto");
-        setShowErrorModal(true);
+        logAndShowError(
+          response.error || "Código de verificación incorrecto",
+          new Error(response.error || "Código de verificación incorrecto"),
+          {
+            context: "otp_verification_failed",
+            metadata: { email, response_success: response.success },
+          },
+        );
         return false;
       }
 
@@ -55,10 +68,16 @@ export const useOTPVerification = ({
 
         if (!currentUser) {
           console.error("No authenticated session after OTP verification");
-          setErrorMessage(
+          logAndShowError(
             "Verificación exitosa pero no se pudo autenticar. Por favor inicia sesión.",
+            new Error(
+              "Verificación exitosa pero no se pudo autenticar. Por favor inicia sesión.",
+            ),
+            {
+              context: "auth_session_failed_after_otp",
+              metadata: { email, user_id: userId },
+            },
           );
-          setShowErrorModal(true);
           onSuccess();
           return true;
         }
@@ -75,8 +94,14 @@ export const useOTPVerification = ({
 
         if (!result.success) {
           console.error("Error creating user and profile:", result.error);
-          setErrorMessage(`No se pudo completar el registro: ${result.error}`);
-          setShowErrorModal(true);
+          logAndShowError(
+            `No se pudo completar el registro: ${result.error}`,
+            new Error(`No se pudo completar el registro: ${result.error}`),
+            {
+              context: "user_profile_creation_failed",
+              metadata: { email, user_id: userId, role: userData.role },
+            },
+          );
         } else {
           console.log("User and profile created successfully");
         }
@@ -85,8 +110,14 @@ export const useOTPVerification = ({
       onSuccess();
       return true;
     } catch (error) {
-      setErrorMessage("Ocurrió un error al verificar el código");
-      setShowErrorModal(true);
+      logAndShowError(
+        (error as Error).message || "Error en verificación OTP",
+        error as Error,
+        {
+          context: "otp_verification_error",
+          metadata: { email },
+        },
+      );
       return false;
     } finally {
       setIsVerifying(false);
@@ -97,7 +128,7 @@ export const useOTPVerification = ({
     verifyCode,
     isVerifying,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
     errorMessage,
   };
 };

@@ -1,11 +1,12 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -34,8 +35,9 @@ const PasswordSetupScreen = () => {
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
   const { email = "", name = "", age = "", role = "self" } = route.params || {};
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const handleRegister = async (validPassword: string) => {
     try {
@@ -44,11 +46,15 @@ const PasswordSetupScreen = () => {
       const authResponse = await authService.signUp(email, validPassword);
 
       if (!authResponse.success || !authResponse.data?.user) {
-        setErrorMessage(
+        logAndShowError(
           authResponse.error ||
             "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
+          new Error(authResponse.error),
+          {
+            context: "auth_signup_failed",
+            metadata: { email, step: "password_setup" },
+          },
         );
-        setShowErrorModal(true);
         return;
       }
 
@@ -62,8 +68,14 @@ const PasswordSetupScreen = () => {
         role,
       });
     } catch (error: any) {
-      setErrorMessage(error.message || "Ocurrió un error durante el registro.");
-      setShowErrorModal(true);
+      logAndShowError(
+        error.message || "Ocurrió un error durante el registro.",
+        error,
+        {
+          context: "auth_registration_error",
+          metadata: { email, step: "password_setup" },
+        },
+      );
     }
   };
 
@@ -208,7 +220,7 @@ const PasswordSetupScreen = () => {
           visible={showErrorModal}
           title="Error"
           message={errorMessage}
-          onClose={() => setShowErrorModal(false)}
+          onClose={closeErrorModal}
         />
       </View>
     </TouchableWithoutFeedback>

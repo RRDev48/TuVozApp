@@ -1,5 +1,6 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -36,28 +37,51 @@ const NewPasswordScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const { updatePassword, isUpdating } = usePasswordRecovery();
 
   const handleUpdatePassword = async () => {
     // Validaciones
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      setErrorMessage("Por favor completa todos los campos");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor completa todos los campos",
+        new Error("Por favor completa todos los campos"),
+        {
+          context: "new_password_fields_empty",
+          metadata: {
+            email,
+            new_password_empty: !newPassword.trim(),
+            confirm_password_empty: !confirmPassword.trim(),
+          },
+        },
+      );
       return;
     }
 
     if (newPassword.length < 6) {
-      setErrorMessage("La contraseña debe tener al menos 6 caracteres");
-      setShowErrorModal(true);
+      logAndShowError(
+        "La contraseña debe tener al menos 6 caracteres",
+        new Error("La contraseña debe tener al menos 6 caracteres"),
+        {
+          context: "new_password_too_short",
+          metadata: { email, password_length: newPassword.length },
+        },
+      );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setErrorMessage("Las contraseñas no coinciden");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Las contraseñas no coinciden",
+        new Error("Las contraseñas no coinciden"),
+        {
+          context: "new_password_mismatch",
+          metadata: { email, passwords_match: false },
+        },
+      );
       return;
     }
 
@@ -67,8 +91,14 @@ const NewPasswordScreen = () => {
     if (result.success) {
       setShowSuccess(true);
     } else {
-      setErrorMessage(result.error || "No se pudo actualizar la contraseña");
-      setShowErrorModal(true);
+      logAndShowError(
+        result.error || "No se pudo actualizar la contraseña",
+        new Error(result.error || "No se pudo actualizar la contraseña"),
+        {
+          context: "password_update_failed",
+          metadata: { email, result_error: result.error },
+        },
+      );
     }
   };
 
@@ -178,7 +208,7 @@ const NewPasswordScreen = () => {
         visible={showErrorModal}
         title="Error"
         message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

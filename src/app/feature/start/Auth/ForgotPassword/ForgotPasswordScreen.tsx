@@ -1,5 +1,6 @@
 import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -26,21 +27,34 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling();
 
   const handleSend = async () => {
     if (!email.trim()) {
-      setErrorMessage("Por favor ingresa tu correo electrónico");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor ingresa tu correo electrónico",
+        new Error("Por favor ingresa tu correo electrónico"),
+        {
+          context: "forgot_password_email_empty",
+          metadata: { email_length: email.length },
+        },
+      );
       return;
     }
 
     // Validación básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setErrorMessage("Por favor ingresa un correo electrónico válido");
-      setShowErrorModal(true);
+      logAndShowError(
+        "Por favor ingresa un correo electrónico válido",
+        new Error("Por favor ingresa un correo electrónico válido"),
+        {
+          context: "forgot_password_email_invalid",
+          metadata: { email },
+        },
+      );
       return;
     }
 
@@ -54,14 +68,26 @@ const ForgotPasswordScreen = () => {
         // Navegar a la pantalla de verificación de código
         navigation.navigate("RecoveryCode", { email });
       } else {
-        setErrorMessage(
+        logAndShowError(
           result.error || "No se pudo enviar el código de verificación",
+          new Error(
+            result.error || "No se pudo enviar el código de verificación",
+          ),
+          {
+            context: "forgot_password_otp_send_failed",
+            metadata: { email, result_error: result.error },
+          },
         );
-        setShowErrorModal(true);
       }
     } catch (error) {
-      setErrorMessage("Ocurrió un error inesperado");
-      setShowErrorModal(true);
+      logAndShowError(
+        (error as Error).message || "Error inesperado",
+        error as Error,
+        {
+          context: "forgot_password_unexpected_error",
+          metadata: { email },
+        },
+      );
     } finally {
       setLoading(false);
     }
@@ -143,7 +169,7 @@ const ForgotPasswordScreen = () => {
         visible={showErrorModal}
         title="Error"
         message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        onClose={closeErrorModal}
       />
     </View>
   );

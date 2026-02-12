@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -30,11 +31,13 @@ export const useAllergyForm = ({
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { transformText } = usePersonalization();
 
+  const { showErrorModal, logAndShowError, closeErrorModal } =
+    useErrorHandling();
+
   const parsed = parseAllergy(initialAllergy);
   const [allergyName, setAllergyName] = useState(parsed.name);
   const [selectedSeverity, setSelectedSeverity] = useState(parsed.severity);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleSelectSeverity = useCallback((severity: string) => {
     setSelectedSeverity(severity);
@@ -43,7 +46,17 @@ export const useAllergyForm = ({
 
   const handleSave = useCallback(() => {
     if (allergyName.trim() === "") {
-      setShowErrorModal(true);
+      logAndShowError(
+        "El nombre de la alergia no puede estar vacío",
+        new Error("El nombre de la alergia no puede estar vacío"),
+        {
+          context: "allergy_name_empty",
+          metadata: {
+            allergy_name_length: allergyName.length,
+            selected_severity: selectedSeverity,
+          },
+        },
+      );
       return;
     }
 
@@ -74,6 +87,6 @@ export const useAllergyForm = ({
     handleSave,
     handleDelete,
     showErrorModal,
-    setShowErrorModal,
+    closeErrorModal,
   };
 };
