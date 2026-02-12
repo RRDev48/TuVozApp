@@ -297,6 +297,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: "auto",
+    paddingVertical: 12,
   },
   helpText: {
     fontSize: 14,

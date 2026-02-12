@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: colors.blue,
+    color: colors.black,
     textAlign: "center",
     marginBottom: 10,
     lineHeight: 28,
   },
   description: {
     fontSize: 14,
-    color: colors.gray,
+    color: colors.black,
     textAlign: "center",
     marginBottom: 40,
     lineHeight: 20,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.blue,
     textAlign: "center",
-    backgroundColor: colors.lightGray,
+    backgroundColor: colors.white,
   },
 });
 

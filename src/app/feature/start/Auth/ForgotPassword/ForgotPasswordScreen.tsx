@@ -5,13 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { authService } from "../(services)/authService";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
@@ -69,14 +69,11 @@ const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
+      <BackButton onPress={() => navigation.goBack()} />
+
+      {/* Header con logo */}
       <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
-
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
+        <AppLogo width={200} height={200} />
       </View>
 
       {/* Título */}
@@ -114,18 +111,20 @@ const ForgotPasswordScreen = () => {
       </View>
 
       {/* Botón Enviar */}
-      <TouchableOpacity
-        style={[styles.sendButton, loading && styles.sendButtonDisabled]}
-        onPress={handleSend}
-        activeOpacity={0.8}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color={colors.white} />
-        ) : (
-          <Text style={styles.sendButtonText}>Enviar</Text>
-        )}
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.sendButton, loading && styles.sendButtonDisabled]}
+          onPress={handleSend}
+          activeOpacity={0.8}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.sendButtonText}>Enviar</Text>
+          )}
+        </TouchableOpacity>
+      </View>
 
       {/* Ayuda */}
       <View style={styles.helpContainer}>
@@ -142,38 +141,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 30,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 60,
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  backText: {
-    fontSize: 16,
-    color: colors.black,
-  },
-  headerLogoContainer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  placeholder: {
-    width: 80,
+    marginTop: -60,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#000000",
+    color: colors.black,
     textAlign: "center",
     marginBottom: 15,
     lineHeight: 28,
@@ -181,7 +157,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#000000",
+    color: colors.black,
     textAlign: "center",
     marginBottom: 40,
     lineHeight: 20,
@@ -189,14 +165,15 @@ const styles = StyleSheet.create({
   form: {
     gap: 20,
     marginBottom: 30,
+    paddingHorizontal: 20,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 18,
     color: colors.black,
-    fontWeight: "700",
+    fontWeight: "500",
   },
   inputContainer: {
     flexDirection: "row",
@@ -208,7 +185,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.white,
     fontWeight: "500",
   },
@@ -216,26 +193,31 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: colors.white,
   },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginTop: 100,
+  },
   sendButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.green,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: 20,
   },
   sendButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   sendButtonText: {
     color: colors.white,
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   helpContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginTop: "auto",
+    paddingVertical: 12,
   },
   helpText: {
     fontSize: 14,

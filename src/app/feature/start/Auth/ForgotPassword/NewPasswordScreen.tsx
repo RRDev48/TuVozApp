@@ -78,29 +78,23 @@ const NewPasswordScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
+      <BackButton onPress={() => navigation.goBack()} />
+
+      {/* Header con logo */}
       <View style={styles.header}>
-        <BackButton onPress={() => navigation.goBack()} />
-
-        <View style={styles.headerLogoContainer}>
-          <AppLogo width={250} height={250} />
-        </View>
-
-        <View style={styles.placeholder} />
+        <AppLogo width={200} height={200} />
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>Nueva contraseña</Text>
-
-      {/* Subtítulo */}
-      <Text style={styles.subtitle}>
-        Crea tu nueva contraseña para acceder a tu cuenta
+      <Text style={styles.title}>
+        Para continuar, necesitamos{"\n"}una contraseña segura.
       </Text>
 
       {/* Formulario */}
       <View style={styles.form}>
         {/* Campo Nueva Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nueva contraseña</Text>
+          <Text style={styles.label}>Ingresa tu Contraseña*</Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -126,7 +120,7 @@ const NewPasswordScreen = () => {
 
         {/* Campo Confirmar Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Confirmar contraseña</Text>
+          <Text style={styles.label}>Confirmar Contraseña*</Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -152,18 +146,23 @@ const NewPasswordScreen = () => {
       </View>
 
       {/* Botón Actualizar */}
-      <TouchableOpacity
-        style={[styles.updateButton, isUpdating && styles.updateButtonDisabled]}
-        onPress={handleUpdatePassword}
-        activeOpacity={0.8}
-        disabled={isUpdating}
-      >
-        {isUpdating ? (
-          <ActivityIndicator color={colors.white} />
-        ) : (
-          <Text style={styles.updateButtonText}>Actualizar contraseña</Text>
-        )}
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[
+            styles.updateButton,
+            isUpdating && styles.updateButtonDisabled,
+          ]}
+          onPress={handleUpdatePassword}
+          activeOpacity={0.8}
+          disabled={isUpdating}
+        >
+          {isUpdating ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <Text style={styles.updateButtonText}>Actualizar contraseña</Text>
+          )}
+        </TouchableOpacity>
+      </View>
 
       {/* Alert de éxito */}
       <SuccessAlert
@@ -181,83 +180,65 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   header: {
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  headerLogoContainer: {
-    alignItems: "center",
-    marginTop: -100,
-  },
-  placeholder: {
-    width: 40,
+    marginTop: -60,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "700",
-    color: colors.blue,
+    color: colors.black,
     textAlign: "center",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.gray,
-    textAlign: "center",
-    marginBottom: 40,
-    paddingHorizontal: 40,
-    lineHeight: 20,
+    marginBottom: 30,
   },
   form: {
-    paddingHorizontal: 20,
     gap: 20,
     marginBottom: 30,
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   inputGroup: {
     gap: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 18,
+    color: colors.black,
     fontWeight: "500",
-    color: colors.blue,
-    marginBottom: 4,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.blue,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    height: 56,
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: colors.white,
+    fontWeight: "500",
   },
   inputIcon: {
-    marginLeft: 8,
-    padding: 4,
+    marginLeft: 10,
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    marginTop: 100,
   },
   updateButton: {
-    backgroundColor: colors.blue,
-    marginHorizontal: 20,
+    backgroundColor: colors.green,
     paddingVertical: 16,
-    borderRadius: 12,
+    borderRadius: 25,
     alignItems: "center",
-    shadowColor: colors.blue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
   updateButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   updateButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
     color: colors.white,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
