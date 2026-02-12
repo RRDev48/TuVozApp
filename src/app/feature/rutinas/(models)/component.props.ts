@@ -1,0 +1,172 @@
+import {
+    ImageSourcePropType,
+    ImageStyle,
+    StyleProp,
+    TextStyle,
+    ViewStyle,
+} from "react-native";
+import { Task } from "./task.types";
+
+// Props para modales de logros y celebraciones
+export interface AchievementModalProps {
+  visible: boolean;
+  onClose: () => void;
+  autoCloseDelay?: number;
+}
+
+// Props para componentes de calendario
+export interface DayCalendarViewProps {
+  tasks: Task[];
+  onTaskTimeChange: (
+    taskId: string,
+    newStartTime: string,
+    newEndTime: string,
+  ) => void;
+  onTaskPress: (task: Task) => void;
+  onHourPress: (hour: string) => void;
+}
+
+export interface DraggableTaskItemProps {
+  task: Task;
+  topPosition: number;
+  height: number;
+  hourHeight: number;
+  columnIndex: number;
+  totalColumns: number;
+  onPositionChange: (newTop: number, newHeight: number) => void;
+  onPress: () => void;
+}
+
+// Props para modales de selección
+export interface CalendarModalProps {
+  visible: boolean;
+  selectedDate?: string | null;
+  onClose: () => void;
+  onDateSelect: (date: string) => void;
+}
+
+export interface RoutineTimeModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onTimeSelected: (startTime: string, endTime: string) => void;
+}
+
+export interface ReminderModalProps {
+  visible: boolean;
+  initialSelectedOption?: string | null;
+  onClose: () => void;
+  onSetReminder: (reminder: { label: string; offsetMs: number }) => void;
+}
+
+export interface CategoryModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onCategorySelect: (
+    selectedCategoryId: string,
+    selectedCategoryName: string,
+  ) => void;
+}
+
+// Props para modales de tareas
+export interface AddTaskModalProps {
+  visible: boolean;
+  selectedDate: Date | null;
+  selectedStartHour: string;
+  calculateEndHour: string;
+  onClose: () => void;
+  updateTasks: (newTask: Task) => void;
+}
+
+export interface TaskStepModalProps {
+  visible: boolean;
+  task: Task | null;
+  onClose: () => void;
+  onRestart: () => void;
+  updateTaskState: (taskId: string, newState: string) => void;
+}
+
+export interface TaskDetailsModalProps {
+  visible: boolean;
+  task: Task | null;
+  onClose: () => void;
+  onStartTask: () => void;
+}
+
+export interface StepItemModalProps {
+  id: number;
+  text: string;
+  index: number;
+  stepsCount: number;
+  onTextChange: (text: string, index: number) => void;
+  onRemove: (index: number) => void;
+}
+
+// Props para modales de confirmación
+export interface ConfirmCancelModalProps {
+  visible: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  message?: string;
+}
+
+export interface SuccessModalProps {
+  visible: boolean;
+  onClose: () => void;
+  message?: string;
+}
+
+// Props para componentes de días y semanas
+export interface DaysOfWeekProps {
+  currentWeekStart: Date;
+  selectedDayIndex: number;
+  setSelectedDayIndex: (index: number) => void;
+  routineId: number;
+}
+
+export interface ChangeWeekProps {
+  currentWeekStart: Date;
+  onChangeWeek: (newStartDate: Date) => void;
+}
+
+// Props para componentes de tareas y elementos
+export interface TasksItemProps {
+  titulo: string;
+  estado: string;
+  categoriaId: string;
+  pasos: string[];
+}
+
+export interface ProgressItemProps {
+  routineId: number | string;
+  refreshTrigger?: number | string;
+  tasks?: Task[];
+}
+
+// Props para componentes de selección
+export interface ReminderOptionButtonProps {
+  label: string;
+  value: string;
+  isSelected: boolean;
+  onPress: (value: string) => void;
+}
+
+export interface TimeInputFieldProps {
+  label: string;
+  value: string;
+  error: boolean;
+  placeholder: string;
+  onChangeText: (text: string) => void;
+}
+
+// Props para componentes de menú (si se usa en rutinas)
+export interface MenuItemProps {
+  name: string;
+  route: string;
+  image: ImageSourcePropType;
+  styles: {
+    itemContainer: StyleProp<ViewStyle>;
+    buttonContainer: StyleProp<ViewStyle>;
+    icon: StyleProp<ImageStyle>;
+    textCard: StyleProp<TextStyle>;
+  };
+}

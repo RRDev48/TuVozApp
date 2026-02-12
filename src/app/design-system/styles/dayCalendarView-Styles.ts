@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 const HOUR_HEIGHT = 60;
 const QUARTER_HEIGHT = 15;
 
-const dayCalendarViewStyles = StyleSheet.create({
+export const dayCalendarViewStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -52,5 +52,3 @@ const dayCalendarViewStyles = StyleSheet.create({
     height: 50,
   },
 });
-
-export default dayCalendarViewStyles;
