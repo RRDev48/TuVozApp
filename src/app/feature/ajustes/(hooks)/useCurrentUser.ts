@@ -7,9 +7,12 @@ export const useCurrentUser = () => {
 
   const checkCurrentUser = useCallback(async () => {
     try {
+      console.log("🔍 useCurrentUser - Verificando usuario...");
       const user = await authService.getCurrentUser();
+      console.log("👤 useCurrentUser - Usuario obtenido:", user);
       setCurrentUser(user);
     } catch (error) {
+      console.log("❌ useCurrentUser - Error o no hay usuario:", error);
       // Si no hay sesión activa, simplemente no hay usuario logueado
       setCurrentUser(null);
     } finally {

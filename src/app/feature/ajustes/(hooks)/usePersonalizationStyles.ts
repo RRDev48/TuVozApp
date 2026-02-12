@@ -77,6 +77,31 @@ export const usePersonalizationStyles = () => {
         switchContainerInactive: {
           borderColor: colors.red,
         },
+        optionSubtitle: {
+          fontSize: 14,
+          fontWeight: "600",
+          color: themedColors.text,
+          marginTop: 4,
+        },
+        optionDescription: {
+          fontSize: 12,
+          color: themedColors.text,
+          opacity: 0.7,
+          marginTop: 8,
+        },
+        resetButton: {
+          backgroundColor: colors.red,
+          borderRadius: 12,
+          paddingVertical: 14,
+          paddingHorizontal: 20,
+          alignItems: "center",
+          marginTop: 10,
+        },
+        resetButtonText: {
+          color: colors.white,
+          fontSize: 16,
+          fontWeight: "600",
+        },
       }),
     [themedColors],
   );

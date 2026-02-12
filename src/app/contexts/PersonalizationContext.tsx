@@ -1,11 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { colors } from "../design-system/themes/globalColors-theme";
+import { useCurrentUserProfile } from "../feature/ajustes/(hooks)/useCurrentUserProfile";
+import { useProfileSettings } from "../feature/ajustes/(hooks)/useProfileSettings";
+import { ProfileSettingsService } from "../feature/ajustes/(services)/profileSettingsService";
 
 interface PersonalizationContextType {
   soloMayusculas: boolean;
   tamanioLetra: "pequenia" | "mediana" | "grande";
   temaOscuro: boolean;
+  isAuthenticated: boolean;
+  currentUserId: string | null;
   setSoloMayusculas: (value: boolean) => void;
   setTamanioLetra: (value: "pequenia" | "mediana" | "grande") => void;
   setTemaOscuro: (value: boolean) => void;
@@ -19,6 +24,7 @@ interface PersonalizationContextType {
     cardBackground: string;
     transparent: string;
   };
+  resetToDefaults: () => Promise<void>;
 }
 
 const PersonalizationContext = createContext<
@@ -36,19 +42,56 @@ const PersonalizationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [soloMayusculas, setSoloMayusculasState] = useState(false);
-  const [tamanioLetra, setTamanioLetraState] = useState<
+  // Hooks para manejo de usuario y configuración
+  const {
+    profileId,
+    userId,
+    loading: userLoading,
+    isAuthenticated,
+  } = useCurrentUserProfile();
+
+  // Debug: verificar valores
+  console.log("🔍 PersonalizationContext Debug:", {
+    userId,
+    profileId,
+    isAuthenticated,
+    userLoading,
+  });
+
+  const {
+    settings,
+    loading: settingsLoading,
+    updateSetting,
+    resetSettings,
+    getFontSizeForApp,
+    getThemeForApp,
+    getUppercaseForApp,
+  } = useProfileSettings(profileId || undefined);
+
+  // Debug: verificar configuraciones
+  console.log("⚙️ Settings Debug:", {
+    settings,
+    settingsLoading,
+  });
+
+  // Estado local para usuarios no autenticados
+  const [localSoloMayusculas, setLocalSoloMayusculasState] = useState(false);
+  const [localTamanioLetra, setLocalTamanioLetraState] = useState<
     "pequenia" | "mediana" | "grande"
   >("mediana");
-  const [temaOscuro, setTemaOscuroState] = useState(false);
+  const [localTemaOscuro, setLocalTemaOscuroState] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // Cargar preferencias al iniciar
+  // Cargar preferencias locales para usuarios no autenticados
   useEffect(() => {
-    loadPreferences();
-  }, []);
+    if (!isAuthenticated && !userLoading) {
+      loadLocalPreferences();
+    } else if (isAuthenticated) {
+      setLoaded(true);
+    }
+  }, [isAuthenticated, userLoading]);
 
-  const loadPreferences = async () => {
+  const loadLocalPreferences = async () => {
     try {
       const [mayusculas, tamanio, temaOscuroValue] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.SOLO_MAYUSCULAS),
@@ -56,50 +99,124 @@ const PersonalizationProvider = ({
         AsyncStorage.getItem(STORAGE_KEYS.TEMA_OSCURO),
       ]);
 
-      if (mayusculas !== null) setSoloMayusculasState(JSON.parse(mayusculas));
-      if (tamanio !== null) setTamanioLetraState(JSON.parse(tamanio));
+      if (mayusculas !== null)
+        setLocalSoloMayusculasState(JSON.parse(mayusculas));
+      if (tamanio !== null) setLocalTamanioLetraState(JSON.parse(tamanio));
       if (temaOscuroValue !== null)
-        setTemaOscuroState(JSON.parse(temaOscuroValue));
+        setLocalTemaOscuroState(JSON.parse(temaOscuroValue));
     } catch (error) {
-      // Error cargando preferencias
+      // Error cargando preferencias locales
     } finally {
       setLoaded(true);
     }
   };
 
-  const setSoloMayusculas = async (value: boolean) => {
+  // Funciones para usuarios autenticados
+  const setSoloMayusculasAuthenticated = async (value: boolean) => {
+    console.log("💾 Guardando uppercase:", value, "profileId:", profileId);
+    await updateSetting("uppercase", value);
+  };
+
+  const setTamanioLetraAuthenticated = async (
+    value: "pequenia" | "mediana" | "grande",
+  ) => {
+    const fontSize = ProfileSettingsService.mapAppSizeToFontSize(value);
+    console.log(
+      "💾 Guardando font_size:",
+      fontSize,
+      "para tamaño:",
+      value,
+      "profileId:",
+      profileId,
+    );
+    await updateSetting("font_size", fontSize);
+  };
+
+  const setTemaOscuroAuthenticated = async (value: boolean) => {
+    const theme = ProfileSettingsService.mapAppThemeToDbTheme(value);
+    console.log(
+      "💾 Guardando theme:",
+      theme,
+      "para temaOscuro:",
+      value,
+      "profileId:",
+      profileId,
+    );
+    await updateSetting("theme", theme);
+  };
+
+  // Funciones para usuarios no autenticados (AsyncStorage)
+  const setSoloMayusculasLocal = async (value: boolean) => {
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.SOLO_MAYUSCULAS,
         JSON.stringify(value),
       );
-      setSoloMayusculasState(value);
+      setLocalSoloMayusculasState(value);
     } catch (error) {
-      // Error guardando preferencia
+      // Error guardando preferencia local
     }
   };
 
-  const setTamanioLetra = async (value: "pequenia" | "mediana" | "grande") => {
+  const setTamanioLetraLocal = async (
+    value: "pequenia" | "mediana" | "grande",
+  ) => {
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.TAMANIO_LETRA,
         JSON.stringify(value),
       );
-      setTamanioLetraState(value);
+      setLocalTamanioLetraState(value);
     } catch (error) {
-      // Error guardando preferencia
+      // Error guardando preferencia local
     }
   };
 
-  const setTemaOscuro = async (value: boolean) => {
+  const setTemaOscuroLocal = async (value: boolean) => {
     try {
       await AsyncStorage.setItem(
         STORAGE_KEYS.TEMA_OSCURO,
         JSON.stringify(value),
       );
-      setTemaOscuroState(value);
+      setLocalTemaOscuroState(value);
     } catch (error) {
-      // Error guardando preferencia
+      // Error guardando preferencia local
+    }
+  };
+
+  // Funciones unificadas que eligen entre DB o AsyncStorage
+  const setSoloMayusculas = isAuthenticated
+    ? setSoloMayusculasAuthenticated
+    : setSoloMayusculasLocal;
+
+  const setTamanioLetra = isAuthenticated
+    ? setTamanioLetraAuthenticated
+    : setTamanioLetraLocal;
+
+  const setTemaOscuro = isAuthenticated
+    ? setTemaOscuroAuthenticated
+    : setTemaOscuroLocal;
+
+  // Valores actuales (desde DB o AsyncStorage)
+  const soloMayusculas = isAuthenticated
+    ? getUppercaseForApp()
+    : localSoloMayusculas;
+
+  const tamanioLetra = isAuthenticated
+    ? getFontSizeForApp()
+    : localTamanioLetra;
+
+  const temaOscuro = isAuthenticated ? getThemeForApp() : localTemaOscuro;
+
+  // Función para resetear a valores por defecto
+  const resetToDefaults = async () => {
+    if (isAuthenticated) {
+      await resetSettings();
+    } else {
+      // Resetear valores locales
+      await setSoloMayusculasLocal(false);
+      await setTamanioLetraLocal("mediana");
+      await setTemaOscuroLocal(false);
     }
   };
 
@@ -143,7 +260,8 @@ const PersonalizationProvider = ({
     }
   };
 
-  if (!loaded) {
+  // Esperar a que cargue la configuración
+  if (userLoading || settingsLoading || !loaded) {
     return null;
   }
 
@@ -153,12 +271,15 @@ const PersonalizationProvider = ({
         soloMayusculas,
         tamanioLetra,
         temaOscuro,
+        isAuthenticated,
+        currentUserId: userId,
         setSoloMayusculas,
         setTamanioLetra,
         setTemaOscuro,
         getFontSize,
         transformText,
         getThemedColors,
+        resetToDefaults,
       }}
     >
       {children}

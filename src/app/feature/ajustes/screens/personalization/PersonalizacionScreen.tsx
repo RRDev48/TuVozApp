@@ -15,10 +15,13 @@ const PersonalizacionScreen = () => {
     soloMayusculas,
     tamanioLetra,
     temaOscuro,
+    isAuthenticated,
+    currentUserId,
     setSoloMayusculas,
     setTamanioLetra,
     setTemaOscuro,
     transformText,
+    resetToDefaults,
   } = usePersonalization();
 
   const styles = usePersonalizationStyles();
@@ -30,6 +33,14 @@ const PersonalizacionScreen = () => {
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
+  const handleResetToDefaults = useCallback(async () => {
+    try {
+      await resetToDefaults();
+    } catch (error) {
+      // Error manejado internamente por el hook
+    }
+  }, [resetToDefaults]);
 
   return (
     <View style={styles.container}>
@@ -119,6 +130,19 @@ const PersonalizacionScreen = () => {
               />
             </View>
           </View>
+        </View>
+
+        {/* Botón para resetear configuración */}
+        <View style={styles.optionContainer}>
+          <TouchableOpacity
+            style={styles.resetButton}
+            onPress={handleResetToDefaults}
+            activeOpacity={0.8}
+          >
+            <CustomText style={styles.resetButtonText}>
+              {transformText("Restablecer configuración por defecto")}
+            </CustomText>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
