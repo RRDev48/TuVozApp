@@ -1,7 +1,8 @@
 // React
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Componentes
 import { AchievementModal } from "../components/achievement/AchievementModal";
@@ -30,8 +31,78 @@ import { useWeekRoutine } from "../(hooks)/useWeekRoutine";
 // Acciones
 
 // Visuales
-import { routineScreenStyles } from "@/src/app/design-system/styles/screen-Styles";
-import { Ionicons } from "@expo/vector-icons";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: colors.white,
+  },
+
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+    position: "relative",
+    paddingTop: 5,
+  },
+
+  backButton: {
+    position: "absolute",
+    left: 0,
+    top: 5,
+    zIndex: 10,
+    padding: 5,
+  },
+
+  headerText: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: colors.blue,
+  },
+
+  daysContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+
+  selectedDay: {
+    width: "13%",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    minWidth: 50,
+  },
+
+  dayText: {
+    fontSize: 14,
+    textAlign: "center",
+    width: "100%",
+  },
+
+  numberDayText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: "100%",
+  },
+
+  hoursContainer: {
+    flex: 1,
+  },
+
+  floatingButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    backgroundColor: colors.blue,
+    borderRadius: 50,
+    padding: 15,
+    elevation: 5,
+  },
+});
 
 /**
  * RoutineScreen
@@ -178,21 +249,21 @@ export const RoutineScreen = () => {
   );
 
   return (
-    <View style={routineScreenStyles.screenContainer}>
+    <View style={styles.screenContainer}>
       {/*
         Encabezado de la pantalla de rutinas:
         - Botón de volver atrás a la pantalla anterior de navegación.
         - Título "Rutinas".
         - Componente ProgressItem que muestra el progreso global de la rutina.
       */}
-      <View style={routineScreenStyles.headerContainer}>
+      <View style={styles.headerContainer}>
         <TouchableOpacity
-          style={routineScreenStyles.backButton}
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={28} color="#2196F3" />
         </TouchableOpacity>
-        <Text style={routineScreenStyles.headerText}>{"Rutinas"}</Text>
+        <Text style={styles.headerText}>{"Rutinas"}</Text>
         <ProgressItem
           routineId={routineId}
           refreshTrigger={tasksRefreshTrigger}
@@ -240,10 +311,7 @@ export const RoutineScreen = () => {
         No preconfigura fecha ni hora; abre el modal de tarea en blanco
         para que el usuario complete todos los datos.
       */}
-      <TouchableOpacity
-        style={routineScreenStyles.floatingButton}
-        onPress={toggleAddTask}
-      >
+      <TouchableOpacity style={styles.floatingButton} onPress={toggleAddTask}>
         <Ionicons name="add-circle-outline" size={24} color="#fff" />
       </TouchableOpacity>
 

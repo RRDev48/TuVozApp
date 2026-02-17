@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Componentes
 import { ReminderOptionButton } from "./ReminderOptionButton";
@@ -18,7 +18,68 @@ import { useReminderPicker } from "../../(hooks)/useReminderPicker";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  sharedModalContainer: {
+    width: "80%",
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  reminderTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: colors.blue,
+  },
+
+  optionsContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+
+  selectedOptionText: {
+    color: "white",
+  },
+
+  setReminderButton: {
+    marginTop: 20,
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+
+  setReminderButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+
+  closeWhitTextButton: {
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
+  },
+
+  closeWhitTextButtonText: {
+    color: colors.white,
+    fontWeight: "bold",
+  },
+});
 
 /**
  * ReminderPickerModal
@@ -70,15 +131,13 @@ export const ReminderPickerModal = ({
   return (
     // Modal deslizante que aparece desde la parte inferior de la pantalla.
     <Modal transparent={true} visible={visible} animationType="slide">
-      <View style={addTaskStyles.overlay}>
-        <View style={addTaskStyles.sharedModalContainer}>
-          <Text style={addTaskStyles.reminderTitle}>
-            {"Establecer Recordatorio"}
-          </Text>
+      <View style={styles.overlay}>
+        <View style={styles.sharedModalContainer}>
+          <Text style={styles.reminderTitle}>{"Establecer Recordatorio"}</Text>
 
           {/* Lista de opciones de recordatorio disponibles.
               Cada opción se muestra como un botón que puede estar seleccionado. */}
-          <View style={addTaskStyles.optionsContainer}>
+          <View style={styles.optionsContainer}>
             {options.map((option) => (
               <ReminderOptionButton
                 key={option.value}
@@ -92,7 +151,7 @@ export const ReminderPickerModal = ({
 
           {/* Texto informativo que muestra la opción actualmente seleccionada. */}
           {selectedOption && (
-            <Text style={addTaskStyles.selectedOptionText}>
+            <Text style={styles.selectedOptionText}>
               {"Opción Seleccionada:"} {getSelectedLabel()}
             </Text>
           )}
@@ -100,9 +159,9 @@ export const ReminderPickerModal = ({
           {/* Botón principal para confirmar y aplicar el recordatorio seleccionado. */}
           <TouchableOpacity
             onPress={handleSetReminder}
-            style={addTaskStyles.setReminderButton}
+            style={styles.setReminderButton}
           >
-            <Text style={addTaskStyles.setReminderButtonText}>
+            <Text style={styles.setReminderButtonText}>
               {"Establecer Recordatorio"}
             </Text>
           </TouchableOpacity>
@@ -110,11 +169,9 @@ export const ReminderPickerModal = ({
           {/* Botón secundario para cerrar el modal sin aplicar cambios. */}
           <TouchableOpacity
             onPress={onClose}
-            style={addTaskStyles.closeWhitTextButton}
+            style={styles.closeWhitTextButton}
           >
-            <Text style={addTaskStyles.closeWhitTextButtonText}>
-              {"Cerrar"}
-            </Text>
+            <Text style={styles.closeWhitTextButtonText}>{"Cerrar"}</Text>
           </TouchableOpacity>
         </View>
       </View>

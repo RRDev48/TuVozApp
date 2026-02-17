@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Componentes
 
@@ -20,9 +20,39 @@ import { Medal } from "../../(models)/routine.types";
 // Acciones
 
 // Visuales
-import { daysOfWeekStyles } from "@/src/app/design-system/styles/daysOfWeek-Styles";
-import { routineScreenStyles } from "@/src/app/design-system/styles/screen-Styles";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  medalImage: {
+    width: 24,
+    height: 24,
+    alignSelf: "center",
+  },
+  daysContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  selectedDay: {
+    width: "13%",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    minWidth: 50,
+  },
+  dayText: {
+    fontSize: 14,
+    textAlign: "center",
+    width: "100%",
+  },
+  numberDayText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: "100%",
+  },
+});
 
 /**
  * DaysOfWeek
@@ -50,7 +80,7 @@ export const DaysOfWeek = ({
   const medals = useWeekMedals(weekDates);
 
   return (
-    <View style={routineScreenStyles.daysContainer}>
+    <View style={styles.daysContainer}>
       {/*
         Recorre los días de la semana y pinta un botón por cada uno.
         Cada día puede estar seleccionado (se resalta con color) y
@@ -62,7 +92,7 @@ export const DaysOfWeek = ({
           <TouchableOpacity
             key={index}
             style={[
-              routineScreenStyles.selectedDay,
+              styles.selectedDay,
               {
                 backgroundColor: isSelected ? colors.blue : colors.white,
                 borderWidth: isSelected ? 2 : 0,
@@ -75,13 +105,13 @@ export const DaysOfWeek = ({
             {medals[index] && medals[index] !== "none" && (
               <Image
                 source={medalImages[medals[index] as Medal]}
-                style={daysOfWeekStyles.medalImage}
+                style={styles.medalImage}
               />
             )}
             {/* Nombre corto del día (lun, mar, mié, ...) */}
             <Text
               style={[
-                routineScreenStyles.dayText,
+                styles.dayText,
                 { color: isSelected ? "white" : "black" },
               ]}
               numberOfLines={1}
@@ -93,7 +123,7 @@ export const DaysOfWeek = ({
             {/* Número de día del mes (1-31) */}
             <Text
               style={[
-                routineScreenStyles.numberDayText,
+                styles.numberDayText,
                 { color: isSelected ? "white" : "black" },
               ]}
               numberOfLines={1}

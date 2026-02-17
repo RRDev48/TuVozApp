@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
+  StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
@@ -27,7 +28,86 @@ import { useTimePickerValidation } from "../../(hooks)/useTimePickerValidation";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  sharedModalContainer: {
+    width: "80%",
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  timePickerTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+    color: colors.blue,
+  },
+
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  switchTextContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
+
+  switchTitleLabel: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.blue,
+  },
+
+  switchSubTitleLabel: {
+    fontSize: 14,
+    color: colors.blue,
+    marginBottom: 5,
+  },
+
+  switch: {
+    marginLeft: 10,
+  },
+
+  timePickerContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  timePickerPeriodText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
+    color: colors.blue,
+  },
+
+  closeWhitTextButton: {
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
+  },
+
+  closeWhitTextButtonText: {
+    color: colors.white,
+    fontWeight: "bold",
+  },
+});
 
 /**
  * TimePickerModal
@@ -93,26 +173,27 @@ export const TimePickerModal = ({
       >
         {/* Permite cerrar el teclado al tocar fuera del contenido del modal. */}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={addTaskStyles.overlay}>
+          <View style={styles.overlay}>
+            ;
             {/* Evita que el toque sobre el contenido cierre el teclado/modal. */}
             <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-              <View style={addTaskStyles.sharedModalContainer}>
+              <View style={styles.sharedModalContainer}>
                 {/* Texto resumen que indica el comportamiento actual:
                     - Si el switch está activo y hay horas válidas, muestra el rango.
                     - Si no, indica que se puede hacer en cualquier momento del día. */}
-                <Text style={addTaskStyles.timePickerTitle}>
+                <Text style={styles.timePickerTitle}>
                   {isSwitchEnabled && startTime.value && endTime.value
                     ? `Hacerlo desde las ${startTime.value} hasta las ${endTime.value}`
                     : "Hacerlo en cualquier momento del día"}
                 </Text>
 
                 {/* Sección con el interruptor para activar/desactivar el rango horario. */}
-                <View style={addTaskStyles.switchContainer}>
-                  <View style={addTaskStyles.switchTextContainer}>
-                    <Text style={addTaskStyles.switchTitleLabel}>
+                <View style={styles.switchContainer}>
+                  <View style={styles.switchTextContainer}>
+                    <Text style={styles.switchTitleLabel}>
                       {"Hora Especificada"}
                     </Text>
-                    <Text style={addTaskStyles.switchSubTitleLabel}>
+                    <Text style={styles.switchSubTitleLabel}>
                       {"Fijar un rango de hora para hacerlo"}
                     </Text>
                   </View>
@@ -120,14 +201,14 @@ export const TimePickerModal = ({
                   <Switch
                     onValueChange={toggleSwitch}
                     value={isSwitchEnabled}
-                    style={addTaskStyles.switch}
+                    style={styles.switch}
                   />
                 </View>
 
                 {/* Cuando el switch está activo, se muestran los campos de rango horario. */}
                 {isSwitchEnabled && (
-                  <View style={addTaskStyles.timePickerContainer}>
-                    <Text style={addTaskStyles.timePickerPeriodText}>
+                  <View style={styles.timePickerContainer}>
+                    <Text style={styles.timePickerPeriodText}>
                       {"Periodo de tiempo"}
                     </Text>
 
@@ -154,11 +235,9 @@ export const TimePickerModal = ({
                 {/* Botón para validar y cerrar el modal aplicando el rango (si es válido). */}
                 <TouchableOpacity
                   onPress={handleClose}
-                  style={addTaskStyles.closeWhitTextButton}
+                  style={styles.closeWhitTextButton}
                 >
-                  <Text style={addTaskStyles.closeWhitTextButtonText}>
-                    {"Cerrar"}
-                  </Text>
+                  <Text style={styles.closeWhitTextButtonText}>{"Cerrar"}</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>

@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 // Componentes
 
@@ -16,8 +16,36 @@ import { TimeInputFieldProps } from "../../(models)/component.props";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  timeInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    width: "100%",
+  },
+
+  textInputLabel: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.blue,
+    marginRight: 10,
+  },
+
+  textTimeInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: colors.darkGray,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    backgroundColor: colors.white,
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.blue,
+  },
+});
 
 /**
  * TimeInputField
@@ -44,11 +72,11 @@ export const TimeInputField = ({
   return (
     // Contenedor del campo de hora con margen inferior para separar de otros campos.
     <View style={{ width: "100%", marginBottom: 15 }}>
-      <View style={addTaskStyles.timeInputContainer}>
-        <Text style={addTaskStyles.textInputLabel}>{label}</Text>
+      <View style={styles.timeInputContainer}>
+        <Text style={styles.textInputLabel}>{label}</Text>
         <TextInput
           style={[
-            addTaskStyles.textTimeInput,
+            styles.textTimeInput,
             // Si hay error, se resalta el borde del input en rojo.
             error && {
               borderColor: "red",

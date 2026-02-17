@@ -1,6 +1,13 @@
 // React
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 // Componentes
 
@@ -16,8 +23,41 @@ import { StepItemModalProps } from "../../(models)/component.props";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
-import { Ionicons } from "@expo/vector-icons";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  stepsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
+  stepNumber: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginRight: 5,
+    color: colors.blue,
+  },
+
+  stepsInput: {
+    fontSize: 18,
+    fontWeight: "bold",
+    borderWidth: 1,
+    color: colors.blue,
+    borderRadius: 10,
+    padding: 10,
+    flex: 1,
+    borderColor: colors.darkGray,
+    marginVertical: 10,
+    width: "90%",
+  },
+
+  removeStepButton: {
+    padding: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 /**
  * StepItem
@@ -45,14 +85,14 @@ export const StepItem = ({
   // const { formatText } = usePersonalization();
   return (
     // Contenedor horizontal de un paso con número, campo de texto y botón de eliminar.
-    <View style={addTaskStyles.stepsContainer}>
+    <View style={styles.stepsContainer}>
       {/* Número ordinal del paso (solo visual). */}
-      <Text style={addTaskStyles.stepNumber}>{id}.</Text>
+      <Text style={styles.stepNumber}>{id}.</Text>
 
       <TextInput
         placeholder={"Paso"}
         placeholderTextColor="black"
-        style={addTaskStyles.stepsInput}
+        style={styles.stepsInput}
         value={text}
         // Notifica al padre el cambio de texto, identificando el paso por su índice.
         onChangeText={(newText) => onTextChange(newText, index)}
@@ -63,7 +103,7 @@ export const StepItem = ({
       {stepsCount > 1 && (
         <TouchableOpacity
           onPress={() => onRemove(index)}
-          style={addTaskStyles.removeStepButton}
+          style={styles.removeStepButton}
         >
           <Ionicons name="trash-outline" size={24} color="red" />
         </TouchableOpacity>

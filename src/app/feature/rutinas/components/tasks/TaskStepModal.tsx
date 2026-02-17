@@ -1,6 +1,6 @@
 // React
 import React, { useState } from "react";
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Componentes
 import { TaskStepModalProps } from "../../(models)/component.props";
@@ -19,10 +19,101 @@ import { useTaskStepModal } from "../../(hooks)/useTaskStepModal";
 // Acciones
 
 // Visuales
-import {
-  addTaskStyles,
-  taskStepsStyles,
-} from "@/src/app/design-system/styles/tasks-Styles";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  detailsOverlay: {
+    flex: 1,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  detailsContainer: {
+    width: "90%",
+    height: "70%",
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    padding: 20,
+    justifyContent: "space-between",
+  },
+
+  titleTaskContainer: {
+    alignItems: "center",
+    marginBottom: 10,
+  },
+
+  taskDetailsTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: colors.blue,
+  },
+
+  stepContainer: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+
+  taskStepText: {
+    fontSize: 24,
+    color: colors.blue,
+    textAlign: "center",
+    fontWeight: "bold",
+    padding: 10,
+    marginBottom: 50,
+  },
+
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+
+  backButton: {
+    flex: 1,
+    backgroundColor: colors.red,
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginRight: 5,
+  },
+
+  nextButton: {
+    flex: 1,
+    backgroundColor: colors.green,
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginLeft: 5,
+  },
+
+  disabledButton: {
+    backgroundColor: colors.lightGray,
+    opacity: 0.5,
+  },
+
+  buttonText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  closeXButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    borderRadius: 20,
+    padding: 5,
+  },
+
+  closeXButtonText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: colors.red,
+  },
+});
 
 /**
  * Modal que guía al usuario por los pasos de una tarea.
@@ -113,44 +204,44 @@ export const TaskStepModal = ({
   return (
     // Modal nativo que se superpone al contenido actual de la app.
     <Modal visible={visible} transparent animationType="slide">
-      <View style={taskStepsStyles.detailsOverlay}>
-        <View style={taskStepsStyles.detailsContainer}>
+      <View style={styles.detailsOverlay}>
+        <View style={styles.detailsContainer}>
           {/* Encabezado que muestra el número de paso actual y el total. */}
-          <View style={taskStepsStyles.titleTaskContainer}>
-            <Text style={taskStepsStyles.taskDetailsTitle}>
+          <View style={styles.titleTaskContainer}>
+            <Text style={styles.taskDetailsTitle}>
               {`Paso ${currentStepIndex + 1} de ${task.pasos.length}`}
             </Text>
           </View>
 
           {/* Contenedor principal del texto del paso actual. */}
-          <View style={taskStepsStyles.stepContainer}>
-            <Text style={taskStepsStyles.taskStepText}>
+          <View style={styles.stepContainer}>
+            <Text style={styles.taskStepText}>
               {task.pasos[currentStepIndex]}
             </Text>
           </View>
 
           {/* Contenedor de los botones de navegación entre pasos. */}
-          <View style={taskStepsStyles.buttonContainer}>
+          <View style={styles.buttonContainer}>
             {/* Botón para volver al paso anterior. Se deshabilita cuando estamos
                 en el primer paso (índice 0). */}
             <TouchableOpacity
               style={[
-                taskStepsStyles.backButton,
-                currentStepIndex === 0 && taskStepsStyles.disabledButton,
+                styles.backButton,
+                currentStepIndex === 0 && styles.disabledButton,
               ]}
               onPress={handleBackStep}
               disabled={currentStepIndex === 0}
             >
-              <Text style={taskStepsStyles.buttonText}>{"Volver Paso"}</Text>
+              <Text style={styles.buttonText}>{"Volver Paso"}</Text>
             </TouchableOpacity>
 
             {/* Botón que avanza al siguiente paso o finaliza la tarea cuando
                 ya estamos en el último paso. */}
             <TouchableOpacity
-              style={taskStepsStyles.nextButton}
+              style={styles.nextButton}
               onPress={handleStepAction}
             >
-              <Text style={taskStepsStyles.buttonText}>
+              <Text style={styles.buttonText}>
                 {currentStepIndex < task.pasos.length - 1
                   ? "Siguiente Paso"
                   : "Terminar Tarea"}
@@ -162,9 +253,9 @@ export const TaskStepModal = ({
               general de cierre definido para los modales de tareas. */}
           <TouchableOpacity
             onPress={handleCancelClick}
-            style={addTaskStyles.closeXButton}
+            style={styles.closeXButton}
           >
-            <Text style={addTaskStyles.closeXButtonText}>×</Text>
+            <Text style={styles.closeXButtonText}>×</Text>
           </TouchableOpacity>
         </View>
       </View>

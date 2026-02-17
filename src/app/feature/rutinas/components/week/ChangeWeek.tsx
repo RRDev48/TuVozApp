@@ -1,5 +1,6 @@
 // React
-import { Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 // Componentes
 import { ChangeWeekProps } from "../../(models)/component.props";
@@ -15,9 +16,24 @@ import { ChangeWeekProps } from "../../(models)/component.props";
 // Acciones
 
 // Visuales
-import { changeWeekStyles } from "@/src/app/design-system/styles/menuItem-Styles";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { Ionicons } from "@expo/vector-icons";
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 20,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+    flex: 1,
+  },
+});
 
 /**
  * Componente para cambiar rápidamente de semana en la vista de rutinas.
@@ -38,14 +54,14 @@ const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
   };
 
   return (
-    <View style={changeWeekStyles.container}>
+    <View style={styles.container}>
       {/* Botón para ir a la semana anterior (resta 7 días). */}
       <TouchableOpacity onPress={() => handleChangeWeek(-1)}>
         <Ionicons name="chevron-back-outline" size={24} color={colors.black} />
       </TouchableOpacity>
 
       {/* Texto central que funciona como encabezado de la sección de rutinas. */}
-      <Text style={changeWeekStyles.title}>{"¿Comenzamos el día?"}</Text>
+      <Text style={styles.title}>{"¿Comenzamos el día?"}</Text>
 
       {/* Botón para ir a la semana siguiente (suma 7 días). */}
       <TouchableOpacity onPress={() => handleChangeWeek(1)}>

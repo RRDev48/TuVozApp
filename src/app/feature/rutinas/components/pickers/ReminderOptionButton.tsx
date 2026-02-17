@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 // Componentes
 
@@ -16,7 +16,30 @@ import { ReminderOptionButtonProps } from "../../(models)/component.props";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  optionButton: {
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    marginVertical: 5,
+    alignItems: "center",
+  },
+
+  optionText: {
+    color: colors.blue,
+    fontWeight: "bold",
+  },
+
+  selectedOption: {
+    backgroundColor: colors.blue,
+  },
+
+  selectedOptionText: {
+    color: "white",
+  },
+});
 
 /**
  * ReminderOptionButton
@@ -38,16 +61,13 @@ export const ReminderOptionButton = ({
 }: ReminderOptionButtonProps) => {
   return (
     <TouchableOpacity
-      style={[
-        addTaskStyles.optionButton,
-        isSelected && addTaskStyles.selectedOption,
-      ]}
+      style={[styles.optionButton, isSelected && styles.selectedOption]}
       onPress={() => onPress(value)}
     >
       <Text
         style={[
-          addTaskStyles.optionText,
-          isSelected ? addTaskStyles.selectedOptionText : null,
+          styles.optionText,
+          isSelected ? styles.selectedOptionText : null,
         ]}
       >
         {label}

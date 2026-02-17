@@ -1,12 +1,20 @@
 // React
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 // Componentes
 import DraggableTaskItem from "./DraggableTaskItem";
 
 // Constantes
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
+const HOUR_HEIGHT = 60;
+const QUARTER_HEIGHT = 15;
 
 // Modelos
 import { DayCalendarViewProps } from "../../(models)/component.props";
@@ -18,8 +26,55 @@ import { useCalendarTasks } from "../../(hooks)/useCalendarTasks";
 
 // Acciones
 
-// Visuales
-import { dayCalendarViewStyles as styles } from "@/src/app/design-system/styles/dayCalendarView-Styles";
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  calendarContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  hourBlockContainer: {
+    position: "relative",
+  },
+  hourRow: {
+    height: HOUR_HEIGHT,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  quarterSpacer: {
+    height: QUARTER_HEIGHT,
+  },
+  hourLabelContainer: {
+    width: 60,
+    paddingRight: 8,
+    paddingTop: 2,
+  },
+  hourLabel: {
+    fontSize: 12,
+    color: "#666",
+    textAlign: "right",
+    fontWeight: "500",
+  },
+  hourLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#e0e0e0",
+  },
+  tasksContainer: {
+    position: "absolute",
+    left: 60,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
+  finalSpacer: {
+    height: 50,
+  },
+});
 
 /**
  * DayCalendarView

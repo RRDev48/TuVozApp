@@ -1,8 +1,10 @@
 // React
+import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
   FlatList,
   Modal,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -33,8 +35,149 @@ import { useAddTaskSubmit } from "../../(hooks)/useAddTaskSubmit";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
-import { Ionicons } from "@expo/vector-icons";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  addTaskModalContainer: {
+    width: "90%",
+    height: "90%",
+    backgroundColor: colors.white,
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  emoji: {
+    fontSize: 60,
+    marginBottom: 20,
+  },
+
+  inputTitleTask: {
+    fontSize: 25,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: colors.black,
+    borderBottomWidth: 10,
+    borderColor: colors.lightGray,
+    borderRadius: 40,
+    padding: 10,
+    marginVertical: 10,
+    width: "90%",
+  },
+
+  dataFields: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  datetButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 10,
+    marginBottom: 10,
+  },
+
+  dateTextButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 10,
+    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "left",
+    color: colors.blue,
+    borderBottomWidth: 1,
+    borderColor: colors.lightGray,
+    padding: 10,
+    marginVertical: 10,
+    width: "90%",
+    marginLeft: 10,
+  },
+
+  categoryField: {
+    width: "100%",
+    marginBottom: 20,
+  },
+
+  categoryButtonText: {
+    fontSize: 18,
+    color: colors.white,
+    fontWeight: "bold",
+  },
+
+  categoryButton: {
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+
+  mainStepsContainer: {
+    width: "100%",
+    flex: 1,
+  },
+
+  stepsTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: colors.blue,
+    borderColor: colors.blue,
+  },
+
+  addStepButton: {
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  addStepButtonText: {
+    color: colors.white,
+    fontSize: 24,
+  },
+
+  createTaskButton: {
+    position: "absolute",
+    top: 5,
+    left: 10,
+    backgroundColor: colors.white,
+    borderRadius: 5,
+    padding: 10,
+  },
+
+  createTaskButtonText: {
+    color: colors.blue,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
+  createTaskButtonDisabled: {
+    backgroundColor: colors.white,
+  },
+
+  closeXButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    borderRadius: 20,
+    padding: 5,
+  },
+
+  closeXButtonText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: colors.red,
+  },
+});
 
 /**
  * AddTaskModal
@@ -183,33 +326,33 @@ const AddTaskModal = ({
       animationType="slide"
       onRequestClose={handleCancelClick}
     >
-      <View style={addTaskStyles.overlay}>
-        <View style={addTaskStyles.addTaskModalContainer}>
+      <View style={styles.overlay}>
+        <View style={styles.addTaskModalContainer}>
           {/* Botón de cierre (X) que dispara el flujo de confirmación de cancelación. */}
           <TouchableOpacity
             onPress={handleCancelClick}
-            style={addTaskStyles.closeXButton}
+            style={styles.closeXButton}
           >
-            <Text style={addTaskStyles.closeXButtonText}>×</Text>
+            <Text style={styles.closeXButtonText}>×</Text>
           </TouchableOpacity>
 
           {/* Botón para crear la tarea. Muestra estado de carga y se deshabilita
               mientras la tarea se está enviando. */}
           <TouchableOpacity
             style={[
-              addTaskStyles.createTaskButton,
-              isLoading && addTaskStyles.createTaskButtonDisabled,
+              styles.createTaskButton,
+              isLoading && styles.createTaskButtonDisabled,
             ]}
             onPress={handleAddTask}
             disabled={isLoading}
           >
-            <Text style={addTaskStyles.createTaskButtonText}>
+            <Text style={styles.createTaskButtonText}>
               {isLoading ? "Creando..." : "Crear"}
             </Text>
           </TouchableOpacity>
 
           {/* Emoji contextual según la hora del día (sol/luna). */}
-          <Text style={addTaskStyles.emoji}>
+          <Text style={styles.emoji}>
             {new Date().getHours() >= 6 && new Date().getHours() < 18
               ? "🌞"
               : "🌙"}
@@ -219,22 +362,22 @@ const AddTaskModal = ({
           <TextInput
             placeholder={'"Nueva tarea"'}
             placeholderTextColor="black"
-            style={addTaskStyles.inputTitleTask}
+            style={styles.inputTitleTask}
             value={taskName}
             onChangeText={setTaskName}
           />
 
           {/* Selector de fecha de vencimiento de la tarea con su modal asociado. */}
-          <View style={addTaskStyles.dataFields}>
+          <View style={styles.dataFields}>
             <TouchableOpacity
-              style={addTaskStyles.datetButton}
+              style={styles.datetButton}
               onPress={() => setIsCalendarVisible(true)}
             >
               <Ionicons name="calendar-outline" size={24} color="#394A72" />
               <TextInput
                 placeholder={"Hoy"}
                 placeholderTextColor="#394A72"
-                style={addTaskStyles.dateTextButton}
+                style={styles.dateTextButton}
                 value={formatDate(dueDate)}
                 editable={false}
                 pointerEvents="none"
@@ -256,16 +399,16 @@ const AddTaskModal = ({
           </View>
 
           {/* Selector de horario de la tarea (desde/hasta) con su modal asociado. */}
-          <View style={addTaskStyles.dataFields}>
+          <View style={styles.dataFields}>
             <TouchableOpacity
-              style={addTaskStyles.datetButton}
+              style={styles.datetButton}
               onPress={() => setIsRoutineTimeVisible(true)}
             >
               <Ionicons name="time-outline" size={24} color="#394A72" />
               <TextInput
                 placeholder={"Seleccionar horario"}
                 placeholderTextColor="#394A72"
-                style={addTaskStyles.dateTextButton}
+                style={styles.dateTextButton}
                 value={
                   taskStartTime && taskEndTime
                     ? `${taskStartTime} - ${taskEndTime}`
@@ -284,16 +427,16 @@ const AddTaskModal = ({
           </View>
 
           {/* Selector de recordatorio para la tarea con su modal asociado. */}
-          <View style={addTaskStyles.dataFields}>
+          <View style={styles.dataFields}>
             <TouchableOpacity
-              style={addTaskStyles.datetButton}
+              style={styles.datetButton}
               onPress={() => setIsReminderVisible(true)}
             >
               <Ionicons name="alarm-outline" size={24} color="#394A72" />
               <TextInput
                 placeholder={"Añadir recordatorio"}
                 placeholderTextColor="#394A72"
-                style={addTaskStyles.dateTextButton}
+                style={styles.dateTextButton}
                 value={reminder.label ? `Recordatorio: ${reminder.label}` : ""}
                 editable={false}
                 pointerEvents="none"
@@ -309,12 +452,12 @@ const AddTaskModal = ({
           </View>
 
           {/* Selector de categoría de la tarea con listado de categorías disponibles. */}
-          <View style={addTaskStyles.categoryField}>
+          <View style={styles.categoryField}>
             <TouchableOpacity
-              style={addTaskStyles.categoryButton}
+              style={styles.categoryButton}
               onPress={() => setIsCategoryVisible(true)}
             >
-              <Text style={addTaskStyles.categoryButtonText}>
+              <Text style={styles.categoryButtonText}>
                 {categoryName || "Seleccionar categoría"}
               </Text>
             </TouchableOpacity>
@@ -333,8 +476,8 @@ const AddTaskModal = ({
           </View>
 
           {/* Sección de gestión de pasos de la tarea (lista + botón para agregar). */}
-          <View style={addTaskStyles.mainStepsContainer}>
-            <Text style={addTaskStyles.stepsTitle}>{"Pasos"}</Text>
+          <View style={styles.mainStepsContainer}>
+            <Text style={styles.stepsTitle}>{"Pasos"}</Text>
 
             <FlatList
               ref={flatListRef}
@@ -355,10 +498,10 @@ const AddTaskModal = ({
 
             {/* Botón para agregar un nuevo paso al final de la lista. */}
             <TouchableOpacity
-              style={addTaskStyles.addStepButton}
+              style={styles.addStepButton}
               onPress={handleAddStepAndScroll}
             >
-              <Text style={addTaskStyles.addStepButtonText}>+</Text>
+              <Text style={styles.addStepButtonText}>+</Text>
             </TouchableOpacity>
           </View>
         </View>

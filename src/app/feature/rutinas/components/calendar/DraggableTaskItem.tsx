@@ -1,6 +1,7 @@
 // React
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
@@ -22,9 +23,94 @@ import { getCategories } from "../../(services)/category.service";
 // Acciones
 
 // Visuales
-import { draggableTaskItemStyles as styles } from "@/src/app/design-system/styles/draggableTaskItem-Styles";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { Ionicons } from "@expo/vector-icons";
+
+const styles = StyleSheet.create({
+  taskContainer: {
+    position: "absolute",
+    paddingHorizontal: 2,
+    borderRadius: 8,
+    overflow: "visible",
+  },
+  taskContent: {
+    flex: 1,
+    borderLeftWidth: 4,
+    borderRadius: 8,
+    padding: 8,
+    paddingTop: 18,
+    paddingBottom: 18,
+    justifyContent: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  resizeIndicatorTop: {
+    position: "absolute",
+    top: 4,
+    left: 0,
+    right: 0,
+    height: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  taskInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    paddingHorizontal: 4,
+    justifyContent: "center",
+  },
+  categoryIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(255, 255, 255, 0.25)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+    overflow: "hidden",
+  },
+  categoryIcon: {
+    width: "100%",
+    height: "100%",
+  },
+  textContainer: {
+    flex: 1,
+  },
+  taskTitle: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  taskMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  stepsText: {
+    color: "#fff",
+    fontSize: 11,
+    opacity: 0.9,
+    marginLeft: 4,
+  },
+  resizeIndicatorBottom: {
+    position: "absolute",
+    bottom: 4,
+    left: 0,
+    right: 0,
+    height: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  resizeIndicator: {
+    width: 40,
+    height: 4,
+    backgroundColor: "rgba(255,255,255,0.6)",
+    borderRadius: 2,
+  },
+});
 
 /**
  * DraggableTaskItem

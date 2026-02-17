@@ -1,6 +1,6 @@
 // React
 import React, { useState } from "react";
-import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 
 // Componentes
@@ -17,8 +17,45 @@ import { CalendarModalProps } from "../../(models)/component.props";
 // Acciones
 
 // Visuales
-import { addTaskStyles } from "@/src/app/design-system/styles/tasks-Styles";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: colors.transparent,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  calendarContainer: {
+    width: "90%",
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+
+  calendarTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: colors.blue,
+  },
+
+  closeWhitTextButton: {
+    backgroundColor: colors.blue,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
+  },
+
+  closeWhitTextButtonText: {
+    color: colors.white,
+    fontWeight: "bold",
+  },
+});
 
 /**
  * DatePickerModal
@@ -53,11 +90,9 @@ export const DatePickerModal = ({
   return (
     // Modal nativo que se muestra sobre la pantalla actual.
     <Modal visible={visible} transparent={true} animationType="slide">
-      <View style={addTaskStyles.overlay}>
-        <View style={addTaskStyles.calendarContainer}>
-          <Text style={addTaskStyles.calendarTitle}>
-            {"Selecciona una fecha"}
-          </Text>
+      <View style={styles.overlay}>
+        <View style={styles.calendarContainer}>
+          <Text style={styles.calendarTitle}>{"Selecciona una fecha"}</Text>
 
           {/* Calendario mensual interactivo.
               - onDayPress: maneja la selección de un día.
@@ -81,11 +116,9 @@ export const DatePickerModal = ({
           {/* Botón para cerrar el modal sin cambiar la fecha. */}
           <TouchableOpacity
             onPress={onClose}
-            style={addTaskStyles.closeWhitTextButton}
+            style={styles.closeWhitTextButton}
           >
-            <Text style={addTaskStyles.closeWhitTextButtonText}>
-              {"Cerrar"}
-            </Text>
+            <Text style={styles.closeWhitTextButtonText}>{"Cerrar"}</Text>
           </TouchableOpacity>
         </View>
       </View>
