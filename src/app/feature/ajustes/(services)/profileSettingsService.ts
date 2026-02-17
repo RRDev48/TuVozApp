@@ -51,22 +51,42 @@ export class ProfileSettingsService {
     profileId: string,
     settings: ProfileSettingsInput,
   ): Promise<ProfileSettings> {
+    console.log("🔄 ProfileSettingsService: upsertProfileSettings iniciado", {
+      profileId,
+      settings,
+    });
+
+    const upsertData = {
+      profile_id: profileId,
+      ...settings,
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log(
+      "📞 ProfileSettingsService: Ejecutando supabase.upsert",
+      upsertData,
+    );
+
     const { data, error } = await supabase
       .from("profile_settings")
-      .upsert({
-        profile_id: profileId,
-        ...settings,
-        updated_at: new Date().toISOString(),
-      })
+      .upsert(upsertData)
       .select()
       .single();
 
     if (error) {
+      console.error(
+        "❌ ProfileSettingsService: Error en supabase.upsert:",
+        error,
+      );
       throw new Error(
         `Error guardando configuración del perfil: ${error.message}`,
       );
     }
 
+    console.log(
+      "✅ ProfileSettingsService: upsertProfileSettings completado",
+      data,
+    );
     return data;
   }
 
@@ -78,11 +98,26 @@ export class ProfileSettingsService {
     key: K,
     value: ProfileSettingsInput[K],
   ): Promise<ProfileSettings> {
+    console.log("🔄 ProfileSettingsService: updateProfileSetting iniciado", {
+      profileId,
+      key,
+      value,
+    });
+
     const settings: ProfileSettingsInput = {
       [key]: value,
     };
 
-    return this.upsertProfileSettings(profileId, settings);
+    console.log("📞 ProfileSettingsService: Llamando upsertProfileSettings", {
+      profileId,
+      settings,
+    });
+    const result = await this.upsertProfileSettings(profileId, settings);
+    console.log(
+      "✅ ProfileSettingsService: updateProfileSetting completado",
+      result,
+    );
+    return result;
   }
 
   /**

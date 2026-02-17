@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-    ProfileSettings,
-    ProfileSettingsInput,
-    ProfileSettingsService,
+  ProfileSettings,
+  ProfileSettingsInput,
+  ProfileSettingsService,
 } from "../(services)/profileSettingsService";
 import { useErrorHandling } from "./useErrorHandling";
 

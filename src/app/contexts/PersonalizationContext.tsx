@@ -78,19 +78,25 @@ const PersonalizationProvider = ({
 
   // Funciones para usuarios autenticados
   const setSoloMayusculasAuthenticated = async (value: boolean) => {
-    await updateSetting("uppercase", value);
+    try {
+      await updateSetting("uppercase", value);
+    } catch (error) {}
   };
 
   const setTamanioLetraAuthenticated = async (
     value: "pequenia" | "mediana" | "grande",
   ) => {
-    const fontSize = ProfileSettingsService.mapAppSizeToFontSize(value);
-    await updateSetting("font_size", fontSize);
+    try {
+      const fontSize = ProfileSettingsService.mapAppSizeToFontSize(value);
+      await updateSetting("font_size", fontSize);
+    } catch (error) {}
   };
 
   const setTemaOscuroAuthenticated = async (value: boolean) => {
-    const theme = ProfileSettingsService.mapAppThemeToDbTheme(value);
-    await updateSetting("theme", theme);
+    try {
+      const theme = ProfileSettingsService.mapAppThemeToDbTheme(value);
+      await updateSetting("theme", theme);
+    } catch (error) {}
   };
 
   // Funciones para usuarios no autenticados (AsyncStorage)
@@ -134,16 +140,28 @@ const PersonalizationProvider = ({
 
   // Funciones unificadas que eligen entre DB o AsyncStorage
   const setSoloMayusculas = isAuthenticated
-    ? setSoloMayusculasAuthenticated
-    : setSoloMayusculasLocal;
+    ? (value: boolean) => {
+        return setSoloMayusculasAuthenticated(value);
+      }
+    : (value: boolean) => {
+        return setSoloMayusculasLocal(value);
+      };
 
   const setTamanioLetra = isAuthenticated
-    ? setTamanioLetraAuthenticated
-    : setTamanioLetraLocal;
+    ? (value: "pequenia" | "mediana" | "grande") => {
+        return setTamanioLetraAuthenticated(value);
+      }
+    : (value: "pequenia" | "mediana" | "grande") => {
+        return setTamanioLetraLocal(value);
+      };
 
   const setTemaOscuro = isAuthenticated
-    ? setTemaOscuroAuthenticated
-    : setTemaOscuroLocal;
+    ? (value: boolean) => {
+        return setTemaOscuroAuthenticated(value);
+      }
+    : (value: boolean) => {
+        return setTemaOscuroLocal(value);
+      };
 
   // Valores actuales (desde DB o AsyncStorage)
   const soloMayusculas = isAuthenticated
