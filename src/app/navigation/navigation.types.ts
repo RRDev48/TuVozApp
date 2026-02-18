@@ -41,6 +41,10 @@ type RootStackParamsList = {
   // Rutas principales
   Home: undefined;
   Expresate: undefined;
+  CategoryPictograms: {
+    categoryId: string;
+    categoryName: string;
+  };
   Rutinas: undefined;
   Tarjetas: undefined;
   Frases: undefined;

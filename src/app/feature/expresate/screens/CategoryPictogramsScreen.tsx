@@ -1,44 +1,57 @@
 // React
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import * as Haptics from "expo-haptics";
+import * as Speech from "expo-speech";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View,
-  ViewToken,
+    Dimensions,
+    FlatList,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    ViewToken,
 } from "react-native";
 
 // Componentes
 import CustomText from "@/src/app/components/CustomText";
-import MenuItem from "@/src/app/components/menu/MenuItem";
 import BackButton from "@/src/app/feature/components/BackButton";
 import ScreenTitle from "@/src/app/feature/components/ScreenTitle";
 
 // Hooks
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { usePaginatedCategories } from "@/src/app/feature/expresate/(hooks)/usePaginatedCategories";
-import { usePictogramCategories } from "@/src/app/feature/expresate/(hooks)/usePictogramCategories";
+import { usePaginatedPictograms } from "@/src/app/feature/expresate/(hooks)/usePaginatedPictograms";
+import { usePictogramsByCategory } from "@/src/app/feature/expresate/(hooks)/usePictogramsByCategory";
 
 // Tipos
+import { Pictogram } from "@/src/app/feature/expresate/(types)/expresate.types";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
 
-const ExpresateScreen = () => {
+type CategoryPictogramsScreenRouteProp = RouteProp<
+  RootStackParamsList,
+  "CategoryPictograms"
+>;
+
+const CategoryPictogramsScreen = () => {
   const { transformText, getThemedColors, tamanioLetra, getFontSize } =
     usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const { categories, isLoading } = usePictogramCategories();
+  const route = useRoute<CategoryPictogramsScreenRouteProp>();
+
+  const { categoryId, categoryName } = route.params;
+
+  const { pictograms, isLoading } = usePictogramsByCategory(categoryId);
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
   const itemsPerPage = tamanioLetra === "grande" ? 3 : 6;
-  const { paginatedCategories, totalPages } = usePaginatedCategories({
-    categories,
+  const { paginatedPictograms, totalPages } = usePaginatedPictograms({
+    pictograms,
     itemsPerPage,
   });
 
@@ -46,18 +59,23 @@ const ExpresateScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
-  const handleMenuItemPress = useCallback(
-    (categoryId: string, categorySlug: string, categoryName: string) => {
-      navigation.navigate("CategoryPictograms", {
-        categoryId,
-        categoryName,
-      });
-    },
-    [navigation],
-  );
+  const handlePictogramPress = useCallback((pictogram: Pictogram) => {
+    console.log("Pictogram selected:", pictogram.keyword, pictogram.arasaac_id);
 
-  const normalizeCategoryName = useCallback((name: string) => {
-    return name;
+    // Feedback háptico
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    // Reproducir el keyword con Text-to-Speech
+    const language = pictogram.language === "es" ? "es-ES" : pictogram.language;
+    Speech.speak(pictogram.keyword, {
+      language: language,
+      pitch: 1.0,
+      rate: 0.9,
+    });
+  }, []);
+
+  const getArasaacImageUrl = useCallback((arasaacId: string) => {
+    return `https://api.arasaac.org/v1/pictograms/${arasaacId}`;
   }, []);
 
   const onViewableItemsChanged = useCallback(
@@ -128,6 +146,7 @@ const ExpresateScreen = () => {
           borderRadius: 30,
           alignItems: "center",
           justifyContent: "center",
+          overflow: "hidden",
         },
         textCard: {
           fontSize: getFontSize(18),
@@ -136,46 +155,62 @@ const ExpresateScreen = () => {
           color: themedColors.text,
           marginTop: 5,
         },
-        icon: {
+        image: {
           width: 70,
           height: 70,
+          resizeMode: "contain",
+        },
+        loadingImage: {
+          width: 70,
+          height: 70,
+          backgroundColor: themedColors.secondary + "30",
+          borderRadius: 10,
         },
       }),
     [themedColors, getFontSize],
   );
 
-  const renderCategoryItem = useCallback(
-    (item: any) => (
-      <MenuItem
-        name={normalizeCategoryName(item.name)}
-        route={item.slug}
-        image={require("@/src/app/assets/icon/Ajustes.png")}
-        styles={containerStyles}
-        onPress={() => handleMenuItemPress(item.id, item.slug, item.name)}
-      />
+  const renderPictogramItem = useCallback(
+    (item: Pictogram) => (
+      <TouchableOpacity
+        style={containerStyles.itemContainer}
+        onPress={() => handlePictogramPress(item)}
+        activeOpacity={0.7}
+      >
+        <View style={containerStyles.buttonContainer}>
+          <Image
+            source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+            style={containerStyles.image}
+            defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+          />
+        </View>
+        <CustomText style={containerStyles.textCard}>
+          {transformText(item.keyword)}
+        </CustomText>
+      </TouchableOpacity>
     ),
-    [containerStyles, handleMenuItemPress, normalizeCategoryName],
+    [containerStyles, handlePictogramPress, getArasaacImageUrl, transformText],
   );
 
   const renderPage = useCallback(
-    (page: any[]) => {
+    (page: Pictogram[]) => {
       if (tamanioLetra === "grande") {
         // 1x3 para letra grande (1 columna, 3 filas)
         return (
           <View style={containerStyles.pageContainer}>
             <View style={containerStyles.gridRow}>
-              {renderCategoryItem(page[0])}
+              {renderPictogramItem(page[0])}
             </View>
             <View style={containerStyles.gridRow}>
               {page[1] ? (
-                renderCategoryItem(page[1])
+                renderPictogramItem(page[1])
               ) : (
                 <View style={{ flex: 1 }} />
               )}
             </View>
             <View style={containerStyles.gridRow}>
               {page[2] ? (
-                renderCategoryItem(page[2])
+                renderPictogramItem(page[2])
               ) : (
                 <View style={{ flex: 1 }} />
               )}
@@ -187,33 +222,33 @@ const ExpresateScreen = () => {
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>
-            {renderCategoryItem(page[0])}
+            {renderPictogramItem(page[0])}
             {page[1] ? (
-              renderCategoryItem(page[1])
+              renderPictogramItem(page[1])
             ) : (
               <View style={{ flex: 1 }} />
             )}
           </View>
           <View style={containerStyles.gridRow}>
             {page[2] ? (
-              renderCategoryItem(page[2])
+              renderPictogramItem(page[2])
             ) : (
               <View style={{ flex: 1 }} />
             )}
             {page[3] ? (
-              renderCategoryItem(page[3])
+              renderPictogramItem(page[3])
             ) : (
               <View style={{ flex: 1 }} />
             )}
           </View>
           <View style={containerStyles.gridRow}>
             {page[4] ? (
-              renderCategoryItem(page[4])
+              renderPictogramItem(page[4])
             ) : (
               <View style={{ flex: 1 }} />
             )}
             {page[5] ? (
-              renderCategoryItem(page[5])
+              renderPictogramItem(page[5])
             ) : (
               <View style={{ flex: 1 }} />
             )}
@@ -222,7 +257,7 @@ const ExpresateScreen = () => {
       );
     },
     [
-      renderCategoryItem,
+      renderPictogramItem,
       containerStyles.pageContainer,
       containerStyles.gridRow,
       tamanioLetra,
@@ -233,7 +268,7 @@ const ExpresateScreen = () => {
     () => (
       <FlatList
         ref={flatListRef}
-        data={paginatedCategories}
+        data={paginatedPictograms}
         renderItem={({ item }) => renderPage(item)}
         keyExtractor={(_, index) => index.toString()}
         horizontal
@@ -243,7 +278,7 @@ const ExpresateScreen = () => {
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
       />
     ),
-    [paginatedCategories, renderPage],
+    [paginatedPictograms, renderPage],
   );
 
   const renderPagination = useCallback(
@@ -274,7 +309,7 @@ const ExpresateScreen = () => {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-        <ScreenTitle text={transformText("Expresate con tarjetas")} />
+        <ScreenTitle text={transformText(categoryName)} />
         <View
           style={{
             flex: 1,
@@ -282,7 +317,27 @@ const ExpresateScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText("Cargando categorías...")}</CustomText>
+          <CustomText>{transformText("Cargando pictogramas...")}</CustomText>
+        </View>
+      </View>
+    );
+  }
+
+  if (pictograms.length === 0) {
+    return (
+      <View style={containerStyles.container}>
+        <BackButton onPress={handleGoBack} />
+        <ScreenTitle text={transformText(categoryName)} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CustomText>
+            {transformText("No hay pictogramas disponibles en esta categoría")}
+          </CustomText>
         </View>
       </View>
     );
@@ -291,7 +346,7 @@ const ExpresateScreen = () => {
   return (
     <View style={containerStyles.container}>
       <BackButton onPress={handleGoBack} />
-      <ScreenTitle text={transformText("Expresate con tarjetas")} />
+      <ScreenTitle text={transformText(categoryName)} />
 
       <View style={containerStyles.carouselContainer}>{renderCarousel()}</View>
 
@@ -300,4 +355,4 @@ const ExpresateScreen = () => {
   );
 };
 
-export default ExpresateScreen;
+export default CategoryPictogramsScreen;

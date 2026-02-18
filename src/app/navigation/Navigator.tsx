@@ -21,6 +21,7 @@ import AddMedicationScreen from "../feature/emergencias/screens/medication/AddMe
 import EditMedicationScreen from "../feature/emergencias/screens/medication/EditMedicationScreen";
 import MedicationsScreen from "../feature/emergencias/screens/medication/MedicationsScreen";
 import NotesScreen from "../feature/emergencias/screens/notes/NotesScreen";
+import CategoryPictogramsScreen from "../feature/expresate/screens/CategoryPictogramsScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
@@ -83,6 +84,7 @@ const settingsScreens = [
 const mainScreens = [
   { name: "Home", component: HomeScreen },
   { name: "Expresate", component: ExpresateScreen },
+  { name: "CategoryPictograms", component: CategoryPictogramsScreen },
   { name: "Rutinas", component: RoutineScreen },
   { name: "Tarjetas", component: CardsScreen },
   { name: "Frases", component: ShortcutScreen },
