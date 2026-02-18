@@ -1,17 +1,25 @@
 import { supabase } from "@/src/lib/supabaseClient";
 
+export interface Category {
+  id: string; // UUID
+  name: string;
+  slug: string;
+  description?: string | null;
+  created_at?: string | null;
+}
+
 export interface PictogramCategory {
-  id: number;
-  category_slug: string;
-  arasaac_id: number;
+  id: string; // UUID
+  name: string;
+  slug: string;
 }
 
 export interface Pictogram {
-  id: number;
-  arasaac_id: number;
+  id: string; // UUID
+  arasaac_id: string;
   keyword: string;
   arasaac_categories: string[] | null;
-  category_slug: string;
+  category_id: string; // UUID - FK a categories
   language: string;
   last_sync: string | null;
   created_at: string | null;
@@ -19,43 +27,27 @@ export interface Pictogram {
 
 export const expresateService = {
   /**
-   * Obtiene todas las categorías únicas de pictogramas
-   * Con ~2500 pictogramas y 14 categorías, traemos todos los registros
-   * y deduplicamos por category_slug
+   * Obtiene todas las categorías de pictogramas directamente de la tabla categories
    */
   getCategories: async (): Promise<{
     data: PictogramCategory[] | null;
     error: any;
   }> => {
     try {
-      // Traer todos los pictogramas para obtener categorías únicas
-      // Sin order para evitar límites implícitos de RLS
-      const { data, error, count } = await supabase
-        .from("pictograms")
-        .select("id, category_slug, arasaac_id", { count: "exact" })
-        .limit(3000);
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, slug")
+        .order("name", { ascending: true });
 
       if (error) {
-        console.error("Error fetching pictograms:", error);
+        console.error("Error fetching categories:", error);
         throw error;
       }
 
-      // Deduplicar por category_slug - mantiene el primer registro de cada categoría
-      const categoryMap = new Map<string, PictogramCategory>();
-
-      if (data && Array.isArray(data)) {
-        for (const item of data as PictogramCategory[]) {
-          if (!categoryMap.has(item.category_slug)) {
-            categoryMap.set(item.category_slug, item);
-          }
-        }
-      }
-
-      const uniqueCategories = Array.from(categoryMap.values()).sort((a, b) =>
-        a.category_slug.localeCompare(b.category_slug),
-      );
-
-      return { data: uniqueCategories, error: null };
+      return {
+        data: data as PictogramCategory[],
+        error: null,
+      };
     } catch (error) {
       console.error("Error in getCategories:", error);
       return { data: null, error };
@@ -66,7 +58,7 @@ export const expresateService = {
    * Obtiene todos los pictogramas de una categoría específica
    */
   getPictogramsByCategory: async (
-    categorySlug: string,
+    categoryId: string,
   ): Promise<{
     data: Pictogram[] | null;
     error: any;
@@ -75,7 +67,7 @@ export const expresateService = {
       const { data, error } = await supabase
         .from("pictograms")
         .select("*")
-        .eq("category_slug", categorySlug)
+        .eq("category_id", categoryId)
         .order("keyword", { ascending: true });
 
       if (error) {

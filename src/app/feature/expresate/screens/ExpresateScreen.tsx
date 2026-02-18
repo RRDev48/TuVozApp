@@ -3,11 +3,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    StyleSheet,
-    View,
-    ViewToken,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  View,
+  ViewToken,
 } from "react-native";
 
 // Componentes
@@ -46,14 +46,16 @@ const ExpresateScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
-  const handleMenuItemPress = useCallback((categorySlug: string) => {}, []);
+  const handleMenuItemPress = useCallback(
+    (categoryId: string, categorySlug: string) => {
+      // Aquí puedes navegar a la pantalla de pictogramas pasando el categoryId
+      console.log("Category selected:", categoryId, categorySlug);
+    },
+    [],
+  );
 
-  const normalizeCategoryName = useCallback((slug: string) => {
-    return slug
-      .replace(/_/g, " ")
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
+  const normalizeCategoryName = useCallback((name: string) => {
+    return name;
   }, []);
 
   const onViewableItemsChanged = useCallback(
@@ -143,11 +145,11 @@ const ExpresateScreen = () => {
   const renderCategoryItem = useCallback(
     (item: any) => (
       <MenuItem
-        name={normalizeCategoryName(item.category_slug)}
-        route={item.category_slug}
+        name={normalizeCategoryName(item.name)}
+        route={item.slug}
         image={require("@/src/app/assets/icon/Ajustes.png")}
         styles={containerStyles}
-        onPress={() => handleMenuItemPress(item.category_slug)}
+        onPress={() => handleMenuItemPress(item.id, item.slug)}
       />
     ),
     [containerStyles, handleMenuItemPress, normalizeCategoryName],
