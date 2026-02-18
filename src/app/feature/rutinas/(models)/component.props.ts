@@ -75,6 +75,7 @@ export interface AddTaskModalProps {
   calculateEndHour: string;
   onClose: () => void;
   updateTasks: (newTask: Task) => void;
+  profileId: string;
 }
 
 export interface TaskStepModalProps {
@@ -121,6 +122,7 @@ export interface DaysOfWeekProps {
   selectedDayIndex: number;
   setSelectedDayIndex: (index: number) => void;
   routineId: number;
+  profileId: string;
 }
 
 export interface ChangeWeekProps {

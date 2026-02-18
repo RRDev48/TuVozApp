@@ -30,13 +30,15 @@ import { getRoutineByDate } from "../(services)/routine.service";
  * Devuelve un arreglo de 7 posiciones con la medalla de cada día, en el
  * mismo orden que las fechas recibidas.
  */
-export function useWeekMedals(weekDates: Date[]) {
+export function useWeekMedals(profileId: string, weekDates: Date[]) {
   // Estado con la medalla por cada día de la semana. Por defecto todas
   // empiezan en "none" hasta que se cargan los datos reales.
   const [medals, setMedals] = useState<Medal[]>(Array(7).fill("none"));
 
   useEffect(() => {
     const fetchMedals = async () => {
+      if (!profileId) return;
+
       const results: Medal[] = [];
 
       for (const date of weekDates) {
@@ -44,7 +46,7 @@ export function useWeekMedals(weekDates: Date[]) {
 
         // Se obtiene la rutina asociada a la fecha. Si no hay rutina,
         // ese día no tiene medalla.
-        const routine = await getRoutineByDate(dateString);
+        const routine = await getRoutineByDate(profileId, dateString);
         if (!routine?.id) {
           results.push("none");
           continue;
@@ -60,7 +62,7 @@ export function useWeekMedals(weekDates: Date[]) {
     };
 
     fetchMedals();
-  }, [weekDates]);
+  }, [weekDates, profileId]);
 
   return medals;
 }

@@ -48,7 +48,7 @@ const getTodayIndex = () => {
  * - Permitir cambiar de semana hacia adelante/atrás y resetear el día
  *   seleccionado cuando la semana cambia.
  */
-export const useWeekRoutine = () => {
+export const useWeekRoutine = (profileId: string) => {
   // Fecha que representa el lunes de la semana actual mostrada.
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
     getMonday(new Date()),
@@ -87,20 +87,22 @@ export const useWeekRoutine = () => {
 
   useEffect(() => {
     const fetchRoutine = async () => {
+      if (!profileId) return;
+
       // Día concreto de la semana seleccionado por el usuario.
       const selectedDay = daysOfWeek[selectedDayIndex];
       const dateString = selectedDay.toISOString().slice(0, 10);
 
       // Busca si ya existe una rutina para ese día. Si no existe, la crea.
-      let routine = await getRoutineByDate(dateString);
+      let routine = await getRoutineByDate(profileId, dateString);
       if (!routine) {
-        routine = await createRoutine(dateString);
+        routine = await createRoutine(profileId, dateString);
       }
       // Guarda el id de la rutina (o 0 por seguridad si algo falla).
       setRoutineId(routine.id || 0);
     };
     fetchRoutine();
-  }, [daysOfWeek, selectedDayIndex]);
+  }, [daysOfWeek, selectedDayIndex, profileId]);
 
   return {
     currentWeekStart,

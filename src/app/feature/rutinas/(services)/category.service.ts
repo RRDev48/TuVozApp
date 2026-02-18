@@ -2,7 +2,7 @@ import { supabase } from "@/src/lib/supabaseClient";
 import { Category } from "../(models)/category.types";
 
 /**
- * Obtiene todas las categorías disponibles para las rutinas desde Supabase
+ * Obtiene todas las categorías disponibles para las tareas desde Supabase
  * y las mapea al modelo de dominio `Category` usado en la app.
  *
  * En caso de error, se registra en consola y se devuelve un arreglo vacío
@@ -10,7 +10,7 @@ import { Category } from "../(models)/category.types";
  */
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
-    .from("routine_categories")
+    .from("task_categories")
     .select("id, name, image_url");
 
   if (error) {

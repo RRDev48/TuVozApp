@@ -2,13 +2,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
-  FlatList,
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Modal,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 // Componentes
@@ -199,6 +199,7 @@ const AddTaskModal = ({
   selectedStartHour,
   calculateEndHour,
   updateTasks,
+  profileId,
 }: AddTaskModalProps) => {
   // Indica si se está enviando la tarea para evitar envíos duplicados
   // y deshabilitar el botón mientras se realiza la operación.
@@ -256,6 +257,7 @@ const AddTaskModal = ({
     setShowSuccessModal,
     resetFields,
     updateTasks,
+    profileId,
   );
 
   // Referencia al FlatList de pasos para poder hacer scroll automático

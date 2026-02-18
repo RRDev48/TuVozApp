@@ -1,6 +1,7 @@
 // Interfaces del dominio de rutinas
 export interface RoutineDb {
   id: number;
+  profile_id: string;
   routine_date: string;
   created_at: string;
 }

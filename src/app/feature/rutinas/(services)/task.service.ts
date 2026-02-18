@@ -1,39 +1,86 @@
 import { supabase } from "@/src/lib/supabaseClient";
-import { TaskDb } from "../(models)/task.types";
+import { RoutineTaskDb, TaskDb, TaskStepDb } from "../(models)/task.types";
 
 /**
  * Obtiene todas las tareas asociadas a una rutina específica.
  *
- * - Filtra por `routine_id`.
+ * - Hace JOIN con la tabla `routine_tasks` para obtener las tareas de una rutina.
  * - Incluye los datos de la categoría relacionada (`category_id`).
- * - Ordena las tareas por `start_time` para facilitar el render en el
- *   calendario.
- * - Ajusta la forma en que llega la relación `category` (array vs objeto)
- *   para devolver siempre un único objeto o `null`.
+ * - Incluye los pasos de cada tarea (`task_steps`).
+ * - Ordena las tareas por `task_order` dentro de la rutina.
  */
-export async function getTasksByRoutine(routineId: number): Promise<TaskDb[]> {
-  const { data, error } = await supabase
+export async function getTasksByRoutine(
+  routineId: number,
+): Promise<(TaskDb & { steps?: TaskStepDb[] })[]> {
+  // Primero obtenemos los IDs de las tareas asociadas a la rutina
+  const { data: routineTasks, error: rtError } = await supabase
+    .from("routine_tasks")
+    .select("task_id, task_order")
+    .eq("routine_id", routineId)
+    .order("task_order");
+
+  if (rtError) throw rtError;
+  if (!routineTasks || routineTasks.length === 0) return [];
+
+  const taskIds = routineTasks.map((rt) => rt.task_id);
+
+  // Obtenemos las tareas con sus categorías
+  const { data: tasks, error: tasksError } = await supabase
     .from("tasks")
     .select(
-      "id, routine_id, category_id, title, status, start_time, end_time, steps, reminder, created_at, category:category_id(name, image_url)",
+      "id, profile_id, category_id, title, status, start_time, end_time, reminder, created_at, category:task_categories(name, image_url)",
     )
-    .eq("routine_id", routineId)
-    .order("start_time");
-  if (error) throw error;
-  // Normaliza la relación `category`, ya que Supabase puede devolverla
-  // como array cuando es una relación 1:N, pero aquí solo nos interesa
-  // un único objeto de categoría.
-  return (data ?? []).map((task: any) => ({
+    .in("id", taskIds);
+
+  if (tasksError) throw tasksError;
+  if (!tasks) return [];
+
+  // Obtenemos los pasos de todas las tareas
+  const { data: steps, error: stepsError } = await supabase
+    .from("task_steps")
+    .select("*")
+    .in("task_id", taskIds)
+    .order("step_order");
+
+  if (stepsError) throw stepsError;
+
+  // Agrupamos los pasos por task_id
+  const stepsByTask: Record<number, TaskStepDb[]> = {};
+  (steps || []).forEach((step) => {
+    if (!stepsByTask[step.task_id]) {
+      stepsByTask[step.task_id] = [];
+    }
+    stepsByTask[step.task_id].push(step);
+  });
+
+  // Mapeamos las tareas con sus pasos y ordenamos según task_order
+  const tasksWithSteps = tasks.map((task: any) => ({
     ...task,
     category: Array.isArray(task.category)
       ? (task.category[0] ?? null)
       : task.category,
-  })) as TaskDb[];
+    steps: stepsByTask[task.id] || [],
+  }));
+
+  // Ordenamos según el order de routine_tasks
+  const orderMap = new Map(
+    routineTasks.map((rt) => [rt.task_id, rt.task_order]),
+  );
+  tasksWithSteps.sort((a, b) => {
+    const orderA = orderMap.get(a.id) || 0;
+    const orderB = orderMap.get(b.id) || 0;
+    return orderA - orderB;
+  });
+
+  return tasksWithSteps as (TaskDb & { steps?: TaskStepDb[] })[];
 }
 
 /**
  * Crea una nueva tarea en la tabla `tasks` y devuelve el registro creado
  * con la categoría relacionada ya cargada.
+ *
+ * NOTA: Esta función solo crea la tarea. Para asociarla a una rutina,
+ * usar `linkTaskToRoutine`. Para agregar pasos, usar `createTaskSteps`.
  */
 export async function createTask(
   task: Omit<TaskDb, "id" | "created_at" | "category">,
@@ -42,12 +89,11 @@ export async function createTask(
     .from("tasks")
     .insert(task)
     .select(
-      "id, routine_id, category_id, title, status, start_time, end_time, steps, reminder, created_at, category:category_id(name, image_url)",
+      "id, profile_id, category_id, title, status, start_time, end_time, reminder, created_at, category:task_categories(name, image_url)",
     )
     .single();
   if (error) throw error;
-  // Se vuelve a normalizar la relación `category` igual que en el fetch
-  // de tareas, para mantener un formato consistente en toda la app.
+
   const mapped = data
     ? {
         ...data,
@@ -57,6 +103,67 @@ export async function createTask(
       }
     : data;
   return mapped as TaskDb;
+}
+
+/**
+ * Vincula una tarea a una rutina específica a través de la tabla routine_tasks.
+ */
+export async function linkTaskToRoutine(
+  routineId: number,
+  taskId: number,
+  taskOrder: number,
+): Promise<RoutineTaskDb> {
+  const { data, error } = await supabase
+    .from("routine_tasks")
+    .insert({
+      routine_id: routineId,
+      task_id: taskId,
+      task_order: taskOrder,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as RoutineTaskDb;
+}
+
+/**
+ * Crea múltiples pasos para una tarea específica.
+ */
+export async function createTaskSteps(
+  taskId: number,
+  steps: Array<{ title: string; description?: string; step_order: number }>,
+): Promise<TaskStepDb[]> {
+  if (steps.length === 0) return [];
+
+  const stepsToInsert = steps.map((step) => ({
+    task_id: taskId,
+    title: step.title,
+    description: step.description || null,
+    step_order: step.step_order,
+  }));
+
+  const { data, error } = await supabase
+    .from("task_steps")
+    .insert(stepsToInsert)
+    .select();
+
+  if (error) throw error;
+  return data as TaskStepDb[];
+}
+
+/**
+ * Obtiene los pasos de una tarea específica.
+ */
+export async function getTaskSteps(taskId: number): Promise<TaskStepDb[]> {
+  const { data, error } = await supabase
+    .from("task_steps")
+    .select("*")
+    .eq("task_id", taskId)
+    .order("step_order");
+
+  if (error) throw error;
+  return data as TaskStepDb[];
 }
 
 /**

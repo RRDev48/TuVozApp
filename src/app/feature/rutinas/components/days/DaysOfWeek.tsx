@@ -70,6 +70,7 @@ export const DaysOfWeek = ({
   currentWeekStart,
   selectedDayIndex,
   setSelectedDayIndex,
+  profileId,
 }: DaysOfWeekProps) => {
   // Obtiene un arreglo de 7 fechas (Date) que representan los días
   // de la semana actual, comenzando en `currentWeekStart`.
@@ -77,7 +78,7 @@ export const DaysOfWeek = ({
 
   // Obtiene, para cada día de la semana, el tipo de medalla alcanzada
   // (si la hay). Si no hay medalla, puede devolver "none".
-  const medals = useWeekMedals(weekDates);
+  const medals = useWeekMedals(profileId, weekDates);
 
   return (
     <View style={styles.daysContainer}>

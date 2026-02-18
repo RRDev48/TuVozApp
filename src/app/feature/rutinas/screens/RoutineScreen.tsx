@@ -25,6 +25,7 @@ import { useModals } from "../(hooks)/useModals";
 import { useRoutineProgress } from "../(hooks)/useRoutineProgress";
 import { useRoutineTasks } from "../(hooks)/useRoutineTasks";
 import { useWeekRoutine } from "../(hooks)/useWeekRoutine";
+import { useCurrentUserProfile } from "../../ajustes/(hooks)/useCurrentUserProfile";
 
 // Servicios
 
@@ -122,6 +123,11 @@ export const RoutineScreen = () => {
   // const { formatText } = usePersonalization();
 
   // -----------------------------
+  // Obtener profileId del usuario actual
+  // -----------------------------
+  const { profileId, loading: profileLoading } = useCurrentUserProfile();
+
+  // -----------------------------
   // Estado local de la pantalla
   // -----------------------------
   // Hora inicial seleccionada al crear una tarea desde el calendario (HH:mm).
@@ -143,7 +149,7 @@ export const RoutineScreen = () => {
     routineId, // Identificador de la rutina actual que se está visualizando.
     daysOfWeek, // Arreglo de fechas que representan cada día de la semana.
     handleChangeWeek, // Función para avanzar o retroceder de semana.
-  } = useWeekRoutine();
+  } = useWeekRoutine(profileId || "");
 
   // -----------------------------------------------------------------
   // Obtención y actualización de tareas asociadas a la rutina actual
@@ -248,6 +254,17 @@ export const RoutineScreen = () => {
     [daysOfWeek, selectedDayIndex, toggleAddTask],
   );
 
+  // Si está cargando el perfil o no hay profileId, mostrar indicador de carga
+  if (profileLoading || !profileId) {
+    return (
+      <View style={styles.screenContainer}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>Cargando...</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screenContainer}>
       {/*
@@ -290,6 +307,7 @@ export const RoutineScreen = () => {
         selectedDayIndex={selectedDayIndex}
         setSelectedDayIndex={setSelectedDayIndex}
         routineId={routineId}
+        profileId={profileId}
       />
 
       {/*
@@ -328,6 +346,7 @@ export const RoutineScreen = () => {
         selectedStartHour={startSelectedHour}
         calculateEndHour={endSelectedHour}
         updateTasks={addTask}
+        profileId={profileId}
       />
 
       {/*

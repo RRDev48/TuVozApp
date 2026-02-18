@@ -11,8 +11,13 @@ import { Task } from "../(models)/task.types";
 // Hooks
 
 // Servicios
+import { supabase } from "@/src/lib/supabaseClient";
 import { createRoutine, getRoutineByDate } from "../(services)/routine.service";
-import { createTask } from "../(services)/task.service";
+import {
+  createTask,
+  createTaskSteps,
+  linkTaskToRoutine,
+} from "../(services)/task.service";
 
 // Acciones
 
@@ -25,6 +30,8 @@ import { createTask } from "../(services)/task.service";
  * - Validar los campos obligatorios antes de crear la tarea.
  * - Asegurar que exista una rutina para la fecha seleccionada (crearla si no).
  * - Construir el payload en formato de BD y llamar al servicio `createTask`.
+ * - Vincular la tarea a la rutina mediante `linkTaskToRoutine`.
+ * - Crear los pasos de la tarea mediante `createTaskSteps`.
  * - Mapear la tarea creada al modelo de UI y actualizar la lista local.
  * - Manejar estados de carga, reseteo de campos y despliegue del modal de éxito.
  */
@@ -33,6 +40,7 @@ export const useAddTaskSubmit = (
   setShowSuccessModal: (show: boolean) => void,
   resetFields: () => void,
   updateTasks: (task: Task) => void,
+  profileId: string,
 ) => {
   // Función principal que se llama al confirmar la creación de una tarea
   // desde el modal `AddTaskModal`.
@@ -76,10 +84,10 @@ export const useAddTaskSubmit = (
 
       // Se obtiene (o crea) la rutina correspondiente a la fecha escogida.
       const formattedDate = formatDateToDB(dueDate);
-      let routine = await getRoutineByDate(formattedDate);
+      let routine = await getRoutineByDate(profileId, formattedDate);
 
       if (!routine) {
-        routine = await createRoutine(formattedDate);
+        routine = await createRoutine(profileId, formattedDate);
       }
 
       // Limpia los pasos, quedándose solo con los textos no vacíos.
@@ -92,17 +100,42 @@ export const useAddTaskSubmit = (
 
       // Payload en formato de BD para crear la tarea en Supabase.
       const newTaskData = {
-        routine_id: routine.id,
+        profile_id: profileId,
         category_id: parseInt(category, 10),
         title: taskName.trim(),
         status: "Pendiente" as const,
         start_time: taskStartTime,
         end_time: taskEndTime,
-        steps: validSteps,
         reminder: reminderDate ? reminderDate.toISOString() : null,
       };
 
+      // 1. Crear la tarea
       const createdTask = await createTask(newTaskData);
+
+      // 2. Obtener el número de tareas existentes para determinar el orden
+      const { data: existingRoutineTasks } = await supabase
+        .from("routine_tasks")
+        .select("task_order")
+        .eq("routine_id", routine.id)
+        .order("task_order", { ascending: false })
+        .limit(1);
+
+      const nextOrder =
+        existingRoutineTasks && existingRoutineTasks.length > 0
+          ? existingRoutineTasks[0].task_order + 1
+          : 1;
+
+      // 3. Vincular la tarea a la rutina
+      await linkTaskToRoutine(routine.id, createdTask.id, nextOrder);
+
+      // 4. Crear los pasos de la tarea si existen
+      if (validSteps.length > 0) {
+        const stepsToCreate = validSteps.map((stepTitle, index) => ({
+          title: stepTitle,
+          step_order: index + 1,
+        }));
+        await createTaskSteps(createdTask.id, stepsToCreate);
+      }
 
       // Mapeo de la tarea creada al modelo `Task` usado en la UI.
       const taskForUI: Task = {
