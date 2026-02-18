@@ -9,7 +9,7 @@ export interface UseRoleSelectionProps {
 }
 
 export interface UseRegisterInfoProps {
-  onValidationSuccess?: (data: { name: string; age: string }) => void;
+  onValidationSuccess?: (data: { name: string }) => void;
 }
 
 export interface UsePasswordSetupProps {
@@ -22,7 +22,6 @@ export interface UseOTPVerificationProps {
   onSuccess: () => void;
   userData?: {
     name: string;
-    age: string;
     role: string;
   };
 }

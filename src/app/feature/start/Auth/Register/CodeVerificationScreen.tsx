@@ -34,7 +34,7 @@ type CodeVerificationScreenRouteProp = RouteProp<
 const CodeVerificationScreen = () => {
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
-  const { email = "", name = "", age = "", role = "self" } = route.params || {};
+  const { email = "", name = "", role = "self" } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   const {
@@ -46,7 +46,7 @@ const CodeVerificationScreen = () => {
   } = useOTPVerification({
     email,
     onSuccess: () => setShowSuccessAlert(true),
-    userData: { name, age, role },
+    userData: { name, role },
   });
 
   const handleVerifyCode = async (fullCode: string) => {
@@ -59,7 +59,7 @@ const CodeVerificationScreen = () => {
   const handleSuccessModalClose = () => {
     setShowSuccessAlert(false);
     // Navigate to Home after successful registration
-    navigation.navigate("Home");
+    navigation.navigate("Login");
   };
 
   const { code, inputRefs, handleCodeChange, handleKeyPress, resetCode } =

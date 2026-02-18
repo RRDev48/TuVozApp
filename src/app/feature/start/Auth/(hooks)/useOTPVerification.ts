@@ -74,7 +74,6 @@ export const useOTPVerification = ({
           full_name: userData.name,
           role: userData.role as UserRole,
           email: email,
-          age: parseInt(userData.age),
         });
 
         if (!result.success) {

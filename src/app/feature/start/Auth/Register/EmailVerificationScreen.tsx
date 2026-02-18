@@ -6,13 +6,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import { useEmailValidation } from "../(hooks)/useEmailValidation";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
@@ -31,7 +31,7 @@ type EmailVerificationScreenRouteProp = RouteProp<
 const EmailVerificationScreen = () => {
   const navigation = useNavigation<EmailVerificationScreenNavigationProp>();
   const route = useRoute<EmailVerificationScreenRouteProp>();
-  const { name = "", age = "", role = "self" } = route.params || {};
+  const { name = "", role = "self" } = route.params || {};
 
   const {
     email,
@@ -47,7 +47,6 @@ const EmailVerificationScreen = () => {
       navigation.navigate("PasswordSetup", {
         email: validatedEmail,
         name,
-        age,
         role,
       });
     },

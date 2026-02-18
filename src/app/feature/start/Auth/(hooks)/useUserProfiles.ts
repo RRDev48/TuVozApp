@@ -55,14 +55,10 @@ export const useUserProfiles = () => {
 
   /**
    * Creates a new profile for the current user
-   * @param profileData - Profile data (full_name, age, avatar_url)
+   * @param profileData - Profile data (full_name, avatar_url)
    */
   const createProfile = useCallback(
-    async (profileData: {
-      full_name: string;
-      age: number | null;
-      avatar_url?: string | null;
-    }) => {
+    async (profileData: { full_name: string; avatar_url?: string | null }) => {
       if (!currentUserId) {
         setError("No hay usuario autenticado");
         return { success: false };
@@ -76,7 +72,6 @@ export const useUserProfiles = () => {
           currentUserId,
           {
             full_name: profileData.full_name,
-            age: profileData.age,
             avatar_url: profileData.avatar_url || null,
           },
           true, // User is the owner

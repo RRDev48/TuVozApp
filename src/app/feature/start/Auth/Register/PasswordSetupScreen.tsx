@@ -8,13 +8,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import { usePasswordSetup } from "../(hooks)/usePasswordSetup";
 import { authService } from "../(services)/authService";
@@ -34,7 +34,7 @@ type PasswordSetupScreenRouteProp = RouteProp<
 const PasswordSetupScreen = () => {
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
-  const { email = "", name = "", age = "", role = "self" } = route.params || {};
+  const { email = "", name = "", role = "self" } = route.params || {};
 
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
@@ -64,7 +64,6 @@ const PasswordSetupScreen = () => {
         email,
         password: validPassword,
         name,
-        age,
         role,
       });
     } catch (error: any) {

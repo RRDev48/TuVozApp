@@ -20,7 +20,7 @@ export const profileService = {
       const { data, error } = await supabase
         .from("profiles")
         .insert(profileData)
-        .select("id, full_name, age, avatar_url, created_at")
+        .select("id, full_name, avatar_url, created_at")
         .single();
 
       if (error) {
@@ -134,7 +134,6 @@ export const profileService = {
           data: {
             id: profileId,
             full_name: profileData.full_name,
-            age: profileData.age,
             avatar_url: profileData.avatar_url,
             created_at: new Date().toISOString(),
           } as Profile,
@@ -167,7 +166,6 @@ export const profileService = {
           profiles (
             id,
             full_name,
-            age,
             avatar_url,
             created_at
           )

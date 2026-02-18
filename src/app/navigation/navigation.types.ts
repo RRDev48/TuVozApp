@@ -29,13 +29,12 @@ type RootStackParamsList = {
   UserType: undefined;
   RoleSelection: undefined;
   RegisterInfo: { role?: string };
-  EmailVerification: { name: string; age: string; role?: string };
-  PasswordSetup: { email: string; name: string; age: string; role?: string };
+  EmailVerification: { name: string; role?: string };
+  PasswordSetup: { email: string; name: string; role?: string };
   CodeVerification: {
     email: string;
     password: string;
     name: string;
-    age: string;
     role?: string;
   };
 

@@ -119,12 +119,12 @@ export const authService = {
    * Creates a user record and profile in a single atomic operation
    * Uses a database function to bypass RLS issues during registration
    * @param userId - Auth user ID
-   * @param userData - User data (full_name, role, email, age)
+   * @param userData - User data (full_name, role, email)
    * @returns Promise with result
    */
   async createUserWithProfile(
     userId: string,
-    userData: { full_name: string; role: string; email: string; age: number },
+    userData: { full_name: string; role: string; email: string },
   ) {
     try {
       const { data, error } = await supabase.rpc("create_user_with_profile", {
@@ -132,7 +132,6 @@ export const authService = {
         p_full_name: userData.full_name,
         p_role: userData.role,
         p_email: userData.email,
-        p_age: userData.age,
       });
 
       if (error) {
@@ -233,13 +232,13 @@ export const authService = {
    * Registra un nuevo usuario
    * @param email - Email del usuario
    * @param password - Contraseña del usuario
-   * @param metadata - Datos adicionales del usuario (nombre, edad, rol)
+   * @param metadata - Datos adicionales del usuario (nombre, rol)
    * @returns Promise con resultado de la operación
    */
   async signUp(
     email: string,
     password: string,
-    metadata?: { full_name: string; age: number; role: string },
+    metadata?: { full_name: string; role: string },
   ) {
     try {
       const { data, error } = await supabase.auth.signUp({

@@ -32,12 +32,11 @@ const RegisterInfoScreen = () => {
   const route = useRoute<RegisterInfoScreenRouteProp>();
   const role = route.params?.role || "self";
 
-  const { name, setName, age, setAge, isFormValid, validateForm } =
-    useRegisterInfo({
-      onValidationSuccess: ({ name, age }) => {
-        navigation.navigate("EmailVerification", { name, age, role });
-      },
-    });
+  const { name, setName, isFormValid, validateForm } = useRegisterInfo({
+    onValidationSuccess: ({ name }) => {
+      navigation.navigate("EmailVerification", { name, role });
+    },
+  });
 
   const handleContinue = () => {
     validateForm();
@@ -71,22 +70,6 @@ const RegisterInfoScreen = () => {
                 onChangeText={setName}
                 autoCapitalize="words"
                 autoComplete="name"
-              />
-            </View>
-          </View>
-
-          {/* Campo Edad */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cuantos años tienes?</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Edad*"
-                placeholderTextColor={colors.white}
-                value={age}
-                onChangeText={setAge}
-                keyboardType="numeric"
-                maxLength={3}
               />
             </View>
           </View>

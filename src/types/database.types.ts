@@ -27,7 +27,6 @@ export interface User {
 export interface Profile {
   id: string; // UUID
   full_name: string;
-  age: number | null;
   avatar_url: string | null;
   created_at: string; // timestamptz
 }
