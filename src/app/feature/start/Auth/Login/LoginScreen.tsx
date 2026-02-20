@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordContainer: {
     alignItems: "center",
-    marginTop: 10,
+    marginTop: -20,
   },
   forgotPasswordText: {
     fontSize: 14,
