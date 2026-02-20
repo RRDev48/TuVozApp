@@ -5,13 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
@@ -76,7 +76,7 @@ const LoginScreen = () => {
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
         <BackButton
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("Onboarding")}
           disablePersonalization
         />
 
