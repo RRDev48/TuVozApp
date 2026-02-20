@@ -2,8 +2,8 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Keyboard, ScrollView, StyleSheet, Text, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
@@ -20,6 +20,27 @@ const NotesScreen = () => {
   const route = useRoute<NotesScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const styles = useMemo(
     () =>
@@ -75,7 +96,7 @@ const NotesScreen = () => {
         />
       </ScrollView>
 
-      <SaveButton onPress={handleSave} />
+      <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 40} />
     </View>
   );
 };

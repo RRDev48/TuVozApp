@@ -5,7 +5,9 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useEffect, useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,6 +32,27 @@ const EditAllergyScreen = () => {
   const route = useRoute<EditAllergyScreenRouteProp>();
   const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const {
     allergyName,
@@ -162,7 +185,7 @@ const EditAllergyScreen = () => {
         </View>
       </View>
 
-      <SaveButton onPress={handleSave} bottom={110} />
+      <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>

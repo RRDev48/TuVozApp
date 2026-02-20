@@ -4,7 +4,9 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useEffect, useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -29,6 +31,27 @@ const AddAllergyScreen = () => {
   const route = useRoute<AddAllergyScreenRouteProp>();
   const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const {
     allergyName,
@@ -140,7 +163,7 @@ const AddAllergyScreen = () => {
         </View>
       </View>
 
-      <SaveButton onPress={handleSave} />
+      <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 40} />
 
       <ErrorModal
         visible={showErrorModal}
