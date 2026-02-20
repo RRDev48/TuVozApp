@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -16,8 +16,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 import { usePasswordSetup } from "../hooks/usePasswordSetup";
 import { authService } from "../services/auth.Service";
 
@@ -35,6 +35,32 @@ const PasswordSetupScreen = () => {
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
   const { email = "", name = "", role = "self" } = route.params || {};
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Calcular progreso basado en el rol
+  const isSelfFlow = role === "self";
+  const currentStep = isSelfFlow ? 4 : 5;
+  const totalSteps = isSelfFlow ? 5 : 6;
 
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
@@ -107,19 +133,28 @@ const PasswordSetupScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        {/* Header con botón atrás y logo */}
-        <BackButton
-          onPress={() => navigation.goBack()}
-          disablePersonalization
-        />
+        {/* Header con botón atrás y barra de progreso */}
+        <View style={styles.headerContainer}>
+          <View style={styles.headerRow}>
+            <View style={styles.backButtonWrapper}>
+              <BackButton
+                onPress={() => navigation.goBack()}
+                disablePersonalization
+              />
+            </View>
 
-        {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
+            {/* Barra de progreso */}
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+          </View>
         </View>
 
         {/* Título */}
-        <Text style={styles.title}>
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
           Para continuar, necesitamos{"\n"}una contraseña segura.
         </Text>
 
@@ -128,31 +163,28 @@ const PasswordSetupScreen = () => {
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Ingresa tu Contraseña*</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                passwordError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Mínimo 8 caracteres"
-                placeholderTextColor={colors.white}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                onPress={togglePasswordVisibility}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name={showPassword ? "eye-off-outline" : "eye-outline"}
-                  size={20}
-                  color={colors.white}
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mínimo 8 caracteres"
+                  placeholderTextColor={colors.gray}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
                 />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={24}
+                    color={colors.black}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
             {passwordError ? (
               <Text style={styles.errorText}>{passwordError}</Text>
@@ -162,31 +194,30 @@ const PasswordSetupScreen = () => {
           {/* Campo Confirmar Contraseña */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Repite tu Contraseña*</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                confirmPasswordError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Confirma tu contraseña"
-                placeholderTextColor={colors.white}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showConfirmPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                onPress={toggleConfirmPasswordVisibility}
-                activeOpacity={0.7}
-              >
-                <Ionicons
-                  name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
-                  size={20}
-                  color={colors.white}
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirma tu contraseña"
+                  placeholderTextColor={colors.gray}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                  autoCapitalize="none"
                 />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={toggleConfirmPasswordVisibility}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={
+                      showConfirmPassword ? "eye-off-outline" : "eye-outline"
+                    }
+                    size={24}
+                    color={colors.black}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
             {confirmPasswordError ? (
               <Text style={styles.errorText}>{confirmPasswordError}</Text>
@@ -195,7 +226,12 @@ const PasswordSetupScreen = () => {
         </View>
 
         {/* Botón Continuar */}
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isKeyboardVisible && styles.buttonContainerKeyboardVisible,
+          ]}
+        >
           <TouchableOpacity
             style={[
               styles.continueButton,
@@ -234,16 +270,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  header: {
+  headerContainer: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+  },
+  headerRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: -60,
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "700",
     color: colors.black,
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 40,
+    marginTop: 40,
+  },
+  titleKeyboardVisible: {
+    marginTop: 20,
+    marginBottom: 20,
+    fontSize: 20,
   },
   form: {
     gap: 20,
@@ -259,39 +312,46 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontWeight: "500",
   },
-  inputContainer: {
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.blue,
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  inputContainerError: {
-    borderWidth: 2,
-    borderColor: colors.red,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.black,
+    paddingBottom: 4,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: "500",
+    fontSize: 18,
+    color: colors.black,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+  },
+  inputIcon: {
+    marginLeft: 8,
   },
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: -5,
+    marginTop: -20,
     marginLeft: 10,
   },
   buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
     paddingHorizontal: 20,
+    paddingBottom: 60,
+  },
+  buttonContainerKeyboardVisible: {
+    flex: 0,
     paddingBottom: 20,
-    marginTop: 100,
   },
   continueButton: {
     backgroundColor: colors.green,
-    paddingVertical: 16,
-    borderRadius: 25,
+    paddingVertical: 18,
+    borderRadius: 30,
     alignItems: "center",
   },
   buttonDisabled: {

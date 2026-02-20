@@ -3,18 +3,18 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 import { useRegisterInfo } from "../hooks/useRegisterInfo";
 
 type RegisterInfoScreenNavigationProp = StackNavigationProp<
@@ -29,8 +29,42 @@ type RegisterInfoScreenRouteProp = RouteProp<
 
 const RegisterInfoScreen = () => {
   const navigation = useNavigation<RegisterInfoScreenNavigationProp>();
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const route = useRoute<RegisterInfoScreenRouteProp>();
   const role = route.params?.role || "self";
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Determinar el flujo: "self" omite RoleSelectionScreen
+  const isSelfFlow = role === "self";
+  const currentStep = isSelfFlow ? 2 : 3;
+  const totalSteps = isSelfFlow ? 5 : 6;
+
+  const MAX_LENGTH = 20;
+
+  const handleNameChange = (text: string) => {
+    if (text.length <= MAX_LENGTH) {
+      setName(text);
+    }
+  };
 
   const { name, setName, isFormValid, validateForm } = useRegisterInfo({
     onValidationSuccess: ({ name }) => {
@@ -45,41 +79,79 @@ const RegisterInfoScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        {/* Header con botón atrás y logo */}
-        <BackButton
-          onPress={() => navigation.goBack()}
-          disablePersonalization
-        />
-
-        {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
-        </View>
-
-        {/* Título */}
-        <Text style={styles.title}>Comencemos a conocernos{"\n"}un poco!!</Text>
-
-        {/* Formulario */}
-        <View style={styles.form}>
-          {/* Campo Nombre */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Como quieres que te llamemos?</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Nombre*"
-                placeholderTextColor={colors.white}
-                value={name}
-                onChangeText={setName}
-                autoCapitalize="words"
-                autoComplete="name"
+        {/* Header con botón atrás y barra de progreso */}
+        <View style={styles.headerContainer}>
+          <View style={styles.headerRow}>
+            <View style={styles.backButtonWrapper}>
+              <BackButton
+                onPress={() => navigation.goBack()}
+                disablePersonalization
               />
             </View>
+
+            {/* Barra de progreso */}
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
           </View>
         </View>
 
+        {/* Título */}
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
+          ¿Cuál es tu nombre?
+        </Text>
+
+        {/* Subtítulo */}
+        <Text
+          style={[
+            styles.subtitle,
+            isKeyboardVisible && styles.subtitleKeyboardVisible,
+          ]}
+        >
+          ¡Nos alegra mucho que estés aquí! {"\n"} ¿Cómo te gustaría que te
+          llamemos?
+        </Text>
+
+        {/* Espaciador */}
+        <View
+          style={[
+            styles.spacer,
+            isKeyboardVisible && styles.spacerKeyboardVisible,
+          ]}
+        />
+
+        {/* Campo de texto */}
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.input}
+            placeholder="Ingresa tu nombre"
+            placeholderTextColor={colors.gray}
+            value={name}
+            onChangeText={handleNameChange}
+            autoCapitalize="words"
+            autoComplete="name"
+            maxLength={MAX_LENGTH}
+          />
+          <Text
+            style={[
+              styles.charCounter,
+              name.length >= MAX_LENGTH && styles.charCounterError,
+            ]}
+          >
+            {name.length}/{MAX_LENGTH}
+          </Text>
+        </View>
+
         {/* Botón Continuar */}
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isKeyboardVisible && styles.buttonContainerKeyboardVisible,
+          ]}
+        >
           <TouchableOpacity
             style={[
               styles.continueButton,
@@ -101,55 +173,85 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+    paddingHorizontal: 24,
   },
-  header: {
+  headerContainer: {
+    marginTop: 20,
+  },
+  headerRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: -60,
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: "700",
     color: colors.black,
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 20,
+    lineHeight: 38,
+    marginTop: 80,
   },
-  form: {
-    gap: 20,
-    marginBottom: 30,
-    paddingHorizontal: 20,
+  titleKeyboardVisible: {
     marginTop: 20,
+    fontSize: 28,
   },
-  inputGroup: {
-    gap: 8,
+  subtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: colors.darkGray,
+    textAlign: "center",
+    lineHeight: 24,
+    paddingHorizontal: 10,
   },
-  label: {
-    fontSize: 18,
-    color: colors.black,
-    fontWeight: "500",
+  subtitleKeyboardVisible: {
+    fontSize: 14,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.blue,
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+  spacer: {
+    height: 120,
+  },
+  spacerKeyboardVisible: {
+    height: 40,
+  },
+  inputWrapper: {
+    marginBottom: 40,
   },
   input: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: "500",
+    fontSize: 18,
+    color: colors.black,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    borderBottomColor: colors.black,
+    borderBottomWidth: 2,
+  },
+  charCounter: {
+    fontSize: 14,
+    color: colors.gray,
+    textAlign: "right",
+    marginTop: 8,
+  },
+  charCounterError: {
+    color: colors.red,
   },
   buttonContainer: {
-    paddingHorizontal: 20,
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: 60,
+  },
+  buttonContainerKeyboardVisible: {
+    flex: 0,
     paddingBottom: 20,
-    marginTop: 100,
   },
   continueButton: {
     backgroundColor: colors.green,
-    paddingVertical: 16,
-    borderRadius: 25,
+    paddingVertical: 18,
+    borderRadius: 30,
     alignItems: "center",
   },
   buttonDisabled: {
@@ -158,7 +260,7 @@ const styles = StyleSheet.create({
   continueButtonText: {
     color: colors.white,
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

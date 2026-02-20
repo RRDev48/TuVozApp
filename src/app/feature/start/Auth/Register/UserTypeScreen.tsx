@@ -4,8 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 
 type UserTypeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -31,59 +31,68 @@ const UserTypeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
+      {/* Header con botón atrás y barra de progreso */}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerRow}>
+          <View style={styles.backButtonWrapper}>
+            <BackButton
+              onPress={() => navigation.goBack()}
+              disablePersonalization
+            />
+          </View>
 
-      {/* Header con logo */}
-      <View style={styles.header}>
-        <AppLogo width={200} height={200} />
+          {/* Barra de progreso */}
+          <ProgressBar currentStep={2} totalSteps={5} />
+        </View>
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>Para quien configuras TuVoz?</Text>
+      <Text style={styles.title}>¿Para quién lo configuras?</Text>
 
       {/* Opciones */}
-      <View style={styles.optionsContainer}>
-        {/* Para mi */}
-        <View style={styles.optionWrapper}>
-          <TouchableOpacity
-            style={[
-              styles.optionCard,
-              selectedType === "self" && styles.optionCardSelected,
-            ]}
-            onPress={() => setSelectedType("self")}
-            activeOpacity={0.8}
-          >
-            <View style={styles.iconContainer}>
-              <Image
-                source={require("../../../../assets/icon/parami.png")}
-                style={styles.icon}
-                resizeMode="contain"
-              />
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.optionText}>Para mi</Text>
-        </View>
+      <View style={styles.optionsWrapper}>
+        <View style={styles.optionsContainer}>
+          {/* Para mi */}
+          <View style={styles.optionWrapper}>
+            <TouchableOpacity
+              style={[
+                styles.optionCard,
+                selectedType === "self" && styles.optionCardSelected,
+              ]}
+              onPress={() => setSelectedType("self")}
+              activeOpacity={0.8}
+            >
+              <View style={styles.iconContainer}>
+                <Image
+                  source={require("../../../../assets/icon/parami.png")}
+                  style={styles.icon}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.optionText}>Para mi</Text>
+          </View>
 
-        {/* Para otro */}
-        <View style={styles.optionWrapper}>
-          <TouchableOpacity
-            style={[
-              styles.optionCard,
-              selectedType === "other" && styles.optionCardSelected,
-            ]}
-            onPress={() => setSelectedType("other")}
-            activeOpacity={0.8}
-          >
-            <View style={styles.iconContainer}>
-              <Image
-                source={require("../../../../assets/icon/paraotro.png")}
-                style={styles.icon}
-                resizeMode="contain"
-              />
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.optionText}>Para otro</Text>
+          {/* Para otro */}
+          <View style={styles.optionWrapper}>
+            <TouchableOpacity
+              style={[
+                styles.optionCard,
+                selectedType === "other" && styles.optionCardSelected,
+              ]}
+              onPress={() => setSelectedType("other")}
+              activeOpacity={0.8}
+            >
+              <View style={styles.iconContainer}>
+                <Image
+                  source={require("../../../../assets/icon/paraotro.png")}
+                  style={styles.icon}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.optionText}>Para otro</Text>
+          </View>
         </View>
       </View>
 
@@ -109,17 +118,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+    paddingHorizontal: 24,
   },
-  header: {
+  headerContainer: {
+    marginTop: 20,
+  },
+  headerRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: -60,
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: "700",
     color: colors.black,
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: -50,
+    marginTop: 60,
+  },
+  optionsWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   optionsContainer: {
     flexDirection: "row",
@@ -164,9 +190,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    paddingHorizontal: 20,
-    marginTop: 100,
-    gap: 16,
+    paddingBottom: 60,
   },
   continueButton: {
     backgroundColor: colors.green,

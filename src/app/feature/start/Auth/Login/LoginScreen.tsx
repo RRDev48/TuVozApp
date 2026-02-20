@@ -3,7 +3,7 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -30,6 +30,27 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleContinue = async () => {
     // Limpiar errores previos
@@ -81,12 +102,25 @@ const LoginScreen = () => {
         />
 
         {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
+        <View
+          style={[
+            styles.header,
+            isKeyboardVisible && styles.headerKeyboardVisible,
+          ]}
+        >
+          <AppLogo
+            width={isKeyboardVisible ? 120 : 200}
+            height={isKeyboardVisible ? 120 : 200}
+          />
         </View>
 
         {/* Título */}
-        <Text style={styles.title}>
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
           Completa tus datos para{"\n"}iniciar sesión
         </Text>
 
@@ -95,31 +129,28 @@ const LoginScreen = () => {
           {/* Campo Email */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Como es tu correo electronico?</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                emailError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Email*"
-                placeholderTextColor={colors.white}
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  setEmailError("");
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={colors.white}
-                style={styles.inputIcon}
-              />
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email*"
+                  placeholderTextColor={colors.gray}
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    setEmailError("");
+                  }}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                />
+                <Ionicons
+                  name="mail-outline"
+                  size={24}
+                  color={colors.black}
+                  style={styles.inputIcon}
+                />
+              </View>
             </View>
             {emailError ? (
               <Text style={styles.errorText}>{emailError}</Text>
@@ -129,35 +160,32 @@ const LoginScreen = () => {
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Y tu contraseña?</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                passwordError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Contraseña*"
-                placeholderTextColor={colors.white}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  setPasswordError("");
-                }}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoComplete="password"
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.inputIconButton}
-              >
-                <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={colors.white}
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Contraseña*"
+                  placeholderTextColor={colors.gray}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setPasswordError("");
+                  }}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoComplete="password"
                 />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.inputIconButton}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-outline" : "eye-off-outline"}
+                    size={24}
+                    color={colors.black}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
             {passwordError ? (
               <Text style={styles.errorText}>{passwordError}</Text>
@@ -177,7 +205,12 @@ const LoginScreen = () => {
         </View>
 
         {/* Botón Continuar */}
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isKeyboardVisible && styles.buttonContainerKeyboardVisible,
+          ]}
+        >
           <TouchableOpacity
             style={[styles.continueButton, isLoading && styles.buttonDisabled]}
             onPress={handleContinue}
@@ -209,7 +242,10 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginTop: -60,
+    marginTop: -120,
+  },
+  headerKeyboardVisible: {
+    marginTop: -80,
   },
   title: {
     fontSize: 20,
@@ -217,6 +253,10 @@ const styles = StyleSheet.create({
     color: colors.black,
     textAlign: "center",
     marginBottom: 30,
+  },
+  titleKeyboardVisible: {
+    fontSize: 18,
+    marginTop: -20,
   },
   form: {
     gap: 20,
@@ -232,36 +272,33 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontWeight: "500",
   },
-  inputContainer: {
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.blue,
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  inputContainerError: {
-    borderWidth: 2,
-    borderColor: colors.red,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.black,
+    paddingBottom: 4,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: "500",
+    fontSize: 18,
+    color: colors.black,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
   },
   inputIcon: {
-    marginLeft: 10,
-    color: colors.white,
+    marginLeft: 8,
   },
   inputIconButton: {
-    marginLeft: 10,
-    padding: 4,
+    marginLeft: 8,
   },
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: -5,
+    marginTop: -20,
     marginLeft: 10,
   },
   forgotPasswordContainer: {
@@ -276,6 +313,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 20,
     marginTop: 80,
+  },
+  buttonContainerKeyboardVisible: {
+    marginTop: -20,
   },
   continueButton: {
     backgroundColor: colors.green,

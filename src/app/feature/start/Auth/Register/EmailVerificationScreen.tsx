@@ -4,9 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Keyboard,
   StyleSheet,
   Text,
@@ -15,8 +14,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 import { useEmailValidation } from "../hooks/useEmailValidation";
 
 type EmailVerificationScreenNavigationProp = StackNavigationProp<
@@ -33,6 +32,32 @@ const EmailVerificationScreen = () => {
   const navigation = useNavigation<EmailVerificationScreenNavigationProp>();
   const route = useRoute<EmailVerificationScreenRouteProp>();
   const { name = "", role = "self" } = route.params || {};
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Calcular progreso basado en el rol
+  const isSelfFlow = role === "self";
+  const currentStep = isSelfFlow ? 3 : 4;
+  const totalSteps = isSelfFlow ? 5 : 6;
 
   const {
     email,
@@ -65,19 +90,28 @@ const EmailVerificationScreen = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        {/* Header con botón atrás y logo */}
-        <BackButton
-          onPress={() => navigation.goBack()}
-          disablePersonalization
-        />
+        {/* Header con botón atrás y barra de progreso */}
+        <View style={styles.headerContainer}>
+          <View style={styles.headerRow}>
+            <View style={styles.backButtonWrapper}>
+              <BackButton
+                onPress={() => navigation.goBack()}
+                disablePersonalization
+              />
+            </View>
 
-        {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
+            {/* Barra de progreso */}
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+          </View>
         </View>
 
         {/* Título */}
-        <Text style={styles.title}>
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
           Para continuar, necesitamos{"\n"}un correo electrónico válido.
         </Text>
 
@@ -86,28 +120,25 @@ const EmailVerificationScreen = () => {
           {/* Campo Email */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Ingresa tu Email*</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                emailError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="micorreo64@gmail.com"
-                placeholderTextColor={colors.white}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={colors.white}
-                style={styles.inputIcon}
-              />
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="micorreo64@gmail.com"
+                  placeholderTextColor={colors.gray}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                />
+                <Ionicons
+                  name="mail-outline"
+                  size={24}
+                  color={colors.black}
+                  style={styles.inputIcon}
+                />
+              </View>
             </View>
             {emailError ? (
               <Text style={styles.errorText}>{emailError}</Text>
@@ -117,28 +148,25 @@ const EmailVerificationScreen = () => {
           {/* Campo Confirmar Email */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Repite tu Email*</Text>
-            <View
-              style={[
-                styles.inputContainer,
-                confirmEmailError ? styles.inputContainerError : null,
-              ]}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="micorreo64@gmail.com"
-                placeholderTextColor={colors.white}
-                value={confirmEmail}
-                onChangeText={setConfirmEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-              />
-              <Ionicons
-                name="mail-outline"
-                size={20}
-                color={colors.white}
-                style={styles.inputIcon}
-              />
+            <View style={styles.inputWrapper}>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="micorreo64@gmail.com"
+                  placeholderTextColor={colors.gray}
+                  value={confirmEmail}
+                  onChangeText={setConfirmEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                />
+                <Ionicons
+                  name="mail-outline"
+                  size={24}
+                  color={colors.black}
+                  style={styles.inputIcon}
+                />
+              </View>
             </View>
             {confirmEmailError ? (
               <Text style={styles.errorText}>{confirmEmailError}</Text>
@@ -147,21 +175,22 @@ const EmailVerificationScreen = () => {
         </View>
 
         {/* Botón Continuar */}
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isKeyboardVisible && styles.buttonContainerKeyboardVisible,
+          ]}
+        >
           <TouchableOpacity
             style={[
               styles.continueButton,
-              (!isFormValid || isChecking) && styles.buttonDisabled,
+              !isFormValid && styles.buttonDisabled,
             ]}
             onPress={handleContinue}
             activeOpacity={0.8}
-            disabled={!isFormValid || isChecking}
+            disabled={!isFormValid}
           >
-            {isChecking ? (
-              <ActivityIndicator size="small" color={colors.white} />
-            ) : (
-              <Text style={styles.continueButtonText}>Continuar</Text>
-            )}
+            <Text style={styles.continueButtonText}>Continuar</Text>
           </TouchableOpacity>
         </View>
 
@@ -183,16 +212,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  header: {
+  headerContainer: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+  },
+  headerRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: -60,
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "700",
     color: colors.black,
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 40,
+    marginTop: 40,
+  },
+  titleKeyboardVisible: {
+    marginTop: 20,
+    marginBottom: 20,
+    fontSize: 20,
   },
   form: {
     gap: 20,
@@ -208,43 +254,46 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontWeight: "500",
   },
-  inputContainer: {
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.blue,
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  inputContainerError: {
-    borderWidth: 2,
-    borderColor: colors.red,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.black,
+    paddingBottom: 4,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: "500",
+    fontSize: 18,
+    color: colors.black,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
   },
   inputIcon: {
-    marginLeft: 10,
-    color: colors.white,
+    marginLeft: 8,
   },
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: -5,
+    marginTop: -20,
     marginLeft: 10,
   },
   buttonContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
     paddingHorizontal: 20,
+    paddingBottom: 60,
+  },
+  buttonContainerKeyboardVisible: {
+    flex: 0,
     paddingBottom: 20,
-    marginTop: 100,
   },
   continueButton: {
     backgroundColor: colors.green,
-    paddingVertical: 16,
-    borderRadius: 25,
+    paddingVertical: 18,
+    borderRadius: 30,
     alignItems: "center",
   },
   buttonDisabled: {

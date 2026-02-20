@@ -4,9 +4,10 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -35,6 +36,27 @@ const RecoveryCodeScreen = () => {
   const navigation = useNavigation<RecoveryCodeScreenNavigationProp>();
   const route = useRoute<RecoveryCodeScreenRouteProp>();
   const { email = "" } = route.params || {};
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
@@ -80,31 +102,57 @@ const RecoveryCodeScreen = () => {
       >
         {/* Header con botón atrás y logo */}
         <BackButton
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("Login")}
           disablePersonalization
         />
 
         {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
+        <View
+          style={[
+            styles.header,
+            isKeyboardVisible && styles.headerKeyboardVisible,
+          ]}
+        >
+          <AppLogo
+            width={isKeyboardVisible ? 120 : 200}
+            height={isKeyboardVisible ? 120 : 200}
+          />
         </View>
 
         {/* Icono de correo */}
-        <View style={styles.iconContainer}>
+        <View
+          style={[
+            styles.iconContainer,
+            isKeyboardVisible && styles.iconContainerKeyboardVisible,
+          ]}
+        >
           <Image
             source={require("../../../../assets/gif/llave.gif")}
-            style={styles.mailIcon}
+            style={[
+              styles.mailIcon,
+              isKeyboardVisible && styles.mailIconKeyboardVisible,
+            ]}
             resizeMode="contain"
           />
         </View>
 
         {/* Título */}
-        <Text style={styles.title}>
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
           Introduce tu código de{"\n"}verificación.
         </Text>
 
         {/* Descripción */}
-        <Text style={styles.description}>
+        <Text
+          style={[
+            styles.description,
+            isKeyboardVisible && styles.descriptionKeyboardVisible,
+          ]}
+        >
           Hemos enviado un código de 6 dígitos a{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
@@ -146,15 +194,25 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginTop: -60,
+    marginTop: -120,
+  },
+  headerKeyboardVisible: {
+    marginTop: -80,
   },
   iconContainer: {
     alignItems: "center",
     marginBottom: 30,
   },
+  iconContainerKeyboardVisible: {
+    marginBottom: 15,
+  },
   mailIcon: {
     width: 180,
     height: 180,
+  },
+  mailIconKeyboardVisible: {
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: 20,
@@ -164,12 +222,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     lineHeight: 28,
   },
+  titleKeyboardVisible: {
+    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 8,
+  },
   description: {
     fontSize: 14,
     color: colors.black,
     textAlign: "center",
     marginBottom: 40,
     lineHeight: 20,
+  },
+  descriptionKeyboardVisible: {
+    fontSize: 13,
+    marginBottom: 30,
   },
   email: {
     fontWeight: "600",

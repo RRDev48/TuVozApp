@@ -4,9 +4,10 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -27,6 +28,27 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
@@ -100,18 +122,38 @@ const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
+      <BackButton
+        onPress={() => navigation.navigate("Login")}
+        disablePersonalization
+      />
 
       {/* Header con logo */}
-      <View style={styles.header}>
-        <AppLogo width={200} height={200} />
+      <View
+        style={[
+          styles.header,
+          isKeyboardVisible && styles.headerKeyboardVisible,
+        ]}
+      >
+        <AppLogo
+          width={isKeyboardVisible ? 120 : 200}
+          height={isKeyboardVisible ? 120 : 200}
+        />
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>¿Olvidaste tu contraseña?</Text>
+      <Text
+        style={[styles.title, isKeyboardVisible && styles.titleKeyboardVisible]}
+      >
+        ¿Olvidaste tu contraseña?
+      </Text>
 
       {/* Subtítulo */}
-      <Text style={styles.subtitle}>
+      <Text
+        style={[
+          styles.subtitle,
+          isKeyboardVisible && styles.subtitleKeyboardVisible,
+        ]}
+      >
         Rellena tus datos para recuperar tu contraseña
       </Text>
 
@@ -120,29 +162,36 @@ const ForgotPasswordScreen = () => {
         {/* Campo Email */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Como es tu correo electronico?</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Email*"
-              placeholderTextColor={colors.white}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color={colors.white}
-              style={styles.inputIcon}
-            />
+          <View style={styles.inputWrapper}>
+            <View style={styles.inputRow}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email*"
+                placeholderTextColor={colors.gray}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+              <Ionicons
+                name="mail-outline"
+                size={24}
+                color={colors.black}
+                style={styles.inputIcon}
+              />
+            </View>
           </View>
         </View>
       </View>
 
       {/* Botón Enviar */}
-      <View style={styles.buttonContainer}>
+      <View
+        style={[
+          styles.buttonContainer,
+          isKeyboardVisible && styles.buttonContainerKeyboardVisible,
+        ]}
+      >
         <TouchableOpacity
           style={[styles.sendButton, loading && styles.sendButtonDisabled]}
           onPress={handleSend}
@@ -182,7 +231,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginTop: -60,
+    marginTop: -120,
   },
   title: {
     fontSize: 20,
@@ -192,6 +241,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     lineHeight: 28,
   },
+  titleKeyboardVisible: {
+    fontSize: 18,
+    marginTop: 20,
+    marginBottom: 10,
+  },
   subtitle: {
     fontSize: 14,
     fontWeight: "400",
@@ -200,10 +254,17 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     lineHeight: 20,
   },
+  subtitleKeyboardVisible: {
+    fontSize: 12,
+    marginBottom: 20,
+  },
   form: {
     gap: 20,
     marginBottom: 30,
     paddingHorizontal: 20,
+  },
+  headerKeyboardVisible: {
+    marginTop: -80,
   },
   inputGroup: {
     gap: 8,
@@ -213,28 +274,33 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontWeight: "500",
   },
-  inputContainer: {
+  inputWrapper: {
+    marginBottom: 20,
+  },
+  inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.blue,
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.black,
+    paddingBottom: 4,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: "500",
+    fontSize: 18,
+    color: colors.black,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
   },
   inputIcon: {
-    marginLeft: 10,
-    color: colors.white,
+    marginLeft: 8,
   },
   buttonContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
     marginTop: 100,
+  },
+  buttonContainerKeyboardVisible: {
+    marginTop: 40,
   },
   sendButton: {
     backgroundColor: colors.green,

@@ -4,14 +4,14 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 import { ROLE_OPTIONS } from "../constants/roles";
 import { useRoleSelection } from "../hooks/useRoleSelection";
 
@@ -36,12 +36,19 @@ const RoleSelectionScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
+      {/* Header con botón atrás y barra de progreso */}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerRow}>
+          <View style={styles.backButtonWrapper}>
+            <BackButton
+              onPress={() => navigation.goBack()}
+              disablePersonalization
+            />
+          </View>
 
-      {/* Header con logo */}
-      <View style={styles.header}>
-        <AppLogo width={200} height={200} />
+          {/* Barra de progreso */}
+          <ProgressBar currentStep={2} totalSteps={6} />
+        </View>
       </View>
 
       {/* Título */}
@@ -87,16 +94,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  header: {
+  headerContainer: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+  },
+  headerRow: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: -60,
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "700",
     color: colors.black,
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 40,
+    marginTop: 40,
   },
   rolesContainer: {
     gap: 16,

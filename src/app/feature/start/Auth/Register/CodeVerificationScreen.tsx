@@ -3,9 +3,10 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -14,8 +15,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import ProgressBar from "../components/ProgressBar";
 import VerificationErrorModal from "../components/VerificationErrorModal";
 import VerificationSuccessModal from "../components/VerificationSuccessModal";
 import { useCodeVerification } from "../hooks/useCodeVerification";
@@ -36,18 +37,39 @@ const CodeVerificationScreen = () => {
   const route = useRoute<CodeVerificationScreenRouteProp>();
   const { email = "", name = "", role = "self" } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-  const {
-    verifyCode,
-    isVerifying,
-    showErrorModal,
-    closeErrorModal,
-    errorMessage,
-  } = useOTPVerification({
-    email,
-    onSuccess: () => setShowSuccessAlert(true),
-    userData: { name, role },
-  });
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  // Calcular progreso basado en el rol
+  const isSelfFlow = role === "self";
+  const currentStep = isSelfFlow ? 5 : 6;
+  const totalSteps = isSelfFlow ? 5 : 6;
+
+  const { verifyCode, showErrorModal, closeErrorModal, errorMessage } =
+    useOTPVerification({
+      email,
+      onSuccess: () => setShowSuccessAlert(true),
+      userData: { name, role },
+    });
 
   const handleVerifyCode = async (fullCode: string) => {
     const success = await verifyCode(fullCode);
@@ -68,11 +90,6 @@ const CodeVerificationScreen = () => {
       onComplete: handleVerifyCode,
     });
 
-  const handleSuccessAlertClose = () => {
-    setShowSuccessAlert(false);
-    navigation.navigate("Login");
-  };
-
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -85,33 +102,49 @@ const CodeVerificationScreen = () => {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* Header con botón atrás y logo */}
-        <BackButton
-          onPress={() => navigation.goBack()}
-          disablePersonalization
-        />
+        {/* Header con botón atrás y barra de progreso */}
+        <View style={styles.headerContainer}>
+          <View style={styles.headerRow}>
+            <View style={styles.backButtonWrapper}>
+              <BackButton
+                onPress={() => navigation.goBack()}
+                disablePersonalization
+              />
+            </View>
 
-        {/* Header con logo */}
-        <View style={styles.header}>
-          <AppLogo width={200} height={200} />
+            {/* Barra de progreso */}
+            <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+          </View>
         </View>
 
         {/* Icono de correo */}
-        <View style={styles.iconContainer}>
-          <Image
-            source={require("../../../../assets/gif/llave.gif")}
-            style={styles.mailIcon}
-            resizeMode="contain"
-          />
-        </View>
+        {!isKeyboardVisible && (
+          <View style={styles.iconContainer}>
+            <Image
+              source={require("../../../../assets/gif/llave.gif")}
+              style={styles.mailIcon}
+              resizeMode="contain"
+            />
+          </View>
+        )}
 
         {/* Título */}
-        <Text style={styles.title}>
+        <Text
+          style={[
+            styles.title,
+            isKeyboardVisible && styles.titleKeyboardVisible,
+          ]}
+        >
           Introduce tu código de{"\n"}verificación.
         </Text>
 
         {/* Descripción */}
-        <Text style={styles.description}>
+        <Text
+          style={[
+            styles.description,
+            isKeyboardVisible && styles.descriptionKeyboardVisible,
+          ]}
+        >
           Hemos enviado un código de 6 dígitos a{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
@@ -158,6 +191,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  headerContainer: {
+    marginTop: 20,
+    paddingHorizontal: 24,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 0,
+    paddingRight: 24,
+  },
+  backButtonWrapper: {
+    marginLeft: -20,
+    marginTop: -40,
+    marginBottom: -10,
+  },
   header: {
     alignItems: "center",
     marginTop: -60,
@@ -165,6 +213,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",
     marginBottom: 30,
+    marginTop: 20,
   },
   mailIcon: {
     width: 180,
@@ -178,12 +227,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     lineHeight: 28,
   },
+  titleKeyboardVisible: {
+    fontSize: 18,
+    marginTop: 20,
+  },
   description: {
     fontSize: 14,
     color: colors.gray,
     textAlign: "center",
     marginBottom: 40,
     lineHeight: 20,
+  },
+  descriptionKeyboardVisible: {
+    fontSize: 12,
+    marginBottom: 20,
   },
   email: {
     fontWeight: "600",
