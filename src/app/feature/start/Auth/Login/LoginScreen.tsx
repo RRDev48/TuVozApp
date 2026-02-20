@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: 4,
+    marginTop: -5,
     marginLeft: 10,
   },
   forgotPasswordContainer: {

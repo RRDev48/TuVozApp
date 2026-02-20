@@ -150,7 +150,6 @@ export const authService = {
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Exception creating user with profile:", error);
       return {
         success: false,
         error: error.message || error.hint || "Error al crear usuario y perfil",
@@ -167,9 +166,6 @@ export const authService = {
    * @returns Promise with result
    */
   async createUserRecord(userId: string, userData: Omit<UserInsert, "id">) {
-    console.warn(
-      "createUserRecord is deprecated. Use createUserWithProfile() instead.",
-    );
     try {
       const userRecord: UserInsert = {
         id: userId,
@@ -183,13 +179,11 @@ export const authService = {
         .single();
 
       if (error) {
-        console.error("Supabase error creating user record:", error);
         throw error;
       }
 
       return { success: true, data };
     } catch (error: any) {
-      console.error("Exception creating user record:", error);
       return {
         success: false,
         error:
@@ -212,7 +206,6 @@ export const authService = {
         .single();
 
       if (error) {
-        // If user not found, return null without throwing
         if (error.code === "PGRST116") {
           return { success: true, data: null };
         }
@@ -328,6 +321,70 @@ export const authService = {
     } catch (error: any) {
       // Si hay cualquier error, simplemente retornar null
       return null;
+    }
+  },
+
+  /**
+   * Verifica si un email ya está registrado en la base de datos
+   * Usa una función RPC que consulta auth.users
+   * @param email - Email a verificar
+   * @returns Promise con resultado indicando si el email existe
+   */
+  async checkEmailExists(email: string) {
+    try {
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Usar la función RPC que verifica en auth.users
+      const { data, error } = await supabase.rpc("check_email_exists", {
+        p_email: normalizedEmail,
+      });
+      if (error) {
+        // Si la función RPC no existe, intentar fallback a tabla users
+        if (
+          error.message.includes("function") &&
+          error.message.includes("does not exist")
+        ) {
+          return await this.checkEmailExistsFallback(normalizedEmail);
+        }
+        throw error;
+      }
+
+      const exists = data === true;
+      return { success: true, exists };
+    } catch (error: any) {
+      return {
+        success: false,
+        exists: false,
+        error: error.message || "Error al verificar el correo electrónico",
+      };
+    }
+  },
+
+  /**
+   * Método fallback para verificar email cuando la función RPC no existe
+   * Solo verifica en public.users (usuarios verificados)
+   * @param normalizedEmail - Email normalizado a verificar
+   */
+  async checkEmailExistsFallback(normalizedEmail: string) {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("email")
+        .eq("email", normalizedEmail)
+        .maybeSingle();
+
+      if (userError && userError.code !== "PGRST116") {
+        throw userError;
+      }
+
+      const exists = !!userData;
+      return { success: true, exists };
+    } catch (error: any) {
+      return {
+        success: false,
+        exists: false,
+        error: error.message || "Error al verificar el correo electrónico",
+      };
     }
   },
 };

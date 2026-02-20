@@ -8,13 +8,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: 4,
+    marginTop: -5,
     marginLeft: 10,
   },
   buttonContainer: {

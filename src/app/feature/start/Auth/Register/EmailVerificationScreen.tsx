@@ -6,13 +6,14 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
@@ -42,6 +43,7 @@ const EmailVerificationScreen = () => {
     confirmEmailError,
     isFormValid,
     validateEmails,
+    isChecking,
   } = useEmailValidation({
     onValidationSuccess: (validatedEmail) => {
       navigation.navigate("PasswordSetup", {
@@ -52,8 +54,8 @@ const EmailVerificationScreen = () => {
     },
   });
 
-  const handleContinue = () => {
-    validateEmails();
+  const handleContinue = async () => {
+    await validateEmails();
   };
 
   const handlePrivacyPolicy = () => {
@@ -149,13 +151,17 @@ const EmailVerificationScreen = () => {
           <TouchableOpacity
             style={[
               styles.continueButton,
-              !isFormValid && styles.buttonDisabled,
+              (!isFormValid || isChecking) && styles.buttonDisabled,
             ]}
             onPress={handleContinue}
             activeOpacity={0.8}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isChecking}
           >
-            <Text style={styles.continueButtonText}>Continuar</Text>
+            {isChecking ? (
+              <ActivityIndicator size="small" color={colors.white} />
+            ) : (
+              <Text style={styles.continueButtonText}>Continuar</Text>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: 4,
+    marginTop: -5,
     marginLeft: 10,
   },
   buttonContainer: {

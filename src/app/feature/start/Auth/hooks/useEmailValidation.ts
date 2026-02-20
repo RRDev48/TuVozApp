@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { UseEmailValidationProps } from "../models/auth.props";
+import { authService } from "../services/auth.Service";
 
 export const useEmailValidation = ({
   onValidationSuccess,
@@ -8,6 +9,7 @@ export const useEmailValidation = ({
   const [confirmEmail, setConfirmEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [confirmEmailError, setConfirmEmailError] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
 
   const commonDomains = [
     "gmail.com",
@@ -40,24 +42,54 @@ export const useEmailValidation = ({
     setConfirmEmailError("");
   };
 
-  const validateEmails = (): boolean => {
+  const validateEmails = async (): Promise<boolean> => {
     clearErrors();
+    setIsChecking(true);
     let hasError = false;
 
+    // Normalizar emails a minúsculas para comparación
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedConfirmEmail = confirmEmail.trim().toLowerCase();
+
     // Validar email
-    if (!validateEmailFormat(email)) {
+    if (!validateEmailFormat(normalizedEmail)) {
       setEmailError("Formato de correo incorrecto");
       hasError = true;
+      setIsChecking(false);
+      return false;
     }
 
     // Validar que los emails coincidan
-    if (email !== confirmEmail) {
+    if (normalizedEmail !== normalizedConfirmEmail) {
       setConfirmEmailError("Los correos no coinciden");
       hasError = true;
+      setIsChecking(false);
+      return false;
     }
 
+    // Verificar si el email ya existe en la base de datos
+    if (!hasError) {
+      const result = await authService.checkEmailExists(normalizedEmail);
+
+      if (!result.success) {
+        setEmailError("Error al verificar el correo. Intenta nuevamente.");
+        setIsChecking(false);
+        return false;
+      }
+
+      if (result.exists) {
+        setEmailError(
+          "Este correo ya está registrado. Por favor usa otro correo.",
+        );
+        setIsChecking(false);
+        return false;
+      }
+    }
+
+    setIsChecking(false);
+
     if (!hasError && onValidationSuccess) {
-      onValidationSuccess(email);
+      onValidationSuccess(normalizedEmail);
     }
 
     return !hasError;
@@ -82,5 +114,6 @@ export const useEmailValidation = ({
     validateEmails,
     clearErrors,
     resetForm,
+    isChecking,
   };
 };

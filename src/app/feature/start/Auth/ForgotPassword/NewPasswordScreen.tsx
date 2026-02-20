@@ -1,7 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
-import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
-import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -9,15 +7,17 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import VerificationErrorModal from "../components/VerificationErrorModal";
+import VerificationSuccessModal from "../components/VerificationSuccessModal";
 import { usePasswordRecovery } from "../hooks/usePasswordRecovery";
 
 type NewPasswordScreenNavigationProp = StackNavigationProp<
@@ -198,14 +198,15 @@ const NewPasswordScreen = () => {
       </View>
 
       {/* Alert de éxito */}
-      <SuccessModal
+      <VerificationSuccessModal
         visible={showSuccess}
         title="Contraseña actualizada"
+        message="Tu contraseña ha sido actualizada correctamente"
         onClose={handleCloseSuccess}
-        gifType="llave"
+        gifType="verificado"
       />
 
-      <ErrorModal
+      <VerificationErrorModal
         visible={showErrorModal}
         title="Error"
         message={errorMessage}
