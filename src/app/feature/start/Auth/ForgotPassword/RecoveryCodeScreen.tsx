@@ -1,6 +1,6 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
+import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,10 +16,10 @@ import {
     TextInput,
     View,
 } from "react-native";
-import { useCodeVerification } from "../(hooks)/useCodeVerification";
-import { usePasswordRecovery } from "../(hooks)/usePasswordRecovery";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { useCodeVerification } from "../hooks/useCodeVerification";
+import { usePasswordRecovery } from "../hooks/usePasswordRecovery";
 
 type RecoveryCodeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -79,7 +79,10 @@ const RecoveryCodeScreen = () => {
         bounces={false}
       >
         {/* Header con botón atrás y logo */}
-        <BackButton onPress={() => navigation.goBack()} />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          disablePersonalization
+        />
 
         {/* Header con logo */}
         <View style={styles.header}>

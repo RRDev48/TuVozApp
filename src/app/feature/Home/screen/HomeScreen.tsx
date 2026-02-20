@@ -1,22 +1,76 @@
-import MenuItem from "@/src/app/components/menu/MenuItem";
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback } from "react";
-import { FlatList, Image, Text, View } from "react-native";
-import getGreeting from "../(actions)/actions";
-import { useAuthentication } from "../(hooks)/useAuthentication";
-import { useHomeMenu } from "../(hooks)/useHomeMenu";
-import { useHomeStyles } from "../(hooks)/useHomeStyles";
-import { useUserData } from "../(hooks)/useUserData";
+import React, { useCallback, useMemo } from "react";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import MenuItem from "../../common/menu/MenuItem";
+import getGreeting from "../actions/actions";
 import homeMenu from "../constants/home.menu";
+import { useAuthentication } from "../hooks/useAuthentication";
+import { useHomeMenu } from "../hooks/useHomeMenu";
+import { useUserData } from "../hooks/useUserData";
 
 const HomeScreen = () => {
   const { userName } = useUserData();
   const { isAuthenticated } = useAuthentication();
   const filteredMenuItems = useHomeMenu(isAuthenticated);
-  const styles = useHomeStyles();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const { getThemedColors } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(() => {
+    return StyleSheet.create({
+      screenContainer: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: themedColors.background,
+      },
+      headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 20,
+        gap: 15,
+      },
+      userIcon: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: themedColors.primary,
+      },
+      greetingText: {
+        fontSize: 24,
+        color: themedColors.text,
+        fontWeight: "bold",
+        flex: 1,
+      },
+      itemContainer: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        marginVertical: 10,
+      },
+      buttonContainer: {
+        width: 130,
+        height: 130,
+        backgroundColor: themedColors.cardBackground,
+        borderRadius: 30,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      textCard: {
+        fontSize: 20,
+        fontWeight: "bold",
+        textAlign: "center",
+        color: themedColors.text,
+        marginTop: 5,
+      },
+      icon: {
+        width: 70,
+        height: 70,
+      },
+    });
+  }, [themedColors]);
 
   const handleMenuPress = useCallback(
     (route: string) => {

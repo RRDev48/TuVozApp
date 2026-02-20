@@ -1,6 +1,6 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -12,15 +12,15 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import {
-  FREQUENCY_OPTIONS,
-  useMedicationForm,
-} from "../../(hooks)/useMedicationForm";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
+import {
+  FREQUENCY_OPTIONS,
+  useMedicationForm,
+} from "../../hooks/useMedicationForm";
 
 type EditMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,

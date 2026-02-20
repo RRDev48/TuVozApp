@@ -1,7 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
-import { EmergencySuccessModalProps } from "../../(models)/modal.props";
+import { EmergencySuccessModalProps } from "../../models/modal.props";
 
 const EmergencySuccessModal = ({
   visible,

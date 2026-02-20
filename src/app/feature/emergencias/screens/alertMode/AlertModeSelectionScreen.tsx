@@ -3,16 +3,16 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
+  StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { useAlertModeSelectionStyles } from "../../(hooks)/useSelectionScreenStyles";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 
@@ -34,13 +34,60 @@ const AlertModeSelectionScreen = () => {
   const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
   const route = useRoute<AlertModeSelectionScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
-  const styles = useAlertModeSelectionStyles();
   const themedColors = getThemedColors();
 
   const [selectedAlertMode, setSelectedAlertMode] = useState<string>(
     route.params?.currentAlertMode || "call",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        contentContainer: {
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 120,
+          alignItems: "center",
+        },
+        sectionTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.text,
+          textAlign: "center",
+          marginBottom: 30,
+        },
+        dropdownButton: {
+          width: "100%",
+          backgroundColor: themedColors.primary,
+          borderRadius: 16,
+          paddingVertical: 18,
+          paddingHorizontal: 24,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 10,
+        },
+        dropdownButtonText: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.secondary,
+        },
+        overlay: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
+      }),
+    [themedColors],
+  );
 
   const handleSelectAlertMode = (value: string) => {
     setSelectedAlertMode(value);

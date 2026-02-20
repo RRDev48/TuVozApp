@@ -1,22 +1,22 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
+import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { authService } from "../(services)/authService";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { authService } from "../services/auth.Service";
 
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -100,7 +100,7 @@ const ForgotPasswordScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
 
       {/* Header con logo */}
       <View style={styles.header}>

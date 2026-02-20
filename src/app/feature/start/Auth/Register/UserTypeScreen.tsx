@@ -5,7 +5,7 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
 
 type UserTypeScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -32,7 +32,7 @@ const UserTypeScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
 
       {/* Header con logo */}
       <View style={styles.header}>

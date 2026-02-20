@@ -4,16 +4,16 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { ROLE_OPTIONS } from "../(constants)/roles";
-import { useRoleSelection } from "../(hooks)/useRoleSelection";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { ROLE_OPTIONS } from "../constants/roles";
+import { useRoleSelection } from "../hooks/useRoleSelection";
 
 type RoleSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -37,7 +37,7 @@ const RoleSelectionScreen = () => {
   return (
     <ScrollView style={styles.container}>
       {/* Header con botón atrás y logo */}
-      <BackButton onPress={() => navigation.goBack()} />
+      <BackButton onPress={() => navigation.goBack()} disablePersonalization />
 
       {/* Header con logo */}
       <View style={styles.header}>

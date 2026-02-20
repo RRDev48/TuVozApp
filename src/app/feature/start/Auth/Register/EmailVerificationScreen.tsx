@@ -14,9 +14,9 @@ import {
     TouchableWithoutFeedback,
     View,
 } from "react-native";
-import { useEmailValidation } from "../(hooks)/useEmailValidation";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { useEmailValidation } from "../hooks/useEmailValidation";
 
 type EmailVerificationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -64,7 +64,10 @@ const EmailVerificationScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
-        <BackButton onPress={() => navigation.goBack()} />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          disablePersonalization
+        />
 
         {/* Header con logo */}
         <View style={styles.header}>

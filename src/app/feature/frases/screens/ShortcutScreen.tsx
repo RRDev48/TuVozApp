@@ -1,5 +1,5 @@
-import CustomText from "@/src/app/components/CustomText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import CustomText from "@/src/app/feature/common/CustomText";
 import { StyleSheet, View } from "react-native";
 
 const ShortcutScreen = () => {

@@ -5,17 +5,17 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
-import { useRegisterInfo } from "../(hooks)/useRegisterInfo";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { useRegisterInfo } from "../hooks/useRegisterInfo";
 
 type RegisterInfoScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -46,7 +46,10 @@ const RegisterInfoScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
-        <BackButton onPress={() => navigation.goBack()} />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          disablePersonalization
+        />
 
         {/* Header con logo */}
         <View style={styles.header}>

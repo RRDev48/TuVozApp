@@ -1,25 +1,25 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
+import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
-import { useCodeVerification } from "../(hooks)/useCodeVerification";
-import { useOTPVerification } from "../(hooks)/useOTPVerification";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
-import SuccessAlert from "../ForgotPassword/components/SuccessAlert";
+import BackButton from "../../../common/BackButton";
+import { useCodeVerification } from "../hooks/useCodeVerification";
+import { useOTPVerification } from "../hooks/useOTPVerification";
 
 type CodeVerificationScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -86,7 +86,10 @@ const CodeVerificationScreen = () => {
         bounces={false}
       >
         {/* Header con botón atrás y logo */}
-        <BackButton onPress={() => navigation.goBack()} />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          disablePersonalization
+        />
 
         {/* Header con logo */}
         <View style={styles.header}>
@@ -139,10 +142,11 @@ const CodeVerificationScreen = () => {
           onClose={closeErrorModal}
         />
 
-        <SuccessAlert
+        <SuccessModal
           visible={showSuccessAlert}
           title="Verificación exitosa"
           onClose={handleSuccessModalClose}
+          gifType="llave"
         />
       </ScrollView>
     </KeyboardAvoidingView>

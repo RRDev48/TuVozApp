@@ -2,11 +2,10 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
-import { useAddressScreenStyles } from "../../(hooks)/useAddressScreenStyles";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import { useMemo, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
@@ -23,8 +22,32 @@ type AddressScreenNavigationProp = StackNavigationProp<
 const AddressScreen = () => {
   const navigation = useNavigation<AddressScreenNavigationProp>();
   const route = useRoute<AddressScreenRouteProp>();
-  const { transformText } = usePersonalization();
-  const styles = useAddressScreenStyles();
+  const { transformText, getThemedColors } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        contentContainer: {
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 120,
+        },
+        sectionTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.text,
+          textAlign: "center",
+          marginBottom: 30,
+        },
+      }),
+    [themedColors],
+  );
 
   const [addresses, setAddresses] = useState<string[]>(
     route.params?.currentAddress

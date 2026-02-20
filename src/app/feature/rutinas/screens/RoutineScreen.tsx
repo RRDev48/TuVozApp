@@ -25,7 +25,7 @@ import { useModals } from "../(hooks)/useModals";
 import { useRoutineProgress } from "../(hooks)/useRoutineProgress";
 import { useRoutineTasks } from "../(hooks)/useRoutineTasks";
 import { useWeekRoutine } from "../(hooks)/useWeekRoutine";
-import { useCurrentUserProfile } from "../../ajustes/(hooks)/useCurrentUserProfile";
+import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
 
 // Servicios
 

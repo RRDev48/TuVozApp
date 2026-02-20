@@ -1,8 +1,8 @@
-import CustomText from "@/src/app/components/CustomText";
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
-import SuccessModal from "@/src/app/components/alerts/SuccessModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
+import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
+import CustomText from "@/src/app/feature/common/CustomText";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -16,9 +16,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSupportForm } from "../../(hooks)/useSupportForm";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
+import { useSupportForm } from "../../hooks/useSupportForm";
 
 const NewSupportEntryScreen = () => {
   const { getThemedColors, transformText } = usePersonalization();

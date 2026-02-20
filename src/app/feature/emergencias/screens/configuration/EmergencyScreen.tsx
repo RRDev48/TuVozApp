@@ -4,21 +4,21 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
-import { useEmergencyScreenStyles } from "../../(hooks)/useEmergencyScreensStyles";
-import { parsePhoneNumber } from "../../(services)/phoneParser";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
 import { EmergencyField } from "../../components/EmergencyField";
+import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
+import { parsePhoneNumber } from "../../services/phoneParser";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -31,8 +31,64 @@ const EmergencyScreen = () => {
   const navigation = useNavigation<EmergencyScreenNavigationProp>();
   const route = useRoute<EmergencyScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
-  const styles = useEmergencyScreenStyles();
   const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        scrollContent: {
+          padding: 20,
+          paddingBottom: 120,
+        },
+        loadingContainer: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        buttonsContainer: {
+          position: "absolute",
+          bottom: 40,
+          left: 20,
+          right: 20,
+          flexDirection: "row",
+          gap: 12,
+        },
+        cancelButton: {
+          flex: 1,
+          backgroundColor: "transparent",
+          borderWidth: 2,
+          borderColor: colors.red,
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        cancelButtonText: {
+          color: colors.red,
+          fontSize: 18,
+          fontWeight: "bold",
+        },
+        nextButton: {
+          flex: 1,
+          backgroundColor: colors.green,
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        nextButtonText: {
+          color: colors.black,
+          fontSize: 18,
+          fontWeight: "bold",
+        },
+      }),
+    [themedColors],
+  );
+
   const { profile, profileFullName, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
 

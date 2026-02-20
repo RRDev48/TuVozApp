@@ -1,5 +1,5 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -11,12 +11,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { SEVERITY_LEVELS, useAllergyForm } from "../../(hooks)/useAllergyForm";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
+import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
 type AddAllergyScreenNavigationProp = StackNavigationProp<

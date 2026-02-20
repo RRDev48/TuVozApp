@@ -5,28 +5,28 @@ import * as Haptics from "expo-haptics";
 import * as Speech from "expo-speech";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-    ViewToken,
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewToken,
 } from "react-native";
 
 // Componentes
-import CustomText from "@/src/app/components/CustomText";
-import BackButton from "@/src/app/feature/components/BackButton";
-import ScreenTitle from "@/src/app/feature/components/ScreenTitle";
+import BackButton from "@/src/app/feature/common/BackButton";
+import CustomText from "@/src/app/feature/common/CustomText";
+import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
 
 // Hooks
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { usePaginatedPictograms } from "@/src/app/feature/expresate/(hooks)/usePaginatedPictograms";
-import { usePictogramsByCategory } from "@/src/app/feature/expresate/(hooks)/usePictogramsByCategory";
+import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
+import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
 
 // Tipos
-import { Pictogram } from "@/src/app/feature/expresate/(types)/expresate.types";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import { Pictogram } from "../models/pictogram.types";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;

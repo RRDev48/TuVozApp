@@ -1,28 +1,28 @@
-import ErrorModal from "@/src/app/components/alerts/ErrorModal";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { useErrorHandling } from "@/src/app/feature/ajustes/(hooks)/useErrorHandling";
+import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
+import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useEmergencyProfile } from "../../(hooks)/useEmergencyProfile";
-import { useEmergencyScreen2Styles } from "../../(hooks)/useEmergencyScreensStyles";
-import { emergencyService } from "../../(services)/emergencyService";
-import { parsePhoneNumber } from "../../(services)/phoneParser";
-import BackButton from "../../../components/BackButton";
-import ScreenTitle from "../../../components/ScreenTitle";
+import BackButton from "../../../common/BackButton";
+import ScreenTitle from "../../../common/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
 import EmergencySuccessModal from "../../components/alerts/EmergencySuccessModal";
 import { EmergencyField } from "../../components/EmergencyField";
+import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
+import { emergencyService } from "../../services/emergency.Service";
+import { parsePhoneNumber } from "../../services/phoneParser";
 
 type EmergencyScreen2NavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -38,8 +38,64 @@ const EmergencyScreen2 = () => {
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
   const route = useRoute<EmergencyScreen2RouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
-  const styles = useEmergencyScreen2Styles();
   const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        scrollContent: {
+          padding: 20,
+          paddingBottom: 120,
+        },
+        loadingContainer: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        buttonsContainer: {
+          position: "absolute",
+          bottom: 40,
+          left: 20,
+          right: 20,
+          flexDirection: "row",
+          gap: 12,
+        },
+        cancelButton: {
+          flex: 1,
+          backgroundColor: "transparent",
+          borderWidth: 2,
+          borderColor: colors.red,
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        cancelButtonText: {
+          color: colors.red,
+          fontSize: 18,
+          fontWeight: "bold",
+        },
+        saveButton: {
+          flex: 1,
+          backgroundColor: colors.green,
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        saveButtonText: {
+          color: colors.black,
+          fontSize: 18,
+          fontWeight: "bold",
+        },
+      }),
+    [themedColors],
+  );
+
   const { profile, profileId, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);

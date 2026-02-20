@@ -1,6 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { StyleSheet, TextInput } from "react-native";
-import { ThemedTextInputProps } from "../(models)/component.props";
+import { ThemedTextInputProps } from "../models/component.props";
 
 const ThemedTextInput = ({
   value,

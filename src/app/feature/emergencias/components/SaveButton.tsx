@@ -1,7 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { SaveButtonProps } from "../(models)/component.props";
+import { SaveButtonProps } from "../models/component.props";
 
 const SaveButton = ({ onPress, text, bottom = 40 }: SaveButtonProps) => {
   const { transformText } = usePersonalization();

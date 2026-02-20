@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { colors } from "../design-system/themes/globalColors-theme";
-import { useCurrentUserProfile } from "../feature/ajustes/(hooks)/useCurrentUserProfile";
-import { useProfileSettings } from "../feature/ajustes/(hooks)/useProfileSettings";
-import { ProfileSettingsService } from "../feature/ajustes/(services)/profileSettingsService";
+import { useCurrentUserProfile } from "../feature/ajustes/hooks/useCurrentUserProfile";
+import { useProfileSettings } from "../feature/ajustes/hooks/useProfileSettings";
+import { ProfileSettingsService } from "../feature/ajustes/services/profileSettings.Service";
 import { PersonalizationContextType } from "./(models)/personalization.types";
 
 const PersonalizationContext = createContext<

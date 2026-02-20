@@ -2,20 +2,8 @@
 // Si una pantalla necesita props, se tipan aquí en lugar de `undefined`.
 
 // Tipos reutilizables para pantallas de emergencias
-type SelectionScreenParams<T extends string> = {
-  [K in `current${Capitalize<T>}`]?: string;
-} & {
-  onSelect: (value: string) => void;
-};
-
 type AddScreenParams = {
   onAdd: (value: string) => void;
-};
-
-type EditScreenParams = {
-  [key: string]: string | ((value: string) => void) | (() => void);
-  onUpdate: (value: string) => void;
-  onDelete: () => void;
 };
 
 type RootStackParamsList = {

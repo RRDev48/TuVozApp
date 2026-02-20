@@ -11,18 +11,18 @@ import {
 } from "react-native";
 
 // Componentes
-import CustomText from "@/src/app/components/CustomText";
-import MenuItem from "@/src/app/components/menu/MenuItem";
-import BackButton from "@/src/app/feature/components/BackButton";
-import ScreenTitle from "@/src/app/feature/components/ScreenTitle";
+import BackButton from "@/src/app/feature/common/BackButton";
+import CustomText from "@/src/app/feature/common/CustomText";
+import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
 
 // Hooks
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { usePaginatedCategories } from "@/src/app/feature/expresate/(hooks)/usePaginatedCategories";
-import { usePictogramCategories } from "@/src/app/feature/expresate/(hooks)/usePictogramCategories";
+import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
+import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
 
 // Tipos
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import MenuItem from "../../common/menu/MenuItem";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;

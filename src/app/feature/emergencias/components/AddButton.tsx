@@ -1,6 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { AddButtonProps } from "../(models)/component.props";
+import { AddButtonProps } from "../models/component.props";
 
 const AddButton = ({ onPress, text }: AddButtonProps) => {
   const { getThemedColors } = usePersonalization();

@@ -5,17 +5,17 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
-import { authService } from "../(services)/authService";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
-import BackButton from "../../../components/BackButton";
+import BackButton from "../../../common/BackButton";
+import { authService } from "../services/auth.Service";
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -30,10 +30,6 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
 
   const handleContinue = async () => {
     // Limpiar errores previos
@@ -79,7 +75,10 @@ const LoginScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         {/* Header con botón atrás y logo */}
-        <BackButton onPress={() => navigation.goBack()} />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          disablePersonalization
+        />
 
         {/* Header con logo */}
         <View style={styles.header}>

@@ -1,6 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { DropdownListProps } from "../(models)/component.props";
+import { DropdownListProps } from "../models/component.props";
 
 const DropdownList = ({
   items,
