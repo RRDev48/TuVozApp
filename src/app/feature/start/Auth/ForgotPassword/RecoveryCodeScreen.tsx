@@ -67,7 +67,6 @@ const RecoveryCodeScreen = () => {
     const result = await verifyRecoveryCode(email, fullCode);
 
     if (result.success) {
-      // Navegar a la pantalla de nueva contraseña
       navigation.navigate("NewPassword", { email });
     } else {
       logAndShowError(

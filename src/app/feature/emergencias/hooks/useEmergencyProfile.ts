@@ -17,13 +17,11 @@ export const useEmergencyProfile = () => {
       setLoading(true);
       setError(null);
 
-      // Obtener usuario actual
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuario no autenticado");
 
-      // Obtener profile_id del usuario (donde es owner)
       const userProfileId = await emergencyService.getCurrentUserProfileId(
         user.id,
       );
@@ -32,11 +30,9 @@ export const useEmergencyProfile = () => {
 
       setProfileId(userProfileId);
 
-      // Obtener nombre completo del perfil
       const fullName = await emergencyService.getProfileFullName(userProfileId);
       setProfileFullName(fullName);
 
-      // Obtener perfil de emergencia
       const emergencyProfile =
         await emergencyService.getEmergencyProfile(userProfileId);
       setProfile(emergencyProfile);

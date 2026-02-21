@@ -22,14 +22,11 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
       setIsLogging(true);
 
       try {
-        // Mostrar el modal de error
         setErrorMessage(errorMessage);
         setShowErrorModal(true);
 
-        // Log del error en paralelo
         const logPromises = [];
 
-        // 1. Log en error_logs
         if (error) {
           logPromises.push(
             errorLogService.logErrorWithStack(
@@ -51,17 +48,14 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
           );
         }
 
-        // 2. Log en audit_logs si está habilitado
         if (options.enableAuditLogging) {
           logPromises.push(
             auditLogService.logError(errorMessage, options.source, context),
           );
         }
 
-        // Ejecutar logs en paralelo sin bloquear la UI
         await Promise.allSettled(logPromises);
       } catch (logError) {
-        // No fallar si el logging falla, pero sí mostrar el modal
       } finally {
         setIsLogging(false);
       }

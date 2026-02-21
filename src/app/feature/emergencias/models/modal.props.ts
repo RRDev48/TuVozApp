@@ -1,4 +1,3 @@
-// Interfaces para modales específicos de emergencias
 export interface CancelConfirmationModalProps {
   visible: boolean;
   onConfirm: () => void;

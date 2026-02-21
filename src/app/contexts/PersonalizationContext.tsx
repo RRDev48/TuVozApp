@@ -20,7 +20,6 @@ const PersonalizationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // Hooks para manejo de usuario y configuración
   const {
     profileId,
     userId,
@@ -37,12 +36,10 @@ const PersonalizationProvider = ({
     getUppercaseForApp,
   } = useProfileSettings(profileId || undefined);
 
-  // Estado local para usuarios no autenticados
   const [localSoloMayusculas, setLocalSoloMayusculasState] = useState(false);
   const [localTemaOscuro, setLocalTemaOscuroState] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // Cargar preferencias locales para usuarios no autenticados
   useEffect(() => {
     if (!isAuthenticated && !userLoading) {
       loadLocalPreferences();
@@ -63,13 +60,11 @@ const PersonalizationProvider = ({
       if (temaOscuroValue !== null)
         setLocalTemaOscuroState(JSON.parse(temaOscuroValue));
     } catch (error) {
-      // Error cargando preferencias locales
     } finally {
       setLoaded(true);
     }
   };
 
-  // Funciones para usuarios autenticados
   const setSoloMayusculasAuthenticated = async (value: boolean) => {
     try {
       await updateSetting("uppercase", value);
@@ -83,7 +78,6 @@ const PersonalizationProvider = ({
     } catch (error) {}
   };
 
-  // Funciones para usuarios no autenticados (AsyncStorage)
   const setSoloMayusculasLocal = async (value: boolean) => {
     try {
       await AsyncStorage.setItem(
@@ -91,9 +85,7 @@ const PersonalizationProvider = ({
         JSON.stringify(value),
       );
       setLocalSoloMayusculasState(value);
-    } catch (error) {
-      // Error guardando preferencia local
-    }
+    } catch (error) {}
   };
 
   const setTemaOscuroLocal = async (value: boolean) => {
@@ -103,12 +95,9 @@ const PersonalizationProvider = ({
         JSON.stringify(value),
       );
       setLocalTemaOscuroState(value);
-    } catch (error) {
-      // Error guardando preferencia local
-    }
+    } catch (error) {}
   };
 
-  // Funciones unificadas que eligen entre DB o AsyncStorage
   const setSoloMayusculas = isAuthenticated
     ? (value: boolean) => {
         return setSoloMayusculasAuthenticated(value);
@@ -125,53 +114,47 @@ const PersonalizationProvider = ({
         return setTemaOscuroLocal(value);
       };
 
-  // Valores actuales (desde DB o AsyncStorage)
   const soloMayusculas = isAuthenticated
     ? getUppercaseForApp()
     : localSoloMayusculas;
 
   const temaOscuro = isAuthenticated ? getThemeForApp() : localTemaOscuro;
 
-  // Función para resetear a valores por defecto
   const resetToDefaults = async () => {
     if (isAuthenticated) {
       await resetSettings();
     } else {
-      // Resetear valores locales
       await setSoloMayusculasLocal(false);
       await setTemaOscuroLocal(false);
     }
   };
 
-  // Transformar texto según preferencias
   const transformText = (text: string): string => {
     return soloMayusculas ? text.toUpperCase() : text;
   };
 
-  // Obtener colores del tema
   const getThemedColors = () => {
     if (temaOscuro) {
       return {
-        background: colors.darkBlue, // azul oscuro
-        cardBackground: colors.white, // blanco
-        primary: colors.white, // blanco
-        secondary: colors.secondBlue, // gris claro
-        text: colors.white, // blanco
+        background: colors.darkBlue,
+        cardBackground: colors.white,
+        primary: colors.white,
+        secondary: colors.secondBlue,
+        text: colors.white,
         transparent: colors.transparent,
       };
     } else {
       return {
-        background: colors.white, // blanco
-        cardBackground: colors.blue, // azul
-        primary: colors.blue, // azul
-        secondary: colors.white, // gris claro
-        text: colors.black, // negro
+        background: colors.white,
+        cardBackground: colors.blue,
+        primary: colors.blue,
+        secondary: colors.white,
+        text: colors.black,
         transparent: colors.transparent,
       };
     }
   };
 
-  // Esperar a que cargue la configuración
   if (userLoading || settingsLoading || !loaded) {
     return null;
   }

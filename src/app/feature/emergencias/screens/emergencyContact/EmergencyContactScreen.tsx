@@ -223,7 +223,7 @@ const EmergencyContactScreen = () => {
 
   const getSelectedCountry = () => {
     const country = COUNTRY_CODES.find((c) => c.code === selectedCountryCode);
-    return country || COUNTRY_CODES[2]; // Default to México
+    return country || COUNTRY_CODES[2];
   };
 
   return (

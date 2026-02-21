@@ -186,8 +186,8 @@ const NewSupportEntryScreen = () => {
         visible={showSuccessModal}
         title="Tu consulta ha sido enviada. Te contactaremos pronto."
         onClose={handleSuccessModalClose}
-        autoCloseDelay={4000} // Se cierra automáticamente después de 4 segundos
-        showDelay={300} // Se muestra con un delay de 300ms
+        autoCloseDelay={4000}
+        showDelay={300}
       />
 
       <ErrorModal
@@ -195,11 +195,9 @@ const NewSupportEntryScreen = () => {
         title="Error"
         message={errorMessage}
         onClose={setShowErrorModal}
-        onDismiss={() => {
-          // Log adicional cuando el usuario cierra el modal de error
-        }}
-        showDelay={200} // Se muestra con un delay de 200ms
-        autoCloseDelay={0} // Sin auto-cierre (requiere interacción del usuario)
+        onDismiss={() => {}}
+        showDelay={200}
+        autoCloseDelay={0}
       />
     </KeyboardAvoidingView>
   );

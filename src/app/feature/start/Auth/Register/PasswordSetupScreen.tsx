@@ -57,7 +57,6 @@ const PasswordSetupScreen = () => {
     };
   }, []);
 
-  // Calcular progreso basado en el rol
   const isSelfFlow = role === "self";
   const currentStep = isSelfFlow ? 4 : 5;
   const totalSteps = isSelfFlow ? 5 : 6;
@@ -67,8 +66,6 @@ const PasswordSetupScreen = () => {
 
   const handleRegister = async (validPassword: string) => {
     try {
-      // Step 1: Create authentication user in Supabase Auth
-      // Note: signUp automatically sends verification code and may auto-login depending on config
       const authResponse = await authService.signUp(email, validPassword);
 
       if (!authResponse.success || !authResponse.data?.user) {
@@ -84,8 +81,6 @@ const PasswordSetupScreen = () => {
         return;
       }
 
-      // Step 2: Navigate to code verification (verification code already sent by signUp)
-      // User and profile creation happens after OTP verification
       navigation.navigate("CodeVerification", {
         email,
         password: validPassword,

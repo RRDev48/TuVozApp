@@ -11,7 +11,6 @@ export const useCodeVerification = ({
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const handleCodeChange = (value: string, index: number) => {
-    // Solo permitir números
     if (value && !/^\d$/.test(value)) {
       return;
     }
@@ -20,17 +19,14 @@ export const useCodeVerification = ({
     newCode[index] = value;
     setCode(newCode);
 
-    // Auto-avanzar al siguiente campo
     if (value && index < codeLength - 1) {
       inputRefs.current[index + 1]?.focus();
     } else if (value && index === codeLength - 1) {
-      // Cerrar teclado al completar el último dígito
       Keyboard.dismiss();
     }
   };
 
   const handleKeyPress = (e: any, index: number) => {
-    // Retroceder al campo anterior al presionar backspace
     if (e.nativeEvent.key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -45,10 +41,8 @@ export const useCodeVerification = ({
 
   const isCodeComplete = () => code.every((digit) => digit !== "");
 
-  // Usar useRef para evitar llamadas múltiples
   const hasVerifiedRef = useRef(false);
 
-  // Verificar automáticamente cuando se complete el código
   useEffect(() => {
     const fullCode = getFullCode();
     if (
@@ -62,7 +56,6 @@ export const useCodeVerification = ({
     }
   }, [code, codeLength, isVerifying]);
 
-  // Resetear el flag cuando el código cambia
   useEffect(() => {
     if (code.some((digit) => digit === "")) {
       hasVerifiedRef.current = false;

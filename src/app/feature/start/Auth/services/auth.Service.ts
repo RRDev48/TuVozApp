@@ -2,11 +2,6 @@ import type { UserInsert } from "@/src/app/feature/common/models/database.types"
 import { supabase } from "@/src/lib/supabaseClient";
 
 export const authService = {
-  /**
-   * Envía un email de recuperación de contraseña
-   * @param email - Email del usuario
-   * @returns Promise con resultado de la operación
-   */
   async sendPasswordResetEmail(email: string) {
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -26,12 +21,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Inicia sesión con email y contraseña
-   * @param email - Email del usuario
-   * @param password - Contraseña del usuario
-   * @returns Promise con resultado de la operación
-   */
   async signIn(email: string, password: string) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -52,15 +41,8 @@ export const authService = {
     }
   },
 
-  /**
-   * Envía un código OTP de verificación al email
-   * @param email - Email del usuario
-   * @param createUser - Si debe crear el usuario o solo enviar OTP
-   * @returns Promise con resultado de la operación
-   */
   async sendOTP(email: string, createUser: boolean = true) {
     try {
-      // Enviar OTP - shouldCreateUser permite registrar nuevos usuarios
       const { data, error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -82,13 +64,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Verifica el código OTP
-   * @param email - Email del usuario
-   * @param token - Código OTP de 6 dígitos
-   * @param type - Tipo de verificación (email, signup, magiclink)
-   * @returns Promise con resultado de la operación
-   */
   async verifyOTP(
     email: string,
     token: string,
@@ -115,13 +90,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Creates a user record and profile in a single atomic operation
-   * Uses a database function to bypass RLS issues during registration
-   * @param userId - Auth user ID
-   * @param userData - User data (full_name, role, email)
-   * @returns Promise with result
-   */
   async createUserWithProfile(
     userId: string,
     userData: { full_name: string; role: string; email: string },
@@ -139,7 +107,6 @@ export const authService = {
         throw error;
       }
 
-      // Check if the function returned success
       if (data && typeof data === "object" && "success" in data) {
         if (data.success) {
           return { success: true, data };
@@ -157,14 +124,6 @@ export const authService = {
     }
   },
 
-  /**
-   * @deprecated Use createUserWithProfile() instead
-   * Creates a user record in the public.users table
-   * This should be called after successful authentication
-   * @param userId - Auth user ID
-   * @param userData - User data (full_name, role, email)
-   * @returns Promise with result
-   */
   async createUserRecord(userId: string, userData: Omit<UserInsert, "id">) {
     try {
       const userRecord: UserInsert = {
@@ -192,11 +151,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Gets user record from public.users table
-   * @param userId - User ID
-   * @returns User record or null
-   */
   async getUserRecord(userId: string) {
     try {
       const { data, error } = await supabase
@@ -221,13 +175,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Registra un nuevo usuario
-   * @param email - Email del usuario
-   * @param password - Contraseña del usuario
-   * @param metadata - Datos adicionales del usuario (nombre, rol)
-   * @returns Promise con resultado de la operación
-   */
   async signUp(
     email: string,
     password: string,
@@ -256,11 +203,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Actualiza la contraseña del usuario autenticado
-   * @param newPassword - Nueva contraseña
-   * @returns Promise con resultado de la operación
-   */
   async updatePassword(newPassword: string) {
     try {
       const { data, error } = await supabase.auth.updateUser({
@@ -280,10 +222,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Cierra la sesión actual
-   * @returns Promise con resultado de la operación
-   */
   async signOut() {
     try {
       const { error } = await supabase.auth.signOut();
@@ -301,10 +239,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Obtiene el usuario actual
-   * @returns Usuario actual o null
-   */
   async getCurrentUser() {
     try {
       const {
@@ -313,33 +247,22 @@ export const authService = {
       } = await supabase.auth.getUser();
 
       if (error) {
-        // Si no hay sesión, retornar null sin lanzar error
         return null;
       }
 
       return user;
     } catch (error: any) {
-      // Si hay cualquier error, simplemente retornar null
       return null;
     }
   },
-
-  /**
-   * Verifica si un email ya está registrado en la base de datos
-   * Usa una función RPC que consulta auth.users
-   * @param email - Email a verificar
-   * @returns Promise con resultado indicando si el email existe
-   */
   async checkEmailExists(email: string) {
     try {
       const normalizedEmail = email.toLowerCase().trim();
 
-      // Usar la función RPC que verifica en auth.users
       const { data, error } = await supabase.rpc("check_email_exists", {
         p_email: normalizedEmail,
       });
       if (error) {
-        // Si la función RPC no existe, intentar fallback a tabla users
         if (
           error.message.includes("function") &&
           error.message.includes("does not exist")
@@ -360,11 +283,6 @@ export const authService = {
     }
   },
 
-  /**
-   * Método fallback para verificar email cuando la función RPC no existe
-   * Solo verifica en public.users (usuarios verificados)
-   * @param normalizedEmail - Email normalizado a verificar
-   */
   async checkEmailExistsFallback(normalizedEmail: string) {
     try {
       const { data: userData, error: userError } = await supabase

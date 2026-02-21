@@ -2,9 +2,6 @@ import type { User } from "@/src/app/feature/common/models/database.types";
 import { useEffect, useState } from "react";
 import { authService } from "../services/auth.Service";
 
-/**
- * Hook to get current user information from public.users table
- */
 export const useCurrentUserInfo = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +13,6 @@ export const useCurrentUserInfo = () => {
       setError(null);
 
       try {
-        // Get authenticated user
         const authUser = await authService.getCurrentUser();
 
         if (!authUser) {
@@ -25,13 +21,11 @@ export const useCurrentUserInfo = () => {
           return;
         }
 
-        // Get user record from public.users table
         const response = await authService.getUserRecord(authUser.id);
 
         if (response.success && response.data) {
           setUser(response.data as User);
         } else if (response.success && !response.data) {
-          // User exists in auth but not in public.users table
           setError("Usuario no encontrado en la base de datos");
         } else {
           setError(

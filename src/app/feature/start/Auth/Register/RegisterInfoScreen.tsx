@@ -53,7 +53,6 @@ const RegisterInfoScreen = () => {
     };
   }, []);
 
-  // Determinar el flujo: "self" omite RoleSelectionScreen
   const isSelfFlow = role === "self";
   const currentStep = isSelfFlow ? 2 : 3;
   const totalSteps = isSelfFlow ? 5 : 6;

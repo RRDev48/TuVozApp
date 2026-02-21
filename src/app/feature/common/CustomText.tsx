@@ -7,10 +7,6 @@ interface CustomTextProps extends TextProps {
   disablePersonalization?: boolean;
 }
 
-/**
- * Componente Text personalizado que aplica automáticamente las preferencias de personalización
- * (mayúsculas)
- */
 export const CustomText = ({
   children,
   style,
@@ -19,7 +15,6 @@ export const CustomText = ({
 }: CustomTextProps) => {
   const { transformText } = usePersonalization();
 
-  // Si la personalización está deshabilitada, renderizar texto normal
   if (disablePersonalization) {
     return (
       <RNText style={style} {...props}>
@@ -28,7 +23,6 @@ export const CustomText = ({
     );
   }
 
-  // Transformar el texto si es string
   const transformedChildren =
     typeof children === "string" ? transformText(children) : children;
 

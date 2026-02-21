@@ -54,7 +54,6 @@ const EmailVerificationScreen = () => {
     };
   }, []);
 
-  // Calcular progreso basado en el rol
   const isSelfFlow = role === "self";
   const currentStep = isSelfFlow ? 3 : 4;
   const totalSteps = isSelfFlow ? 5 : 6;

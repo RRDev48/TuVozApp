@@ -43,14 +43,11 @@ export const useOTPVerification = ({
         return false;
       }
 
-      // After successful verification, create user record and profile if userData is provided
       if (userData && response.data?.user) {
         const userId = response.data.user.id;
 
-        // Small delay to ensure session is fully established
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        // Verify we have a session (user is authenticated)
         const currentUser = await authService.getCurrentUser();
 
         if (!currentUser) {
@@ -69,7 +66,6 @@ export const useOTPVerification = ({
           return true;
         }
 
-        // Create user record and profile using RPC function (bypasses RLS)
         const result = await authService.createUserWithProfile(userId, {
           full_name: userData.name,
           role: userData.role as UserRole,

@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { TextInputProps } from "react-native";
 
-// Interfaces para componentes generales de emergencias
 export interface AddButtonProps {
   onPress: () => void;
   text: string;

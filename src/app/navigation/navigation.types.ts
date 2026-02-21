@@ -1,13 +1,8 @@
-// Definición de los parámetros de cada ruta del stack principal.
-// Si una pantalla necesita props, se tipan aquí en lugar de `undefined`.
-
-// Tipos reutilizables para pantallas de emergencias
 type AddScreenParams = {
   onAdd: (value: string) => void;
 };
 
 type RootStackParamsList = {
-  // Splash/Bienvenida
   Splash: undefined;
   Onboarding: undefined;
   Login: undefined;
@@ -26,7 +21,6 @@ type RootStackParamsList = {
     role?: string;
   };
 
-  // Rutas principales
   Home: undefined;
   Expresate: undefined;
   CategoryPictograms: {
@@ -51,13 +45,11 @@ type RootStackParamsList = {
   };
   EmergencyProfile: undefined;
 
-  // Pantallas de emergencias - Tipo de sangre
   BloodTypeSelection: {
     currentBloodType?: string;
     onSelect: (bloodType: string) => void;
   };
 
-  // Pantallas de emergencias - Alergias
   AllergiesSelection: {
     currentAllergies?: string;
     onSelect: (allergies: string) => void;
@@ -69,7 +61,6 @@ type RootStackParamsList = {
     onDelete: () => void;
   };
 
-  // Pantallas de emergencias - Medicaciones
   MedicationsSelection: {
     currentMedications?: string;
     onSelect: (medications: string) => void;
@@ -81,7 +72,6 @@ type RootStackParamsList = {
     onDelete: () => void;
   };
 
-  // Pantallas de emergencias - Dirección
   AddressSelection: {
     currentAddress?: string;
     onSelect: (address: string) => void;
@@ -93,19 +83,16 @@ type RootStackParamsList = {
     onDelete: () => void;
   };
 
-  // Pantallas de emergencias - Modo de alerta
   AlertModeSelection: {
     currentAlertMode?: string;
     onSelect: (alertMode: string) => void;
   };
 
-  // Pantallas de emergencias - Notas
   NotesSelection: {
     currentNotes?: string;
     onSelect: (notes: string) => void;
   };
 
-  // Pantallas de emergencias - Contacto de emergencia
   EmergencyContactSelection: {
     currentContactName?: string;
     currentCountryCode?: string;
@@ -113,7 +100,6 @@ type RootStackParamsList = {
     onSelect: (name: string, phone: string) => void;
   };
 
-  // Ajustes
   Ajustes: undefined;
   PersonalizationScreen: undefined;
   ProfilesConfigScreen: undefined;

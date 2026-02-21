@@ -19,9 +19,6 @@ export interface ProfileSettingsInput {
 }
 
 export class ProfileSettingsService {
-  /**
-   * Obtiene la configuración de personalización de un perfil
-   */
   static async getProfileSettings(
     profileId: string,
   ): Promise<ProfileSettings | null> {
@@ -33,7 +30,6 @@ export class ProfileSettingsService {
 
     if (error) {
       if (error.code === "PGRST116") {
-        // No existe configuración, retornar configuración por defecto
         return null;
       }
       throw new Error(
@@ -44,9 +40,6 @@ export class ProfileSettingsService {
     return data;
   }
 
-  /**
-   * Crea o actualiza la configuración de personalización de un perfil
-   */
   static async upsertProfileSettings(
     profileId: string,
     settings: ProfileSettingsInput,
@@ -71,9 +64,6 @@ export class ProfileSettingsService {
     return data;
   }
 
-  /**
-   * Actualiza una configuración específica del perfil
-   */
   static async updateProfileSetting<K extends keyof ProfileSettingsInput>(
     profileId: string,
     key: K,
@@ -86,9 +76,6 @@ export class ProfileSettingsService {
     return result;
   }
 
-  /**
-   * Elimina la configuración de personalización de un perfil
-   */
   static async deleteProfileSettings(profileId: string): Promise<void> {
     const { error } = await supabase
       .from("profile_settings")
@@ -102,23 +89,14 @@ export class ProfileSettingsService {
     }
   }
 
-  /**
-   * Convierte el tema de la app al formato de la base de datos
-   */
   static mapAppThemeToDbTheme(temaOscuro: boolean): "light" | "dark" {
     return temaOscuro ? "dark" : "light";
   }
 
-  /**
-   * Convierte el tema de la base de datos al formato de la app
-   */
   static mapDbThemeToAppTheme(theme: string): boolean {
     return theme === "dark";
   }
 
-  /**
-   * Obtiene la configuración por defecto
-   */
   static getDefaultSettings(): ProfileSettingsInput {
     return {
       font_size: 16,

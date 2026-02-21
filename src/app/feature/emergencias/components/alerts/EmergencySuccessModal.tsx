@@ -36,7 +36,6 @@ const EmergencySuccessModal = ({
 
   React.useEffect(() => {
     if (visible) {
-      // Auto cerrar después de 3 segundos
       const timer = setTimeout(() => {
         onClose();
       }, 3000);

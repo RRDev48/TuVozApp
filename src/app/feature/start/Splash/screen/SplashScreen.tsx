@@ -16,7 +16,6 @@ const SplashScreen = () => {
   const navigation = useNavigation<SplashScreenNavigationProp>();
 
   useEffect(() => {
-    // Navegar a Onboarding después de 3 segundos
     const timer = setTimeout(() => {
       navigation.replace("Onboarding");
     }, 3000);

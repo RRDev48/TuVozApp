@@ -10,7 +10,6 @@ export const useCurrentUser = () => {
       const user = await authService.getCurrentUser();
       setCurrentUser(user);
     } catch (error) {
-      // Si no hay sesión activa, simplemente no hay usuario logueado
       setCurrentUser(null);
     } finally {
       setIsLoading(false);

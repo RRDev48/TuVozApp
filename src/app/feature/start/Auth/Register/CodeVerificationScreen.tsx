@@ -59,7 +59,6 @@ const CodeVerificationScreen = () => {
     };
   }, []);
 
-  // Calcular progreso basado en el rol
   const isSelfFlow = role === "self";
   const currentStep = isSelfFlow ? 5 : 6;
   const totalSteps = isSelfFlow ? 5 : 6;
@@ -80,7 +79,6 @@ const CodeVerificationScreen = () => {
 
   const handleSuccessModalClose = () => {
     setShowSuccessAlert(false);
-    // Navigate to Home after successful registration
     navigation.navigate("Login");
   };
 

@@ -1,14 +1,7 @@
 import { auditLogService } from "./auditLog.Service";
 import { errorLogService } from "./errorLog.Service";
 
-/**
- * Servicio unificado para logging y auditoría
- * Combina error_logs y audit_logs en una interfaz simple
- */
 export const loggingService = {
-  /**
-   * Log de errores con auditoría automática
-   */
   async logError(
     errorMessage: string,
     error?: Error,
@@ -18,7 +11,6 @@ export const loggingService = {
   ) {
     const logPromises = [];
 
-    // 1. Log en error_logs
     if (error) {
       logPromises.push(
         errorLogService.logErrorWithStack(
@@ -40,22 +32,16 @@ export const loggingService = {
       );
     }
 
-    // 2. Log en audit_logs para errores críticos o errores
     if (severity === "critical" || severity === "error") {
       logPromises.push(auditLogService.logError(errorMessage, source, context));
     }
 
-    // Ejecutar en paralelo
     const results = await Promise.allSettled(logPromises);
 
-    // Retornar si al menos uno fue exitoso
     const hasSuccess = results.some((result) => result.status === "fulfilled");
     return { success: hasSuccess };
   },
 
-  /**
-   * Log de eventos de auditoría
-   */
   async logAuditEvent(
     eventType: string,
     description?: string,
@@ -68,9 +54,6 @@ export const loggingService = {
     });
   },
 
-  /**
-   * Funciones específicas para eventos comunes
-   */
   support: {
     async logTicketCreated(ticketId: string, subject: string) {
       return auditLogService.logSupportTicketCreated(ticketId, subject);
@@ -124,9 +107,6 @@ export const loggingService = {
     },
   },
 
-  /**
-   * Funciones de conveniencia para tipos de error comunes
-   */
   errors: {
     async logValidationError(
       message: string,

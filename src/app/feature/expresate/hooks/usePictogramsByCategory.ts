@@ -21,7 +21,6 @@ export const usePictogramsByCategory = (categoryId: string) => {
       setPictograms(data);
       setError(null);
 
-      // Si vienen del caché, el loading es casi instantáneo
       if (fromCache) {
         setIsLoading(false);
       }

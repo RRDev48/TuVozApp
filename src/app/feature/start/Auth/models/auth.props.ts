@@ -1,4 +1,3 @@
-// Interfaces para hooks de autenticación
 export interface UseCodeVerificationProps {
   codeLength?: number;
   onComplete?: (code: string) => void;

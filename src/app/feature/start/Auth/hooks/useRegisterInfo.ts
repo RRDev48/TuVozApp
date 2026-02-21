@@ -19,7 +19,6 @@ export const useRegisterInfo = ({
     clearErrors();
     let hasError = false;
 
-    // Validar nombre
     if (!validateName(name)) {
       setNameError("Por favor ingresa un nombre válido");
       hasError = true;

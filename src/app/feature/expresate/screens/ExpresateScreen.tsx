@@ -1,4 +1,10 @@
-// React
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import BackButton from "@/src/app/feature/common/BackButton";
+import CustomText from "@/src/app/feature/common/CustomText";
+import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
+import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
+import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -9,19 +15,6 @@ import {
   View,
   ViewToken,
 } from "react-native";
-
-// Componentes
-import BackButton from "@/src/app/feature/common/BackButton";
-import CustomText from "@/src/app/feature/common/CustomText";
-import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
-
-// Hooks
-import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
-import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
-
-// Tipos
-import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import MenuItem from "../../common/menu/MenuItem";
 
 const { width } = Dimensions.get("window");
@@ -158,7 +151,6 @@ const ExpresateScreen = () => {
 
   const renderPage = useCallback(
     (page: any[]) => {
-      // 2x3 layout
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>

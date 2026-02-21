@@ -6,8 +6,6 @@ import {
   ViewStyle,
 } from "react-native";
 
-// Props que describen un ítem del menú principal,
-// incluyendo texto, ruta de navegación e icono con estilos.
 export interface MenuItemProps {
   name: string;
   route: string;

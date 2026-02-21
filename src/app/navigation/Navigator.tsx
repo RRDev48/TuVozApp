@@ -41,7 +41,6 @@ import SplashScreen from "../feature/start/Splash/screen/SplashScreen";
 import CardsScreen from "../feature/tarjetas/screens/TarjetasScreen";
 import RootStackParamsList from "./navigation.types";
 
-// Definición del stack principal tipado con RootStackParamsList
 const Stack = createStackNavigator<RootStackParamsList>();
 
 const authScreens = [
@@ -101,7 +100,6 @@ const expresateScreens = [
   { name: "Animales", component: SettingsScreen },
 ];
 
-// Navegador principal de la app.
 const StackNavigator = () => {
   return (
     <Stack.Navigator

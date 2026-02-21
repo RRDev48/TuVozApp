@@ -11,7 +11,6 @@ export interface UseProfileSettingsReturn {
   loading: boolean;
   isAuthenticated: boolean;
 
-  // Operaciones CRUD
   updateSetting: <K extends keyof ProfileSettingsInput>(
     key: K,
     value: ProfileSettingsInput[K],
@@ -20,7 +19,6 @@ export interface UseProfileSettingsReturn {
   loadSettings: () => Promise<void>;
   resetSettings: () => Promise<void>;
 
-  // Mappers para compatibilidad con la app existente
   getThemeForApp: () => boolean;
   getUppercaseForApp: () => boolean;
   getLanguageForApp: () => string;
@@ -32,20 +30,15 @@ export const useProfileSettings = (profileId?: string) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { logAndShowError } = useErrorHandling();
 
-  // Verificar si hay usuario autenticado
   useEffect(() => {
     setIsAuthenticated(!!profileId);
     if (profileId) {
       loadSettings();
     } else {
-      // Usuario no autenticado, usar valores por defecto locales
       setSettings(null);
     }
   }, [profileId]);
 
-  /**
-   * Cargar configuración del perfil
-   */
   const loadSettings = useCallback(async (): Promise<void> => {
     if (!profileId) {
       setSettings(null);
@@ -72,16 +65,12 @@ export const useProfileSettings = (profileId?: string) => {
     }
   }, [profileId, logAndShowError]);
 
-  /**
-   * Actualizar una configuración específica
-   */
   const updateSetting = useCallback(
     async <K extends keyof ProfileSettingsInput>(
       key: K,
       value: ProfileSettingsInput[K],
     ): Promise<void> => {
       if (!profileId) {
-        // Usuario no autenticado, no guardar en DB
         return;
       }
 
@@ -109,13 +98,9 @@ export const useProfileSettings = (profileId?: string) => {
     [profileId, settings, logAndShowError],
   );
 
-  /**
-   * Actualizar múltiples configuraciones
-   */
   const updateSettings = useCallback(
     async (newSettings: ProfileSettingsInput): Promise<void> => {
       if (!profileId) {
-        // Usuario no autenticado, no guardar en DB
         return;
       }
 
@@ -141,9 +126,6 @@ export const useProfileSettings = (profileId?: string) => {
     [profileId, settings, logAndShowError],
   );
 
-  /**
-   * Resetear configuración a valores por defecto
-   */
   const resetSettings = useCallback(async (): Promise<void> => {
     if (!profileId) {
       setSettings(null);
@@ -190,13 +172,11 @@ export const useProfileSettings = (profileId?: string) => {
     loading,
     isAuthenticated,
 
-    // Operaciones CRUD
     updateSetting,
     updateSettings,
     loadSettings,
     resetSettings,
 
-    // Mappers para compatibilidad
     getThemeForApp,
     getUppercaseForApp,
     getLanguageForApp,

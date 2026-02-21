@@ -6,7 +6,6 @@ import ExpresateProvider from "./contexts/ExpresateContext";
 import PersonalizationProvider from "./contexts/PersonalizationContext";
 import StackNavigator from "./navigation/Navigator";
 
-// Prevenir que el splash screen se oculte automáticamente
 SplashScreen.preventAutoHideAsync();
 
 const PictomindApp = () => {

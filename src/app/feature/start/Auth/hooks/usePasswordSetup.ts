@@ -13,7 +13,6 @@ export const usePasswordSetup = ({
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   const validatePasswordFormat = (password: string): boolean => {
-    // Debe tener al menos el número mínimo de caracteres
     return password.length >= minLength;
   };
 
@@ -26,7 +25,6 @@ export const usePasswordSetup = ({
     clearErrors();
     let hasError = false;
 
-    // Validar contraseña
     if (!validatePasswordFormat(password)) {
       setPasswordError(
         `La contraseña debe tener al menos ${minLength} caracteres`,
@@ -34,7 +32,6 @@ export const usePasswordSetup = ({
       hasError = true;
     }
 
-    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       setConfirmPasswordError("Las contraseñas no coinciden");
       hasError = true;

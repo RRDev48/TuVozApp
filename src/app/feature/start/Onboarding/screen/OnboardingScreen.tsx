@@ -23,7 +23,6 @@ const OnboardingScreen = () => {
   };
 
   const handleSkip = () => {
-    // Navegar directamente a Home
     navigation.replace("Home");
   };
 

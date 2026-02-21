@@ -104,7 +104,6 @@ const EmergencyScreen2 = () => {
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
 
-  // Obtener los datos del formulario desde la navegación
   const [formData, setFormData] = useState<
     RootStackParamsList["EmergenciasParte2"]["formData"]
   >(route.params.formData);
@@ -157,7 +156,6 @@ const EmergencyScreen2 = () => {
   const handleSaveEmergencyData = async () => {
     setIsSaving(true);
     try {
-      // Verificar que los campos requeridos estén completos
       if (
         !formData.blood_type ||
         !formData.emergency_contact_name ||
@@ -182,7 +180,6 @@ const EmergencyScreen2 = () => {
         return;
       }
 
-      // Si ya existe un perfil, actualizar; si no, crear uno nuevo
       if (profile && profileId) {
         await emergencyService.updateEmergencyProfile(profileId, {
           blood_type: formData.blood_type,
@@ -195,7 +192,6 @@ const EmergencyScreen2 = () => {
           notes: formData.notes || null,
         });
       } else {
-        // Obtener el profileId y full_name del perfil actual
         if (!profileId) {
           throw new Error("No se encontró el ID del perfil");
         }
@@ -240,7 +236,6 @@ const EmergencyScreen2 = () => {
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-    // Navegar directamente al Home
     navigation.navigate("Home");
   };
 
@@ -256,7 +251,6 @@ const EmergencyScreen2 = () => {
 
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
-    // Limpiar el estado local
     setFormData({
       blood_type: "",
       allergies: "",

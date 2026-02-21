@@ -20,17 +20,12 @@ export interface CreateErrorLogData {
 }
 
 export const errorLogService = {
-  /**
-   * Registra un error en la base de datos
-   */
   async logError(data: CreateErrorLogData) {
     try {
-      // Obtener el usuario actual
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Obtener el profile_id si el usuario está autenticado
       let profileId: string | null = null;
       if (user) {
         const { data: profile } = await supabase
@@ -68,9 +63,6 @@ export const errorLogService = {
     }
   },
 
-  /**
-   * Obtiene los logs de error de un usuario
-   */
   async getUserErrorLogs(limit: number = 50) {
     try {
       const {
@@ -84,7 +76,6 @@ export const errorLogService = {
         };
       }
 
-      // Obtener el profile_id
       const { data: profile } = await supabase
         .from("profiles")
         .select("id")
@@ -118,9 +109,6 @@ export const errorLogService = {
     }
   },
 
-  /**
-   * Función helper para loggear errores con información del stack trace
-   */
   async logErrorWithStack(
     errorMessage: string,
     error: Error,

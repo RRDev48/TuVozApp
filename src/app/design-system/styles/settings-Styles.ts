@@ -22,7 +22,7 @@ export const settingsStyles = StyleSheet.create({
     color: colors.black,
     flex: 1,
     textAlign: "center",
-    marginRight: 40, // Compensa el espacio del botón de retroceso
+    marginRight: 40,
   },
   profileSection: {
     alignItems: "center",
@@ -76,7 +76,6 @@ export const settingsStyles = StyleSheet.create({
   },
 });
 
-// Estilos para el modal de personalización
 export const customizationModalStyles = StyleSheet.create({
   overlay: {
     flex: 1,

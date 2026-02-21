@@ -1,9 +1,6 @@
 import { supabase } from "@/src/lib/supabaseClient";
 
 export const userService = {
-  /**
-   * Obtiene el usuario autenticado actual
-   */
   getCurrentUser: async () => {
     try {
       const {
@@ -12,7 +9,6 @@ export const userService = {
       } = await supabase.auth.getUser();
 
       if (error) {
-        // No mostrar error si simplemente no hay sesión activa
         if (
           error.message?.includes("session") ||
           error.message?.includes("Session")
@@ -28,16 +24,13 @@ export const userService = {
     }
   },
 
-  /**
-   * Obtiene los datos completos del usuario desde la tabla users
-   */
   getUserData: async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from("users")
         .select("*")
         .eq("id", userId)
-        .maybeSingle(); // Usar maybeSingle() para manejar 0 resultados
+        .maybeSingle();
 
       if (error) {
         throw error;
@@ -49,14 +42,10 @@ export const userService = {
     }
   },
 
-  /**
-   * Obtiene el nombre completo del usuario autenticado
-   */
   getUserFullName: async () => {
     try {
       const { user, error: authError } = await userService.getCurrentUser();
 
-      // Si no hay usuario, retornar null silenciosamente (caso de "Omitir")
       if (!user) {
         return { fullName: null, error: null };
       }
@@ -75,7 +64,6 @@ export const userService = {
         throw error;
       }
 
-      // Si no hay datos, el usuario no está en la tabla users
       if (!data) {
         return { fullName: null, error: null };
       }

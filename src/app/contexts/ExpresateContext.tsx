@@ -1,13 +1,13 @@
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import {
-    Pictogram,
-    PictogramCategory,
+  Pictogram,
+  PictogramCategory,
 } from "../feature/expresate/models/pictogram.types";
 import { expresateService } from "../feature/expresate/services/expresate.Service";
 
@@ -34,7 +34,6 @@ export const ExpresateProvider = ({
   const [categories, setCategories] = useState<PictogramCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Caché de pictogramas por categoría
   const [pictogramsCache, setPictogramsCache] = useState<
     Record<string, Pictogram[]>
   >({});
@@ -65,12 +64,10 @@ export const ExpresateProvider = ({
     async (
       categoryId: string,
     ): Promise<{ data: Pictogram[]; fromCache: boolean }> => {
-      // Si ya están en caché, devolverlos inmediatamente
       if (pictogramsCache[categoryId]) {
         return { data: pictogramsCache[categoryId], fromCache: true };
       }
 
-      // Si no están en caché, cargarlos
       try {
         const { data, error: serviceError } =
           await expresateService.getPictogramsByCategory(categoryId);
@@ -82,7 +79,6 @@ export const ExpresateProvider = ({
 
         const pictograms = data || [];
 
-        // Guardar en caché
         setPictogramsCache((prev) => ({
           ...prev,
           [categoryId]: pictograms,

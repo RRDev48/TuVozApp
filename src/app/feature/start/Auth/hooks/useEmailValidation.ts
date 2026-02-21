@@ -26,13 +26,11 @@ export const useEmailValidation = ({
   ];
 
   const validateEmailFormat = (email: string): boolean => {
-    // Validar formato básico: debe tener al menos un carácter antes del @
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return false;
     }
 
-    // Validar dominios comunes
     const domain = email.split("@")[1]?.toLowerCase();
     return commonDomains.includes(domain);
   };
@@ -47,11 +45,9 @@ export const useEmailValidation = ({
     setIsChecking(true);
     let hasError = false;
 
-    // Normalizar emails a minúsculas para comparación
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedConfirmEmail = confirmEmail.trim().toLowerCase();
 
-    // Validar email
     if (!validateEmailFormat(normalizedEmail)) {
       setEmailError("Formato de correo incorrecto");
       hasError = true;
@@ -59,7 +55,6 @@ export const useEmailValidation = ({
       return false;
     }
 
-    // Validar que los emails coincidan
     if (normalizedEmail !== normalizedConfirmEmail) {
       setConfirmEmailError("Los correos no coinciden");
       hasError = true;
@@ -67,7 +62,6 @@ export const useEmailValidation = ({
       return false;
     }
 
-    // Verificar si el email ya existe en la base de datos
     if (!hasError) {
       const result = await authService.checkEmailExists(normalizedEmail);
 

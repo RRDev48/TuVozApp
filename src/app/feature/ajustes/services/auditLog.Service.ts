@@ -18,17 +18,12 @@ export interface CreateAuditLogData {
 }
 
 export const auditLogService = {
-  /**
-   * Registra un evento de auditoría
-   */
   async logEvent(data: CreateAuditLogData) {
     try {
-      // Obtener el usuario actual
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Obtener el profile_id si el usuario está autenticado
       let profileId: string | null = null;
       if (user) {
         const { data: profile } = await supabase
@@ -40,7 +35,6 @@ export const auditLogService = {
         profileId = profile?.id || null;
       }
 
-      // Obtener información del navegador (si está disponible)
       const userAgent =
         typeof navigator !== "undefined" ? navigator.userAgent : null;
 
@@ -52,7 +46,6 @@ export const auditLogService = {
           event_description: data.event_description || null,
           metadata: data.metadata || null,
           user_agent: userAgent,
-          // ip_address se puede obtener del servidor o dejarlo null por ahora
           ip_address: null,
         })
         .select()
@@ -71,9 +64,6 @@ export const auditLogService = {
     }
   },
 
-  /**
-   * Obtiene los logs de auditoría de un usuario
-   */
   async getUserAuditLogs(limit: number = 50) {
     try {
       const {
@@ -87,7 +77,6 @@ export const auditLogService = {
         };
       }
 
-      // Obtener el profile_id
       const { data: profile } = await supabase
         .from("profiles")
         .select("id")
@@ -121,41 +110,29 @@ export const auditLogService = {
     }
   },
 
-  /**
-   * Eventos de auditoría predefinidos para consistencia
-   */
   events: {
-    // Autenticación
     LOGIN: "auth.login",
     LOGOUT: "auth.logout",
     REGISTER: "auth.register",
     PASSWORD_RESET: "auth.password_reset",
 
-    // Soporte
     SUPPORT_TICKET_CREATED: "support.ticket_created",
     SUPPORT_TICKET_UPDATED: "support.ticket_updated",
 
-    // Perfil
     PROFILE_UPDATED: "profile.updated",
     PROFILE_VIEWED: "profile.viewed",
 
-    // Emergencias
     EMERGENCY_PROFILE_CREATED: "emergency.profile_created",
     EMERGENCY_PROFILE_UPDATED: "emergency.profile_updated",
     EMERGENCY_ALERT_SENT: "emergency.alert_sent",
     EMERGENCY_CALL_MADE: "emergency.call_made",
 
-    // Configuración
     SETTINGS_UPDATED: "settings.updated",
     PERSONALIZATION_UPDATED: "personalization.updated",
 
-    // Errors
     ERROR_OCCURRED: "error.occurred",
   },
 
-  /**
-   * Funciones helper para eventos comunes
-   */
   async logSupportTicketCreated(ticketId: string, subject: string) {
     return this.logEvent({
       event_type: this.events.SUPPORT_TICKET_CREATED,

@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import { UseUserDataReturn } from "../models/userData.types";
 import { userService } from "../services/userService";
 
-/**
- * Hook personalizado para obtener y gestionar los datos del usuario autenticado
- * @param defaultName - Nombre por defecto si no se puede obtener el nombre del usuario
- */
 export const useUserData = (
   defaultName: string | null = null,
 ): UseUserDataReturn => {

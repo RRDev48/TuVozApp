@@ -9,7 +9,6 @@ export const useSupportForm = (navigation: any) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Usar el hook de error handling con auditoría habilitada
   const {
     showErrorModal,
     errorMessage,
@@ -37,23 +36,17 @@ export const useSupportForm = (navigation: any) => {
       });
 
       if (response.success) {
-        // Log de auditoría para ticket creado
         try {
           await auditLogService.logSupportTicketCreated(
             response.data?.id || "unknown",
             subject.trim(),
           );
-        } catch (auditError) {
-          // Log del error de auditoría pero no bloquear la experiencia del usuario
-        }
+        } catch (auditError) {}
 
-        // Resetear campos
         setSubject("");
         setQuery("");
-        // Mostrar mensaje de éxito
         setShowSuccessModal(true);
       } else {
-        // Log del error con contexto
         const errorContext = {
           subject: subject.trim(),
           queryLength: query.trim().length,
@@ -66,7 +59,6 @@ export const useSupportForm = (navigation: any) => {
         );
       }
     } catch (error: any) {
-      // Log del error de excepción
       const errorContext = {
         subject: subject.trim(),
         queryLength: query.trim().length,
@@ -81,7 +73,6 @@ export const useSupportForm = (navigation: any) => {
 
   const handleSuccessModalClose = useCallback(() => {
     setShowSuccessModal(false);
-    // Navegar hacia atrás después de cerrar el modal
     navigation.goBack();
   }, [navigation]);
 

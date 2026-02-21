@@ -18,9 +18,6 @@ export interface CreateSupportTicketData {
 }
 
 export const supportService = {
-  /**
-   * Crea un nuevo ticket de soporte
-   */
   async createTicket(data: CreateSupportTicketData) {
     try {
       const {
@@ -59,9 +56,6 @@ export const supportService = {
     }
   },
 
-  /**
-   * Obtiene todos los tickets del usuario actual
-   */
   async getUserTickets() {
     try {
       const {
@@ -94,9 +88,6 @@ export const supportService = {
     }
   },
 
-  /**
-   * Obtiene un ticket específico por ID
-   */
   async getTicketById(ticketId: string) {
     try {
       const { data: ticket, error } = await supabase
@@ -118,9 +109,6 @@ export const supportService = {
     }
   },
 
-  /**
-   * Actualiza el estado de un ticket
-   */
   async updateTicketStatus(
     ticketId: string,
     status: "open" | "in_progress" | "resolved" | "closed",

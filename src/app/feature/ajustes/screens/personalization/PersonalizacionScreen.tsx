@@ -98,9 +98,7 @@ const PersonalizacionScreen = () => {
   const handleResetToDefaults = useCallback(async () => {
     try {
       await resetToDefaults();
-    } catch (error) {
-      // Error manejado internamente por el hook
-    }
+    } catch (error) {}
   }, [resetToDefaults]);
 
   return (

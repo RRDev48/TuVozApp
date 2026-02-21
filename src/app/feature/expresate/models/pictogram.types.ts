@@ -1,5 +1,5 @@
 export interface Category {
-  id: string; // UUID
+  id: string;
   name: string;
   slug: string;
   description?: string | null;
@@ -7,17 +7,17 @@ export interface Category {
 }
 
 export interface PictogramCategory {
-  id: string; // UUID
+  id: string;
   name: string;
   slug: string;
 }
 
 export interface Pictogram {
-  id: string; // UUID
+  id: string;
   arasaac_id: string;
   keyword: string;
   arasaac_categories: string[] | null;
-  category_id: string; // UUID - FK a categories
+  category_id: string;
   language: string;
   last_sync: string | null;
   created_at: string | null;

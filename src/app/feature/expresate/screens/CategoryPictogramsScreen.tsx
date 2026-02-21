@@ -1,4 +1,10 @@
-// React
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import BackButton from "@/src/app/feature/common/BackButton";
+import CustomText from "@/src/app/feature/common/CustomText";
+import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
+import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
+import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as Haptics from "expo-haptics";
@@ -13,19 +19,6 @@ import {
   View,
   ViewToken,
 } from "react-native";
-
-// Componentes
-import BackButton from "@/src/app/feature/common/BackButton";
-import CustomText from "@/src/app/feature/common/CustomText";
-import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
-
-// Hooks
-import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
-import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
-import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
-
-// Tipos
-import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Pictogram } from "../models/pictogram.types";
 
 const { width } = Dimensions.get("window");
@@ -59,10 +52,8 @@ const CategoryPictogramsScreen = () => {
   }, [navigation]);
 
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
-    // Feedback háptico
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Reproducir el keyword con Text-to-Speech
     const language = pictogram.language === "es" ? "es-ES" : pictogram.language;
     Speech.speak(pictogram.keyword, {
       language: language,
@@ -169,7 +160,6 @@ const CategoryPictogramsScreen = () => {
 
   const renderPictogramItem = useCallback(
     (item: Pictogram) => {
-      // Capitalizar la primera letra de la palabra
       const capitalizedKeyword =
         item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
 
@@ -197,7 +187,6 @@ const CategoryPictogramsScreen = () => {
 
   const renderPage = useCallback(
     (page: Pictogram[]) => {
-      // 2x3 layout
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>

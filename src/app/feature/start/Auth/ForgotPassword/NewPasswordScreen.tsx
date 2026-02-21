@@ -66,7 +66,6 @@ const NewPasswordScreen = () => {
   const { updatePassword, isUpdating } = usePasswordRecovery();
 
   const handleUpdatePassword = async () => {
-    // Validaciones
     if (!newPassword.trim() || !confirmPassword.trim()) {
       logAndShowError(
         "Por favor completa todos los campos",
@@ -107,7 +106,6 @@ const NewPasswordScreen = () => {
       return;
     }
 
-    // Actualizar contraseña
     const result = await updatePassword(newPassword);
 
     if (result.success) {
@@ -126,7 +124,6 @@ const NewPasswordScreen = () => {
 
   const handleCloseSuccess = () => {
     setShowSuccess(false);
-    // Navegar a login
     navigation.navigate("Login");
   };
 

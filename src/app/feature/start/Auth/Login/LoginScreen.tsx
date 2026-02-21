@@ -53,7 +53,6 @@ const LoginScreen = () => {
   }, []);
 
   const handleContinue = async () => {
-    // Limpiar errores previos
     setEmailError("");
     setPasswordError("");
 
@@ -69,10 +68,8 @@ const LoginScreen = () => {
       const response = await authService.signIn(email, password);
 
       if (response.success) {
-        // Navegar al Home después de login exitoso
         navigation.navigate("Home");
       } else {
-        // Marcar ambos campos como error cuando las credenciales son incorrectas
         setEmailError("Credenciales incorrectas");
         setPasswordError("Credenciales incorrectas");
       }

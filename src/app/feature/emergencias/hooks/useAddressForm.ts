@@ -1,4 +1,3 @@
-import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
@@ -19,7 +18,6 @@ export const useAddressForm = ({
   onDelete,
 }: AddressFormParams) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const { transformText } = usePersonalization();
 
   const { showErrorModal, logAndShowError, closeErrorModal } =
     useErrorHandling();

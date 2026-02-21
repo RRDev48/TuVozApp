@@ -21,7 +21,6 @@ const COUNTRY_CODE_LIST = COUNTRY_CODES.map((c) => c.code);
 export const parsePhoneNumber = (fullPhone: string) => {
   if (!fullPhone) return { countryCode: "+54", phoneNumber: "" };
 
-  // Buscar el código de país más largo que coincida
   const sortedCodes = [...COUNTRY_CODE_LIST].sort(
     (a, b) => b.length - a.length,
   );

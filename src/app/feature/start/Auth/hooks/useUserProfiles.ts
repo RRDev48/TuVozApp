@@ -3,10 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { authService } from "../services/auth.Service";
 import { profileService } from "../services/profile.Service";
 
-/**
- * Hook to manage user profiles
- * Provides functionality to fetch, create, update, and delete profiles
- */
 export const useUserProfiles = () => {
   const [profiles, setProfiles] = useState<(Profile & { is_owner: boolean })[]>(
     [],
@@ -15,7 +11,6 @@ export const useUserProfiles = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  // Get current user ID
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const user = await authService.getCurrentUser();
@@ -26,9 +21,6 @@ export const useUserProfiles = () => {
     fetchCurrentUser();
   }, []);
 
-  /**
-   * Fetches all profiles for the current user
-   */
   const fetchProfiles = useCallback(async () => {
     if (!currentUserId) {
       setError("No hay usuario autenticado");
@@ -53,10 +45,6 @@ export const useUserProfiles = () => {
     }
   }, [currentUserId]);
 
-  /**
-   * Creates a new profile for the current user
-   * @param profileData - Profile data (full_name, avatar_url)
-   */
   const createProfile = useCallback(
     async (profileData: { full_name: string; avatar_url?: string | null }) => {
       if (!currentUserId) {
@@ -74,11 +62,10 @@ export const useUserProfiles = () => {
             full_name: profileData.full_name,
             avatar_url: profileData.avatar_url || null,
           },
-          true, // User is the owner
+          true,
         );
 
         if (response.success) {
-          // Refresh profiles list
           await fetchProfiles();
           return { success: true, data: response.data };
         } else {
@@ -95,11 +82,6 @@ export const useUserProfiles = () => {
     [currentUserId, fetchProfiles],
   );
 
-  /**
-   * Updates an existing profile
-   * @param profileId - Profile ID
-   * @param updates - Profile fields to update
-   */
   const updateProfile = useCallback(
     async (
       profileId: string,
@@ -116,7 +98,6 @@ export const useUserProfiles = () => {
         const response = await profileService.updateProfile(profileId, updates);
 
         if (response.success) {
-          // Refresh profiles list
           await fetchProfiles();
           return { success: true, data: response.data };
         } else {
@@ -133,10 +114,6 @@ export const useUserProfiles = () => {
     [fetchProfiles],
   );
 
-  /**
-   * Deletes a profile (only if user is owner)
-   * @param profileId - Profile ID
-   */
   const deleteProfile = useCallback(
     async (profileId: string) => {
       setLoading(true);
@@ -146,7 +123,6 @@ export const useUserProfiles = () => {
         const response = await profileService.deleteProfile(profileId);
 
         if (response.success) {
-          // Refresh profiles list
           await fetchProfiles();
           return { success: true };
         } else {
@@ -163,10 +139,6 @@ export const useUserProfiles = () => {
     [fetchProfiles],
   );
 
-  /**
-   * Unlinks current user from a profile
-   * @param profileId - Profile ID
-   */
   const unlinkProfile = useCallback(
     async (profileId: string) => {
       if (!currentUserId) {
@@ -184,7 +156,6 @@ export const useUserProfiles = () => {
         );
 
         if (response.success) {
-          // Refresh profiles list
           await fetchProfiles();
           return { success: true };
         } else {
@@ -201,7 +172,6 @@ export const useUserProfiles = () => {
     [currentUserId, fetchProfiles],
   );
 
-  // Fetch profiles on mount
   useEffect(() => {
     if (currentUserId) {
       fetchProfiles();

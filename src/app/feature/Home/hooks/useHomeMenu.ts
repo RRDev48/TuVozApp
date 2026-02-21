@@ -6,7 +6,6 @@ export const useHomeMenu = (isAuthenticated: boolean) => {
     if (isAuthenticated) {
       return homeMenu.homeMenuItems;
     }
-    // Ocultar Emergencias y Rutinas si no está autenticado
     return homeMenu.homeMenuItems.filter(
       (item) => item.name !== "Emergencias" && item.name !== "Rutinas",
     );

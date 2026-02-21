@@ -2,15 +2,11 @@ import { supabase } from "@/src/lib/supabaseClient";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
 
 export const expresateService = {
-  /**
-   * Obtiene todas las categorías de pictogramas que tengan al menos un pictograma
-   */
   getCategories: async (): Promise<{
     data: PictogramCategory[] | null;
     error: any;
   }> => {
     try {
-      // Solo obtener categorías que tengan al menos un pictograma
       const { data, error } = await supabase
         .from("categories")
         .select("id, name, slug, pictograms!inner(id)")
@@ -21,7 +17,6 @@ export const expresateService = {
         throw error;
       }
 
-      // Filtrar categorías únicas (inner join puede crear duplicados)
       const uniqueCategories =
         data?.reduce((acc: PictogramCategory[], curr: any) => {
           if (!acc.find((cat) => cat.id === curr.id)) {
@@ -44,9 +39,6 @@ export const expresateService = {
     }
   },
 
-  /**
-   * Obtiene todos los pictogramas de una categoría específica
-   */
   getPictogramsByCategory: async (
     categoryId: string,
   ): Promise<{
@@ -70,9 +62,6 @@ export const expresateService = {
     }
   },
 
-  /**
-   * Busca pictogramas por palabra clave
-   */
   searchPictograms: async (
     keyword: string,
   ): Promise<{
@@ -96,9 +85,6 @@ export const expresateService = {
     }
   },
 
-  /**
-   * Obtiene un pictograma específico por ID
-   */
   getPictogramById: async (
     id: number,
   ): Promise<{

@@ -13,7 +13,6 @@ export const useEmergencyActions = () => {
 
   const getLocation = async () => {
     try {
-      // Solicitar permisos de ubicación
       const { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== "granted") {
@@ -28,7 +27,6 @@ export const useEmergencyActions = () => {
         return null;
       }
 
-      // Obtener ubicación actual
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
       });
@@ -77,10 +75,8 @@ export const useEmergencyActions = () => {
 
     try {
       if (alertType === "call") {
-        // Llamada al contacto de emergencia
         await Linking.openURL(`tel:${phone}`);
       } else if (alertType === "whatsapp_location") {
-        // Obtener ubicación
         const location = await getLocation();
 
         if (!location) {
@@ -91,10 +87,8 @@ export const useEmergencyActions = () => {
         const { latitude, longitude } = location.coords;
         const userDisplayName = userName || "Usuario";
 
-        // Crear mensaje con ubicación
         const message = `🚨 ¡ALERTA DE EMERGENCIA! 🚨\n\n${userDisplayName} necesita ayuda urgente.\n\n📍 Mi ubicación actual:\nhttps://maps.google.com/?q=${latitude},${longitude}\n\n${profile?.notes ? `Información adicional: ${profile.notes}` : ""}`;
 
-        // Remover el símbolo + del número para WhatsApp
         const whatsappPhone = phone.replace(/\+/g, "");
 
         const url = `whatsapp://send?phone=${whatsappPhone}&text=${encodeURIComponent(message)}`;
@@ -102,7 +96,6 @@ export const useEmergencyActions = () => {
         try {
           await Linking.openURL(url);
         } catch (urlError) {
-          // Si falla con whatsapp://, intentar con https://wa.me/
           const waUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(message)}`;
           try {
             await Linking.openURL(waUrl);

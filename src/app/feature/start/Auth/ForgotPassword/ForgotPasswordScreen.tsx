@@ -66,7 +66,6 @@ const ForgotPasswordScreen = () => {
       return;
     }
 
-    // Validación básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       logAndShowError(
@@ -83,11 +82,9 @@ const ForgotPasswordScreen = () => {
     setLoading(true);
 
     try {
-      // Enviar OTP para recuperación de contraseña
       const result = await authService.sendOTP(email, false);
 
       if (result.success) {
-        // Navegar a la pantalla de verificación de código
         navigation.navigate("RecoveryCode", { email });
       } else {
         logAndShowError(

@@ -1,4 +1,3 @@
-// Interface del contexto de personalización
 export interface PersonalizationContextType {
   soloMayusculas: boolean;
   temaOscuro: boolean;

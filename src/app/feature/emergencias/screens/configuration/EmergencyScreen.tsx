@@ -18,7 +18,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
-import { parsePhoneNumber } from "../../services/phoneParser";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -92,7 +91,6 @@ const EmergencyScreen = () => {
   const { profile, profileFullName, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  // Estado local para los datos del formulario
   const [formData, setFormData] = useState({
     blood_type: "",
     allergies: "",
@@ -104,10 +102,8 @@ const EmergencyScreen = () => {
     notes: "",
   });
 
-  // Obtener el parámetro fromSettings
   const fromSettings = route.params?.fromSettings;
 
-  // Inicializar el estado local con los datos del perfil si existe
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -123,10 +119,8 @@ const EmergencyScreen = () => {
     }
   }, [profile]);
 
-  // Verificar si el perfil está completo y redirigir solo si NO viene de Settings
   useEffect(() => {
     if (!loading && profile && !fromSettings) {
-      // Verificar si los campos principales están completos
       const isProfileComplete =
         profile.blood_type &&
         profile.emergency_contact_name &&
@@ -134,7 +128,6 @@ const EmergencyScreen = () => {
         profile.alert_type;
 
       if (isProfileComplete) {
-        // Si el perfil está completo, redirigir a EmergencyProfileScreen
         navigation.replace("EmergencyProfile");
       }
     }
@@ -167,49 +160,12 @@ const EmergencyScreen = () => {
     });
   };
 
-  const handleAddressEdit = () => {
-    navigation.navigate("AddressSelection", {
-      currentAddress: formData.address || "",
-      onSelect: (address: string) => {
-        setFormData((prev) => ({ ...prev, address }));
-      },
-    });
-  };
-
-  const handleAlertTypeEdit = () => {
-    navigation.navigate("AlertModeSelection", {
-      currentAlertMode: formData.alert_type || "call",
-      onSelect: (alertMode: string) => {
-        setFormData((prev) => ({ ...prev, alert_type: alertMode }));
-      },
-    });
-  };
-
-  const handleEmergencyContactEdit = () => {
-    const fullPhone = formData.emergency_contact_phone || "";
-    const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
-
-    navigation.navigate("EmergencyContactSelection", {
-      currentContactName: formData.emergency_contact_name || "",
-      currentCountryCode: countryCode,
-      currentPhoneNumber: phoneNumber,
-      onSelect: (name: string, phone: string) => {
-        setFormData((prev) => ({
-          ...prev,
-          emergency_contact_name: name,
-          emergency_contact_phone: phone,
-        }));
-      },
-    });
-  };
-
   const handleCancel = () => {
     setShowCancelModal(true);
   };
 
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
-    // Limpiar el estado local
     setFormData({
       blood_type: "",
       allergies: "",

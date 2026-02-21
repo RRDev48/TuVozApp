@@ -128,7 +128,6 @@ const EmergencyProfileScreen = () => {
     setShowConfirmModal,
   } = useEmergencyActions();
 
-  // Enviar alerta de emergencia al contacto configurado
   const handleSendAlert = () => {
     if (profile) {
       sendAlert(profile, profileFullName || undefined);

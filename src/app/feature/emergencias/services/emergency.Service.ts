@@ -17,10 +17,6 @@ export interface EmergencyProfile {
 }
 
 export const emergencyService = {
-  /**
-   * Get the profile_id for the current authenticated user
-   * Returns the profile where the user is the owner
-   */
   async getCurrentUserProfileId(userId: string): Promise<string | null> {
     const { data, error } = await supabase
       .from("user_profiles")
@@ -39,7 +35,6 @@ export const emergencyService = {
     return data.profile_id;
   },
 
-  // Obtener perfil de emergencia del usuario
   async getEmergencyProfile(
     profileId: string,
   ): Promise<EmergencyProfile | null> {
@@ -59,7 +54,6 @@ export const emergencyService = {
     return data;
   },
 
-  // Crear perfil de emergencia usando función RPC para bypass RLS
   async createEmergencyProfile(
     profile: Omit<EmergencyProfile, "id" | "created_at" | "updated_at">,
   ): Promise<EmergencyProfile> {
@@ -81,7 +75,6 @@ export const emergencyService = {
       throw error;
     }
 
-    // Check if the function returned success
     if (data && typeof data === "object" && "success" in data) {
       if (data.success) {
         return data.data as EmergencyProfile;
@@ -93,7 +86,6 @@ export const emergencyService = {
     throw new Error("Unexpected response from create_emergency_profile");
   },
 
-  // Actualizar perfil de emergencia
   async updateEmergencyProfile(
     profileId: string,
     updates: Partial<
@@ -112,7 +104,6 @@ export const emergencyService = {
     return data;
   },
 
-  // Obtener nombre completo del perfil
   async getProfileFullName(profileId: string): Promise<string> {
     const { data, error } = await supabase
       .from("profiles")
@@ -125,7 +116,6 @@ export const emergencyService = {
     return data.full_name || "";
   },
 
-  // Limpiar datos del perfil de emergencia
   async clearEmergencyProfile(profileId: string): Promise<void> {
     const { error } = await supabase
       .from("emergency_profiles")

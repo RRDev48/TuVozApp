@@ -7,16 +7,8 @@ import type {
 import { supabase } from "@/src/lib/supabaseClient";
 
 export const profileService = {
-  /**
-   * Creates a new profile
-   * NOTE: Prefer using createProfileForUser instead, which handles linking automatically
-   * @param profileData - Profile data to insert
-   * @returns The created profile or error
-   * @deprecated Use createProfileForUser instead
-   */
   async createProfile(profileData: ProfileInsert) {
     try {
-      // Don't use .select() because RLS policy requires profile to be linked first
       const { data, error } = await supabase
         .from("profiles")
         .insert(profileData)
@@ -38,13 +30,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Links a user to a profile
-   * @param userId - User ID
-   * @param profileId - Profile ID
-   * @param isOwner - Whether the user is the owner of the profile
-   * @returns The created relationship or error
-   */
   async linkUserToProfile(
     userId: string,
     profileId: string,
@@ -79,21 +64,12 @@ export const profileService = {
     }
   },
 
-  /**
-   * Creates a profile and links it to a user
-   * This method works around RLS policies by not selecting the profile until after linking
-   * @param userId - User ID
-   * @param profileData - Profile data to insert
-   * @param isOwner - Whether the user is the owner of the profile
-   * @returns The created profile or error
-   */
   async createProfileForUser(
     userId: string,
     profileData: ProfileInsert,
     isOwner: boolean = true,
   ) {
     try {
-      // Insert profile without selecting (to avoid RLS policy issue)
       const { data: insertedProfile, error: insertError } = await supabase
         .from("profiles")
         .insert(profileData)
@@ -107,7 +83,6 @@ export const profileService = {
 
       const profileId = insertedProfile.id;
 
-      // Link the user to the profile
       const linkResult = await this.linkUserToProfile(
         userId,
         profileId,
@@ -119,7 +94,6 @@ export const profileService = {
         throw new Error(linkResult.error);
       }
 
-      // Now we can select the full profile data (after linking, RLS allows it)
       const { data: fullProfile, error: selectError } = await supabase
         .from("profiles")
         .select("*")
@@ -128,7 +102,6 @@ export const profileService = {
 
       if (selectError) {
         console.warn("Could not fetch profile after creation:", selectError);
-        // Return partial data with the fields we have
         return {
           success: true,
           data: {
@@ -150,11 +123,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Gets all profiles for a user
-   * @param userId - User ID
-   * @returns List of profiles with ownership information
-   */
   async getUserProfiles(userId: string) {
     try {
       const { data, error } = await supabase
@@ -175,7 +143,6 @@ export const profileService = {
 
       if (error) throw error;
 
-      // Transform the data to a cleaner format
       const profiles = data?.map((item: any) => ({
         ...item.profiles,
         is_owner: item.is_owner,
@@ -193,11 +160,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Gets a specific profile by ID
-   * @param profileId - Profile ID
-   * @returns Profile data or error
-   */
   async getProfileById(profileId: string) {
     try {
       const { data, error } = await supabase
@@ -217,12 +179,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Updates a profile (only if user is owner)
-   * @param profileId - Profile ID
-   * @param updates - Profile fields to update
-   * @returns Updated profile or error
-   */
   async updateProfile(profileId: string, updates: Partial<ProfileInsert>) {
     try {
       const { data, error } = await supabase
@@ -243,11 +199,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Deletes a profile (only if user is owner)
-   * @param profileId - Profile ID
-   * @returns Success status or error
-   */
   async deleteProfile(profileId: string) {
     try {
       const { error } = await supabase
@@ -266,12 +217,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Removes a user's link to a profile
-   * @param userId - User ID
-   * @param profileId - Profile ID
-   * @returns Success status or error
-   */
   async unlinkUserFromProfile(userId: string, profileId: string) {
     try {
       const { error } = await supabase
@@ -291,11 +236,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Gets all users linked to a profile
-   * @param profileId - Profile ID
-   * @returns List of users with ownership information
-   */
   async getProfileUsers(profileId: string) {
     try {
       const { data, error } = await supabase
@@ -317,7 +257,6 @@ export const profileService = {
 
       if (error) throw error;
 
-      // Transform the data to a cleaner format
       const users = data?.map((item: any) => ({
         ...item.users,
         is_owner: item.is_owner,
@@ -332,12 +271,6 @@ export const profileService = {
     }
   },
 
-  /**
-   * Checks if a user is the owner of a profile
-   * @param userId - User ID
-   * @param profileId - Profile ID
-   * @returns Boolean indicating ownership status
-   */
   async isProfileOwner(userId: string, profileId: string) {
     try {
       const { data, error } = await supabase
