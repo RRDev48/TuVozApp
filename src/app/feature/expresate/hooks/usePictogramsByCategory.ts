@@ -1,8 +1,9 @@
+import { useExpresate } from "@/src/app/contexts/ExpresateContext";
 import { useCallback, useEffect, useState } from "react";
 import { Pictogram } from "../models/pictogram.types";
-import { expresateService } from "../services/expresate.Service";
 
 export const usePictogramsByCategory = (categoryId: string) => {
+  const { getPictogramsByCategory } = useExpresate();
   const [pictograms, setPictograms] = useState<Pictogram[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,22 +16,22 @@ export const usePictogramsByCategory = (categoryId: string) => {
 
     try {
       setIsLoading(true);
-      const { data, error: serviceError } =
-        await expresateService.getPictogramsByCategory(categoryId);
+      const { data, fromCache } = await getPictogramsByCategory(categoryId);
 
-      if (serviceError) {
-        setError(serviceError.message || "Error fetching pictograms");
-        return;
-      }
-
-      setPictograms(data || []);
+      setPictograms(data);
       setError(null);
+
+      // Si vienen del caché, el loading es casi instantáneo
+      if (fromCache) {
+        setIsLoading(false);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
+      setPictograms([]);
     } finally {
       setIsLoading(false);
     }
-  }, [categoryId]);
+  }, [categoryId, getPictogramsByCategory]);
 
   useEffect(() => {
     fetchPictograms();

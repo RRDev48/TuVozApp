@@ -60,8 +60,6 @@ const CategoryPictogramsScreen = () => {
   }, [navigation]);
 
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
-    console.log("Pictogram selected:", pictogram.keyword, pictogram.arasaac_id);
-
     // Feedback háptico
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -171,24 +169,30 @@ const CategoryPictogramsScreen = () => {
   );
 
   const renderPictogramItem = useCallback(
-    (item: Pictogram) => (
-      <TouchableOpacity
-        style={containerStyles.itemContainer}
-        onPress={() => handlePictogramPress(item)}
-        activeOpacity={0.7}
-      >
-        <View style={containerStyles.buttonContainer}>
-          <Image
-            source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
-            style={containerStyles.image}
-            defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
-          />
-        </View>
-        <CustomText style={containerStyles.textCard}>
-          {transformText(item.keyword)}
-        </CustomText>
-      </TouchableOpacity>
-    ),
+    (item: Pictogram) => {
+      // Capitalizar la primera letra de la palabra
+      const capitalizedKeyword =
+        item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
+
+      return (
+        <TouchableOpacity
+          style={containerStyles.itemContainer}
+          onPress={() => handlePictogramPress(item)}
+          activeOpacity={0.7}
+        >
+          <View style={containerStyles.buttonContainer}>
+            <Image
+              source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+              style={containerStyles.image}
+              defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+            />
+          </View>
+          <CustomText style={containerStyles.textCard}>
+            {transformText(capitalizedKeyword)}
+          </CustomText>
+        </TouchableOpacity>
+      );
+    },
     [containerStyles, handlePictogramPress, getArasaacImageUrl, transformText],
   );
 
