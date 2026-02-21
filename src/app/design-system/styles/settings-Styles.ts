@@ -121,29 +121,6 @@ export const customizationModalStyles = StyleSheet.create({
     color: colors.black,
     marginBottom: 10,
   },
-  fontSizeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  fontSizeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.blue,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  fontSizeButtonText: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  fontSizeDisplay: {
-    fontSize: 18,
-    color: colors.black,
-    fontWeight: "600",
-  },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",

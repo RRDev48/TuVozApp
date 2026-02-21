@@ -12,7 +12,6 @@ const PersonalizationContext = createContext<
 
 const STORAGE_KEYS = {
   SOLO_MAYUSCULAS: "@personalization_soloMayusculas",
-  TAMANIO_LETRA: "@personalization_tamanioLetra",
   TEMA_OSCURO: "@personalization_temaOscuro",
 };
 
@@ -34,16 +33,12 @@ const PersonalizationProvider = ({
     loading: settingsLoading,
     updateSetting,
     resetSettings,
-    getFontSizeForApp,
     getThemeForApp,
     getUppercaseForApp,
   } = useProfileSettings(profileId || undefined);
 
   // Estado local para usuarios no autenticados
   const [localSoloMayusculas, setLocalSoloMayusculasState] = useState(false);
-  const [localTamanioLetra, setLocalTamanioLetraState] = useState<
-    "pequenia" | "mediana" | "grande"
-  >("mediana");
   const [localTemaOscuro, setLocalTemaOscuroState] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -58,15 +53,13 @@ const PersonalizationProvider = ({
 
   const loadLocalPreferences = async () => {
     try {
-      const [mayusculas, tamanio, temaOscuroValue] = await Promise.all([
+      const [mayusculas, temaOscuroValue] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.SOLO_MAYUSCULAS),
-        AsyncStorage.getItem(STORAGE_KEYS.TAMANIO_LETRA),
         AsyncStorage.getItem(STORAGE_KEYS.TEMA_OSCURO),
       ]);
 
       if (mayusculas !== null)
         setLocalSoloMayusculasState(JSON.parse(mayusculas));
-      if (tamanio !== null) setLocalTamanioLetraState(JSON.parse(tamanio));
       if (temaOscuroValue !== null)
         setLocalTemaOscuroState(JSON.parse(temaOscuroValue));
     } catch (error) {
@@ -80,15 +73,6 @@ const PersonalizationProvider = ({
   const setSoloMayusculasAuthenticated = async (value: boolean) => {
     try {
       await updateSetting("uppercase", value);
-    } catch (error) {}
-  };
-
-  const setTamanioLetraAuthenticated = async (
-    value: "pequenia" | "mediana" | "grande",
-  ) => {
-    try {
-      const fontSize = ProfileSettingsService.mapAppSizeToFontSize(value);
-      await updateSetting("font_size", fontSize);
     } catch (error) {}
   };
 
@@ -107,20 +91,6 @@ const PersonalizationProvider = ({
         JSON.stringify(value),
       );
       setLocalSoloMayusculasState(value);
-    } catch (error) {
-      // Error guardando preferencia local
-    }
-  };
-
-  const setTamanioLetraLocal = async (
-    value: "pequenia" | "mediana" | "grande",
-  ) => {
-    try {
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.TAMANIO_LETRA,
-        JSON.stringify(value),
-      );
-      setLocalTamanioLetraState(value);
     } catch (error) {
       // Error guardando preferencia local
     }
@@ -147,14 +117,6 @@ const PersonalizationProvider = ({
         return setSoloMayusculasLocal(value);
       };
 
-  const setTamanioLetra = isAuthenticated
-    ? (value: "pequenia" | "mediana" | "grande") => {
-        return setTamanioLetraAuthenticated(value);
-      }
-    : (value: "pequenia" | "mediana" | "grande") => {
-        return setTamanioLetraLocal(value);
-      };
-
   const setTemaOscuro = isAuthenticated
     ? (value: boolean) => {
         return setTemaOscuroAuthenticated(value);
@@ -168,10 +130,6 @@ const PersonalizationProvider = ({
     ? getUppercaseForApp()
     : localSoloMayusculas;
 
-  const tamanioLetra = isAuthenticated
-    ? getFontSizeForApp()
-    : localTamanioLetra;
-
   const temaOscuro = isAuthenticated ? getThemeForApp() : localTemaOscuro;
 
   // Función para resetear a valores por defecto
@@ -181,20 +139,7 @@ const PersonalizationProvider = ({
     } else {
       // Resetear valores locales
       await setSoloMayusculasLocal(false);
-      await setTamanioLetraLocal("mediana");
       await setTemaOscuroLocal(false);
-    }
-  };
-
-  // Obtener tamaño de fuente basado en el tamaño base
-  const getFontSize = (baseSize: number): number => {
-    switch (tamanioLetra) {
-      case "pequenia":
-        return 12;
-      case "grande":
-        return 22;
-      default:
-        return 16;
     }
   };
 
@@ -235,14 +180,11 @@ const PersonalizationProvider = ({
     <PersonalizationContext.Provider
       value={{
         soloMayusculas,
-        tamanioLetra,
         temaOscuro,
         isAuthenticated,
         currentUserId: userId,
         setSoloMayusculas,
-        setTamanioLetra,
         setTemaOscuro,
-        getFontSize,
         transformText,
         getThemedColors,
         resetToDefaults,

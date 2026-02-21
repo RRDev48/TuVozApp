@@ -28,15 +28,14 @@ const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
 
 const ExpresateScreen = () => {
-  const { transformText, getThemedColors, tamanioLetra, getFontSize } =
-    usePersonalization();
+  const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { categories, isLoading } = usePictogramCategories();
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const itemsPerPage = tamanioLetra === "grande" ? 3 : 6;
+  const itemsPerPage = 6;
   const { paginatedCategories, totalPages } = usePaginatedCategories({
     categories,
     itemsPerPage,
@@ -130,7 +129,7 @@ const ExpresateScreen = () => {
           justifyContent: "center",
         },
         textCard: {
-          fontSize: getFontSize(18),
+          fontSize: 18,
           fontWeight: "bold",
           textAlign: "center",
           color: themedColors.text,
@@ -141,7 +140,7 @@ const ExpresateScreen = () => {
           height: 70,
         },
       }),
-    [themedColors, getFontSize],
+    [themedColors],
   );
 
   const renderCategoryItem = useCallback(
@@ -159,31 +158,7 @@ const ExpresateScreen = () => {
 
   const renderPage = useCallback(
     (page: any[]) => {
-      if (tamanioLetra === "grande") {
-        // 1x3 para letra grande (1 columna, 3 filas)
-        return (
-          <View style={containerStyles.pageContainer}>
-            <View style={containerStyles.gridRow}>
-              {renderCategoryItem(page[0])}
-            </View>
-            <View style={containerStyles.gridRow}>
-              {page[1] ? (
-                renderCategoryItem(page[1])
-              ) : (
-                <View style={{ flex: 1 }} />
-              )}
-            </View>
-            <View style={containerStyles.gridRow}>
-              {page[2] ? (
-                renderCategoryItem(page[2])
-              ) : (
-                <View style={{ flex: 1 }} />
-              )}
-            </View>
-          </View>
-        );
-      }
-      // 2x3 para otros tamaños
+      // 2x3 layout
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>
@@ -225,7 +200,6 @@ const ExpresateScreen = () => {
       renderCategoryItem,
       containerStyles.pageContainer,
       containerStyles.gridRow,
-      tamanioLetra,
     ],
   );
 

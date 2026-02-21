@@ -103,33 +103,6 @@ export class ProfileSettingsService {
   }
 
   /**
-   * Convierte el font_size de la base de datos al formato usado en la app
-   */
-  static mapFontSizeToAppSize(
-    fontSize: number,
-  ): "pequenia" | "mediana" | "grande" {
-    if (fontSize <= 12) return "pequenia";
-    if (fontSize >= 22) return "grande";
-    return "mediana";
-  }
-
-  /**
-   * Convierte el tamaño de la app al font_size de la base de datos
-   */
-  static mapAppSizeToFontSize(
-    appSize: "pequenia" | "mediana" | "grande",
-  ): number {
-    switch (appSize) {
-      case "pequenia":
-        return 12;
-      case "grande":
-        return 22;
-      default:
-        return 16;
-    }
-  }
-
-  /**
    * Convierte el tema de la app al formato de la base de datos
    */
   static mapAppThemeToDbTheme(temaOscuro: boolean): "light" | "dark" {

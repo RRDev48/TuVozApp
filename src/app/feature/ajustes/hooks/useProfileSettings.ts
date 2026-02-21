@@ -21,7 +21,6 @@ export interface UseProfileSettingsReturn {
   resetSettings: () => Promise<void>;
 
   // Mappers para compatibilidad con la app existente
-  getFontSizeForApp: () => "pequenia" | "mediana" | "grande";
   getThemeForApp: () => boolean;
   getUppercaseForApp: () => boolean;
   getLanguageForApp: () => string;
@@ -171,15 +170,6 @@ export const useProfileSettings = (profileId?: string) => {
     }
   }, [profileId, settings, logAndShowError]);
 
-  // Mappers para compatibilidad con la app existente
-  const getFontSizeForApp = useCallback(():
-    | "pequenia"
-    | "mediana"
-    | "grande" => {
-    if (!settings) return "mediana";
-    return ProfileSettingsService.mapFontSizeToAppSize(settings.font_size);
-  }, [settings]);
-
   const getThemeForApp = useCallback((): boolean => {
     if (!settings) return false;
     return ProfileSettingsService.mapDbThemeToAppTheme(settings.theme);
@@ -207,7 +197,6 @@ export const useProfileSettings = (profileId?: string) => {
     resetSettings,
 
     // Mappers para compatibilidad
-    getFontSizeForApp,
     getThemeForApp,
     getUppercaseForApp,
     getLanguageForApp,

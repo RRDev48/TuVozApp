@@ -12,16 +12,13 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
-import { useTextSizeButtons } from "../../hooks/useTextSizeButtons";
 
 const PersonalizacionScreen = () => {
   const navigation = useNavigation();
   const {
     soloMayusculas,
-    tamanioLetra,
     temaOscuro,
     setSoloMayusculas,
-    setTamanioLetra,
     setTemaOscuro,
     transformText,
     resetToDefaults,
@@ -53,41 +50,6 @@ const PersonalizacionScreen = () => {
           fontSize: 18,
           fontWeight: "bold",
           color: themedColors.text,
-        },
-        sizeContainer: {
-          flexDirection: "row",
-          gap: 8,
-          marginTop: 16,
-        },
-        sizeContainerColumn: {
-          flexDirection: "column",
-          gap: 12,
-        },
-        sizeButton: {
-          flex: 1,
-          paddingVertical: 12,
-          paddingHorizontal: 10,
-          borderRadius: 20,
-          backgroundColor: themedColors.cardBackground,
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 44,
-        },
-        sizeButtonColumn: {
-          flex: 0,
-          width: "100%",
-        },
-        sizeButtonActive: {
-          backgroundColor: colors.yellow,
-        },
-        sizeText: {
-          fontSize: 14,
-          fontWeight: "600",
-          color: themedColors.background,
-          textAlign: "center",
-        },
-        sizeTextActive: {
-          color: colors.black,
         },
         switchContainer: {
           borderWidth: 2,
@@ -127,10 +89,6 @@ const PersonalizacionScreen = () => {
         },
       }),
     [themedColors],
-  );
-  const { buttons, handleSetSize, isGrande } = useTextSizeButtons(
-    tamanioLetra,
-    setTamanioLetra,
   );
 
   const handleGoBack = useCallback(() => {
@@ -173,41 +131,6 @@ const PersonalizacionScreen = () => {
                 thumbColor={colors.gray}
               />
             </View>
-          </View>
-        </View>
-
-        {/* Opción: Tamaño de Letra */}
-        <View style={styles.optionContainer}>
-          <CustomText style={styles.optionTitle}>
-            {transformText("Tamaño de la letra")}
-          </CustomText>
-          <View
-            style={[
-              styles.sizeContainer,
-              isGrande && styles.sizeContainerColumn,
-            ]}
-          >
-            {buttons.map((btn) => (
-              <TouchableOpacity
-                key={btn.size}
-                style={[
-                  styles.sizeButton,
-                  isGrande && styles.sizeButtonColumn,
-                  tamanioLetra === btn.size && styles.sizeButtonActive,
-                ]}
-                onPress={() => handleSetSize(btn.size)}
-                activeOpacity={0.8}
-              >
-                <CustomText
-                  style={[
-                    styles.sizeText,
-                    tamanioLetra === btn.size && styles.sizeTextActive,
-                  ]}
-                >
-                  {transformText(btn.labelKey)}
-                </CustomText>
-              </TouchableOpacity>
-            ))}
           </View>
         </View>
 

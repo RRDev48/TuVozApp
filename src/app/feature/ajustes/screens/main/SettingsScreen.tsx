@@ -8,10 +8,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
 import {
   Image,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -20,7 +19,7 @@ import { useSettingsButtons } from "../../hooks/useSettingsButtons";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
-  const { getThemedColors, transformText, tamanioLetra } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
   const { currentUser, isLoading } = useCurrentUser();
   const buttons = useSettingsButtons(currentUser, isLoading);
@@ -166,22 +165,9 @@ const SettingsScreen = () => {
       </View>
 
       {/* Botones de configuración */}
-      {tamanioLetra === "grande" ? (
-        <ScrollView
-          style={styles.buttonsContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          {buttons.map((button) => (
-            <View key={button.id} style={{ marginBottom: 5 }}>
-              {renderButton(button)}
-            </View>
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.buttonsContainerView}>
-          {buttons.map(renderButton)}
-        </View>
-      )}
+      <View style={styles.buttonsContainerView}>
+        {buttons.map(renderButton)}
+      </View>
     </View>
   );
 };
