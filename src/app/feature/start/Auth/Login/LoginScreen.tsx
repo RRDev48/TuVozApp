@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: colors.red,
-    marginTop: -20,
+    marginTop: -27,
     marginLeft: 10,
   },
   forgotPasswordContainer: {
     alignItems: "center",
-    marginTop: -20,
+    marginTop: -15,
   },
   forgotPasswordText: {
     fontSize: 14,

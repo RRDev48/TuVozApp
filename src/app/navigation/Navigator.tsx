@@ -3,6 +3,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { colors } from "../design-system/themes/globalColors-theme";
 import SettingsScreen from "../feature/ajustes/screens/main/SettingsScreen";
 import PersonalizacionScreen from "../feature/ajustes/screens/personalization/PersonalizacionScreen";
+import ProfileEditScreen from "../feature/ajustes/screens/profiles/ProfileEditScreen";
+import ProfilesConfigScreen from "../feature/ajustes/screens/profiles/ProfilesConfigScreen";
 import NewSupportEntryScreen from "../feature/ajustes/screens/support/NewSupportEntryScreen";
 import SupportScreen from "../feature/ajustes/screens/support/SupportScreen";
 import AddAddressScreen from "../feature/emergencias/screens/address/AddAddressScreen";
@@ -76,6 +78,8 @@ const emergencyScreens = [
 
 const settingsScreens = [
   { name: "PersonalizationScreen", component: PersonalizacionScreen },
+  { name: "ProfilesConfigScreen", component: ProfilesConfigScreen },
+  { name: "ProfileEdit", component: ProfileEditScreen },
   { name: "SupportScreen", component: SupportScreen },
   { name: "NewSupportEntryScreen", component: NewSupportEntryScreen },
 ];

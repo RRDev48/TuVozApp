@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { useUserData } from "@/src/app/feature/Home/hooks/useUserData";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -6,14 +7,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { useSettingsButtons } from "../../hooks/useSettingsButtons";
 
@@ -100,12 +97,39 @@ const SettingsScreen = () => {
         buttonChevron: {
           marginLeft: 10,
         },
+        logoutButton: {
+          position: "absolute",
+          bottom: 28,
+          left: 20,
+          right: 20,
+          backgroundColor: "transparent",
+          paddingVertical: 18,
+          borderRadius: 16,
+          alignItems: "center",
+          borderWidth: 2,
+          borderColor: colors.red,
+        },
+        logoutButtonText: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: colors.red,
+        },
       }),
     [themedColors],
   );
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
+  }, [navigation]);
+
+  const handleLogout = useCallback(async () => {
+    const result = await authService.signOut();
+    if (result.success) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Onboarding" }],
+      });
+    }
   }, [navigation]);
 
   const renderButton = useCallback(
@@ -168,6 +192,12 @@ const SettingsScreen = () => {
       <View style={styles.buttonsContainerView}>
         {buttons.map(renderButton)}
       </View>
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>
+          {transformText("Cerrar Sesión")}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

@@ -103,6 +103,13 @@ type RootStackParamsList = {
   Ajustes: undefined;
   PersonalizationScreen: undefined;
   ProfilesConfigScreen: undefined;
+  ProfileEdit: {
+    profile: {
+      id: string;
+      full_name: string;
+      avatar_url?: string | null;
+    };
+  };
   SupportScreen: undefined;
   NewSupportEntryScreen: undefined;
 };
