@@ -34,7 +34,13 @@ type PasswordSetupScreenRouteProp = RouteProp<
 const PasswordSetupScreen = () => {
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
-  const { email = "", name = "", role = "self" } = route.params || {};
+  const {
+    email = "",
+    name = "",
+    role = "self",
+    isOwner = true,
+    ownerUserId,
+  } = route.params || {};
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -86,6 +92,8 @@ const PasswordSetupScreen = () => {
         password: validPassword,
         name,
         role,
+        isOwner,
+        ownerUserId,
       });
     } catch (error: any) {
       logAndShowError(

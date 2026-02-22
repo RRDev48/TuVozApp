@@ -32,6 +32,8 @@ const RegisterInfoScreen = () => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const route = useRoute<RegisterInfoScreenRouteProp>();
   const role = route.params?.role || "self";
+  const isOwner = route.params?.isOwner ?? true;
+  const ownerUserId = route.params?.ownerUserId;
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -67,7 +69,12 @@ const RegisterInfoScreen = () => {
 
   const { name, setName, isFormValid, validateForm } = useRegisterInfo({
     onValidationSuccess: ({ name }) => {
-      navigation.navigate("EmailVerification", { name, role });
+      navigation.navigate("EmailVerification", {
+        name,
+        role,
+        isOwner,
+        ownerUserId,
+      });
     },
   });
 

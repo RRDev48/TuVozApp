@@ -12,7 +12,9 @@ export const profileService = {
       const { data, error } = await supabase
         .from("profiles")
         .insert(profileData)
-        .select("id, full_name, avatar_url, created_at")
+        .select(
+          "id, full_name, avatar_url, created_at, email, auth_user_id, owner_user_id",
+        )
         .single();
 
       if (error) {
@@ -109,6 +111,9 @@ export const profileService = {
             full_name: profileData.full_name,
             avatar_url: profileData.avatar_url,
             created_at: new Date().toISOString(),
+            email: null,
+            auth_user_id: null,
+            owner_user_id: null,
           } as Profile,
         };
       }
@@ -125,7 +130,8 @@ export const profileService = {
 
   async getUserProfiles(userId: string) {
     try {
-      const { data, error } = await supabase
+      // Obtener perfiles vinculados directamente en user_profiles
+      const { data: linkedProfiles, error: linkedError } = await supabase
         .from("user_profiles")
         .select(
           `
@@ -135,18 +141,51 @@ export const profileService = {
             id,
             full_name,
             avatar_url,
-            created_at
+            created_at,
+            email,
+            auth_user_id,
+            owner_user_id
           )
         `,
         )
         .eq("user_id", userId);
 
-      if (error) throw error;
+      if (linkedError) throw linkedError;
 
-      const profiles = data?.map((item: any) => ({
-        ...item.profiles,
-        is_owner: item.is_owner,
-      }));
+      // Obtener perfiles donde el usuario es el owner (perfiles que él creó)
+      const { data: ownedProfiles, error: ownedError } = await supabase
+        .from("profiles")
+        .select(
+          "id, full_name, avatar_url, created_at, email, auth_user_id, owner_user_id",
+        )
+        .eq("owner_user_id", userId);
+
+      if (ownedError) throw ownedError;
+
+      // Combinar ambos resultados
+      const linkedProfilesData =
+        linkedProfiles?.map((item: any) => ({
+          ...item.profiles,
+          is_owner: item.is_owner,
+        })) || [];
+
+      const ownedProfilesData =
+        ownedProfiles?.map((profile: any) => ({
+          ...profile,
+          is_owner: false, // Los perfiles creados para otros no son "owner"
+        })) || [];
+
+      // Eliminar duplicados (por si un perfil está en ambas listas)
+      const allProfilesMap = new Map();
+
+      linkedProfilesData.forEach((p: any) => allProfilesMap.set(p.id, p));
+      ownedProfilesData.forEach((p: any) => {
+        if (!allProfilesMap.has(p.id)) {
+          allProfilesMap.set(p.id, p);
+        }
+      });
+
+      const profiles = Array.from(allProfilesMap.values());
 
       return {
         success: true,

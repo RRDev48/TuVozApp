@@ -35,7 +35,13 @@ type CodeVerificationScreenRouteProp = RouteProp<
 const CodeVerificationScreen = () => {
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
-  const { email = "", name = "", role = "self" } = route.params || {};
+  const {
+    email = "",
+    name = "",
+    role = "self",
+    isOwner = true,
+    ownerUserId,
+  } = route.params || {};
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -67,7 +73,7 @@ const CodeVerificationScreen = () => {
     useOTPVerification({
       email,
       onSuccess: () => setShowSuccessAlert(true),
-      userData: { name, role },
+      userData: { name, role, isOwner, ownerUserId },
     });
 
   const handleVerifyCode = async (fullCode: string) => {

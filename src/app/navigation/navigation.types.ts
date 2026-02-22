@@ -10,15 +10,28 @@ type RootStackParamsList = {
   RecoveryCode: { email: string };
   NewPassword: { email: string };
   UserType: undefined;
-  RoleSelection: undefined;
-  RegisterInfo: { role?: string };
-  EmailVerification: { name: string; role?: string };
-  PasswordSetup: { email: string; name: string; role?: string };
+  RoleSelection: { isOwner?: boolean; ownerUserId?: string };
+  RegisterInfo: { role?: string; isOwner?: boolean; ownerUserId?: string };
+  EmailVerification: {
+    name: string;
+    role?: string;
+    isOwner?: boolean;
+    ownerUserId?: string;
+  };
+  PasswordSetup: {
+    email: string;
+    name: string;
+    role?: string;
+    isOwner?: boolean;
+    ownerUserId?: string;
+  };
   CodeVerification: {
     email: string;
     password: string;
     name: string;
     role?: string;
+    isOwner?: boolean;
+    ownerUserId?: string;
   };
 
   Home: undefined;

@@ -31,7 +31,12 @@ type EmailVerificationScreenRouteProp = RouteProp<
 const EmailVerificationScreen = () => {
   const navigation = useNavigation<EmailVerificationScreenNavigationProp>();
   const route = useRoute<EmailVerificationScreenRouteProp>();
-  const { name = "", role = "self" } = route.params || {};
+  const {
+    name = "",
+    role = "self",
+    isOwner = true,
+    ownerUserId,
+  } = route.params || {};
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -74,6 +79,8 @@ const EmailVerificationScreen = () => {
         email: validatedEmail,
         name,
         role,
+        isOwner,
+        ownerUserId,
       });
     },
   });

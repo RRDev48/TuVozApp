@@ -92,15 +92,37 @@ export const authService = {
 
   async createUserWithProfile(
     userId: string,
-    userData: { full_name: string; role: string; email: string },
+    userData: {
+      full_name: string;
+      role: string;
+      email: string;
+      isOwner?: boolean;
+      ownerUserId?: string;
+    },
   ) {
     try {
-      const { data, error } = await supabase.rpc("create_user_with_profile", {
-        p_user_id: userId,
-        p_full_name: userData.full_name,
-        p_role: userData.role,
-        p_email: userData.email,
+      console.log("🔵 createUserWithProfile - Datos recibidos:", {
+        userId,
+        full_name: userData.full_name,
+        role: userData.role,
+        email: userData.email,
+        isOwner: userData.isOwner,
+        ownerUserId: userData.ownerUserId,
       });
+
+      const { data, error } = await supabase.rpc(
+        "create_user_profile_from_auth",
+        {
+          p_user_id: userId,
+          p_email: userData.email,
+          p_full_name: userData.full_name,
+          p_role: userData.role,
+          p_is_owner: userData.isOwner ?? true,
+          p_owner_user_id: userData.ownerUserId || null,
+        },
+      );
+
+      console.log("🔵 RPC Response:", { data, error });
 
       if (error) {
         console.error("Supabase RPC error:", error);

@@ -17,6 +17,9 @@ export interface Profile {
   full_name: string;
   avatar_url: string | null;
   created_at: string;
+  email: string | null;
+  auth_user_id: string | null;
+  owner_user_id: string | null;
 }
 export interface UserProfile {
   user_id: string;

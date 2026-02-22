@@ -70,6 +70,8 @@ export const useOTPVerification = ({
           full_name: userData.name,
           role: userData.role as UserRole,
           email: email,
+          isOwner: userData.isOwner ?? true,
+          ownerUserId: userData.ownerUserId,
         });
 
         if (!result.success) {

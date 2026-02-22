@@ -1,6 +1,10 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  useRoute,
+  type RouteProp,
+} from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
@@ -22,11 +26,15 @@ type RoleSelectionScreenNavigationProp = StackNavigationProp<
 
 const RoleSelectionScreen = () => {
   const navigation = useNavigation<RoleSelectionScreenNavigationProp>();
+  const route = useRoute<RouteProp<RootStackParamsList, "RoleSelection">>();
+
+  // Obtener isOwner desde los parámetros de navegación (por defecto true)
+  const isOwner = route.params?.isOwner ?? true;
 
   const { selectedRole, handleRoleSelect, confirmSelection, isRoleSelected } =
     useRoleSelection({
       onRoleSelected: (roleId) => {
-        navigation.navigate("RegisterInfo", { role: roleId });
+        navigation.navigate("RegisterInfo", { role: roleId, isOwner });
       },
     });
 

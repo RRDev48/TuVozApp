@@ -22,6 +22,8 @@ export interface UseOTPVerificationProps {
   userData?: {
     name: string;
     role: string;
+    isOwner?: boolean;
+    ownerUserId?: string;
   };
 }
 

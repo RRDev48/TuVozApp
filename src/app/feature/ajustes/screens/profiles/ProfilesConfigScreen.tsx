@@ -99,10 +99,20 @@ const ProfilesConfigScreen = () => {
       return;
     }
 
-    // Si hay usuario y el rol permite crear subcuentas
-    // TODO: Implementar la navegación a la pantalla de creación de perfil
+    // Si el usuario tiene rol diferente de "self", ir directo a RegisterInfo
+    // con role="self", isOwner=false y ownerUserId del usuario actual
+    if (userRole && userRole !== "self") {
+      navigation.navigate("RegisterInfo", {
+        role: "self",
+        isOwner: false,
+        ownerUserId: currentUser.id, // UUID del usuario que está creando el perfil
+      });
+      return;
+    }
+
+    // Si el rol es "self", ir al flujo normal con UserType
     navigation.navigate("UserType");
-  }, [currentUser, navigation]);
+  }, [currentUser, userRole, navigation]);
 
   const handleProfilePress = useCallback(
     (profile: any) => {

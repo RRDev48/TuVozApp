@@ -49,53 +49,42 @@ const ProfileEditScreen = () => {
       const profileId = route.params.profile.id;
       const newName = fullName.trim();
 
-      // 1. Obtener el user_id asociado al perfil y su rol
-      const { data: userProfileData, error: userProfileError } = await supabase
-        .from("user_profiles")
-        .select("user_id, users(role)")
-        .eq("profile_id", profileId)
-        .eq("is_owner", true)
-        .single();
+      console.log("🚀 INICIO handleSave");
+      console.log("📝 Profile ID:", profileId);
+      console.log("📝 New Name:", newName);
 
-      if (userProfileError) {
-        console.error("Error getting user profile:", userProfileError);
-        setErrorMessage("Error al obtener información del perfil");
-        setShowError(true);
-        return;
-      }
+      // Llamar a la función RPC que actualiza ambas tablas con SECURITY DEFINER
+      const { data: rpcResult, error: rpcError } = await supabase.rpc(
+        "update_profile_name",
+        {
+          p_profile_id: profileId,
+          p_new_name: newName,
+        },
+      );
 
-      const userId = userProfileData.user_id;
-      const userRole = (userProfileData.users as any)?.role;
+      console.log("🔍 RPC Result:", rpcResult);
 
-      // 2. Actualizar siempre la tabla profiles
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ full_name: newName })
-        .eq("id", profileId);
-
-      if (profileError) {
-        console.error("Error updating profile:", profileError);
+      if (rpcError) {
+        console.error("❌ RPC Error:", rpcError);
         setErrorMessage("Error al actualizar el perfil");
         setShowError(true);
         return;
       }
 
-      // 3. Si el rol es "self", también actualizar la tabla users
-      if (userRole === "self") {
-        const { error: userError } = await supabase
-          .from("users")
-          .update({ full_name: newName })
-          .eq("id", userId);
-
-        if (userError) {
-          console.error("Error updating user:", userError);
-          setErrorMessage("Error al actualizar el usuario");
-          setShowError(true);
-          return;
-        }
+      if (!rpcResult?.success) {
+        console.error("❌ RPC returned success=false:", rpcResult);
+        setErrorMessage(rpcResult?.error || "Error al actualizar el perfil");
+        setShowError(true);
+        return;
       }
 
-      // 4. Actualizar los perfiles en el hook para refrescar la lista
+      console.log("✅ Actualización exitosa:", {
+        profile_updated: rpcResult.profile_updated,
+        user_updated: rpcResult.user_updated,
+        auth_user_id: rpcResult.auth_user_id,
+      });
+
+      // Actualizar los perfiles en el hook para refrescar la lista
       await updateProfile(profileId, { full_name: newName });
 
       setShowSuccess(true);
@@ -103,7 +92,7 @@ const ProfileEditScreen = () => {
         navigation.goBack();
       }, 1500);
     } catch (error: any) {
-      console.error("Error in handleSave:", error);
+      console.error("❌ Error in handleSave:", error);
       setErrorMessage("Error al actualizar el perfil");
       setShowError(true);
     }
@@ -120,29 +109,46 @@ const ProfileEditScreen = () => {
       const profileId = route.params.profile.id;
       console.log("🔴 INICIO DELETE - Profile ID:", profileId);
 
-      // 1. Obtener el user_id asociado al perfil y su rol
-      console.log("📋 Paso 1: Obteniendo user_id y rol...");
-      const { data: userProfileData, error: userProfileError } = await supabase
-        .from("user_profiles")
-        .select("user_id, users(role)")
-        .eq("profile_id", profileId)
-        .eq("is_owner", true)
+      // 1. Obtener el usuario actual logueado
+      console.log("📋 Paso 1: Obteniendo usuario actual...");
+      const {
+        data: { user: currentAuthUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !currentAuthUser) {
+        console.error("❌ Error getting current user:", authError);
+        setErrorMessage("Error al obtener usuario actual");
+        setShowError(true);
+        return;
+      }
+
+      const currentUserId = currentAuthUser.id;
+      console.log("✅ Usuario actual (auth):", currentUserId);
+
+      // 2. Obtener el auth_user_id del perfil que se intenta eliminar
+      console.log("📋 Paso 2: Obteniendo auth_user_id del perfil...");
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("auth_user_id")
+        .eq("id", profileId)
         .single();
 
-      if (userProfileError) {
-        console.error("❌ Error getting user profile:", userProfileError);
+      if (profileError) {
+        console.error("❌ Error getting profile:", profileError);
         setErrorMessage("Error al obtener información del perfil");
         setShowError(true);
         return;
       }
 
-      const userId = userProfileData.user_id;
-      const userRole = (userProfileData.users as any)?.role;
-      console.log("✅ User ID:", userId);
-      console.log("✅ User Role:", userRole);
+      const profileAuthUserId = profileData.auth_user_id;
+      console.log("✅ auth_user_id del perfil:", profileAuthUserId);
 
-      if (userRole === "self") {
-        console.log("🎯 ROL SELF - Llamando RPC delete_all_user_data");
+      // 3. Decidir qué función RPC llamar
+      if (profileAuthUserId === currentUserId) {
+        console.log(
+          "🎯 ELIMINAR MI PROPIO PERFIL - Llamando RPC delete_all_user_data",
+        );
 
         // Llamar a la función RPC que elimina TODO
         const { data: rpcResult, error: rpcError } = await supabase.rpc(
@@ -172,7 +178,7 @@ const ProfileEditScreen = () => {
         });
       } else {
         console.log(
-          "🎯 ROL DIFERENTE A SELF - Llamando RPC delete_single_profile",
+          "🎯 ELIMINAR CUENTA HIJA - Llamando RPC delete_single_profile",
         );
 
         // Llamar a la función RPC que elimina el perfil específico
