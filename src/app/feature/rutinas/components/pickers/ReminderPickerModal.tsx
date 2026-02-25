@@ -1,6 +1,7 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { useReminderPicker } from "../../hooks/useReminderPicker";
 import { ReminderModalProps } from "../../models/component.props";
 import { ReminderOptionButton } from "./ReminderOptionButton";
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
   },
 
   selectedOptionText: {
-    color: "white",
+    color: colors.blue,
   },
 
   setReminderButton: {
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
 
   closeWhitTextButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.red,
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
@@ -92,7 +93,9 @@ export const ReminderPickerModal = ({
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.sharedModalContainer}>
-          <Text style={styles.reminderTitle}>{"Establecer Recordatorio"}</Text>
+          <CustomText style={styles.reminderTitle}>
+            {"Establecer Recordatorio"}
+          </CustomText>
 
           {/* Lista de opciones de recordatorio disponibles.
               Cada opción se muestra como un botón que puede estar seleccionado. */}
@@ -110,9 +113,9 @@ export const ReminderPickerModal = ({
 
           {/* Texto informativo que muestra la opción actualmente seleccionada. */}
           {selectedOption && (
-            <Text style={styles.selectedOptionText}>
+            <CustomText style={styles.selectedOptionText}>
               {"Opción Seleccionada:"} {getSelectedLabel()}
-            </Text>
+            </CustomText>
           )}
 
           {/* Botón principal para confirmar y aplicar el recordatorio seleccionado. */}
@@ -120,9 +123,9 @@ export const ReminderPickerModal = ({
             onPress={handleSetReminder}
             style={styles.setReminderButton}
           >
-            <Text style={styles.setReminderButtonText}>
+            <CustomText style={styles.setReminderButtonText}>
               {"Establecer Recordatorio"}
-            </Text>
+            </CustomText>
           </TouchableOpacity>
 
           {/* Botón secundario para cerrar el modal sin aplicar cambios. */}
@@ -130,7 +133,9 @@ export const ReminderPickerModal = ({
             onPress={onClose}
             style={styles.closeWhitTextButton}
           >
-            <Text style={styles.closeWhitTextButtonText}>{"Cerrar"}</Text>
+            <CustomText style={styles.closeWhitTextButtonText}>
+              {"Cerrar"}
+            </CustomText>
           </TouchableOpacity>
         </View>
       </View>

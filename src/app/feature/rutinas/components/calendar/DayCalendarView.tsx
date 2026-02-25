@@ -1,67 +1,15 @@
-import React from "react";
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import React, { useMemo } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+  HOURS,
+  HOUR_HEIGHT,
+  QUARTER_HEIGHT,
+} from "../../constants/calendar.constants";
 import { useCalendarTasks } from "../../hooks/useCalendarTasks";
 import { DayCalendarViewProps } from "../../models/component.props";
 import DraggableTaskItem from "./DraggableTaskItem";
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const HOUR_HEIGHT = 60;
-const QUARTER_HEIGHT = 15;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  calendarContainer: {
-    position: "relative",
-    width: "100%",
-  },
-  hourBlockContainer: {
-    position: "relative",
-  },
-  hourRow: {
-    height: HOUR_HEIGHT,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-  },
-  quarterSpacer: {
-    height: QUARTER_HEIGHT,
-  },
-  hourLabelContainer: {
-    width: 60,
-    paddingRight: 8,
-    paddingTop: 2,
-  },
-  hourLabel: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "right",
-    fontWeight: "500",
-  },
-  hourLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#e0e0e0",
-  },
-  tasksContainer: {
-    position: "absolute",
-    left: 60,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
-  finalSpacer: {
-    height: 50,
-  },
-});
 
 export const DayCalendarView = ({
   tasks,
@@ -69,8 +17,63 @@ export const DayCalendarView = ({
   onTaskPress,
   onHourPress,
 }: DayCalendarViewProps) => {
+  const { getThemedColors } = usePersonalization();
+  const themedColors = getThemedColors();
   const { taskPositions, minutesToTime, TOTAL_HOUR_HEIGHT } =
     useCalendarTasks(tasks);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        calendarContainer: {
+          position: "relative",
+          width: "100%",
+        },
+        hourBlockContainer: {
+          position: "relative",
+        },
+        hourRow: {
+          height: HOUR_HEIGHT,
+          flexDirection: "row",
+          alignItems: "flex-start",
+          borderTopWidth: 1,
+          borderTopColor: themedColors.primary,
+        },
+        quarterSpacer: {
+          height: QUARTER_HEIGHT,
+        },
+        hourLabelContainer: {
+          width: 60,
+          paddingRight: 8,
+          paddingTop: 2,
+        },
+        hourLabel: {
+          fontSize: 12,
+          color: themedColors.primary,
+          textAlign: "right",
+          fontWeight: "500",
+        },
+        hourLine: {
+          flex: 1,
+          height: 1,
+        },
+        tasksContainer: {
+          position: "absolute",
+          left: 60,
+          right: 0,
+          top: 0,
+          bottom: 0,
+        },
+        finalSpacer: {
+          height: 50,
+        },
+      }),
+    [themedColors],
+  );
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -94,7 +97,7 @@ export const DayCalendarView = ({
                 activeOpacity={0.7}
               >
                 <View style={styles.hourLabelContainer}>
-                  <Text style={styles.hourLabel}>{hourString}</Text>
+                  <CustomText style={styles.hourLabel}>{hourString}</CustomText>
                 </View>
                 <View style={styles.hourLine} />
               </TouchableOpacity>

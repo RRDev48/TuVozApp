@@ -4,10 +4,10 @@ import {
   FlatList,
   Modal,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { useCategories } from "../../hooks/useCategories";
 import { CategoryModalProps } from "../../models/component.props";
 
@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   sharedModalContainer: {
     width: "80%",
     backgroundColor: colors.white,
@@ -26,7 +25,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
   },
-
   categoryTitle: {
     paddingTop: 40,
     fontSize: 20,
@@ -34,12 +32,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: colors.blue,
   },
-
   optionsContainer: {
     width: "100%",
     marginBottom: 20,
   },
-
   optionButton: {
     padding: 10,
     backgroundColor: "#f0f0f0",
@@ -47,20 +43,16 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     alignItems: "center",
   },
-
   optionText: {
     color: colors.blue,
     fontWeight: "bold",
   },
-
   closeXButton: {
     position: "absolute",
-    top: 10,
     right: 10,
     borderRadius: 20,
     padding: 5,
   },
-
   closeXButtonText: {
     fontSize: 30,
     fontWeight: "bold",
@@ -81,15 +73,17 @@ export const CategorPickeryModal = ({
         <View style={[styles.sharedModalContainer, { height: "60%" }]}>
           {/* Botón de cierre (X) en la esquina superior derecha del modal */}
           <TouchableOpacity onPress={onClose} style={styles.closeXButton}>
-            <Text style={styles.closeXButtonText}>×</Text>
+            <CustomText style={styles.closeXButtonText}>×</CustomText>
           </TouchableOpacity>
 
-          <Text style={styles.categoryTitle}>{"Selecciona una categoría"}</Text>
+          <CustomText style={styles.categoryTitle}>
+            {"Selecciona una categoría"}
+          </CustomText>
 
           {loading ? (
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
+            <CustomText style={{ textAlign: "center", marginTop: 20 }}>
               {"Cargando..."}
-            </Text>
+            </CustomText>
           ) : (
             <FlatList
               data={categories}
@@ -103,7 +97,9 @@ export const CategorPickeryModal = ({
                     onClose();
                   }}
                 >
-                  <Text style={styles.optionText}>{item.nombre}</Text>
+                  <CustomText style={styles.optionText}>
+                    {item.nombre}
+                  </CustomText>
                 </TouchableOpacity>
               )}
             />

@@ -98,19 +98,6 @@ export interface StepItemModalProps {
   onRemove: (index: number) => void;
 }
 
-export interface ConfirmCancelModalProps {
-  visible: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  message?: string;
-}
-
-export interface SuccessModalProps {
-  visible: boolean;
-  onClose: () => void;
-  message?: string;
-}
-
 export interface DaysOfWeekProps {
   currentWeekStart: Date;
   selectedDayIndex: number;
@@ -150,6 +137,8 @@ export interface TimeInputFieldProps {
   error: boolean;
   placeholder: string;
   onChangeText: (text: string) => void;
+  editable?: boolean;
+  icon?: React.ReactNode;
 }
 
 export interface MenuItemProps {

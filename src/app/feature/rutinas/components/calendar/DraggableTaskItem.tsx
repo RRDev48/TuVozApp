@@ -1,9 +1,11 @@
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import CustomText from "../../../common/CustomText";
 import { STATUS_COLOR_MAP } from "../../constants/task.constants";
 import { useTaskGestures } from "../../hooks/useTaskGestures";
 import { Category } from "../../models/category.types";
@@ -107,6 +109,7 @@ export const DraggableTaskItem = ({
   onPositionChange,
   onPress,
 }: DraggableTaskItemProps) => {
+  const { transformText } = usePersonalization();
   const [isDragging, setIsDragging] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -200,16 +203,18 @@ export const DraggableTaskItem = ({
             {/* Información de la tarea - Solo se muestra si NO está en modo compacto */}
             {!isCompactMode && (
               <View style={styles.textContainer}>
-                <Text style={styles.taskTitle} numberOfLines={2}>
+                <CustomText style={styles.taskTitle} numberOfLines={2}>
                   {task.titulo}
-                </Text>
+                </CustomText>
                 {task.pasos && task.pasos.length > 0 && (
                   <View style={styles.taskMeta}>
                     <Ionicons name="list-outline" size={12} color="#fff" />
-                    <Text style={styles.stepsText}>
+                    <CustomText style={styles.stepsText}>
                       {task.pasos.length}{" "}
-                      {task.pasos.length !== 1 ? "pasos" : "paso"}
-                    </Text>
+                      {transformText(
+                        task.pasos.length !== 1 ? "pasos" : "paso",
+                      )}
+                    </CustomText>
                   </View>
                 )}
               </View>

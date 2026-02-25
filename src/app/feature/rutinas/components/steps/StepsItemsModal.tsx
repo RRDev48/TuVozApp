@@ -1,48 +1,9 @@
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useMemo } from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { StepItemModalProps } from "../../models/component.props";
-
-const styles = StyleSheet.create({
-  stepsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  stepNumber: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginRight: 5,
-    color: colors.blue,
-  },
-
-  stepsInput: {
-    fontSize: 18,
-    fontWeight: "bold",
-    borderWidth: 1,
-    color: colors.blue,
-    borderRadius: 10,
-    padding: 10,
-    flex: 1,
-    borderColor: colors.darkGray,
-    marginVertical: 10,
-    width: "90%",
-  },
-
-  removeStepButton: {
-    padding: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export const StepItem = ({
   id,
@@ -52,14 +13,51 @@ export const StepItem = ({
   onTextChange,
   onRemove,
 }: StepItemModalProps) => {
+  const { getThemedColors, transformText } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        stepsContainer: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 10,
+        },
+        stepNumber: {
+          fontSize: 20,
+          fontWeight: "bold",
+          marginRight: 5,
+          color: themedColors.primary,
+        },
+        stepsInput: {
+          fontSize: 18,
+          fontWeight: "bold",
+          borderWidth: 1,
+          color: themedColors.primary,
+          borderRadius: 10,
+          padding: 10,
+          flex: 1,
+          borderColor: themedColors.primary,
+          marginVertical: 10,
+          width: "90%",
+        },
+        removeStepButton: {
+          padding: 5,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      }),
+    [themedColors],
+  );
   return (
     <View style={styles.stepsContainer}>
       {/* Número ordinal del paso (solo visual). */}
-      <Text style={styles.stepNumber}>{id}.</Text>
+      <CustomText style={styles.stepNumber}>{id}.</CustomText>
 
       <TextInput
-        placeholder={"Paso"}
-        placeholderTextColor="black"
+        placeholder={transformText("Paso")}
+        placeholderTextColor={themedColors.primary}
         style={styles.stepsInput}
         value={text}
         onChangeText={(newText) => onTextChange(newText, index)}

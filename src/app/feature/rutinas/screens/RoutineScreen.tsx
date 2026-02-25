@@ -1,9 +1,12 @@
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
+import BackButton from "../../common/BackButton";
+import ScreenTitle from "../../common/ScreenTitle";
 import { AchievementModal } from "../components/achievement/AchievementModal";
 import { DayCalendarView } from "../components/calendar/DayCalendarView";
 import { DaysOfWeek } from "../components/days/DaysOfWeek";
@@ -19,85 +22,40 @@ import { useRoutineTasks } from "../hooks/useRoutineTasks";
 import { useWeekRoutine } from "../hooks/useWeekRoutine";
 import { Task } from "../models/task.types";
 
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: colors.white,
-  },
-
-  headerContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-    position: "relative",
-    paddingTop: 5,
-  },
-
-  backButton: {
-    position: "absolute",
-    left: 0,
-    top: 5,
-    zIndex: 10,
-    padding: 5,
-  },
-
-  headerText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: colors.blue,
-  },
-
-  daysContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-    marginBottom: 20,
-  },
-
-  selectedDay: {
-    width: "13%",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    minWidth: 50,
-  },
-
-  dayText: {
-    fontSize: 14,
-    textAlign: "center",
-    width: "100%",
-  },
-
-  numberDayText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    width: "100%",
-  },
-
-  hoursContainer: {
-    flex: 1,
-  },
-
-  floatingButton: {
-    position: "absolute",
-    bottom: 30,
-    right: 30,
-    backgroundColor: colors.blue,
-    borderRadius: 50,
-    padding: 15,
-    elevation: 5,
-  },
-});
-
 export const RoutineScreen = () => {
   const navigation = useNavigation();
   const { profileId, loading: profileLoading } = useCurrentUserProfile();
+  const { getThemedColors, transformText } = usePersonalization();
+  const themedColors = getThemedColors();
 
   const [startSelectedHour, setSelectedHour] = useState("");
   const [endSelectedHour, setEndSelectedHour] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        screenContainer: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        headerContainer: {
+          alignItems: "center",
+          marginBottom: 20,
+        },
+        floatingButton: {
+          position: "absolute",
+          bottom: 30,
+          right: 30,
+          backgroundColor: colors.green,
+          borderRadius: 50,
+          padding: 15,
+          elevation: 5,
+        },
+      }),
+    [themedColors],
+  );
 
   const {
     currentWeekStart,
@@ -176,32 +134,17 @@ export const RoutineScreen = () => {
     [daysOfWeek, selectedDayIndex, toggleAddTask],
   );
 
-  if (profileLoading || !profileId) {
-    return (
-      <View style={styles.screenContainer}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Cargando...</Text>
-        </View>
-      </View>
-    );
+  if (!profileId) {
+    return null;
   }
 
   return (
     <View style={styles.screenContainer}>
-      {/*
-        Encabezado de la pantalla de rutinas:
-        - Botón de volver atrás a la pantalla anterior de navegación.
-        - Título "Rutinas".
-        - Componente ProgressItem que muestra el progreso global de la rutina.
-      */}
+      <BackButton onPress={() => navigation.goBack()} />
+
+      <ScreenTitle text={transformText("Rutinas")} />
+
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={28} color="#2196F3" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>{"Rutinas"}</Text>
         <ProgressItem
           routineId={routineId}
           refreshTrigger={tasksRefreshTrigger}
@@ -251,7 +194,7 @@ export const RoutineScreen = () => {
         para que el usuario complete todos los datos.
       */}
       <TouchableOpacity style={styles.floatingButton} onPress={toggleAddTask}>
-        <Ionicons name="add-circle-outline" size={24} color="#fff" />
+        <Ionicons name="add-circle" size={24} color={colors.white} />
       </TouchableOpacity>
 
       {/*

@@ -1,6 +1,7 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { ReminderOptionButtonProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
@@ -37,14 +38,14 @@ export const ReminderOptionButton = ({
       style={[styles.optionButton, isSelected && styles.selectedOption]}
       onPress={() => onPress(value)}
     >
-      <Text
+      <CustomText
         style={[
           styles.optionText,
           isSelected ? styles.selectedOptionText : null,
         ]}
       >
         {label}
-      </Text>
+      </CustomText>
     </TouchableOpacity>
   );
 };

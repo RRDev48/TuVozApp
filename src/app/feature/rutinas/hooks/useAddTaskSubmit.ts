@@ -1,5 +1,5 @@
 import { supabase } from "@/src/lib/supabaseClient";
-import { Alert } from "react-native";
+import { useState } from "react";
 import { Task } from "../models/task.types";
 import { createRoutine, getRoutineByDate } from "../services/routine.service";
 import {
@@ -15,6 +15,20 @@ export const useAddTaskSubmit = (
   updateTasks: (task: Task) => void,
   profileId: string,
 ) => {
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorTitle, setErrorTitle] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const showError = (title: string, message: string) => {
+    setErrorTitle(title);
+    setErrorMessage(message);
+    setErrorModalVisible(true);
+  };
+
+  const closeErrorModal = () => {
+    setErrorModalVisible(false);
+  };
+
   const handleAddTask = async (
     taskName: string,
     taskStartTime: string,
@@ -29,25 +43,25 @@ export const useAddTaskSubmit = (
       setIsLoading(true);
 
       if (!taskName.trim()) {
-        Alert.alert("Error", "Por favor, ingresa el nombre de la tarea.");
+        showError("Error", "Por favor, ingresa el nombre de la tarea.");
         setIsLoading(false);
         return;
       }
 
       if (!taskStartTime || !taskEndTime) {
-        Alert.alert("Error", "Por favor, selecciona el horario de la tarea.");
+        showError("Error", "Por favor, selecciona el horario de la tarea.");
         setIsLoading(false);
         return;
       }
 
       if (!category) {
-        Alert.alert("Error", "Por favor, selecciona una categoría.");
+        showError("Error", "Por favor, selecciona una categoría.");
         setIsLoading(false);
         return;
       }
 
       if (!dueDate) {
-        Alert.alert("Error", "Por favor, selecciona una fecha.");
+        showError("Error", "Por favor, selecciona una fecha.");
         setIsLoading(false);
         return;
       }
@@ -115,7 +129,7 @@ export const useAddTaskSubmit = (
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error al crear la tarea:", error);
-      Alert.alert(
+      showError(
         "Error",
         "No se pudo crear la tarea. Por favor, inténtalo de nuevo.",
       );
@@ -124,5 +138,11 @@ export const useAddTaskSubmit = (
     }
   };
 
-  return { handleAddTask };
+  return {
+    handleAddTask,
+    errorModalVisible,
+    errorTitle,
+    errorMessage,
+    closeErrorModal,
+  };
 };

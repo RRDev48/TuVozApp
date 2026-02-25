@@ -1,10 +1,9 @@
 import { useMemo } from "react";
+import {
+  MIN_TASK_HEIGHT,
+  TOTAL_HOUR_HEIGHT,
+} from "../constants/calendar.constants";
 import { Task } from "../models/task.types";
-
-const HOUR_HEIGHT = 60;
-const QUARTER_HEIGHT = 15;
-const TOTAL_HOUR_HEIGHT = HOUR_HEIGHT + QUARTER_HEIGHT * 3;
-const MIN_TASK_HEIGHT = 60;
 
 export const useCalendarTasks = (tasks: Task[]) => {
   const timeToMinutes = (time: string): number => {

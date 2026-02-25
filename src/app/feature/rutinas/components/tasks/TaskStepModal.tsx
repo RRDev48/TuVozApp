@@ -1,105 +1,12 @@
-import React, { useState } from "react";
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
+import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
+import React, { useMemo, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { useTaskStepModal } from "../../hooks/useTaskStepModal";
 import { TaskStepModalProps } from "../../models/component.props";
-import { ConfirmCancelModal } from "./ConfirmCancelModal";
-import { SuccessModal } from "./SuccessModal";
-
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-
-const styles = StyleSheet.create({
-  detailsOverlay: {
-    flex: 1,
-    backgroundColor: colors.transparent,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  detailsContainer: {
-    width: "90%",
-    height: "70%",
-    backgroundColor: colors.white,
-    borderRadius: 20,
-    padding: 20,
-    justifyContent: "space-between",
-  },
-
-  titleTaskContainer: {
-    alignItems: "center",
-    marginBottom: 10,
-  },
-
-  taskDetailsTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: colors.blue,
-  },
-
-  stepContainer: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-
-  taskStepText: {
-    fontSize: 24,
-    color: colors.blue,
-    textAlign: "center",
-    fontWeight: "bold",
-    padding: 10,
-    marginBottom: 50,
-  },
-
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-
-  backButton: {
-    flex: 1,
-    backgroundColor: colors.red,
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginRight: 5,
-  },
-
-  nextButton: {
-    flex: 1,
-    backgroundColor: colors.green,
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginLeft: 5,
-  },
-
-  disabledButton: {
-    backgroundColor: colors.lightGray,
-    opacity: 0.5,
-  },
-
-  buttonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  closeXButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    borderRadius: 20,
-    padding: 5,
-  },
-
-  closeXButtonText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: colors.red,
-  },
-});
 
 export const TaskStepModal = ({
   visible,
@@ -108,8 +15,96 @@ export const TaskStepModal = ({
   onRestart,
   updateTaskState,
 }: TaskStepModalProps) => {
+  const { getThemedColors, transformText } = usePersonalization();
+  const themedColors = getThemedColors();
   const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        detailsOverlay: {
+          flex: 1,
+          backgroundColor: colors.transparent,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        detailsContainer: {
+          width: "90%",
+          height: "70%",
+          backgroundColor: themedColors.background,
+          borderRadius: 20,
+          padding: 20,
+          justifyContent: "space-between",
+        },
+        titleTaskContainer: {
+          alignItems: "center",
+          marginBottom: 10,
+        },
+        taskDetailsTitle: {
+          fontSize: 22,
+          fontWeight: "bold",
+          color: themedColors.primary,
+        },
+        stepContainer: {
+          flex: 1,
+          width: "100%",
+          justifyContent: "flex-end",
+          alignItems: "center",
+        },
+        taskStepText: {
+          fontSize: 24,
+          color: themedColors.primary,
+          textAlign: "center",
+          fontWeight: "bold",
+          padding: 10,
+          marginBottom: 50,
+        },
+        buttonContainer: {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 20,
+        },
+        backButton: {
+          flex: 1,
+          backgroundColor: colors.red,
+          padding: 12,
+          borderRadius: 10,
+          alignItems: "center",
+          marginRight: 5,
+        },
+        nextButton: {
+          flex: 1,
+          backgroundColor: colors.green,
+          padding: 12,
+          borderRadius: 10,
+          alignItems: "center",
+          marginLeft: 5,
+        },
+        disabledButton: {
+          backgroundColor: colors.lightGray,
+          opacity: 0.5,
+        },
+        buttonText: {
+          color: colors.white,
+          fontSize: 16,
+          fontWeight: "bold",
+        },
+        closeXButton: {
+          position: "absolute",
+          top: 10,
+          right: 10,
+          borderRadius: 20,
+          padding: 5,
+        },
+        closeXButtonText: {
+          fontSize: 30,
+          fontWeight: "bold",
+          color: colors.red,
+        },
+      }),
+    [themedColors],
+  );
 
   const { currentStepIndex, handleNextStep, handleBackStep, handleClose } =
     useTaskStepModal(
@@ -166,16 +161,18 @@ export const TaskStepModal = ({
         <View style={styles.detailsContainer}>
           {/* Encabezado que muestra el número de paso actual y el total. */}
           <View style={styles.titleTaskContainer}>
-            <Text style={styles.taskDetailsTitle}>
-              {`Paso ${currentStepIndex + 1} de ${task.pasos.length}`}
-            </Text>
+            <CustomText style={styles.taskDetailsTitle}>
+              {transformText(
+                `Paso ${currentStepIndex + 1} de ${task.pasos.length}`,
+              )}
+            </CustomText>
           </View>
 
           {/* Contenedor principal del texto del paso actual. */}
           <View style={styles.stepContainer}>
-            <Text style={styles.taskStepText}>
+            <CustomText style={styles.taskStepText}>
               {task.pasos[currentStepIndex]}
-            </Text>
+            </CustomText>
           </View>
 
           {/* Contenedor de los botones de navegación entre pasos. */}
@@ -190,7 +187,9 @@ export const TaskStepModal = ({
               onPress={handleBackStep}
               disabled={currentStepIndex === 0}
             >
-              <Text style={styles.buttonText}>{"Volver Paso"}</Text>
+              <CustomText style={styles.buttonText}>
+                {transformText("Volver Paso")}
+              </CustomText>
             </TouchableOpacity>
 
             {/* Botón que avanza al siguiente paso o finaliza la tarea cuando
@@ -199,11 +198,11 @@ export const TaskStepModal = ({
               style={styles.nextButton}
               onPress={handleStepAction}
             >
-              <Text style={styles.buttonText}>
+              <CustomText style={styles.buttonText}>
                 {currentStepIndex < task.pasos.length - 1
-                  ? "Siguiente Paso"
-                  : "Terminar Tarea"}
-              </Text>
+                  ? transformText("Siguiente Paso")
+                  : transformText("Terminar Tarea")}
+              </CustomText>
             </TouchableOpacity>
           </View>
 
@@ -222,15 +221,16 @@ export const TaskStepModal = ({
       <SuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
-        message={"Tarea terminada con éxito"}
+        title={transformText("¡Tarea completada!")}
+        message={transformText("Tarea terminada con éxito")}
       />
 
       {/* Modal de confirmación que aparece al intentar cerrar sin completar. */}
-      <ConfirmCancelModal
+      <ConfirmationModal
         visible={showConfirmCancelModal}
+        title={transformText("¿Desea salir sin completar la tarea?")}
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelCancel}
-        message={"¿Desea salir sin completar la tarea?"}
       />
     </Modal>
   );

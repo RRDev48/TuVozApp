@@ -1,36 +1,9 @@
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import React from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useMemo } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { TimeInputFieldProps } from "../../models/component.props";
-
-const styles = StyleSheet.create({
-  timeInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-    width: "100%",
-  },
-
-  textInputLabel: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: colors.blue,
-    marginRight: 10,
-  },
-
-  textTimeInput: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: colors.darkGray,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    backgroundColor: colors.white,
-    fontSize: 15,
-    fontWeight: "bold",
-    color: colors.blue,
-  },
-});
 
 export const TimeInputField = ({
   label,
@@ -38,11 +11,51 @@ export const TimeInputField = ({
   error,
   placeholder,
   onChangeText,
+  editable = true,
+  icon,
 }: TimeInputFieldProps) => {
+  const { getThemedColors } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        timeInputContainer: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 5,
+        },
+        textInputLabel: {
+          fontSize: 13,
+          fontWeight: "bold",
+          color: themedColors.text,
+          marginRight: 5,
+        },
+        textTimeInput: {
+          flex: 1,
+          height: 40,
+          borderWidth: 1,
+          borderRadius: 5,
+          paddingHorizontal: 10,
+          backgroundColor: themedColors.primary,
+          fontSize: 15,
+          fontWeight: "bold",
+          minWidth: 80,
+        },
+        errorText: {
+          color: "red",
+          fontSize: 12,
+          marginTop: 4,
+          paddingLeft: 10,
+        },
+      }),
+    [themedColors],
+  );
   return (
-    <View style={{ width: "100%", marginBottom: 15 }}>
+    <View style={{ flex: 1, marginHorizontal: 5 }}>
       <View style={styles.timeInputContainer}>
-        <Text style={styles.textInputLabel}>{label}</Text>
+        {icon && <View style={{ marginRight: 8 }}>{icon}</View>}
+        <CustomText style={styles.textInputLabel}>{label}</CustomText>
         <TextInput
           style={[
             styles.textTimeInput,
@@ -50,27 +63,25 @@ export const TimeInputField = ({
               borderColor: "red",
               borderWidth: 2,
             },
+            !editable && {
+              backgroundColor: colors.lightGray,
+              color: colors.gray,
+            },
           ]}
           placeholder={placeholder}
-          placeholderTextColor={colors.blue}
+          placeholderTextColor={themedColors.secondary}
           keyboardType="numeric"
           maxLength={5}
           value={value}
           onChangeText={onChangeText}
+          editable={editable}
         />
       </View>
       {/* Mensaje de error mostrado debajo del campo cuando la hora es inválida. */}
       {error && (
-        <Text
-          style={{
-            color: "red",
-            fontSize: 12,
-            marginTop: 4,
-            paddingLeft: 10,
-          }}
-        >
+        <CustomText style={styles.errorText}>
           {"Hora inválida (HH: 00-23, mm: 00-59)"}
-        </Text>
+        </CustomText>
       )}
     </View>
   );

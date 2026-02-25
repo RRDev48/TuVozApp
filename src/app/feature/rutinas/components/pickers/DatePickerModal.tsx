@@ -1,7 +1,8 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
+import CustomText from "../../../common/CustomText";
 import { CalendarModalProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
   },
 
   closeWhitTextButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.red,
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
@@ -59,7 +60,9 @@ export const DatePickerModal = ({
     <Modal visible={visible} transparent={true} animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.calendarContainer}>
-          <Text style={styles.calendarTitle}>{"Selecciona una fecha"}</Text>
+          <CustomText style={styles.calendarTitle}>
+            {"Selecciona una fecha"}
+          </CustomText>
 
           {/* Calendario mensual interactivo.
               - onDayPress: maneja la selección de un día.
@@ -85,7 +88,9 @@ export const DatePickerModal = ({
             onPress={onClose}
             style={styles.closeWhitTextButton}
           >
-            <Text style={styles.closeWhitTextButtonText}>{"Cerrar"}</Text>
+            <CustomText style={styles.closeWhitTextButtonText}>
+              {"Cerrar"}
+            </CustomText>
           </TouchableOpacity>
         </View>
       </View>

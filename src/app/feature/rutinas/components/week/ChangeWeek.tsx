@@ -1,26 +1,33 @@
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useMemo } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import CustomText from "../../../common/CustomText";
 import { ChangeWeekProps } from "../../models/component.props";
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 20,
-  },
-
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
-    flex: 1,
-  },
-});
-
 const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
+  const { getThemedColors, transformText } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginVertical: 20,
+        },
+        title: {
+          fontSize: 20,
+          fontWeight: "bold",
+          color: themedColors.text,
+          textAlign: "center",
+          flex: 1,
+        },
+      }),
+    [themedColors],
+  );
   const handleChangeWeek = (increment: number) => {
     const newStartDate = new Date(currentWeekStart);
     newStartDate.setDate(currentWeekStart.getDate() + increment * 7);
@@ -31,18 +38,24 @@ const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
     <View style={styles.container}>
       {/* Botón para ir a la semana anterior (resta 7 días). */}
       <TouchableOpacity onPress={() => handleChangeWeek(-1)}>
-        <Ionicons name="chevron-back-outline" size={24} color={colors.black} />
+        <Ionicons
+          name="chevron-back-outline"
+          size={24}
+          color={themedColors.text}
+        />
       </TouchableOpacity>
 
       {/* Texto central que funciona como encabezado de la sección de rutinas. */}
-      <Text style={styles.title}>{"¿Comenzamos el día?"}</Text>
+      <CustomText style={styles.title}>
+        {transformText("¿Comenzamos el día?")}
+      </CustomText>
 
       {/* Botón para ir a la semana siguiente (suma 7 días). */}
       <TouchableOpacity onPress={() => handleChangeWeek(1)}>
         <Ionicons
           name="chevron-forward-outline"
           size={24}
-          color={colors.black}
+          color={themedColors.text}
         />
       </TouchableOpacity>
     </View>

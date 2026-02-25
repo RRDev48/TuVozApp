@@ -1,20 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoutine, getRoutineByDate } from "../services/routine.service";
-
-const getMonday = (date: Date) => {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
-
-const getTodayIndex = () => {
-  const today = new Date();
-  const day = today.getDay();
-  return day === 0 ? 6 : day - 1;
-};
+import { getMonday, getTodayIndex } from "../utils/dateHelpers";
 
 export const useWeekRoutine = (profileId: string) => {
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>

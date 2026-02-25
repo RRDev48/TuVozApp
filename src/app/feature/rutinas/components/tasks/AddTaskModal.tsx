@@ -1,15 +1,22 @@
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
+import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Modal,
+  StatusBar,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import ErrorModal from "../../../common/alerts/ErrorModal";
+import CustomText from "../../../common/CustomText";
 import { useAddTaskForm } from "../../hooks/useAddTaskForm";
 import { useAddTaskModals } from "../../hooks/useAddTaskModals";
 import { useAddTaskSubmit } from "../../hooks/useAddTaskSubmit";
@@ -17,152 +24,8 @@ import { AddTaskModalProps } from "../../models/component.props";
 import { CategorPickeryModal } from "../pickers/CategoryPickerModal";
 import { DatePickerModal } from "../pickers/DatePickerModal";
 import { ReminderPickerModal } from "../pickers/ReminderPickerModal";
-import { TimePickerModal } from "../pickers/TimePickerModal";
+import { TimeInputField } from "../pickers/TimeInputField";
 import { StepItem } from "../steps/StepsItemsModal";
-import { ConfirmCancelModal } from "./ConfirmCancelModal";
-import { SuccessModal } from "./SuccessModal";
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.transparent,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  addTaskModalContainer: {
-    width: "90%",
-    height: "90%",
-    backgroundColor: colors.white,
-    borderRadius: 20,
-    padding: 20,
-    alignItems: "center",
-  },
-
-  emoji: {
-    fontSize: 60,
-    marginBottom: 20,
-  },
-
-  inputTitleTask: {
-    fontSize: 25,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: colors.black,
-    borderBottomWidth: 10,
-    borderColor: colors.lightGray,
-    borderRadius: 40,
-    padding: 10,
-    marginVertical: 10,
-    width: "90%",
-  },
-
-  dataFields: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  datetButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 10,
-    marginBottom: 10,
-  },
-
-  dateTextButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 10,
-    marginBottom: 10,
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "left",
-    color: colors.blue,
-    borderBottomWidth: 1,
-    borderColor: colors.lightGray,
-    padding: 10,
-    marginVertical: 10,
-    width: "90%",
-    marginLeft: 10,
-  },
-
-  categoryField: {
-    width: "100%",
-    marginBottom: 20,
-  },
-
-  categoryButtonText: {
-    fontSize: 18,
-    color: colors.white,
-    fontWeight: "bold",
-  },
-
-  categoryButton: {
-    backgroundColor: colors.blue,
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  mainStepsContainer: {
-    width: "100%",
-    flex: 1,
-  },
-
-  stepsTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: colors.blue,
-    borderColor: colors.blue,
-  },
-
-  addStepButton: {
-    backgroundColor: colors.blue,
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  addStepButtonText: {
-    color: colors.white,
-    fontSize: 24,
-  },
-
-  createTaskButton: {
-    position: "absolute",
-    top: 5,
-    left: 10,
-    backgroundColor: colors.white,
-    borderRadius: 5,
-    padding: 10,
-  },
-
-  createTaskButtonText: {
-    color: colors.blue,
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-
-  createTaskButtonDisabled: {
-    backgroundColor: colors.white,
-  },
-
-  closeXButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    borderRadius: 20,
-    padding: 5,
-  },
-
-  closeXButtonText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: colors.red,
-  },
-});
 
 const AddTaskModal = ({
   visible,
@@ -174,6 +37,161 @@ const AddTaskModal = ({
   profileId,
 }: AddTaskModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isAllDayEnabled, setIsAllDayEnabled] = useState(false);
+  const { getThemedColors, transformText } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: colors.transparent,
+        },
+        addTaskModalContainer: {
+          width: "100%",
+          height: "100%",
+          backgroundColor: themedColors.background,
+          paddingTop: (StatusBar.currentHeight || 0) + 40,
+          paddingHorizontal: 20,
+          paddingBottom: 20,
+          alignItems: "center",
+        },
+        emoji: {
+          fontSize: 60,
+          marginBottom: 20,
+        },
+        inputTitleTask: {
+          fontSize: 25,
+          fontWeight: "bold",
+          textAlign: "center",
+          color: themedColors.text,
+          borderBottomWidth: 10,
+          borderColor: colors.lightGray,
+          borderRadius: 40,
+          padding: 10,
+          marginVertical: 10,
+          width: "90%",
+        },
+        dataFields: {
+          flexDirection: "row",
+          alignItems: "center",
+        },
+        datetButton: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginRight: 10,
+          marginBottom: 10,
+        },
+        dateTextButton: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginRight: 10,
+          marginBottom: 10,
+          fontSize: 18,
+          fontWeight: "bold",
+          textAlign: "left",
+          color: themedColors.primary,
+          borderBottomWidth: 1,
+          borderColor: colors.lightGray,
+          padding: 10,
+          marginVertical: 10,
+          width: "90%",
+          marginLeft: 10,
+        },
+        categoryField: {
+          width: "100%",
+          marginBottom: 20,
+        },
+        categoryButtonText: {
+          fontSize: 18,
+          color: themedColors.background,
+          fontWeight: "bold",
+        },
+        categoryButton: {
+          backgroundColor: themedColors.cardBackground,
+          padding: 10,
+          borderRadius: 10,
+          alignItems: "center",
+        },
+        mainStepsContainer: {
+          width: "100%",
+          flex: 1,
+        },
+        stepsTitle: {
+          fontSize: 20,
+          fontWeight: "bold",
+          marginBottom: 10,
+          color: themedColors.primary,
+          borderColor: themedColors.primary,
+        },
+        addStepButton: {
+          backgroundColor: themedColors.cardBackground,
+          padding: 10,
+          borderRadius: 10,
+          alignItems: "center",
+          marginTop: 10,
+        },
+        addStepButtonText: {
+          color: themedColors.background,
+          fontSize: 24,
+        },
+        createTaskButton: {
+          position: "absolute",
+          top: (StatusBar.currentHeight || 0) + 45,
+          left: 10,
+          backgroundColor: themedColors.background,
+          borderRadius: 5,
+          padding: 10,
+        },
+        createTaskButtonText: {
+          color: themedColors.primary,
+          fontSize: 20,
+          fontWeight: "bold",
+        },
+        createTaskButtonDisabled: {
+          backgroundColor: themedColors.background,
+        },
+        closeXButton: {
+          position: "absolute",
+          top: (StatusBar.currentHeight || 0) + 40,
+          right: 10,
+          borderRadius: 20,
+          padding: 5,
+        },
+        closeXButtonText: {
+          fontSize: 30,
+          fontWeight: "bold",
+          color: colors.red,
+        },
+        timeInputsContainer: {
+          width: "100%",
+          marginBottom: 10,
+          marginLeft: -15,
+        },
+        timeInputsRow: {
+          flexDirection: "row",
+          alignItems: "center",
+          width: "100%",
+          marginBottom: 10,
+        },
+        switchContainer: {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingHorizontal: 10,
+          marginBottom: 20,
+        },
+        switchLabel: {
+          fontSize: 16,
+          fontWeight: "bold",
+          color: themedColors.text,
+        },
+      }),
+    [themedColors],
+  );
+
   const {
     taskName,
     setTaskName,
@@ -200,8 +218,6 @@ const AddTaskModal = ({
   const {
     isRoutineCalendarVisible,
     setIsCalendarVisible,
-    isRoutineTimeVisible,
-    setIsRoutineTimeVisible,
     isReminderVisible,
     setIsReminderVisible,
     isCategoryVisible,
@@ -212,7 +228,13 @@ const AddTaskModal = ({
     setShowConfirmCancelModal,
   } = useAddTaskModals();
 
-  const { handleAddTask: submitTask } = useAddTaskSubmit(
+  const {
+    handleAddTask: submitTask,
+    errorModalVisible,
+    errorTitle,
+    errorMessage,
+    closeErrorModal,
+  } = useAddTaskSubmit(
     setIsLoading,
     setShowSuccessModal,
     resetFields,
@@ -232,6 +254,98 @@ const AddTaskModal = ({
     setTimeout(scrollToEnd, 100);
   };
 
+  const toggleAllDaySwitch = () => {
+    const newValue = !isAllDayEnabled;
+    setIsAllDayEnabled(newValue);
+    if (newValue) {
+      // Si se activa "Todo el día", establecer horario completo
+      handleTimeSelected("00:00", "23:59");
+    } else {
+      // Si se desactiva, limpiar los campos
+      handleTimeSelected("", "");
+    }
+  };
+
+  const formatTimeInput = (text: string, currentValue: string): string => {
+    // Remover todo excepto números
+    let filteredText = text.replace(/[^0-9]/g, "");
+
+    // Obtener solo los números del valor actual para comparar
+    const currentFiltered = currentValue.replace(/[^0-9]/g, "");
+
+    // Si el texto nuevo es más corto que el actual (incluyendo caracteres especiales),
+    // o si tiene menos dígitos, estamos borrando
+    const isDeleting =
+      text.length < currentValue.length ||
+      filteredText.length < currentFiltered.length;
+
+    // Si el usuario está borrando, no formatear
+    if (isDeleting) {
+      // Limitar a 4 dígitos
+      if (filteredText.length > 4) {
+        filteredText = filteredText.substring(0, 4);
+      }
+      return filteredText;
+    }
+
+    // Limitar a 4 dígitos
+    if (filteredText.length > 4) {
+      filteredText = filteredText.substring(0, 4);
+    }
+
+    // Validar horas y minutos
+    if (filteredText.length >= 1) {
+      const firstDigit = parseInt(filteredText[0], 10);
+      // Si el primer dígito es mayor a 2, es inválido para horas
+      if (firstDigit > 2) {
+        return currentValue;
+      }
+    }
+
+    if (filteredText.length >= 2) {
+      const hours = parseInt(filteredText.substring(0, 2), 10);
+      // Horas deben estar entre 00 y 23
+      if (hours > 23) {
+        return currentValue;
+      }
+    }
+
+    if (filteredText.length >= 3) {
+      const firstMinuteDigit = parseInt(filteredText[2], 10);
+      // Si el primer dígito de minutos es mayor a 5, es inválido
+      if (firstMinuteDigit > 5) {
+        return currentValue;
+      }
+    }
+
+    if (filteredText.length === 4) {
+      const minutes = parseInt(filteredText.substring(2, 4), 10);
+      // Minutos deben estar entre 00 y 59
+      if (minutes > 59) {
+        return currentValue;
+      }
+    }
+
+    // Formatear solo si hay 2 o más dígitos
+    if (filteredText.length >= 2) {
+      const hours = filteredText.substring(0, 2);
+      const minutes = filteredText.substring(2, 4);
+      return `${hours}:${minutes}`;
+    }
+
+    return filteredText;
+  };
+
+  const handleStartTimeChange = (text: string) => {
+    const formattedTime = formatTimeInput(text, taskStartTime);
+    handleTimeSelected(formattedTime, taskEndTime);
+  };
+
+  const handleEndTimeChange = (text: string) => {
+    const formattedTime = formatTimeInput(text, taskEndTime);
+    handleTimeSelected(taskStartTime, formattedTime);
+  };
+
   const handleAddTask = () => {
     submitTask(
       taskName,
@@ -248,6 +362,7 @@ const AddTaskModal = ({
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
     setTimeout(() => {
+      setIsAllDayEnabled(false);
       onClose();
     }, 300);
   };
@@ -260,6 +375,7 @@ const AddTaskModal = ({
     setShowConfirmCancelModal(false);
     setTimeout(() => {
       resetFields();
+      setIsAllDayEnabled(false);
       onClose();
     }, 100);
   };
@@ -295,9 +411,9 @@ const AddTaskModal = ({
             onPress={handleAddTask}
             disabled={isLoading}
           >
-            <Text style={styles.createTaskButtonText}>
-              {isLoading ? "Creando..." : "Crear"}
-            </Text>
+            <CustomText style={styles.createTaskButtonText}>
+              {isLoading ? transformText("Creando...") : transformText("Crear")}
+            </CustomText>
           </TouchableOpacity>
 
           {/* Emoji contextual según la hora del día (sol/luna). */}
@@ -309,8 +425,8 @@ const AddTaskModal = ({
 
           {/* Campo de texto para el título de la nueva tarea. */}
           <TextInput
-            placeholder={'"Nueva tarea"'}
-            placeholderTextColor="black"
+            placeholder={transformText('"Nueva tarea"')}
+            placeholderTextColor={themedColors.text}
             style={styles.inputTitleTask}
             value={taskName}
             onChangeText={setTaskName}
@@ -322,10 +438,14 @@ const AddTaskModal = ({
               style={styles.datetButton}
               onPress={() => setIsCalendarVisible(true)}
             >
-              <Ionicons name="calendar-outline" size={24} color="#394A72" />
+              <Ionicons
+                name="calendar-outline"
+                size={24}
+                color={themedColors.primary}
+              />
               <TextInput
-                placeholder={"Hoy"}
-                placeholderTextColor="#394A72"
+                placeholder={transformText("Hoy")}
+                placeholderTextColor={themedColors.primary}
                 style={styles.dateTextButton}
                 value={formatDate(dueDate)}
                 editable={false}
@@ -347,32 +467,52 @@ const AddTaskModal = ({
             />
           </View>
 
-          {/* Selector de horario de la tarea (desde/hasta) con su modal asociado. */}
-          <View style={styles.dataFields}>
-            <TouchableOpacity
-              style={styles.datetButton}
-              onPress={() => setIsRoutineTimeVisible(true)}
-            >
-              <Ionicons name="time-outline" size={24} color="#394A72" />
-              <TextInput
-                placeholder={"Seleccionar horario"}
-                placeholderTextColor="#394A72"
-                style={styles.dateTextButton}
-                value={
-                  taskStartTime && taskEndTime
-                    ? `${taskStartTime} - ${taskEndTime}`
-                    : ""
+          {/* Selector de horario de la tarea (desde/hasta) con campos de entrada directos. */}
+          <View style={styles.timeInputsContainer}>
+            <View style={styles.timeInputsRow}>
+              <TimeInputField
+                icon={
+                  <Ionicons
+                    name="time-outline"
+                    size={24}
+                    color={themedColors.primary}
+                  />
                 }
-                editable={false}
-                pointerEvents="none"
+                label={transformText("Desde:")}
+                value={taskStartTime}
+                error={false}
+                placeholder="00:00"
+                onChangeText={handleStartTimeChange}
+                editable={!isAllDayEnabled}
               />
-            </TouchableOpacity>
 
-            <TimePickerModal
-              visible={isRoutineTimeVisible}
-              onClose={() => setIsRoutineTimeVisible(false)}
-              onTimeSelected={handleTimeSelected}
-            />
+              <TimeInputField
+                icon={
+                  <Ionicons
+                    name="time-outline"
+                    size={24}
+                    color={themedColors.text}
+                  />
+                }
+                label={transformText("Hasta:")}
+                value={taskEndTime}
+                error={false}
+                placeholder="23:59"
+                onChangeText={handleEndTimeChange}
+                editable={!isAllDayEnabled}
+              />
+            </View>
+
+            {/* Switch para activar/desactivar "Todo el día" */}
+            <View style={styles.switchContainer}>
+              <CustomText style={styles.switchLabel}>
+                {transformText("Todo el día")}
+              </CustomText>
+              <Switch
+                onValueChange={toggleAllDaySwitch}
+                value={isAllDayEnabled}
+              />
+            </View>
           </View>
 
           {/* Selector de recordatorio para la tarea con su modal asociado. */}
@@ -381,12 +521,20 @@ const AddTaskModal = ({
               style={styles.datetButton}
               onPress={() => setIsReminderVisible(true)}
             >
-              <Ionicons name="alarm-outline" size={24} color="#394A72" />
+              <Ionicons
+                name="alarm-outline"
+                size={24}
+                color={themedColors.primary}
+              />
               <TextInput
-                placeholder={"Añadir recordatorio"}
-                placeholderTextColor="#394A72"
+                placeholder={transformText("Añadir recordatorio")}
+                placeholderTextColor={themedColors.primary}
                 style={styles.dateTextButton}
-                value={reminder.label ? `Recordatorio: ${reminder.label}` : ""}
+                value={
+                  reminder.label
+                    ? `${transformText("Recordatorio")}: ${reminder.label}`
+                    : ""
+                }
                 editable={false}
                 pointerEvents="none"
               />
@@ -406,9 +554,9 @@ const AddTaskModal = ({
               style={styles.categoryButton}
               onPress={() => setIsCategoryVisible(true)}
             >
-              <Text style={styles.categoryButtonText}>
-                {categoryName || "Seleccionar categoría"}
-              </Text>
+              <CustomText style={styles.categoryButtonText}>
+                {categoryName || transformText("Seleccionar categoría")}
+              </CustomText>
             </TouchableOpacity>
 
             <CategorPickeryModal
@@ -426,7 +574,9 @@ const AddTaskModal = ({
 
           {/* Sección de gestión de pasos de la tarea (lista + botón para agregar). */}
           <View style={styles.mainStepsContainer}>
-            <Text style={styles.stepsTitle}>{"Pasos"}</Text>
+            <CustomText style={styles.stepsTitle}>
+              {transformText("Pasos")}
+            </CustomText>
 
             <FlatList
               ref={flatListRef}
@@ -460,13 +610,24 @@ const AddTaskModal = ({
       <SuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
+        title={transformText("Tarea creada")}
+        message={transformText("La tarea se ha creado exitosamente")}
       />
 
       {/* Modal de confirmación que aparece al intentar cerrar sin guardar cambios. */}
-      <ConfirmCancelModal
+      <ConfirmationModal
         visible={showConfirmCancelModal}
+        title={transformText("¿Desea cancelar la creación de la tarea?")}
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelCancel}
+      />
+
+      {/* Modal de error que se muestra cuando hay campos incompletos o un error al crear la tarea. */}
+      <ErrorModal
+        visible={errorModalVisible}
+        title={errorTitle}
+        message={errorMessage}
+        onClose={closeErrorModal}
       />
     </Modal>
   );
