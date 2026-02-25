@@ -19,6 +19,9 @@ interface ExpresateContextType {
   getPictogramsByCategory: (
     categoryId: string,
   ) => Promise<{ data: Pictogram[]; fromCache: boolean }>;
+  searchPictograms: (
+    keyword: string,
+  ) => Promise<{ data: Pictogram[]; fromCache: boolean }>;
   clearPictogramsCache: () => void;
 }
 
@@ -37,6 +40,9 @@ export const ExpresateProvider = ({
   const [pictogramsCache, setPictogramsCache] = useState<
     Record<string, Pictogram[]>
   >({});
+  const [searchCache, setSearchCache] = useState<Record<string, Pictogram[]>>(
+    {},
+  );
 
   const fetchCategories = async () => {
     try {
@@ -95,7 +101,43 @@ export const ExpresateProvider = ({
 
   const clearPictogramsCache = useCallback(() => {
     setPictogramsCache({});
+    setSearchCache({});
   }, []);
+
+  const searchPictograms = useCallback(
+    async (
+      keyword: string,
+    ): Promise<{ data: Pictogram[]; fromCache: boolean }> => {
+      const cacheKey = keyword.toLowerCase();
+
+      if (searchCache[cacheKey]) {
+        return { data: searchCache[cacheKey], fromCache: true };
+      }
+
+      try {
+        const { data, error: serviceError } =
+          await expresateService.searchPictograms(keyword);
+
+        if (serviceError) {
+          console.error("Error searching pictograms:", serviceError);
+          return { data: [], fromCache: false };
+        }
+
+        const pictograms = data || [];
+
+        setSearchCache((prev) => ({
+          ...prev,
+          [cacheKey]: pictograms,
+        }));
+
+        return { data: pictograms, fromCache: false };
+      } catch (err) {
+        console.error("Error in searchPictograms:", err);
+        return { data: [], fromCache: false };
+      }
+    },
+    [searchCache],
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -107,6 +149,7 @@ export const ExpresateProvider = ({
     error,
     refetchCategories: fetchCategories,
     getPictogramsByCategory,
+    searchPictograms,
     clearPictogramsCache,
   };
 

@@ -3,19 +3,36 @@ import BackButton from "@/src/app/feature/common/BackButton";
 import CustomText from "@/src/app/feature/common/CustomText";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
 import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
+import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
+import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import * as Haptics from "expo-haptics";
+import * as Speech from "expo-speech";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Dimensions,
   FlatList,
+  Image,
+  Keyboard,
+  Platform,
   StyleSheet,
+  TextInput,
+  TouchableOpacity,
   View,
   ViewToken,
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
+import { Pictogram } from "../models/pictogram.types";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -26,13 +43,57 @@ const ExpresateScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { categories, isLoading } = usePictogramCategories();
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
+  const { pictograms: searchResults, isLoading: isSearching } =
+    useSearchPictograms(searchQuery);
+
   const itemsPerPage = 6;
-  const { paginatedCategories, totalPages } = usePaginatedCategories({
-    categories,
-    itemsPerPage,
-  });
+
+  const isSearchMode = searchQuery.trim().length > 0;
+
+  const { paginatedCategories, totalPages: totalCategoryPages } =
+    usePaginatedCategories({
+      categories,
+      itemsPerPage,
+    });
+
+  const { paginatedPictograms, totalPages: totalPictogramPages } =
+    usePaginatedPictograms({
+      pictograms: searchResults,
+      itemsPerPage,
+    });
+
+  const totalPages = isSearchMode ? totalPictogramPages : totalCategoryPages;
+
+  // Resetear página cuando cambia el modo de búsqueda
+  useEffect(() => {
+    setCurrentPage(0);
+    flatListRef.current?.scrollToIndex({ index: 0, animated: false });
+  }, [isSearchMode]);
+
+  // Manejar teclado
+  useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      },
+    );
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      () => {
+        setKeyboardHeight(0);
+      },
+    );
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -47,6 +108,21 @@ const ExpresateScreen = () => {
     },
     [navigation],
   );
+
+  const handlePictogramPress = useCallback((pictogram: Pictogram) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    const language = pictogram.language === "es" ? "es-ES" : pictogram.language;
+    Speech.speak(pictogram.keyword, {
+      language: language,
+      pitch: 1.0,
+      rate: 0.9,
+    });
+  }, []);
+
+  const getArasaacImageUrl = useCallback((arasaacId: string) => {
+    return `https://api.arasaac.org/v1/pictograms/${arasaacId}`;
+  }, []);
 
   const normalizeCategoryName = useCallback((name: string) => {
     return name;
@@ -132,6 +208,37 @@ const ExpresateScreen = () => {
           width: 70,
           height: 70,
         },
+        image: {
+          width: 70,
+          height: 70,
+          resizeMode: "contain",
+        },
+        searchContainer: {
+          paddingHorizontal: 20,
+          paddingVertical: 15,
+          backgroundColor: themedColors.background,
+          flexDirection: "row",
+          alignItems: "center",
+        },
+        searchInputWrapper: {
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: themedColors.cardBackground,
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: themedColors.secondary + "30",
+          paddingHorizontal: 15,
+        },
+        searchIcon: {
+          marginRight: 10,
+        },
+        searchInput: {
+          flex: 1,
+          paddingVertical: 12,
+          fontSize: 16,
+          color: themedColors.secondary,
+        },
       }),
     [themedColors],
   );
@@ -149,47 +256,60 @@ const ExpresateScreen = () => {
     [containerStyles, handleMenuItemPress, normalizeCategoryName],
   );
 
+  const renderPictogramItem = useCallback(
+    (item: Pictogram) => {
+      const capitalizedKeyword =
+        item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
+
+      return (
+        <TouchableOpacity
+          style={containerStyles.itemContainer}
+          onPress={() => handlePictogramPress(item)}
+          activeOpacity={0.7}
+        >
+          <View style={containerStyles.buttonContainer}>
+            <Image
+              source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+              style={containerStyles.image}
+              defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+            />
+          </View>
+          <CustomText style={containerStyles.textCard}>
+            {transformText(capitalizedKeyword)}
+          </CustomText>
+        </TouchableOpacity>
+      );
+    },
+    [containerStyles, handlePictogramPress, getArasaacImageUrl, transformText],
+  );
+
   const renderPage = useCallback(
     (page: any[]) => {
+      const renderItem = isSearchMode
+        ? renderPictogramItem
+        : renderCategoryItem;
+
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>
-            {renderCategoryItem(page[0])}
-            {page[1] ? (
-              renderCategoryItem(page[1])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
+            {renderItem(page[0])}
+            {page[1] ? renderItem(page[1]) : <View style={{ flex: 1 }} />}
           </View>
           <View style={containerStyles.gridRow}>
-            {page[2] ? (
-              renderCategoryItem(page[2])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-            {page[3] ? (
-              renderCategoryItem(page[3])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
+            {page[2] ? renderItem(page[2]) : <View style={{ flex: 1 }} />}
+            {page[3] ? renderItem(page[3]) : <View style={{ flex: 1 }} />}
           </View>
           <View style={containerStyles.gridRow}>
-            {page[4] ? (
-              renderCategoryItem(page[4])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-            {page[5] ? (
-              renderCategoryItem(page[5])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
+            {page[4] ? renderItem(page[4]) : <View style={{ flex: 1 }} />}
+            {page[5] ? renderItem(page[5]) : <View style={{ flex: 1 }} />}
           </View>
         </View>
       );
     },
     [
+      isSearchMode,
       renderCategoryItem,
+      renderPictogramItem,
       containerStyles.pageContainer,
       containerStyles.gridRow,
     ],
@@ -199,7 +319,7 @@ const ExpresateScreen = () => {
     () => (
       <FlatList
         ref={flatListRef}
-        data={paginatedCategories}
+        data={isSearchMode ? paginatedPictograms : paginatedCategories}
         renderItem={({ item }) => renderPage(item)}
         keyExtractor={(_, index) => index.toString()}
         horizontal
@@ -209,7 +329,7 @@ const ExpresateScreen = () => {
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
       />
     ),
-    [paginatedCategories, renderPage],
+    [isSearchMode, paginatedCategories, paginatedPictograms, renderPage],
   );
 
   const renderPagination = useCallback(
@@ -255,13 +375,56 @@ const ExpresateScreen = () => {
   }
 
   return (
-    <View style={containerStyles.container}>
+    <View
+      style={[
+        containerStyles.container,
+        { paddingBottom: keyboardHeight > 0 ? keyboardHeight - 50 : 0 },
+      ]}
+    >
       <BackButton onPress={handleGoBack} />
       <ScreenTitle text={transformText("Expresate con tarjetas")} />
 
-      <View style={containerStyles.carouselContainer}>{renderCarousel()}</View>
+      {isSearchMode && searchResults.length === 0 && !isSearching ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CustomText>
+            {transformText("No se encontraron pictogramas")}
+          </CustomText>
+        </View>
+      ) : (
+        <>
+          <View style={containerStyles.carouselContainer}>
+            {renderCarousel()}
+          </View>
 
-      {totalPages > 1 && renderPagination()}
+          {totalPages > 1 && renderPagination()}
+        </>
+      )}
+
+      <View style={containerStyles.searchContainer}>
+        <View style={containerStyles.searchInputWrapper}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={themedColors.secondary}
+            style={containerStyles.searchIcon}
+          />
+          <TextInput
+            style={containerStyles.searchInput}
+            placeholder={transformText("Buscar pictograma...")}
+            placeholderTextColor={themedColors.secondary}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
+      </View>
     </View>
   );
 };
