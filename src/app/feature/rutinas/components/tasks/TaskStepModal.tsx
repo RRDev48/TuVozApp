@@ -1,24 +1,10 @@
-// React
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// Componentes
-import { TaskStepModalProps } from "../../(models)/component.props";
+import { useTaskStepModal } from "../../hooks/useTaskStepModal";
+import { TaskStepModalProps } from "../../models/component.props";
 import { ConfirmCancelModal } from "./ConfirmCancelModal";
 import { SuccessModal } from "./SuccessModal";
 
-// Constantes
-
-// Modelos
-
-// Hooks
-import { useTaskStepModal } from "../../(hooks)/useTaskStepModal";
-
-// Servicios
-
-// Acciones
-
-// Visuales
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 
 const styles = StyleSheet.create({
@@ -115,20 +101,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * Modal que guía al usuario por los pasos de una tarea.
- *
- * Responsabilidades principales:
- * - Mostrar de forma secuencial cada paso de la tarea seleccionada.
- * - Permitir avanzar y retroceder entre pasos.
- * - Notificar el cambio de estado de la tarea (por ejemplo, a "Completada")
- *   cuando se finalizan todos los pasos.
- * - Permitir reiniciar la ejecución de los pasos o cerrar el modal.
- *
- * La lógica de navegación entre pasos y actualización de estado se delega en
- * el hook `useTaskStepModal`, manteniendo este componente enfocado en la
- * presentación y en conectar los callbacks.
- */
 export const TaskStepModal = ({
   visible,
   task,
@@ -136,14 +108,9 @@ export const TaskStepModal = ({
   onRestart,
   updateTaskState,
 }: TaskStepModalProps) => {
-  // const { formatText } = usePersonalization();
-
-  // Estados para controlar la visibilidad de los modales de confirmación y éxito
   const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // Hook que encapsula la lógica de pasos: índice actual, siguiente, anterior
-  // y cierre. Recibe la información mínima de la tarea y callbacks externos.
   const { currentStepIndex, handleNextStep, handleBackStep, handleClose } =
     useTaskStepModal(
       task?.id,
@@ -153,12 +120,10 @@ export const TaskStepModal = ({
       onClose,
     );
 
-  // Muestra el modal de confirmación al presionar X
   const handleCancelClick = () => {
     setShowConfirmCancelModal(true);
   };
 
-  // Confirma el cierre: cambia el estado a "En Proceso" y cierra los modales
   const handleConfirmCancel = () => {
     setShowConfirmCancelModal(false);
     setTimeout(() => {
@@ -170,18 +135,14 @@ export const TaskStepModal = ({
     }, 100);
   };
 
-  // Cancela el cierre: solo oculta el modal de confirmación
   const handleCancelCancel = () => {
     setShowConfirmCancelModal(false);
   };
 
-  // Maneja el avance de pasos y finalización
   const handleStepAction = () => {
     if (currentStepIndex < (task?.pasos.length || 0) - 1) {
-      // Si no es el último paso, avanzar normalmente
       handleNextStep();
     } else {
-      // Si es el último paso, mostrar el modal de éxito
       if (task?.id) {
         updateTaskState(task.id, "Completado");
       }
@@ -189,7 +150,6 @@ export const TaskStepModal = ({
     }
   };
 
-  // Cierra el modal de éxito y cierra el TaskStepModal
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
     setTimeout(() => {
@@ -198,11 +158,9 @@ export const TaskStepModal = ({
     }, 300);
   };
 
-  // Si no hay tarea seleccionada, no se muestra ningún contenido.
   if (!task) return null;
 
   return (
-    // Modal nativo que se superpone al contenido actual de la app.
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.detailsOverlay}>
         <View style={styles.detailsContainer}>

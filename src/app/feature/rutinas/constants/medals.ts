@@ -1,4 +1,4 @@
-import { Medal } from "../(models)/routine.types";
+import { Medal } from "../models/routine.types";
 
 export const medalImages: Record<Medal, any> = {
   bronce: require("../../../assets/medals/bronce.png"),

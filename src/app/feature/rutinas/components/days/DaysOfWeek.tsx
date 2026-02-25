@@ -1,26 +1,11 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// Componentes
-
-// Constantes
 import medalImages from "../../constants/medals";
-
-// Modelos
-import { DaysOfWeekProps } from "../../(models)/component.props";
-
-// Hooks
-import { useWeekDays } from "../../(hooks)/useWeekDays";
-import { useWeekMedals } from "../../(hooks)/useWeekMedals";
-
-// Servicios
-import { Medal } from "../../(models)/routine.types";
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useWeekDays } from "../../hooks/useWeekDays";
+import { useWeekMedals } from "../../hooks/useWeekMedals";
+import { DaysOfWeekProps } from "../../models/component.props";
+import { Medal } from "../../models/routine.types";
 
 const styles = StyleSheet.create({
   medalImage: {
@@ -54,30 +39,14 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * DaysOfWeek
- * ----------
- * Muestra los 7 días de la semana actual de la rutina, permitiendo
- * seleccionar un día y visualizar si se obtuvo una medalla/logro en él.
- *
- * Responsabilidades:
- * - Calcular las fechas de la semana a partir de `currentWeekStart`.
- * - Mostrar cada día con su nombre corto (lun, mar, ...) y número.
- * - Resaltar visualmente el día actualmente seleccionado.
- * - Mostrar una medalla sobre el día si existe un logro asociado.
- */
 export const DaysOfWeek = ({
   currentWeekStart,
   selectedDayIndex,
   setSelectedDayIndex,
   profileId,
 }: DaysOfWeekProps) => {
-  // Obtiene un arreglo de 7 fechas (Date) que representan los días
-  // de la semana actual, comenzando en `currentWeekStart`.
   const weekDates = useWeekDays(currentWeekStart);
 
-  // Obtiene, para cada día de la semana, el tipo de medalla alcanzada
-  // (si la hay). Si no hay medalla, puede devolver "none".
   const medals = useWeekMedals(profileId, weekDates);
 
   return (

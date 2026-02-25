@@ -1,4 +1,4 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import {
   Keyboard,
@@ -12,23 +12,9 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-
-// Componentes
+import { useTimePickerValidation } from "../../hooks/useTimePickerValidation";
+import { RoutineTimeModalProps } from "../../models/component.props";
 import { TimeInputField } from "./TimeInputField";
-// Constantes
-
-// Modelos
-import { RoutineTimeModalProps } from "../../(models)/component.props";
-
-// Hooks
-import { useTimePickerValidation } from "../../(hooks)/useTimePickerValidation";
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 
 const styles = StyleSheet.create({
   overlay: {
@@ -109,32 +95,11 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * TimePickerModal
- * ---------------
- * Modal que permite definir si una tarea se realiza en cualquier
- * momento del día o dentro de un rango horario específico.
- *
- * Responsabilidades:
- * - Mostrar un interruptor (Switch) para activar/desactivar el rango horario.
- * - Cuando el rango está activo, permitir introducir hora de inicio y fin
- *   validando el formato y la coherencia (inicio < fin).
- * - Devolver al padre las horas seleccionadas mediante `onTimeSelected`.
- * - Cerrar el modal solo si las horas son válidas.
- */
 export const TimePickerModal = ({
   visible,
   onClose,
   onTimeSelected,
 }: RoutineTimeModalProps) => {
-  // const { formatText } = usePersonalization();
-  // Hook que centraliza el estado y la validación de las horas.
-  // Proporciona:
-  // - startTime / endTime: valores y flags de error para cada campo.
-  // - isSwitchEnabled: indica si se está usando un rango horario específico.
-  // - handleTimeChange: actualiza la hora de inicio o fin.
-  // - toggleSwitch: activa/desactiva el uso de rango horario.
-  // - validateBeforeClose: función que valida ambas horas antes de cerrar.
   const {
     startTime,
     endTime,
@@ -144,12 +109,6 @@ export const TimePickerModal = ({
     validateBeforeClose,
   } = useTimePickerValidation();
 
-  // Maneja el cierre del modal desde el botón "Cerrar":
-  // - Oculta el teclado.
-  // - Valida las horas si el rango está activo.
-  // - Si la validación falla, mantiene el modal abierto.
-  // - Si no hay errores, calcula horas finales por defecto y
-  //   llama a `onTimeSelected` antes de cerrar el modal.
   const handleClose = () => {
     Keyboard.dismiss();
 
@@ -165,7 +124,6 @@ export const TimePickerModal = ({
   };
 
   return (
-    // Modal deslizante que se muestra encima del contenido actual.
     <Modal transparent={true} visible={visible} animationType="slide">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}

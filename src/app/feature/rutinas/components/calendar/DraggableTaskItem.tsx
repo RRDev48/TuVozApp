@@ -1,29 +1,14 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
-
-// Componentes
-
-// Constantes
 import { STATUS_COLOR_MAP } from "../../constants/task.constants";
-
-// Modelos
-import { Category } from "../../(models)/category.types";
-import { DraggableTaskItemProps } from "../../(models)/component.props";
-
-// Hooks
-import { useTaskGestures } from "../../(hooks)/useTaskGestures";
-
-// Servicios
-import { getCategories } from "../../(services)/category.service";
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useTaskGestures } from "../../hooks/useTaskGestures";
+import { Category } from "../../models/category.types";
+import { DraggableTaskItemProps } from "../../models/component.props";
+import { getCategories } from "../../services/category.service";
 
 const styles = StyleSheet.create({
   taskContainer: {
@@ -112,17 +97,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * DraggableTaskItem
- * -----------------
- * Representa visualmente una tarea dentro del calendario diario.
- *
- * Responsabilidades:
- * - Mostrar la información básica de la tarea (título, número de pasos, categoría).
- * - Posicionarse en el calendario según su hora de inicio y duración.
- * - Permitir arrastrar el bloque verticalmente para cambiar la hora.
- * - Permitir redimensionar el bloque desde los extremos para ajustar la duración.
- */
 export const DraggableTaskItem = ({
   task,
   topPosition,
@@ -133,22 +107,13 @@ export const DraggableTaskItem = ({
   onPositionChange,
   onPress,
 }: DraggableTaskItemProps) => {
-  // const { formatText } = usePersonalization();
-  // Indica si el usuario está interactuando (arrastrando/redimensionando) con la tarea.
   const [isDragging, setIsDragging] = useState(false);
-  // Estado para las categorías cargadas desde Supabase
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Cargar categorías al montar el componente
   useEffect(() => {
     getCategories().then(setCategories);
   }, []);
 
-  // Hook que encapsula toda la lógica de gestos (drag + resize) de la tarea.
-  // Devuelve:
-  // - translateY: posición vertical animada del bloque.
-  // - taskHeight: altura animada del bloque.
-  // - composedGesture: gesto combinado que se pasa al GestureDetector.
   const { translateY, taskHeight, composedGesture } = useTaskGestures({
     hourHeight,
     initialTop: topPosition,
@@ -158,33 +123,21 @@ export const DraggableTaskItem = ({
     setIsDragging,
   });
 
-  // Cálculo del ancho de la columna cuando existen colisiones de tareas.
-  // Si hay varias tareas en paralelo, se reparten equitativamente el ancho.
   const columnWidthPercent = totalColumns > 1 ? 100 / totalColumns : 100;
   const leftPositionPercent =
     totalColumns > 1 ? (columnIndex * 100) / totalColumns : 0;
 
-  // Color de fondo asociado al estado actual de la tarea (Pendiente, En Proceso, etc.).
-  // Si el estado no está definido, se toma "Pendiente" como valor por defecto.
   const statusColor = useMemo(() => {
     return STATUS_COLOR_MAP[task.estado || "Pendiente"] ?? colors.red;
   }, [task.estado]);
 
-  // Icono asociado a la categoría de la tarea desde Supabase.
-  // Si no se encuentra, se intenta usar el mapeo local como fallback.
   const categoryImage = useMemo(() => {
     const category = categories.find((cat) => cat.id === task.categoriaId);
     return category?.image || null;
   }, [task.categoriaId, categories]);
 
-  // Determinar si hay suficiente espacio para mostrar todo el contenido
-  // Si el ancho de la columna es menor al 50% (cuando hay 2+ tareas en paralelo),
-  // solo mostramos el ícono de categoría
   const isCompactMode = columnWidthPercent < 50;
 
-  // Estilos animados del contenedor de la tarea.
-  // - translateY y height provienen de la lógica de gestos.
-  // - opacity se reduce ligeramente mientras se arrastra para dar feedback visual.
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
     height: taskHeight.value,
@@ -196,7 +149,6 @@ export const DraggableTaskItem = ({
       style={[
         styles.taskContainer,
         animatedStyle,
-        // Posicionamiento horizontal en función del número de columnas y el índice.
         { width: `${columnWidthPercent}%`, left: `${leftPositionPercent}%` },
       ]}
     >

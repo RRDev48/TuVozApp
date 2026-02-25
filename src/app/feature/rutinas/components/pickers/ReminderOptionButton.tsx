@@ -1,22 +1,7 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-
-// Componentes
-
-// Constantes
-
-// Modelos
-import { ReminderOptionButtonProps } from "../../(models)/component.props";
-
-//Hooks
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { ReminderOptionButtonProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
   optionButton: {
@@ -41,18 +26,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * ReminderOptionButton
- * --------------------
- * Botón reutilizable para seleccionar una opción de recordatorio
- * dentro del modal de recordatorios (por ejemplo: "5 minutos antes").
- *
- * Props:
- * - label: texto visible para el usuario.
- * - value: valor interno asociado a la opción (se envía al callback).
- * - isSelected: indica si esta opción está actualmente seleccionada.
- * - onPress: callback que se ejecuta al pulsar, recibiendo `value`.
- */
 export const ReminderOptionButton = ({
   label,
   value,

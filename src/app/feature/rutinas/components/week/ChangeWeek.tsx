@@ -1,22 +1,7 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// Componentes
-import { ChangeWeekProps } from "../../(models)/component.props";
-
-// Constantes
-
-// Modelos
-
-// Hooks
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { ChangeWeekProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
   container: {
@@ -35,18 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * Componente para cambiar rápidamente de semana en la vista de rutinas.
- *
- * Muestra dos flechas (anterior y siguiente) y un texto central. Al pulsar
- * cada flecha, ajusta la fecha de inicio de la semana actual sumando o
- * restando 7 días y notifica el nuevo valor mediante `onChangeWeek`.
- */
 const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
-  // const { formatText } = usePersonalization();
-
-  // Calcula una nueva fecha de inicio de semana a partir de la actual,
-  // moviéndose `increment` semanas hacia adelante o hacia atrás.
   const handleChangeWeek = (increment: number) => {
     const newStartDate = new Date(currentWeekStart);
     newStartDate.setDate(currentWeekStart.getDate() + increment * 7);

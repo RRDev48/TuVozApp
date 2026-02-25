@@ -1,24 +1,9 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// Componentes
+import { useReminderPicker } from "../../hooks/useReminderPicker";
+import { ReminderModalProps } from "../../models/component.props";
 import { ReminderOptionButton } from "./ReminderOptionButton";
-
-// Constantes
-
-// Modelos
-import { ReminderModalProps } from "../../(models)/component.props";
-
-// Hooks
-import { useReminderPicker } from "../../(hooks)/useReminderPicker";
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 
 const styles = StyleSheet.create({
   overlay: {
@@ -81,33 +66,12 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * ReminderPickerModal
- * -------------------
- * Modal que permite al usuario seleccionar una opción de recordatorio
- * para una tarea (por ejemplo: "5 minutos antes", "1 hora antes", etc.).
- *
- * Responsabilidades:
- * - Mostrar un conjunto de opciones de recordatorio reutilizando
- *   `ReminderOptionButton`.
- * - Mantener cuál opción está seleccionada actualmente.
- * - Traducir la opción seleccionada a un offset en milisegundos
- *   y devolverla al componente padre mediante `onSetReminder`.
- */
 export const ReminderPickerModal = ({
   visible,
   onClose,
   onSetReminder,
   initialSelectedOption,
 }: ReminderModalProps) => {
-  // const { formatText } = usePersonalization();
-  // Hook que centraliza el estado y la lógica de selección de recordatorios.
-  // Devuelve:
-  // - selectedOption: valor de la opción actual.
-  // - setSelectedOption: función para cambiar la opción seleccionada.
-  // - options: lista de opciones disponibles (label + value).
-  // - getSelectedLabel / getSelectedOffsetMs: helpers para obtener
-  //   la etiqueta visible y el offset en ms de la opción actual.
   const {
     selectedOption,
     setSelectedOption,
@@ -116,10 +80,6 @@ export const ReminderPickerModal = ({
     getSelectedOffsetMs,
   } = useReminderPicker(initialSelectedOption, visible);
 
-  // Confirma la selección del recordatorio:
-  // - Obtiene el offset en ms a partir de la opción seleccionada.
-  // - Si existe, llama a `onSetReminder` con label y offset.
-  // - Cierra el modal al finalizar.
   const handleSetReminder = () => {
     const offsetMs = getSelectedOffsetMs();
     if (offsetMs) {
@@ -129,7 +89,6 @@ export const ReminderPickerModal = ({
   };
 
   return (
-    // Modal deslizante que aparece desde la parte inferior de la pantalla.
     <Modal transparent={true} visible={visible} animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.sharedModalContainer}>

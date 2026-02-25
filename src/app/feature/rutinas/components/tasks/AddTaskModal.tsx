@@ -1,17 +1,19 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-
-// Componentes
+import { useAddTaskForm } from "../../hooks/useAddTaskForm";
+import { useAddTaskModals } from "../../hooks/useAddTaskModals";
+import { useAddTaskSubmit } from "../../hooks/useAddTaskSubmit";
+import { AddTaskModalProps } from "../../models/component.props";
 import { CategorPickeryModal } from "../pickers/CategoryPickerModal";
 import { DatePickerModal } from "../pickers/DatePickerModal";
 import { ReminderPickerModal } from "../pickers/ReminderPickerModal";
@@ -19,23 +21,6 @@ import { TimePickerModal } from "../pickers/TimePickerModal";
 import { StepItem } from "../steps/StepsItemsModal";
 import { ConfirmCancelModal } from "./ConfirmCancelModal";
 import { SuccessModal } from "./SuccessModal";
-
-// Constantes
-
-// Modelos
-import { AddTaskModalProps } from "../../(models)/component.props";
-
-// Hooks
-import { useAddTaskForm } from "../../(hooks)/useAddTaskForm";
-import { useAddTaskModals } from "../../(hooks)/useAddTaskModals";
-import { useAddTaskSubmit } from "../../(hooks)/useAddTaskSubmit";
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 
 const styles = StyleSheet.create({
   overlay: {
@@ -179,19 +164,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * AddTaskModal
- * ------------
- * Modal principal para crear una nueva tarea dentro de una rutina.
- *
- * Responsabilidades:
- * - Gestionar el formulario de creación de tarea (título, fecha, horario,
- *   recordatorio, categoría y pasos).
- * - Coordinar la apertura/cierre de los sub-modales (fecha, hora, recordatorio,
- *   categoría, confirmación de cancelación y éxito).
- * - Orquestar el envío de la tarea usando `useAddTaskSubmit`, incluyendo
- *   estado de carga y reseteo de campos.
- */
 const AddTaskModal = ({
   visible,
   onClose,
@@ -201,14 +173,7 @@ const AddTaskModal = ({
   updateTasks,
   profileId,
 }: AddTaskModalProps) => {
-  // Indica si se está enviando la tarea para evitar envíos duplicados
-  // y deshabilitar el botón mientras se realiza la operación.
   const [isLoading, setIsLoading] = useState(false);
-  // const { formatText } = usePersonalization();
-
-  // Hook que encapsula todo el estado del formulario de tarea:
-  // - título, fecha de vencimiento, horario, categoría, recordatorio y pasos.
-  // - callbacks para actualizar estos valores y formatear fechas.
   const {
     taskName,
     setTaskName,
@@ -232,8 +197,6 @@ const AddTaskModal = ({
     formatDate,
   } = useAddTaskForm(selectedDate, selectedStartHour, calculateEndHour);
 
-  // Hook que administra la visibilidad de todos los modales relacionados
-  // con la creación de la tarea (fecha, hora, recordatorio, categoría, éxito, confirmación).
   const {
     isRoutineCalendarVisible,
     setIsCalendarVisible,
@@ -249,9 +212,6 @@ const AddTaskModal = ({
     setShowConfirmCancelModal,
   } = useAddTaskModals();
 
-  // Hook responsable de construir y enviar la tarea a la capa de datos.
-  // Recibe setters para controlar el estado de carga, mostrar el modal de éxito,
-  // resetear el formulario y actualizar la lista de tareas en la pantalla padre.
   const { handleAddTask: submitTask } = useAddTaskSubmit(
     setIsLoading,
     setShowSuccessModal,
@@ -259,9 +219,6 @@ const AddTaskModal = ({
     updateTasks,
     profileId,
   );
-
-  // Referencia al FlatList de pasos para poder hacer scroll automático
-  // hacia el final cuando se agregan nuevos pasos.
   const flatListRef = useRef<FlatList<{ id: number; text: string }> | null>(
     null,
   );
@@ -270,13 +227,11 @@ const AddTaskModal = ({
     flatListRef.current?.scrollToEnd({ animated: true });
   };
 
-  // Agrega un nuevo paso y desplaza la lista al final para que sea visible.
   const handleAddStepAndScroll = () => {
     handleAddStep();
     setTimeout(scrollToEnd, 100);
   };
 
-  // Arma los datos necesarios y delega el envío de la tarea al hook de submit.
   const handleAddTask = () => {
     submitTask(
       taskName,
@@ -290,8 +245,6 @@ const AddTaskModal = ({
     );
   };
 
-  // Cierra el modal de éxito y, tras un pequeño retraso, cierra también
-  // el modal principal de creación de tarea.
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
     setTimeout(() => {
@@ -299,24 +252,18 @@ const AddTaskModal = ({
     }, 300);
   };
 
-  // Al pulsar la X de cierre se muestra primero un modal de confirmación
-  // para evitar perder cambios sin querer.
   const handleCancelClick = () => {
     setShowConfirmCancelModal(true);
   };
 
-  // Confirma la cancelación: cierra el modal de confirmación, resetea
-  // los campos del formulario y cierra el modal principal.
   const handleConfirmCancel = () => {
     setShowConfirmCancelModal(false);
-    // Pequeño delay para permitir que el modal de confirmación se cierre antes
     setTimeout(() => {
       resetFields();
       onClose();
     }, 100);
   };
 
-  // Cancela la acción de cancelar: solo oculta el modal de confirmación.
   const handleCancelCancel = () => {
     setShowConfirmCancelModal(false);
   };

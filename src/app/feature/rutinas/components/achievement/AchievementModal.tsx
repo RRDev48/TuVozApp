@@ -1,4 +1,3 @@
-// React
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -9,20 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Componentes
-
-// Constantes
-
-// Modelos
-import { AchievementModalProps } from "../../(models)/component.props";
-
-// Hooks
-import { useAutoClose } from "../../(hooks)/useAutoClose";
-
-// Servicios
-
-// Acciones
+import { useAutoClose } from "../../hooks/useAutoClose";
+import { AchievementModalProps } from "../../models/component.props";
 
 const { width } = Dimensions.get("window");
 
@@ -88,28 +75,14 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * Props de configuración del modal de logro.
- * - visible: controla si el modal se muestra u oculta.
- * - onClose: función llamada cuando se cierra el modal (manual o automáticamente).
- * - autoCloseDelay: tiempo en milisegundos antes del autocierre (por defecto 3000ms).
- * Modal que informa al usuario cuando ha alcanzado un nuevo logro
- * dentro de una rutina. Se muestra sobre el contenido actual y
- * puede cerrarse manualmente (botón o back) o automáticamente
- * pasado un tiempo configurado con `autoCloseDelay`.
- */
 export const AchievementModal: React.FC<AchievementModalProps> = ({
   visible,
   onClose,
   autoCloseDelay = 3000,
 }) => {
-  // const { formatText } = usePersonalization();
-  // Inicia o reinicia el temporizador de autocierre cuando el modal está visible.
-  // Si `visible` es false, el hook detiene el temporizador y no ejecuta `onClose`.
   useAutoClose(visible, onClose, autoCloseDelay);
 
   return (
-    // Componente nativo de React Native que muestra el contenido como una ventana modal.
     <Modal
       visible={visible}
       transparent

@@ -1,50 +1,19 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ConfirmCancelModalProps } from "../../models/component.props";
 
-// Componentes
-
-// Constantes
-
-// Modelos
-import { ConfirmCancelModalProps } from "../../(models)/component.props";
-
-// Hooks
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-
-/**
- * ConfirmCancelModal
- * ------------------
- * Modal genérico de confirmación utilizado, por ejemplo, cuando el usuario
- * intenta cancelar la creación de una tarea y podría perder cambios.
- *
- * Props:
- * - visible: controla si el modal se muestra u oculta.
- * - onConfirm: callback ejecutado cuando el usuario confirma la acción ("Sí").
- * - onCancel: callback ejecutado cuando el usuario rechaza la acción ("No").
- * - message: texto mostrado en el cuerpo del modal (permite reutilizarlo
- *   con distintos mensajes según el contexto).
- */
 export const ConfirmCancelModal = ({
   visible,
   onConfirm,
   onCancel,
   message = "Desea cancelar la\ncreación de la tarea?",
 }: ConfirmCancelModalProps) => {
-  // const { formatText } = usePersonalization();
-  // Maneja la confirmación y delega en la función recibida por props.
   const handleConfirm = () => {
     onConfirm();
   };
 
   return (
-    // Modal semitransparente con animación de fade.
     <Modal
       transparent={true}
       visible={visible}
@@ -78,7 +47,7 @@ export const ConfirmCancelModal = ({
     </Modal>
   );
 };
-// Estilos del overlay, contenedor, icono y botones del modal.
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,

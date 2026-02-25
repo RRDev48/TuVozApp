@@ -1,4 +1,3 @@
-// Interfaces del dominio de rutinas
 export interface RoutineDb {
   id: number;
   profile_id: string;
@@ -13,10 +12,8 @@ export interface Routine {
   tareas: string[];
 }
 
-// Posibles medallas que puede obtener una rutina
 export type Medal = "bronce" | "plata" | "oro" | "none";
 
-// Estructura de datos que resume el progreso de una rutina
 export interface RoutineProgress {
   completed: number;
   total: number;

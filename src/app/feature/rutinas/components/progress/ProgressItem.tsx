@@ -1,53 +1,18 @@
-// React
-import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-// Componentes
-import { PendingTasksModal } from "./PendingTasksModal";
-
-// Visuales
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRoutineProgress } from "../../hooks/useRoutineProgress";
+import { ProgressItemProps } from "../../models/component.props";
+import { PendingTasksModal } from "./PendingTasksModal";
 
-// Constantes
-import { ProgressItemProps } from "../../(models)/component.props";
-
-// Modelos
-
-// Hooks
-import { useRoutineProgress } from "../../(hooks)/useRoutineProgress";
-
-// Servicios
-
-// Acciones
-
-// Visuales
-
-/**
- * ProgressItem
- * ------------
- * Pequeño componente de resumen que muestra el progreso de una rutina
- * en formato porcentaje y contador completado/total.
- *
- * Props:
- * - routineId: identificador numérico o string de la rutina sobre la que
- *   se calculará el progreso.
- * - refreshTrigger: valor opcional que al cambiar fuerza la recarga del progreso.
- * - tasks: arreglo de tareas para mostrar en el modal de detalles.
- */
 export const ProgressItem = ({
   routineId,
   refreshTrigger,
   tasks = [],
 }: ProgressItemProps) => {
-  // const { formatText } = usePersonalization();
-  // Estado para controlar la visibilidad del modal
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Obtiene desde el hook de progreso:
-  // - completed: cantidad de tareas completadas.
-  // - total: cantidad total de tareas de la rutina.
-  // - percent: porcentaje de avance (0-100).
   const { completed, total, percent } = useRoutineProgress(
     Number(routineId),
     refreshTrigger,
@@ -89,7 +54,6 @@ export const ProgressItem = ({
   );
 };
 
-// Estilos mejorados para hacer el componente más llamativo
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 8,

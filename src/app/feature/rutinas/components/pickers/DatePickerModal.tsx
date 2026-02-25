@@ -1,23 +1,8 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
-
-// Componentes
-
-// Constantes
-
-// Modelos
-import { CalendarModalProps } from "../../(models)/component.props";
-
-// Hooks
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { CalendarModalProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
   overlay: {
@@ -57,30 +42,13 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * DatePickerModal
- * ---------------
- * Modal que permite seleccionar una fecha usando el componente Calendar.
- *
- * Responsabilidades:
- * - Mostrar un calendario mensual para que el usuario elija un día.
- * - Marcar visualmente la fecha seleccionada.
- * - Devolver la fecha elegida al componente padre mediante `onDateSelect`.
- * - Cerrar el modal tras seleccionar una fecha o al pulsar el botón "Cerrar".
- */
 export const DatePickerModal = ({
   visible,
   onClose,
   onDateSelect,
 }: CalendarModalProps) => {
-  // const { formatText } = usePersonalization();
-  // Fecha seleccionada actualmente en formato YYYY-MM-DD.
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // Maneja el toque en un día del calendario:
-  // - actualiza el estado local con la nueva fecha.
-  // - notifica al padre con la fecha seleccionada.
-  // - cierra el modal.
   const handleDayPress = (day: { dateString: string }) => {
     setSelectedDate(day.dateString);
     onDateSelect(day.dateString);
@@ -88,7 +56,6 @@ export const DatePickerModal = ({
   };
 
   return (
-    // Modal nativo que se muestra sobre la pantalla actual.
     <Modal visible={visible} transparent={true} animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.calendarContainer}>

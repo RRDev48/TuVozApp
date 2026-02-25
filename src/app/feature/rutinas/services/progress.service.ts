@@ -1,15 +1,6 @@
-import { Medal, RoutineProgress } from "../(models)/routine.types";
+import { Medal, RoutineProgress } from "../models/routine.types";
 import { getTasksByRoutine } from "./task.service";
 
-/**
- * Calcula el progreso de una rutina a partir de sus tareas.
- *
- * Reglas de medalla:
- * - 0%           → "none" (sin medalla).
- * - 0% < x < 50% → "bronce".
- * - 50% ≤ x < 100% → "plata".
- * - 100%         → "oro".
- */
 export async function getRoutineProgress(
   routineId: number,
 ): Promise<RoutineProgress> {

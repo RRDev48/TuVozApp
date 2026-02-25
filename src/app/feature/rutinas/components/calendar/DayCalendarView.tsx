@@ -1,4 +1,3 @@
-// React
 import React from "react";
 import {
   ScrollView,
@@ -7,24 +6,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Componentes
+import { useCalendarTasks } from "../../hooks/useCalendarTasks";
+import { DayCalendarViewProps } from "../../models/component.props";
 import DraggableTaskItem from "./DraggableTaskItem";
-
-// Constantes
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const HOUR_HEIGHT = 60;
 const QUARTER_HEIGHT = 15;
-
-// Modelos
-import { DayCalendarViewProps } from "../../(models)/component.props";
-
-// Hooks
-import { useCalendarTasks } from "../../(hooks)/useCalendarTasks";
-
-// Servicios
-
-// Acciones
 
 const styles = StyleSheet.create({
   container: {
@@ -76,25 +63,12 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * DayCalendarView
- * ---------------
- * Vista de calendario para un solo día dentro de la rutina.
- *
- * Responsabilidades:
- * - Pintar el eje horario (HOURS) en bloques de una hora, con separación en cuartos.
- * - Mostrar las tareas del día posicionadas en función de su hora de inicio y duración.
- * - Permitir que el usuario cree nuevas tareas tocando una franja horaria vacía.
- * - Permitir que el usuario arrastre y redimensione tareas existentes para cambiar horario.
- */
 export const DayCalendarView = ({
   tasks,
   onTaskTimeChange,
   onTaskPress,
   onHourPress,
 }: DayCalendarViewProps) => {
-  // Hook que calcula las posiciones verticales y altura de cada tarea
-  // en función de su hora de inicio y final, y provee utilidades de conversión.
   const { taskPositions, minutesToTime, TOTAL_HOUR_HEIGHT } =
     useCalendarTasks(tasks);
 
@@ -149,24 +123,17 @@ export const DayCalendarView = ({
                 columnIndex={columnIndex}
                 totalColumns={totalColumns}
                 onPositionChange={(newTop: number, newHeight: number) => {
-                  // Convierte la posición vertical (en píxeles) a minutos reales.
                   const rawStartMinutes = (newTop / TOTAL_HOUR_HEIGHT) * 60;
                   const rawDurationMinutes =
                     (newHeight / TOTAL_HOUR_HEIGHT) * 60;
-
-                  // Redondea el inicio y la duración a intervalos de 15 minutos
-                  // para mantener la cuadrícula del calendario consistente.
                   const newStartMinutes = Math.round(rawStartMinutes / 15) * 15;
                   const newDurationMinutes =
                     Math.round(rawDurationMinutes / 15) * 15;
                   const newEndMinutes = newStartMinutes + newDurationMinutes;
 
-                  // Convierte los minutos redondeados a formato HH:mm.
                   const newStartTime = minutesToTime(newStartMinutes);
                   const newEndTime = minutesToTime(newEndMinutes);
 
-                  // Notifica al contenedor (RoutineScreen) el cambio de horario
-                  // para que persista la nueva hora de inicio y fin de la tarea.
                   onTaskTimeChange(task.id!, newStartTime, newEndTime);
                 }}
                 onPress={() => onTaskPress(task)}

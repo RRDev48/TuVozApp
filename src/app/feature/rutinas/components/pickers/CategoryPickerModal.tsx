@@ -1,4 +1,4 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React from "react";
 import {
   FlatList,
@@ -8,23 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Componentes
-
-// Constantes
-
-// Modelos
-import { CategoryModalProps } from "../../(models)/component.props";
-
-// Hooks
-import { useCategories } from "../../(hooks)/useCategories";
-
-// Servicios
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useCategories } from "../../hooks/useCategories";
+import { CategoryModalProps } from "../../models/component.props";
 
 const styles = StyleSheet.create({
   overlay: {
@@ -83,30 +68,14 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * CategoryPickerModal
- * -------------------
- * Modal que permite al usuario seleccionar una categoría para la tarea.
- *
- * Responsabilidades:
- * - Cargar la lista de categorías disponibles usando `useCategories`.
- * - Mostrar un indicador de carga mientras se obtienen las categorías.
- * - Renderizar la lista de categorías en forma de botones.
- * - Notificar al componente padre qué categoría fue seleccionada y cerrar el modal.
- */
 export const CategorPickeryModal = ({
   visible,
   onClose,
   onCategorySelect,
 }: CategoryModalProps) => {
-  // const { formatText } = usePersonalization();
-
-  // Hook que obtiene desde el backend/listado local las categorías disponibles
-  // para las tareas. Se dispara en función de la visibilidad del modal.
   const { categories, loading } = useCategories(visible);
 
   return (
-    // Modal nativo de React Native que muestra el contenido encima de la pantalla actual.
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={[styles.sharedModalContainer, { height: "60%" }]}>
@@ -118,20 +87,15 @@ export const CategorPickeryModal = ({
           <Text style={styles.categoryTitle}>{"Selecciona una categoría"}</Text>
 
           {loading ? (
-            // Mensaje sencillo mientras se cargan las categorías.
             <Text style={{ textAlign: "center", marginTop: 20 }}>
               {"Cargando..."}
             </Text>
           ) : (
-            // Lista de categorías disponibles para seleccionar.
             <FlatList
               data={categories}
               keyExtractor={(item) => item.id}
               style={styles.optionsContainer}
               renderItem={({ item }) => (
-                // Cada categoría se muestra como un botón; al pulsar:
-                // - se notifica al padre con id y nombre de la categoría.
-                // - se cierra el modal.
                 <TouchableOpacity
                   style={styles.optionButton}
                   onPress={() => {

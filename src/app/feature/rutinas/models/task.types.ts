@@ -1,4 +1,3 @@
-// Interfaces del dominio de tareas
 export interface TaskDb {
   id: number;
   profile_id: string;
@@ -15,7 +14,6 @@ export interface TaskDb {
   };
 }
 
-// Interface para los pasos de una tarea (tabla task_steps)
 export interface TaskStepDb {
   id: number;
   task_id: number;
@@ -25,7 +23,6 @@ export interface TaskStepDb {
   created_at: string;
 }
 
-// Interface para la relación rutina-tarea (tabla routine_tasks)
 export interface RoutineTaskDb {
   id: number;
   routine_id: number;

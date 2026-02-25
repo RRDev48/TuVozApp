@@ -1,20 +1,18 @@
 import {
-    ImageSourcePropType,
-    ImageStyle,
-    StyleProp,
-    TextStyle,
-    ViewStyle,
+  ImageSourcePropType,
+  ImageStyle,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
 } from "react-native";
 import { Task } from "./task.types";
 
-// Props para modales de logros y celebraciones
 export interface AchievementModalProps {
   visible: boolean;
   onClose: () => void;
   autoCloseDelay?: number;
 }
 
-// Props para componentes de calendario
 export interface DayCalendarViewProps {
   tasks: Task[];
   onTaskTimeChange: (
@@ -37,7 +35,6 @@ export interface DraggableTaskItemProps {
   onPress: () => void;
 }
 
-// Props para modales de selección
 export interface CalendarModalProps {
   visible: boolean;
   selectedDate?: string | null;
@@ -67,7 +64,6 @@ export interface CategoryModalProps {
   ) => void;
 }
 
-// Props para modales de tareas
 export interface AddTaskModalProps {
   visible: boolean;
   selectedDate: Date | null;
@@ -102,7 +98,6 @@ export interface StepItemModalProps {
   onRemove: (index: number) => void;
 }
 
-// Props para modales de confirmación
 export interface ConfirmCancelModalProps {
   visible: boolean;
   onConfirm: () => void;
@@ -116,7 +111,6 @@ export interface SuccessModalProps {
   message?: string;
 }
 
-// Props para componentes de días y semanas
 export interface DaysOfWeekProps {
   currentWeekStart: Date;
   selectedDayIndex: number;
@@ -130,7 +124,6 @@ export interface ChangeWeekProps {
   onChangeWeek: (newStartDate: Date) => void;
 }
 
-// Props para componentes de tareas y elementos
 export interface TasksItemProps {
   titulo: string;
   estado: string;
@@ -144,7 +137,6 @@ export interface ProgressItemProps {
   tasks?: Task[];
 }
 
-// Props para componentes de selección
 export interface ReminderOptionButtonProps {
   label: string;
   value: string;
@@ -160,7 +152,6 @@ export interface TimeInputFieldProps {
   onChangeText: (text: string) => void;
 }
 
-// Props para componentes de menú (si se usa en rutinas)
 export interface MenuItemProps {
   name: string;
   route: string;

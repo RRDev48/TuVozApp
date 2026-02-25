@@ -1,4 +1,5 @@
-// React
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -9,25 +10,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Componentes
-
-// Constantes
-
-// Modelos
-import { Category } from "../../(models)/category.types";
-import { Task } from "../../(models)/task.types";
-
-// Hooks
-
-// Servicios
-import { getCategories } from "../../(services)/category.service";
-
-// Acciones
-
-// Visuales
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import { Ionicons } from "@expo/vector-icons";
+import { Category } from "../../models/category.types";
+import { Task } from "../../models/task.types";
+import { getCategories } from "../../services/category.service";
 
 interface PendingTasksModalProps {
   visible: boolean;
@@ -38,13 +23,6 @@ interface PendingTasksModalProps {
   percent: number;
 }
 
-/**
- * PendingTasksModal
- * -----------------
- * Modal que muestra las tareas en estado "Pendiente" o "En Proceso".
- * Incluye un resumen del progreso y la lista de tareas pendientes
- * con su título, imagen de categoría y cantidad de pasos.
- */
 export const PendingTasksModal = ({
   visible,
   onClose,
@@ -53,22 +31,18 @@ export const PendingTasksModal = ({
   total,
   percent,
 }: PendingTasksModalProps) => {
-  // const { formatText } = usePersonalization();
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Cargar categorías cuando el modal se abre
   useEffect(() => {
     if (visible) {
       getCategories().then(setCategories);
     }
   }, [visible, tasks]);
 
-  // Filtrar solo las tareas pendientes o en proceso
   const pendingTasks = tasks.filter(
     (task) => task.estado === "Pendiente" || task.estado === "En Proceso",
   );
 
-  // Obtener la categoría de una tarea
   const getCategoryImage = (categoryId: string) => {
     const category = categories.find((cat) => cat.id === categoryId);
     return category?.image;
