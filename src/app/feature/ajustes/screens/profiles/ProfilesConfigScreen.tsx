@@ -1,10 +1,9 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { supabase } from "@/src/lib/supabaseClient";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
     ActivityIndicator,
     Image,
@@ -17,6 +16,7 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { useUserProfiles } from "../../../start/Auth/hooks/useUserProfiles";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { useProfilesConfig } from "../../hooks/useProfilesConfig";
 
 type ProfilesConfigScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -33,33 +33,14 @@ const ProfilesConfigScreen = () => {
     loading: isLoadingProfiles,
     fetchProfiles,
   } = useUserProfiles();
-  const [userRole, setUserRole] = useState<string | null>(null);
 
-  // Obtener el rol del usuario actual
-  useEffect(() => {
-    const getUserRole = async () => {
-      if (!currentUser) {
-        setUserRole(null);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from("users")
-          .select("role")
-          .eq("id", currentUser.id)
-          .single();
-
-        if (!error && data) {
-          setUserRole(data.role);
-        }
-      } catch (error) {
-        console.error("Error getting user role:", error);
-      }
-    };
-
-    getUserRole();
-  }, [currentUser]);
+  const {
+    isLoadingRole,
+    isAddButtonEnabled,
+    handleAddProfile,
+    handleProfilePress,
+    handleEditProfile,
+  } = useProfilesConfig(currentUser);
 
   useEffect(() => {
     if (currentUser) {
@@ -67,67 +48,12 @@ const ProfilesConfigScreen = () => {
     }
   }, [currentUser, fetchProfiles]);
 
-  // Refrescar perfiles cuando la pantalla recibe el foco
   useFocusEffect(
     useCallback(() => {
       if (currentUser) {
         fetchProfiles();
       }
     }, [currentUser, fetchProfiles]),
-  );
-
-  // Determinar si el botón "Añadir nuevo" debe estar habilitado
-  const isAddButtonEnabled = useMemo(() => {
-    // Si no hay usuario (invitado), el botón está activo
-    if (!currentUser) {
-      return true;
-    }
-
-    // Si el rol es "self", el botón está deshabilitado
-    if (userRole === "self") {
-      return false;
-    }
-
-    // Si el rol es diferente de "self", el botón está activo
-    return true;
-  }, [currentUser, userRole]);
-
-  const handleAddProfile = useCallback(() => {
-    // Si no hay usuario (invitado), redirige a UserType
-    if (!currentUser) {
-      navigation.navigate("UserType");
-      return;
-    }
-
-    // Si el usuario tiene rol diferente de "self", ir directo a RegisterInfo
-    // con role="self", isOwner=false y ownerUserId del usuario actual
-    if (userRole && userRole !== "self") {
-      navigation.navigate("RegisterInfo", {
-        role: "self",
-        isOwner: false,
-        ownerUserId: currentUser.id, // UUID del usuario que está creando el perfil
-      });
-      return;
-    }
-
-    // Si el rol es "self", ir al flujo normal con UserType
-    navigation.navigate("UserType");
-  }, [currentUser, userRole, navigation]);
-
-  const handleProfilePress = useCallback(
-    (profile: any) => {
-      // TODO: Cambiar al perfil seleccionado
-      console.log("Switch to profile:", profile.id);
-    },
-    [navigation],
-  );
-
-  const handleEditProfile = useCallback(
-    (profile: any, event: any) => {
-      event.stopPropagation();
-      navigation.navigate("ProfileEdit", { profile });
-    },
-    [navigation],
   );
 
   const styles = useMemo(
@@ -263,7 +189,10 @@ const ProfilesConfigScreen = () => {
         )}
         <TouchableOpacity
           style={styles.editIconButton}
-          onPress={(event) => handleEditProfile(profile, event)}
+          onPress={(event) => {
+            event.stopPropagation();
+            handleEditProfile(profile);
+          }}
           activeOpacity={0.7}
         >
           <Ionicons
@@ -277,7 +206,7 @@ const ProfilesConfigScreen = () => {
     [styles, themedColors, handleProfilePress, handleEditProfile],
   );
 
-  if (isLoadingUser || isLoadingProfiles) {
+  if (isLoadingUser || isLoadingProfiles || isLoadingRole) {
     return (
       <View style={styles.container}>
         <BackButton onPress={() => navigation.goBack()} />

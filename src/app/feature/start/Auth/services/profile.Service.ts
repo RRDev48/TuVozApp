@@ -18,13 +18,11 @@ export const profileService = {
         .single();
 
       if (error) {
-        console.error("Supabase error creating profile:", error);
         throw error;
       }
 
       return { success: true, data: data as Profile };
     } catch (error: any) {
-      console.error("Exception creating profile:", error);
       return {
         success: false,
         error: error.message || error.hint || "Error al crear el perfil",
@@ -51,13 +49,11 @@ export const profileService = {
         .single();
 
       if (error) {
-        console.error("Supabase error linking user to profile:", error);
         throw error;
       }
 
       return { success: true, data: data as UserProfile };
     } catch (error: any) {
-      console.error("Exception linking user to profile:", error);
       return {
         success: false,
         error:
@@ -79,7 +75,6 @@ export const profileService = {
         .single();
 
       if (insertError || !insertedProfile) {
-        console.error("Error inserting profile:", insertError);
         throw insertError || new Error("No profile data returned");
       }
 
@@ -92,7 +87,6 @@ export const profileService = {
       );
 
       if (!linkResult.success) {
-        console.error("Error linking user to profile:", linkResult.error);
         throw new Error(linkResult.error);
       }
 
@@ -103,7 +97,6 @@ export const profileService = {
         .single();
 
       if (selectError) {
-        console.warn("Could not fetch profile after creation:", selectError);
         return {
           success: true,
           data: {
@@ -120,7 +113,6 @@ export const profileService = {
 
       return { success: true, data: fullProfile as Profile };
     } catch (error: any) {
-      console.error("Exception in createProfileForUser:", error);
       return {
         success: false,
         error: error.message || "Error al crear perfil para el usuario",
@@ -130,7 +122,6 @@ export const profileService = {
 
   async getUserProfiles(userId: string) {
     try {
-      // Obtener perfiles vinculados directamente en user_profiles
       const { data: linkedProfiles, error: linkedError } = await supabase
         .from("user_profiles")
         .select(
@@ -152,7 +143,6 @@ export const profileService = {
 
       if (linkedError) throw linkedError;
 
-      // Obtener perfiles donde el usuario es el owner (perfiles que él creó)
       const { data: ownedProfiles, error: ownedError } = await supabase
         .from("profiles")
         .select(
@@ -162,7 +152,6 @@ export const profileService = {
 
       if (ownedError) throw ownedError;
 
-      // Combinar ambos resultados
       const linkedProfilesData =
         linkedProfiles?.map((item: any) => ({
           ...item.profiles,
@@ -172,10 +161,9 @@ export const profileService = {
       const ownedProfilesData =
         ownedProfiles?.map((profile: any) => ({
           ...profile,
-          is_owner: false, // Los perfiles creados para otros no son "owner"
+          is_owner: false,
         })) || [];
 
-      // Eliminar duplicados (por si un perfil está en ambas listas)
       const allProfilesMap = new Map();
 
       linkedProfilesData.forEach((p: any) => allProfilesMap.set(p.id, p));

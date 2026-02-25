@@ -28,7 +28,6 @@ const RoleSelectionScreen = () => {
   const navigation = useNavigation<RoleSelectionScreenNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamsList, "RoleSelection">>();
 
-  // Obtener isOwner desde los parámetros de navegación (por defecto true)
   const isOwner = route.params?.isOwner ?? true;
 
   const { selectedRole, handleRoleSelect, confirmSelection, isRoleSelected } =

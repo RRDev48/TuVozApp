@@ -101,15 +101,6 @@ export const authService = {
     },
   ) {
     try {
-      console.log("🔵 createUserWithProfile - Datos recibidos:", {
-        userId,
-        full_name: userData.full_name,
-        role: userData.role,
-        email: userData.email,
-        isOwner: userData.isOwner,
-        ownerUserId: userData.ownerUserId,
-      });
-
       const { data, error } = await supabase.rpc(
         "create_user_profile_from_auth",
         {
@@ -122,10 +113,7 @@ export const authService = {
         },
       );
 
-      console.log("🔵 RPC Response:", { data, error });
-
       if (error) {
-        console.error("Supabase RPC error:", error);
         throw error;
       }
 

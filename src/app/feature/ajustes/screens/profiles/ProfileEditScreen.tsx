@@ -1,10 +1,9 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
-import { supabase } from "@/src/lib/supabaseClient";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
     StyleSheet,
     Text,
@@ -17,7 +16,8 @@ import ErrorModal from "../../../common/alerts/ErrorModal";
 import SuccessModal from "../../../common/alerts/SuccessModal";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
-import { useUserProfiles } from "../../../start/Auth/hooks/useUserProfiles";
+import { useProfileDelete } from "../../hooks/useProfileDelete";
+import { useProfileEdit } from "../../hooks/useProfileEdit";
 
 type ProfileEditScreenRouteProp = RouteProp<RootStackParamsList, "ProfileEdit">;
 type ProfileEditScreenNavigationProp = StackNavigationProp<
@@ -30,196 +30,47 @@ const ProfileEditScreen = () => {
   const route = useRoute<ProfileEditScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
-  const { updateProfile } = useUserProfiles();
 
-  const [fullName, setFullName] = useState(route.params.profile.full_name);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const profileId = route.params.profile.id;
+  const initialName = route.params.profile.full_name;
 
-  const handleSave = useCallback(async () => {
-    if (!fullName.trim()) {
-      setErrorMessage("Por favor ingrese un nombre");
-      setShowError(true);
-      return;
-    }
+  const {
+    fullName,
+    setFullName,
+    showError: showEditError,
+    showSuccess,
+    errorMessage: editErrorMessage,
+    isSaving,
+    handleSave,
+    closeError: closeEditError,
+    closeSuccess,
+  } = useProfileEdit(profileId, initialName);
 
-    try {
-      const profileId = route.params.profile.id;
-      const newName = fullName.trim();
+  const {
+    showConfirmDelete,
+    showError: showDeleteError,
+    errorMessage: deleteErrorMessage,
+    isDeleting,
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    closeError: closeDeleteError,
+  } = useProfileDelete();
 
-      console.log("🚀 INICIO handleSave");
-      console.log("📝 Profile ID:", profileId);
-      console.log("📝 New Name:", newName);
+  const handleSaveSuccess = () => {
+    navigation.goBack();
+  };
 
-      // Llamar a la función RPC que actualiza ambas tablas con SECURITY DEFINER
-      const { data: rpcResult, error: rpcError } = await supabase.rpc(
-        "update_profile_name",
-        {
-          p_profile_id: profileId,
-          p_new_name: newName,
-        },
-      );
-
-      console.log("🔍 RPC Result:", rpcResult);
-
-      if (rpcError) {
-        console.error("❌ RPC Error:", rpcError);
-        setErrorMessage("Error al actualizar el perfil");
-        setShowError(true);
-        return;
-      }
-
-      if (!rpcResult?.success) {
-        console.error("❌ RPC returned success=false:", rpcResult);
-        setErrorMessage(rpcResult?.error || "Error al actualizar el perfil");
-        setShowError(true);
-        return;
-      }
-
-      console.log("✅ Actualización exitosa:", {
-        profile_updated: rpcResult.profile_updated,
-        user_updated: rpcResult.user_updated,
-        auth_user_id: rpcResult.auth_user_id,
+  const handleDeleteComplete = (shouldSignOut: boolean) => {
+    if (shouldSignOut) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Onboarding" }],
       });
-
-      // Actualizar los perfiles en el hook para refrescar la lista
-      await updateProfile(profileId, { full_name: newName });
-
-      setShowSuccess(true);
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1500);
-    } catch (error: any) {
-      console.error("❌ Error in handleSave:", error);
-      setErrorMessage("Error al actualizar el perfil");
-      setShowError(true);
+    } else {
+      navigation.goBack();
     }
-  }, [fullName, route.params.profile.id, updateProfile, navigation]);
-
-  const handleDelete = useCallback(() => {
-    setShowConfirmDelete(true);
-  }, []);
-
-  const confirmDelete = useCallback(async () => {
-    setShowConfirmDelete(false);
-
-    try {
-      const profileId = route.params.profile.id;
-      console.log("🔴 INICIO DELETE - Profile ID:", profileId);
-
-      // 1. Obtener el usuario actual logueado
-      console.log("📋 Paso 1: Obteniendo usuario actual...");
-      const {
-        data: { user: currentAuthUser },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError || !currentAuthUser) {
-        console.error("❌ Error getting current user:", authError);
-        setErrorMessage("Error al obtener usuario actual");
-        setShowError(true);
-        return;
-      }
-
-      const currentUserId = currentAuthUser.id;
-      console.log("✅ Usuario actual (auth):", currentUserId);
-
-      // 2. Obtener el auth_user_id del perfil que se intenta eliminar
-      console.log("📋 Paso 2: Obteniendo auth_user_id del perfil...");
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("auth_user_id")
-        .eq("id", profileId)
-        .single();
-
-      if (profileError) {
-        console.error("❌ Error getting profile:", profileError);
-        setErrorMessage("Error al obtener información del perfil");
-        setShowError(true);
-        return;
-      }
-
-      const profileAuthUserId = profileData.auth_user_id;
-      console.log("✅ auth_user_id del perfil:", profileAuthUserId);
-
-      // 3. Decidir qué función RPC llamar
-      if (profileAuthUserId === currentUserId) {
-        console.log(
-          "🎯 ELIMINAR MI PROPIO PERFIL - Llamando RPC delete_all_user_data",
-        );
-
-        // Llamar a la función RPC que elimina TODO
-        const { data: rpcResult, error: rpcError } = await supabase.rpc(
-          "delete_all_user_data",
-        );
-
-        console.log("🔍 Resultado RPC:", { data: rpcResult, error: rpcError });
-
-        if (rpcError) {
-          console.error("❌ Error en RPC delete_all_user_data:", rpcError);
-          setErrorMessage("Error al eliminar todos los datos del usuario");
-          setShowError(true);
-          return;
-        }
-
-        console.log("✅ Datos eliminados exitosamente:", rpcResult);
-
-        // Cerrar sesión del usuario actual
-        console.log("📋 Cerrando sesión...");
-        await supabase.auth.signOut();
-        console.log("✅ Sesión cerrada");
-
-        console.log("🎉 ELIMINACIÓN COMPLETADA - Redirigiendo a Onboarding");
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Onboarding" }],
-        });
-      } else {
-        console.log(
-          "🎯 ELIMINAR CUENTA HIJA - Llamando RPC delete_single_profile",
-        );
-
-        // Llamar a la función RPC que elimina el perfil específico
-        const { data: rpcResult, error: rpcError } = await supabase.rpc(
-          "delete_single_profile",
-          { p_profile_id: profileId },
-        );
-
-        console.log("🔍 Resultado RPC:", { data: rpcResult, error: rpcError });
-
-        if (rpcError) {
-          console.error("❌ Error en RPC delete_single_profile:", rpcError);
-          setErrorMessage("Error al eliminar el perfil");
-          setShowError(true);
-          return;
-        }
-
-        console.log("✅ Perfil eliminado exitosamente:", rpcResult);
-
-        // Si se eliminó también el usuario (era la última cuenta), cerrar sesión
-        if (rpcResult?.deleted_user) {
-          console.log("📋 Era la última cuenta - Cerrando sesión...");
-          await supabase.auth.signOut();
-          console.log("✅ Sesión cerrada");
-
-          console.log("🎉 ELIMINACIÓN COMPLETADA - Redirigiendo a Onboarding");
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "Onboarding" }],
-          });
-        } else {
-          console.log("✅ No era la última cuenta - Regresando");
-          navigation.goBack();
-        }
-      }
-    } catch (error: any) {
-      console.error("❌ ERROR GENERAL in confirmDelete:", error);
-      setErrorMessage("Error al eliminar el perfil");
-      setShowError(true);
-    }
-  }, [route.params.profile.id, navigation]);
+  };
 
   const styles = useMemo(
     () =>
@@ -325,34 +176,42 @@ const ProfileEditScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={handleSave}
+          onPress={() => handleSave(handleSaveSuccess)}
           activeOpacity={0.8}
+          disabled={isSaving || isDeleting}
         >
           <Text style={styles.continueButtonText}>
-            {transformText("Continuar")}
+            {transformText(isSaving ? "Guardando..." : "Continuar")}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Botón Eliminar perfil */}
-      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={handleDelete}
+        disabled={isSaving || isDeleting}
+      >
         <Text style={styles.deleteButtonText}>
-          {transformText("Eliminar perfil")}
+          {transformText(isDeleting ? "Eliminando..." : "Eliminar perfil")}
         </Text>
       </TouchableOpacity>
 
       <ErrorModal
-        visible={showError}
+        visible={showEditError || showDeleteError}
         title="Error"
-        message={errorMessage}
-        onClose={() => setShowError(false)}
+        message={editErrorMessage || deleteErrorMessage}
+        onClose={() => {
+          closeEditError();
+          closeDeleteError();
+        }}
       />
 
       <SuccessModal
         visible={showSuccess}
         title="Éxito"
         message="Perfil actualizado correctamente"
-        onClose={() => setShowSuccess(false)}
+        onClose={closeSuccess}
       />
 
       <ConfirmationModal
@@ -360,8 +219,8 @@ const ProfileEditScreen = () => {
         title="¿Estás seguro de que deseas eliminar este perfil?"
         confirmText="Eliminar"
         cancelText="Cancelar"
-        onConfirm={confirmDelete}
-        onCancel={() => setShowConfirmDelete(false)}
+        onConfirm={() => confirmDelete(profileId, handleDeleteComplete)}
+        onCancel={cancelDelete}
       />
     </View>
   );
