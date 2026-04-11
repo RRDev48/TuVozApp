@@ -13,13 +13,14 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import {
-  SettingsButton,
-  useSettingsButtons,
+    SettingsButton,
+    useSettingsButtons,
 } from "../../hooks/useSettingsButtons";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, reloadLocalPreferences } =
+    usePersonalization();
   const themedColors = getThemedColors();
   const { currentUser, isLoading } = useCurrentUser();
   const buttons = useSettingsButtons(currentUser, isLoading);
@@ -128,12 +129,13 @@ const SettingsScreen = () => {
   const handleLogout = useCallback(async () => {
     const result = await authService.signOut();
     if (result.success) {
+      await reloadLocalPreferences();
       navigation.reset({
         index: 0,
         routes: [{ name: "Onboarding" }],
       });
     }
-  }, [navigation]);
+  }, [navigation, reloadLocalPreferences]);
 
   const renderButton = useCallback(
     (button: SettingsButton) => (

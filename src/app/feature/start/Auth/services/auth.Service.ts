@@ -4,6 +4,7 @@ import type {
   UserRole,
 } from "@/src/app/feature/common/models/database.types";
 import { supabase } from "@/src/lib/supabaseClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthProfileInput = {
   full_name: string;
@@ -338,9 +339,15 @@ export const authService = {
 
   async signOut() {
     try {
+      await AsyncStorage.clear();
+
       const { error } = await supabase.auth.signOut();
 
-      if (error) {
+      const isMissingSessionError =
+        !!error?.message &&
+        /session|logged out|invalid/i.test(error.message.toLowerCase());
+
+      if (error && !isMissingSessionError) {
         throw error;
       }
 

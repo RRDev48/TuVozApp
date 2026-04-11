@@ -15,4 +15,5 @@ export interface PersonalizationContextType {
     transparent: string;
   };
   resetToDefaults: () => Promise<void>;
+  reloadLocalPreferences: () => Promise<void>;
 }

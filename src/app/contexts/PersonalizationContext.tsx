@@ -27,6 +27,8 @@ const PersonalizationProvider = ({
     isAuthenticated,
   } = useCurrentUserProfile();
 
+  const hasProfile = !!profileId;
+
   const {
     settings,
     loading: settingsLoading,
@@ -41,12 +43,12 @@ const PersonalizationProvider = ({
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated && !userLoading) {
+    if (!hasProfile && !userLoading) {
       loadLocalPreferences();
-    } else if (isAuthenticated) {
+    } else if (hasProfile) {
       setLoaded(true);
     }
-  }, [isAuthenticated, userLoading]);
+  }, [hasProfile, userLoading]);
 
   const loadLocalPreferences = async () => {
     try {
@@ -57,8 +59,11 @@ const PersonalizationProvider = ({
 
       if (mayusculas !== null)
         setLocalSoloMayusculasState(JSON.parse(mayusculas));
+      else setLocalSoloMayusculasState(false);
+
       if (temaOscuroValue !== null)
         setLocalTemaOscuroState(JSON.parse(temaOscuroValue));
+      else setLocalTemaOscuroState(false);
     } catch (error) {
     } finally {
       setLoaded(true);
@@ -68,6 +73,11 @@ const PersonalizationProvider = ({
   const setSoloMayusculasAuthenticated = async (value: boolean) => {
     try {
       await updateSetting("uppercase", value);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SOLO_MAYUSCULAS,
+        JSON.stringify(value),
+      );
+      setLocalSoloMayusculasState(value);
     } catch (error) {}
   };
 
@@ -75,6 +85,11 @@ const PersonalizationProvider = ({
     try {
       const theme = ProfileSettingsService.mapAppThemeToDbTheme(value);
       await updateSetting("theme", theme);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.TEMA_OSCURO,
+        JSON.stringify(value),
+      );
+      setLocalTemaOscuroState(value);
     } catch (error) {}
   };
 
@@ -98,7 +113,7 @@ const PersonalizationProvider = ({
     } catch (error) {}
   };
 
-  const setSoloMayusculas = isAuthenticated
+  const setSoloMayusculas = hasProfile
     ? (value: boolean) => {
         return setSoloMayusculasAuthenticated(value);
       }
@@ -106,7 +121,7 @@ const PersonalizationProvider = ({
         return setSoloMayusculasLocal(value);
       };
 
-  const setTemaOscuro = isAuthenticated
+  const setTemaOscuro = hasProfile
     ? (value: boolean) => {
         return setTemaOscuroAuthenticated(value);
       }
@@ -114,14 +129,14 @@ const PersonalizationProvider = ({
         return setTemaOscuroLocal(value);
       };
 
-  const soloMayusculas = isAuthenticated
+  const soloMayusculas = hasProfile
     ? getUppercaseForApp()
     : localSoloMayusculas;
 
-  const temaOscuro = isAuthenticated ? getThemeForApp() : localTemaOscuro;
+  const temaOscuro = hasProfile ? getThemeForApp() : localTemaOscuro;
 
   const resetToDefaults = async () => {
-    if (isAuthenticated) {
+    if (hasProfile) {
       await resetSettings();
     } else {
       await setSoloMayusculasLocal(false);
@@ -171,6 +186,7 @@ const PersonalizationProvider = ({
         transformText,
         getThemedColors,
         resetToDefaults,
+        reloadLocalPreferences: loadLocalPreferences,
       }}
     >
       {children}

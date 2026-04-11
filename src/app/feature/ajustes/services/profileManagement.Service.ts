@@ -1,4 +1,5 @@
 import { supabase } from "@/src/lib/supabaseClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { auditLogService } from "./auditLog.Service";
 
 type ProfileSummary = {
@@ -309,7 +310,16 @@ export const profileManagementService = {
 
   async signOut() {
     try {
-      await supabase.auth.signOut();
+      await AsyncStorage.clear();
+
+      const { error } = await supabase.auth.signOut();
+      const isMissingSessionError =
+        !!error?.message &&
+        /session|logged out|invalid/i.test(error.message.toLowerCase());
+
+      if (error && !isMissingSessionError) {
+        throw error;
+      }
 
       await auditLogService.logEventSafe({
         event_type: auditLogService.events.LOGOUT,

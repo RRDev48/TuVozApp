@@ -17,6 +17,10 @@ type FavoritePictogramRow = {
   pictograms: Pictogram | Pictogram[] | null;
 };
 
+type CategoryWithPictogramsRow = PictogramCategory & {
+  pictograms: Array<{ id: string }>;
+};
+
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
     return error.message || fallback;
@@ -43,15 +47,23 @@ export const expresateService = {
     try {
       const { data, error } = await supabase
         .from("pictograms_categories")
-        .select("id, name, slug, image_url")
+        .select("id, name, slug, image_url, pictograms!inner(id)")
         .order("name", { ascending: true });
 
       if (error) {
         throw error;
       }
 
+      const categories =
+        (data as CategoryWithPictogramsRow[] | null)?.map((row) => ({
+          id: row.id,
+          name: row.name,
+          slug: row.slug,
+          image_url: row.image_url,
+        })) ?? [];
+
       return {
-        data: data as PictogramCategory[],
+        data: categories,
         error: null,
       };
     } catch (error: unknown) {

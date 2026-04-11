@@ -2,13 +2,21 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CustomText from "@/src/app/feature/common/CustomText";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
+import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavoritePictograms";
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as Haptics from "expo-haptics";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Dimensions,
   FlatList,
@@ -30,7 +38,7 @@ type CategoryPictogramsScreenRouteProp = RouteProp<
 >;
 
 const CategoryPictogramsScreen = () => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { transformText, getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const route = useRoute<CategoryPictogramsScreenRouteProp>();
@@ -38,12 +46,33 @@ const CategoryPictogramsScreen = () => {
   const { categoryId, categoryName } = route.params;
 
   const { pictograms, isLoading, error } = usePictogramsByCategory(categoryId);
+  const {
+    favoriteIds,
+    toggleFavorite,
+    isReady: favoritesReady,
+  } = useFavoritePictograms();
   const [currentPage, setCurrentPage] = useState(0);
+  const [stableOrder, setStableOrder] = useState<Pictogram[]>([]);
+  const sortedOnceRef = useRef(false);
   const flatListRef = useRef<FlatList>(null);
 
   const itemsPerPage = 6;
+
+  // Sort once when both pictograms and favorites are ready. Never re-sort
+  // on subsequent favorite toggles to avoid visual jumping.
+  useEffect(() => {
+    if (sortedOnceRef.current || pictograms.length === 0 || !favoritesReady) {
+      return;
+    }
+    sortedOnceRef.current = true;
+    setStableOrder([
+      ...pictograms.filter((p) => favoriteIds.has(p.id)),
+      ...pictograms.filter((p) => !favoriteIds.has(p.id)),
+    ]);
+  }, [pictograms, favoriteIds, favoritesReady]);
+
   const { paginatedPictograms, totalPages } = usePaginatedPictograms({
-    pictograms,
+    pictograms: stableOrder,
     itemsPerPage,
   });
 
@@ -99,13 +128,13 @@ const CategoryPictogramsScreen = () => {
           width: 8,
           height: 8,
           borderRadius: 4,
-          backgroundColor: themedColors.secondary,
+          backgroundColor: temaOscuro ? "#FFFFFF" : "#006F9E",
         },
         paginationDotActive: {
           width: 8,
           height: 8,
           borderRadius: 4,
-          backgroundColor: themedColors.primary,
+          backgroundColor: "#03A503",
         },
         pageContainer: {
           width: PAGE_WIDTH,
@@ -122,6 +151,9 @@ const CategoryPictogramsScreen = () => {
           justifyContent: "center",
           marginVertical: 10,
         },
+        cardWrapper: {
+          position: "relative",
+        },
         buttonContainer: {
           width: 130,
           height: 130,
@@ -131,12 +163,23 @@ const CategoryPictogramsScreen = () => {
           justifyContent: "center",
           overflow: "hidden",
         },
+        heartButton: {
+          position: "absolute",
+          top: -8,
+          right: -8,
+          backgroundColor: themedColors.background,
+          borderRadius: 12,
+          padding: 4,
+          zIndex: 1,
+        },
         textCard: {
           fontSize: 18,
           fontWeight: "bold",
+          lineHeight: 22,
           textAlign: "center",
           color: themedColors.text,
           marginTop: 5,
+          minHeight: 44,
         },
         image: {
           width: 70,
@@ -150,13 +193,14 @@ const CategoryPictogramsScreen = () => {
           borderRadius: 10,
         },
       }),
-    [themedColors],
+    [themedColors, temaOscuro],
   );
 
   const renderPictogramItem = useCallback(
     (item: Pictogram) => {
       const capitalizedKeyword =
         item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
+      const isFavorite = favoriteIds.has(item.id);
 
       return (
         <TouchableOpacity
@@ -164,12 +208,25 @@ const CategoryPictogramsScreen = () => {
           onPress={() => handlePictogramPress(item)}
           activeOpacity={0.7}
         >
-          <View style={containerStyles.buttonContainer}>
-            <Image
-              source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
-              style={containerStyles.image}
-              defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
-            />
+          <View style={containerStyles.cardWrapper}>
+            <View style={containerStyles.buttonContainer}>
+              <Image
+                source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+                style={containerStyles.image}
+                defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+              />
+            </View>
+            <TouchableOpacity
+              style={containerStyles.heartButton}
+              onPress={() => void toggleFavorite(item.id)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={isFavorite ? "heart" : "heart-outline"}
+                size={20}
+                color={isFavorite ? "#E53935" : "#9E9E9E"}
+              />
+            </TouchableOpacity>
           </View>
           <CustomText style={containerStyles.textCard}>
             {transformText(capitalizedKeyword)}
@@ -177,7 +234,14 @@ const CategoryPictogramsScreen = () => {
         </TouchableOpacity>
       );
     },
-    [containerStyles, handlePictogramPress, getArasaacImageUrl, transformText],
+    [
+      containerStyles,
+      handlePictogramPress,
+      getArasaacImageUrl,
+      transformText,
+      favoriteIds,
+      toggleFavorite,
+    ],
   );
 
   const renderPage = useCallback(
@@ -267,7 +331,10 @@ const CategoryPictogramsScreen = () => {
     ],
   );
 
-  if (isLoading) {
+  const showLoading =
+    isLoading || (pictograms.length > 0 && stableOrder.length === 0);
+
+  if (showLoading) {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />

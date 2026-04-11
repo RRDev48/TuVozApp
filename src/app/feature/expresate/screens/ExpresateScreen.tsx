@@ -3,6 +3,7 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CustomText from "@/src/app/feature/common/CustomText";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
+import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavoritePictograms";
 import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
@@ -39,7 +40,7 @@ const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
 
 const ExpresateScreen = () => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { transformText, getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { categories, isLoading, error } = usePictogramCategories();
@@ -47,6 +48,7 @@ const ExpresateScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const { favoriteIds, toggleFavorite } = useFavoritePictograms();
 
   const {
     pictograms: searchResults,
@@ -54,29 +56,36 @@ const ExpresateScreen = () => {
     error: searchError,
   } = useSearchPictograms(searchQuery);
 
-  const itemsPerPage = 6;
+  const isKeyboardOpen = keyboardHeight > 0;
+  const categoryItemsPerPage = isKeyboardOpen ? 2 : 4;
+  const pictogramItemsPerPage = 6;
 
   const isSearchMode = searchQuery.trim().length > 0;
 
   const { paginatedCategories, totalPages: totalCategoryPages } =
     usePaginatedCategories({
       categories,
-      itemsPerPage,
+      itemsPerPage: categoryItemsPerPage,
     });
 
   const { paginatedPictograms, totalPages: totalPictogramPages } =
     usePaginatedPictograms({
       pictograms: searchResults,
-      itemsPerPage,
+      itemsPerPage: pictogramItemsPerPage,
     });
 
   const totalPages = isSearchMode ? totalPictogramPages : totalCategoryPages;
 
-  // Resetear página cuando cambia el modo de búsqueda
+  // Resetear página cuando cambia el modo de búsqueda o el estado del teclado
   useEffect(() => {
     setCurrentPage(0);
     flatListRef.current?.scrollToIndex({ index: 0, animated: false });
   }, [isSearchMode]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+    flatListRef.current?.scrollToIndex({ index: 0, animated: false });
+  }, [isKeyboardOpen]);
 
   // Manejar teclado
   useEffect(() => {
@@ -168,13 +177,13 @@ const ExpresateScreen = () => {
           width: 8,
           height: 8,
           borderRadius: 4,
-          backgroundColor: themedColors.secondary,
+          backgroundColor: temaOscuro ? "#FFFFFF" : "#006F9E",
         },
         paginationDotActive: {
           width: 8,
           height: 8,
           borderRadius: 4,
-          backgroundColor: themedColors.primary,
+          backgroundColor: "#03A503",
         },
         pageContainer: {
           width: PAGE_WIDTH,
@@ -199,12 +208,26 @@ const ExpresateScreen = () => {
           alignItems: "center",
           justifyContent: "center",
         },
+        cardWrapper: {
+          position: "relative",
+        },
+        heartButton: {
+          position: "absolute",
+          top: -8,
+          right: -8,
+          backgroundColor: themedColors.background,
+          borderRadius: 12,
+          padding: 4,
+          zIndex: 1,
+        },
         textCard: {
           fontSize: 18,
           fontWeight: "bold",
+          lineHeight: 22,
           textAlign: "center",
           color: themedColors.text,
           marginTop: 5,
+          minHeight: 44,
         },
         icon: {
           width: 70,
@@ -242,7 +265,7 @@ const ExpresateScreen = () => {
           color: themedColors.secondary,
         },
       }),
-    [themedColors],
+    [themedColors, temaOscuro],
   );
 
   const renderCategoryItem = useCallback(
@@ -262,6 +285,7 @@ const ExpresateScreen = () => {
     (item: Pictogram) => {
       const capitalizedKeyword =
         item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
+      const isFavorite = favoriteIds.has(item.id);
 
       return (
         <TouchableOpacity
@@ -269,12 +293,25 @@ const ExpresateScreen = () => {
           onPress={() => handlePictogramPress(item)}
           activeOpacity={0.7}
         >
-          <View style={containerStyles.buttonContainer}>
-            <Image
-              source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
-              style={containerStyles.image}
-              defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
-            />
+          <View style={containerStyles.cardWrapper}>
+            <View style={containerStyles.buttonContainer}>
+              <Image
+                source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+                style={containerStyles.image}
+                defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+              />
+            </View>
+            <TouchableOpacity
+              style={containerStyles.heartButton}
+              onPress={() => void toggleFavorite(item.id)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={isFavorite ? "heart" : "heart-outline"}
+                size={20}
+                color={isFavorite ? "#E53935" : "#9E9E9E"}
+              />
+            </TouchableOpacity>
           </View>
           <CustomText style={containerStyles.textCard}>
             {transformText(capitalizedKeyword)}
@@ -282,7 +319,14 @@ const ExpresateScreen = () => {
         </TouchableOpacity>
       );
     },
-    [containerStyles, handlePictogramPress, getArasaacImageUrl, transformText],
+    [
+      containerStyles,
+      handlePictogramPress,
+      getArasaacImageUrl,
+      transformText,
+      favoriteIds,
+      toggleFavorite,
+    ],
   );
 
   const renderPage = useCallback(
@@ -303,19 +347,24 @@ const ExpresateScreen = () => {
             {renderGridItem(page[0])}
             {renderGridItem(page[1])}
           </View>
-          <View style={containerStyles.gridRow}>
-            {renderGridItem(page[2])}
-            {renderGridItem(page[3])}
-          </View>
-          <View style={containerStyles.gridRow}>
-            {renderGridItem(page[4])}
-            {renderGridItem(page[5])}
-          </View>
+          {!isKeyboardOpen || isSearchMode ? (
+            <View style={containerStyles.gridRow}>
+              {renderGridItem(page[2])}
+              {renderGridItem(page[3])}
+            </View>
+          ) : null}
+          {isSearchMode ? (
+            <View style={containerStyles.gridRow}>
+              {renderGridItem(page[4])}
+              {renderGridItem(page[5])}
+            </View>
+          ) : null}
         </View>
       );
     },
     [
       isSearchMode,
+      isKeyboardOpen,
       renderCategoryItem,
       renderPictogramItem,
       containerStyles.pageContainer,
@@ -493,6 +542,15 @@ const ExpresateScreen = () => {
             autoCapitalize="none"
             autoCorrect={false}
           />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery("")}>
+              <Ionicons
+                name="close-circle"
+                size={20}
+                color={themedColors.secondary}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
