@@ -8,7 +8,6 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as Haptics from "expo-haptics";
-import * as Speech from "expo-speech";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
@@ -20,6 +19,7 @@ import {
   ViewToken,
 } from "react-native";
 import { Pictogram } from "../models/pictogram.types";
+import { speakPictogramText } from "../services/speech.Service";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -54,12 +54,7 @@ const CategoryPictogramsScreen = () => {
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const language = pictogram.language === "es" ? "es-ES" : pictogram.language;
-    Speech.speak(pictogram.keyword, {
-      language: language,
-      pitch: 1.0,
-      rate: 0.9,
-    });
+    void speakPictogramText(pictogram.keyword, pictogram.language);
   }, []);
 
   const getArasaacImageUrl = useCallback((arasaacId: string) => {

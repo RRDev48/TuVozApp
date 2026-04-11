@@ -12,7 +12,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import * as Haptics from "expo-haptics";
-import * as Speech from "expo-speech";
 import React, {
   useCallback,
   useEffect,
@@ -34,6 +33,7 @@ import {
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
+import { speakPictogramText } from "../services/speech.Service";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -119,12 +119,7 @@ const ExpresateScreen = () => {
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    const language = pictogram.language === "es" ? "es-ES" : pictogram.language;
-    Speech.speak(pictogram.keyword, {
-      language: language,
-      pitch: 1.0,
-      rate: 0.9,
-    });
+    void speakPictogramText(pictogram.keyword, pictogram.language);
   }, []);
 
   const getArasaacImageUrl = useCallback((arasaacId: string) => {
