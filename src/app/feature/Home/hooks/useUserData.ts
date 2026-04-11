@@ -7,7 +7,7 @@ export const useUserData = (
 ): UseUserDataReturn => {
   const [userName, setUserName] = useState<string | null>(defaultName);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchUserData = async () => {
     try {
@@ -27,8 +27,8 @@ export const useUserData = (
       } else {
         setUserName(null);
       }
-    } catch (err) {
-      setError(err);
+    } catch {
+      setError("No se pudo obtener la informacion del usuario");
       setUserName(null);
     } finally {
       setLoading(false);

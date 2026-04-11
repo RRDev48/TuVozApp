@@ -1,50 +1,70 @@
+import { auditLogService } from "@/src/app/feature/ajustes/services/auditLog.Service";
 import { supabase } from "@/src/lib/supabaseClient";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
 
+type ServiceResult<T> = {
+  data: T | null;
+  error: string | null;
+};
+
+type MutationResult = {
+  success: boolean;
+  error: string | null;
+};
+
+type FavoritePictogramRow = {
+  pictogram_id: string;
+  pictograms: Pictogram | Pictogram[] | null;
+};
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const supabaseError = error as { message?: string };
+    return supabaseError.message || fallback;
+  }
+
+  return fallback;
+}
+
+function normalizeJoinedRow<T>(value: T | T[] | null): T | null {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+
+  return value;
+}
+
 export const expresateService = {
-  getCategories: async (): Promise<{
-    data: PictogramCategory[] | null;
-    error: any;
-  }> => {
+  getCategories: async (): Promise<ServiceResult<PictogramCategory[]>> => {
     try {
       const { data, error } = await supabase
-        .from("categories")
-        .select("id, name, slug, pictograms!inner(id)")
+        .from("pictograms_categories")
+        .select("id, name, slug, image_url")
         .order("name", { ascending: true });
 
       if (error) {
-        console.error("Error fetching categories:", error);
         throw error;
       }
 
-      const uniqueCategories =
-        data?.reduce((acc: PictogramCategory[], curr: any) => {
-          if (!acc.find((cat) => cat.id === curr.id)) {
-            acc.push({
-              id: curr.id,
-              name: curr.name,
-              slug: curr.slug,
-            });
-          }
-          return acc;
-        }, []) || [];
-
       return {
-        data: uniqueCategories,
+        data: data as PictogramCategory[],
         error: null,
       };
-    } catch (error) {
-      console.error("Error in getCategories:", error);
-      return { data: null, error };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: getErrorMessage(error, "Error al obtener categorías"),
+      };
     }
   },
 
   getPictogramsByCategory: async (
     categoryId: string,
-  ): Promise<{
-    data: Pictogram[] | null;
-    error: any;
-  }> => {
+  ): Promise<ServiceResult<Pictogram[]>> => {
     try {
       const { data, error } = await supabase
         .from("pictograms")
@@ -57,17 +77,17 @@ export const expresateService = {
       }
 
       return { data: data as Pictogram[], error: null };
-    } catch (error) {
-      return { data: null, error };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: getErrorMessage(error, "Error al obtener pictogramas"),
+      };
     }
   },
 
   searchPictograms: async (
     keyword: string,
-  ): Promise<{
-    data: Pictogram[] | null;
-    error: any;
-  }> => {
+  ): Promise<ServiceResult<Pictogram[]>> => {
     try {
       const { data, error } = await supabase
         .from("pictograms")
@@ -80,17 +100,15 @@ export const expresateService = {
       }
 
       return { data: data as Pictogram[], error: null };
-    } catch (error) {
-      return { data: null, error };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: getErrorMessage(error, "Error al buscar pictogramas"),
+      };
     }
   },
 
-  getPictogramById: async (
-    id: number,
-  ): Promise<{
-    data: Pictogram | null;
-    error: any;
-  }> => {
+  getPictogramById: async (id: string): Promise<ServiceResult<Pictogram>> => {
     try {
       const { data, error } = await supabase
         .from("pictograms")
@@ -102,9 +120,102 @@ export const expresateService = {
         throw error;
       }
 
-      return { data: data as Pictogram, error: null };
-    } catch (error) {
-      return { data: null, error };
+      return { data: (data as Pictogram | null) ?? null, error: null };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: getErrorMessage(error, "Error al obtener el pictograma"),
+      };
+    }
+  },
+
+  addFavoritePictogram: async (
+    profileId: string,
+    pictogramId: string,
+  ): Promise<MutationResult> => {
+    try {
+      const { error } = await supabase.from("favorite_pictograms").insert({
+        profile_id: profileId,
+        pictogram_id: pictogramId,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      await auditLogService.logEventSafe({
+        profile_id: profileId,
+        event_type: auditLogService.events.FAVORITE_PICTOGRAM_ADDED,
+        description: "Favorite pictogram added",
+        metadata: { profile_id: profileId, pictogram_id: pictogramId },
+        source: "expresate.service.addFavoritePictogram",
+      });
+
+      return { success: true, error: null };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al agregar favorito"),
+      };
+    }
+  },
+
+  removeFavoritePictogram: async (
+    profileId: string,
+    pictogramId: string,
+  ): Promise<MutationResult> => {
+    try {
+      const { error } = await supabase
+        .from("favorite_pictograms")
+        .delete()
+        .eq("profile_id", profileId)
+        .eq("pictogram_id", pictogramId);
+
+      if (error) {
+        throw error;
+      }
+
+      await auditLogService.logEventSafe({
+        profile_id: profileId,
+        event_type: auditLogService.events.FAVORITE_PICTOGRAM_REMOVED,
+        description: "Favorite pictogram removed",
+        metadata: { profile_id: profileId, pictogram_id: pictogramId },
+        source: "expresate.service.removeFavoritePictogram",
+      });
+
+      return { success: true, error: null };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al quitar favorito"),
+      };
+    }
+  },
+
+  getFavoritePictograms: async (
+    profileId: string,
+  ): Promise<ServiceResult<Pictogram[]>> => {
+    try {
+      const { data, error } = await supabase
+        .from("favorite_pictograms")
+        .select("pictogram_id, pictograms(*)")
+        .eq("profile_id", profileId);
+
+      if (error) {
+        throw error;
+      }
+
+      const pictograms =
+        (data as FavoritePictogramRow[] | null)
+          ?.map((item) => normalizeJoinedRow(item.pictograms))
+          .filter((item): item is Pictogram => item !== null) || [];
+
+      return { data: pictograms as Pictogram[], error: null };
+    } catch (error: unknown) {
+      return {
+        data: null,
+        error: getErrorMessage(error, "Error al obtener favoritos"),
+      };
     }
   },
 };

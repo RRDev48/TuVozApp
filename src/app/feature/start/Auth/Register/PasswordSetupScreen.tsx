@@ -21,6 +21,14 @@ import ProgressBar from "../components/ProgressBar";
 import { usePasswordSetup } from "../hooks/usePasswordSetup";
 import { authService } from "../services/auth.Service";
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+}
+
 type PasswordSetupScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "PasswordSetup"
@@ -72,18 +80,20 @@ const PasswordSetupScreen = () => {
 
   const handleRegister = async (validPassword: string) => {
     try {
-      const authResponse = await authService.signUp(email, validPassword);
+      const authResponse = await authService.signUp(email, validPassword, {
+        full_name: name,
+        role,
+      });
 
       if (!authResponse.success || !authResponse.data?.user) {
-        logAndShowError(
+        const message =
           authResponse.error ||
-            "No se pudo crear el usuario. Verifica que el correo no esté registrado.",
-          new Error(authResponse.error),
-          {
-            context: "auth_signup_failed",
-            metadata: { email, step: "password_setup" },
-          },
-        );
+          "No se pudo crear el usuario. Verifica que el correo no esté registrado.";
+
+        await logAndShowError(message, new Error(message), {
+          context: "auth_signup_failed",
+          metadata: { email, step: "password_setup" },
+        });
         return;
       }
 
@@ -95,10 +105,15 @@ const PasswordSetupScreen = () => {
         isOwner,
         ownerUserId,
       });
-    } catch (error: any) {
-      logAndShowError(
-        error.message || "Ocurrió un error durante el registro.",
+    } catch (error: unknown) {
+      const message = getErrorMessage(
         error,
+        "Ocurrió un error durante el registro.",
+      );
+
+      await logAndShowError(
+        message,
+        error instanceof Error ? error : undefined,
         {
           context: "auth_registration_error",
           metadata: { email, step: "password_setup" },

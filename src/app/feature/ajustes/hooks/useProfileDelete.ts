@@ -1,6 +1,10 @@
 import { useCallback, useState } from "react";
 import { profileManagementService } from "../services/profileManagement.Service";
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 interface UseProfileDeleteResult {
   showConfirmDelete: boolean;
   showError: boolean;
@@ -68,15 +72,10 @@ export const useProfileDelete = (): UseProfileDeleteResult => {
             return;
           }
 
-          if (result.deletedUser) {
-            await profileManagementService.signOut();
-            onComplete(true);
-          } else {
-            onComplete(false);
-          }
+          onComplete(false);
         }
-      } catch (error: any) {
-        setErrorMessage("Error al eliminar el perfil");
+      } catch (error: unknown) {
+        setErrorMessage(getErrorMessage(error, "Error al eliminar el perfil"));
         setShowError(true);
       } finally {
         setIsDeleting(false);

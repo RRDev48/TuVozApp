@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import type {
+  NativeSyntheticEvent,
+  TextInputKeyPressEventData,
+} from "react-native";
 import { Keyboard, TextInput } from "react-native";
 import { UseCodeVerificationProps } from "../models/auth.props";
 
@@ -26,7 +30,10 @@ export const useCodeVerification = ({
     }
   };
 
-  const handleKeyPress = (e: any, index: number) => {
+  const handleKeyPress = (
+    e: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    index: number,
+  ) => {
     if (e.nativeEvent.key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -54,7 +61,7 @@ export const useCodeVerification = ({
       hasVerifiedRef.current = true;
       onComplete(fullCode);
     }
-  }, [code, codeLength, isVerifying]);
+  }, [code, codeLength, isVerifying, onComplete]);
 
   useEffect(() => {
     if (code.some((digit) => digit === "")) {

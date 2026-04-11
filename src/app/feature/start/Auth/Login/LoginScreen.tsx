@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -15,7 +16,16 @@ import {
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
+import VerificationErrorModal from "../components/VerificationErrorModal";
 import { authService } from "../services/auth.Service";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+}
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -31,6 +41,8 @@ const LoginScreen = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
+    useErrorHandling({ source: "login.screen", enableAuditLogging: true });
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -56,8 +68,10 @@ const LoginScreen = () => {
     setEmailError("");
     setPasswordError("");
 
-    if (!email.trim() || !password.trim()) {
-      if (!email.trim()) setEmailError("Por favor ingresa tu email");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || !password.trim()) {
+      if (!normalizedEmail) setEmailError("Por favor ingresa tu email");
       if (!password.trim()) setPasswordError("Por favor ingresa tu contraseña");
       return;
     }
@@ -65,17 +79,38 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.signIn(email, password);
+      const response = await authService.signIn(normalizedEmail, password);
 
       if (response.success) {
         navigation.navigate("Home");
       } else {
         setEmailError("Credenciales incorrectas");
         setPasswordError("Credenciales incorrectas");
+
+        await logAndShowError(
+          response.error || "Credenciales incorrectas",
+          new Error(response.error || "Credenciales incorrectas"),
+          {
+            context: "login_failed",
+            metadata: { email: normalizedEmail },
+          },
+          "warning",
+        );
       }
-    } catch (error) {
-      setEmailError("Error al iniciar sesión");
-      setPasswordError("Error al iniciar sesión");
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, "Error al iniciar sesión");
+
+      setEmailError(message);
+      setPasswordError(message);
+
+      await logAndShowError(
+        message,
+        error instanceof Error ? error : undefined,
+        {
+          context: "login_unexpected_error",
+          metadata: { email: normalizedEmail },
+        },
+      );
     } finally {
       setIsLoading(false);
     }
@@ -227,6 +262,13 @@ const LoginScreen = () => {
             <Text style={styles.helpLink}>Ayuda</Text>
           </TouchableOpacity>
         </View>
+
+        <VerificationErrorModal
+          visible={showErrorModal}
+          title="Error"
+          message={errorMessage}
+          onClose={closeErrorModal}
+        />
       </View>
     </TouchableWithoutFeedback>
   );

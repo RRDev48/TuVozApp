@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createRoutine, getRoutineByDate } from "../services/routine.service";
+import { getRoutineByDate } from "../services/routine.service";
 import { getMonday, getTodayIndex } from "../utils/dateHelpers";
 
 export const useWeekRoutine = (profileId: string) => {
@@ -32,16 +32,16 @@ export const useWeekRoutine = (profileId: string) => {
 
   useEffect(() => {
     const fetchRoutine = async () => {
-      if (!profileId) return;
+      if (!profileId) {
+        setRoutineId(0);
+        return;
+      }
 
       const selectedDay = daysOfWeek[selectedDayIndex];
       const dateString = selectedDay.toISOString().slice(0, 10);
 
-      let routine = await getRoutineByDate(profileId, dateString);
-      if (!routine) {
-        routine = await createRoutine(profileId, dateString);
-      }
-      setRoutineId(routine.id || 0);
+      const routine = await getRoutineByDate(profileId, dateString);
+      setRoutineId(routine?.id ?? 0);
     };
     fetchRoutine();
   }, [daysOfWeek, selectedDayIndex, profileId]);

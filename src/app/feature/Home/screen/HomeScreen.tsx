@@ -3,13 +3,21 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  ListRenderItem,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
 import getGreeting from "../actions/actions";
 import homeMenu from "../constants/home.menu";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { useHomeMenu } from "../hooks/useHomeMenu";
 import { useUserData } from "../hooks/useUserData";
+import { HomeMenuItem, HomeRouteName } from "../models/userData.types";
 
 const HomeScreen = () => {
   const { userName } = useUserData();
@@ -73,14 +81,33 @@ const HomeScreen = () => {
   }, [themedColors]);
 
   const handleMenuPress = useCallback(
-    (route: string) => {
-      navigation.navigate(route as any);
+    (route: HomeRouteName) => {
+      switch (route) {
+        case "Expresate":
+          navigation.navigate({ name: "Expresate", params: undefined });
+          break;
+        case "Rutinas":
+          navigation.navigate({ name: "Rutinas", params: undefined });
+          break;
+        case "Tarjetas":
+          navigation.navigate({ name: "Tarjetas", params: undefined });
+          break;
+        case "Frases":
+          navigation.navigate({ name: "Frases", params: undefined });
+          break;
+        case "Emergencias":
+          navigation.navigate({ name: "Emergencias", params: {} });
+          break;
+        case "Ajustes":
+          navigation.navigate({ name: "Ajustes", params: undefined });
+          break;
+      }
     },
     [navigation],
   );
 
-  const renderItem = useCallback(
-    ({ item }: any) => (
+  const renderItem = useCallback<ListRenderItem<HomeMenuItem>>(
+    ({ item }) => (
       <MenuItem
         name={item.name}
         route={item.component}

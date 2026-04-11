@@ -1,26 +1,41 @@
 import { useCallback, useEffect, useState } from "react";
 import { Task } from "../models/task.types";
 import {
-  getTasksByRoutine,
-  updateTaskStatus,
-  updateTaskTimes,
+    getTasksByRoutine,
+    updateTaskStatus,
+    updateTaskTimes,
 } from "../services/task.service";
 import { mapTasksFromDB } from "./useTaskMapper";
+
+const TASK_STATUS_VALUES = [
+  "Pendiente",
+  "En Proceso",
+  "Completado",
+  "Cancelado",
+] as const;
+
+type TaskStatus = (typeof TASK_STATUS_VALUES)[number];
+
+function isTaskStatus(value: string): value is TaskStatus {
+  return TASK_STATUS_VALUES.includes(value as TaskStatus);
+}
 
 export const useRoutineTasks = (routineId: number) => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (routineId) {
-        const tasksDb = await getTasksByRoutine(routineId);
-        setTasks(mapTasksFromDB(tasksDb));
-      } else {
-        setTasks([]);
-      }
-    };
-    fetchTasks();
+  const loadTasks = useCallback(async () => {
+    if (!routineId) {
+      setTasks([]);
+      return;
+    }
+
+    const tasksDb = await getTasksByRoutine(routineId);
+    setTasks(mapTasksFromDB(tasksDb));
   }, [routineId]);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
 
   const addTask = useCallback((newTask: Task) => {
     setTasks((prev) => [...prev, newTask]);
@@ -28,20 +43,21 @@ export const useRoutineTasks = (routineId: number) => {
 
   const updateTaskState = useCallback(
     async (taskId: string, newState: string) => {
+      if (!isTaskStatus(newState)) {
+        return;
+      }
+
       try {
-        await updateTaskStatus(
-          Number(taskId),
-          newState as "Pendiente" | "En Proceso" | "Completado" | "Cancelado",
-        );
+        await updateTaskStatus(Number(taskId), newState);
 
         setTasks((prev) =>
           prev.map((t) => (t.id === taskId ? { ...t, estado: newState } : t)),
         );
-      } catch (error) {
-        console.error("Error updating task status:", error);
+      } catch {
+        await loadTasks();
       }
     },
-    [],
+    [loadTasks],
   );
 
   const handleTaskTimeChange = useCallback(
@@ -56,15 +72,11 @@ export const useRoutineTasks = (routineId: number) => {
               : t,
           ),
         );
-      } catch (error) {
-        console.error("Error updating task times:", error);
-        if (routineId) {
-          const tasksDb = await getTasksByRoutine(routineId);
-          setTasks(mapTasksFromDB(tasksDb));
-        }
+      } catch {
+        await loadTasks();
       }
     },
-    [routineId],
+    [loadTasks],
   );
 
   return {

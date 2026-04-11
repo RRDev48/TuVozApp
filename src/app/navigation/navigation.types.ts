@@ -1,3 +1,9 @@
+import type { UserRole } from "@/src/app/feature/common/models/database.types";
+import type {
+  EmergencyAlertType,
+  EmergencyFormData,
+} from "@/src/app/feature/emergencias/models/emergency.types";
+
 type AddScreenParams = {
   onAdd: (value: string) => void;
 };
@@ -11,17 +17,17 @@ type RootStackParamsList = {
   NewPassword: { email: string };
   UserType: undefined;
   RoleSelection: { isOwner?: boolean; ownerUserId?: string };
-  RegisterInfo: { role?: string; isOwner?: boolean; ownerUserId?: string };
+  RegisterInfo: { role?: UserRole; isOwner?: boolean; ownerUserId?: string };
   EmailVerification: {
     name: string;
-    role?: string;
+    role?: UserRole;
     isOwner?: boolean;
     ownerUserId?: string;
   };
   PasswordSetup: {
     email: string;
     name: string;
-    role?: string;
+    role?: UserRole;
     isOwner?: boolean;
     ownerUserId?: string;
   };
@@ -29,7 +35,7 @@ type RootStackParamsList = {
     email: string;
     password: string;
     name: string;
-    role?: string;
+    role?: UserRole;
     isOwner?: boolean;
     ownerUserId?: string;
   };
@@ -45,16 +51,7 @@ type RootStackParamsList = {
   Frases: undefined;
   Emergencias: { fromSettings?: boolean };
   EmergenciasParte2: {
-    formData: {
-      blood_type: string;
-      allergies: string;
-      medications: string;
-      address: string;
-      alert_type: string;
-      emergency_contact_name: string;
-      emergency_contact_phone: string;
-      notes: string;
-    };
+    formData: EmergencyFormData;
   };
   EmergencyProfile: undefined;
 
@@ -97,8 +94,8 @@ type RootStackParamsList = {
   };
 
   AlertModeSelection: {
-    currentAlertMode?: string;
-    onSelect: (alertMode: string) => void;
+    currentAlertMode?: EmergencyAlertType;
+    onSelect: (alertMode: EmergencyAlertType) => void;
   };
 
   NotesSelection: {

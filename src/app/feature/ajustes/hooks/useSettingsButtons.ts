@@ -1,18 +1,25 @@
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import { authService } from "@/src/app/feature/start/Auth/services/auth.Service";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback } from "react";
 
-interface SettingsButton {
+type CurrentAuthUser = Awaited<ReturnType<typeof authService.getCurrentUser>>;
+
+export interface SettingsButton {
   id: string;
   titleKey: string;
   subtitleKey: string;
-  iconName: string;
+  iconName: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
   show: boolean;
 }
 
-export const useSettingsButtons = (currentUser: any, isLoading: boolean) => {
+export const useSettingsButtons = (
+  currentUser: CurrentAuthUser,
+  isLoading: boolean,
+) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
   const handleNavigateToProfiles = useCallback(() => {

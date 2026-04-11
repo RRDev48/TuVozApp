@@ -4,9 +4,8 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
-  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,6 +17,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
+import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
@@ -29,29 +29,9 @@ type AddAllergyScreenNavigationProp = StackNavigationProp<
 const AddAllergyScreen = () => {
   const navigation = useNavigation<AddAllergyScreenNavigationProp>();
   const route = useRoute<AddAllergyScreenRouteProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const isKeyboardVisible = useKeyboardVisibility();
 
   const {
     allergyName,
@@ -67,49 +47,53 @@ const AddAllergyScreen = () => {
     onAdd: route.params?.onAdd,
   });
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    contentContainer: {
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 120,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.text,
-      marginBottom: 20,
-      textAlign: "center",
-    },
-    firstSection: {
-      marginBottom: 30,
-    },
-    dropdownButton: {
-      backgroundColor: themedColors.primary,
-      borderRadius: 16,
-      paddingVertical: 18,
-      paddingHorizontal: 24,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    dropdownButtonText: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-    },
-    overlay: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
-  });
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        contentContainer: {
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 120,
+        },
+        sectionTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.text,
+          marginBottom: 20,
+          textAlign: "center",
+        },
+        firstSection: {
+          marginBottom: 30,
+        },
+        dropdownButton: {
+          backgroundColor: themedColors.primary,
+          borderRadius: 16,
+          paddingVertical: 18,
+          paddingHorizontal: 24,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+        dropdownButtonText: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.secondary,
+        },
+        overlay: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
+      }),
+    [themedColors],
+  );
 
   return (
     <View style={styles.container}>

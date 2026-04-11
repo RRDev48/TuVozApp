@@ -2,18 +2,32 @@ import { useEffect, useState } from "react";
 import { Category } from "../models/category.types";
 import { getCategories } from "../services/category.service";
 
-export function useCategories(visible: boolean) {
+export function useCategories(enabled = true) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (visible) {
+    let isMounted = true;
+
+    if (enabled) {
       setLoading(true);
       getCategories()
-        .then((cats) => setCategories(cats))
-        .finally(() => setLoading(false));
+        .then((cats) => {
+          if (isMounted) {
+            setCategories(cats);
+          }
+        })
+        .finally(() => {
+          if (isMounted) {
+            setLoading(false);
+          }
+        });
     }
-  }, [visible]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [enabled]);
 
   return { categories, loading };
 }

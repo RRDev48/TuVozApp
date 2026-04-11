@@ -5,9 +5,8 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +18,7 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
+import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 import { COUNTRY_CODES } from "../../services/phoneParser";
 
 type EmergencyContactScreenRouteProp = RouteProp<
@@ -35,27 +35,7 @@ const EmergencyContactScreen = () => {
   const route = useRoute<EmergencyContactScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const isKeyboardVisible = useKeyboardVisibility();
 
   const styles = useMemo(
     () =>

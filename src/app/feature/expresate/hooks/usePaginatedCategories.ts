@@ -11,7 +11,7 @@ export const usePaginatedCategories = ({
   itemsPerPage,
 }: UsePaginatedCategoriesProps) => {
   const paginatedCategories = useMemo(() => {
-    const pages = [];
+    const pages: PictogramCategory[][] = [];
     for (let i = 0; i < categories.length; i += itemsPerPage) {
       pages.push(categories.slice(i, i + itemsPerPage));
     }

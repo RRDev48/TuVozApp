@@ -6,13 +6,14 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ProgressBar from "../components/ProgressBar";
@@ -190,13 +191,17 @@ const EmailVerificationScreen = () => {
           <TouchableOpacity
             style={[
               styles.continueButton,
-              !isFormValid && styles.buttonDisabled,
+              (!isFormValid || isChecking) && styles.buttonDisabled,
             ]}
             onPress={handleContinue}
             activeOpacity={0.8}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isChecking}
           >
-            <Text style={styles.continueButtonText}>Continuar</Text>
+            {isChecking ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.continueButtonText}>Continuar</Text>
+            )}
           </TouchableOpacity>
         </View>
 

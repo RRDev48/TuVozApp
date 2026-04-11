@@ -1,55 +1,44 @@
 import { auditLogService } from "./auditLog.Service";
-import { errorLogService } from "./errorLog.Service";
+
+type LogContext = Record<string, unknown>;
 
 export const loggingService = {
   async logError(
     errorMessage: string,
     error?: Error,
     source?: string,
-    context?: Record<string, any>,
+    context?: LogContext,
     severity: "info" | "warning" | "error" | "critical" = "error",
   ) {
-    const logPromises = [];
+    await auditLogService.logEventSafe({
+      event_type: auditLogService.events.ERROR_OCCURRED,
+      severity,
+      description: errorMessage,
+      metadata: {
+        ...context,
+        ...(error
+          ? {
+              error_name: error.name,
+              error_message: error.message,
+              stack_trace: error.stack,
+            }
+          : {}),
+      },
+      source,
+    });
 
-    if (error) {
-      logPromises.push(
-        errorLogService.logErrorWithStack(
-          errorMessage,
-          error,
-          source,
-          context,
-          severity,
-        ),
-      );
-    } else {
-      logPromises.push(
-        errorLogService.logError({
-          error_message: errorMessage,
-          severity,
-          source,
-          context,
-        }),
-      );
-    }
-
-    if (severity === "critical" || severity === "error") {
-      logPromises.push(auditLogService.logError(errorMessage, source, context));
-    }
-
-    const results = await Promise.allSettled(logPromises);
-
-    const hasSuccess = results.some((result) => result.status === "fulfilled");
-    return { success: hasSuccess };
+    return { success: true };
   },
 
   async logAuditEvent(
     eventType: string,
     description?: string,
-    metadata?: Record<string, any>,
+    metadata?: LogContext,
   ) {
     return auditLogService.logEvent({
       event_type: eventType,
-      event_description: description,
+      severity: "info",
+      description: description || "",
       metadata,
     });
   },
@@ -74,21 +63,24 @@ export const loggingService = {
     async logLogin() {
       return auditLogService.logEvent({
         event_type: auditLogService.events.LOGIN,
-        event_description: "User logged in successfully",
+        severity: "info",
+        description: "User logged in successfully",
       });
     },
 
     async logLogout() {
       return auditLogService.logEvent({
         event_type: auditLogService.events.LOGOUT,
-        event_description: "User logged out",
+        severity: "info",
+        description: "User logged out",
       });
     },
 
     async logRegister(userEmail?: string) {
       return auditLogService.logEvent({
         event_type: auditLogService.events.REGISTER,
-        event_description: "New user registered",
+        severity: "info",
+        description: "New user registered",
         metadata: userEmail ? { email: userEmail } : undefined,
       });
     },
@@ -102,7 +94,8 @@ export const loggingService = {
     async logView() {
       return auditLogService.logEvent({
         event_type: auditLogService.events.PROFILE_VIEWED,
-        event_description: "User viewed their profile",
+        severity: "info",
+        description: "User viewed their profile",
       });
     },
   },
@@ -111,7 +104,7 @@ export const loggingService = {
     async logValidationError(
       message: string,
       source: string,
-      context?: Record<string, any>,
+      context?: LogContext,
     ) {
       return loggingService.logError(
         message,
@@ -122,11 +115,7 @@ export const loggingService = {
       );
     },
 
-    async logNetworkError(
-      error: Error,
-      source: string,
-      context?: Record<string, any>,
-    ) {
+    async logNetworkError(error: Error, source: string, context?: LogContext) {
       return loggingService.logError(
         "Network error occurred",
         error,
@@ -136,11 +125,7 @@ export const loggingService = {
       );
     },
 
-    async logServerError(
-      error: Error,
-      source: string,
-      context?: Record<string, any>,
-    ) {
+    async logServerError(error: Error, source: string, context?: LogContext) {
       return loggingService.logError(
         "Server error occurred",
         error,
@@ -150,11 +135,7 @@ export const loggingService = {
       );
     },
 
-    async logCriticalError(
-      error: Error,
-      source: string,
-      context?: Record<string, any>,
-    ) {
+    async logCriticalError(error: Error, source: string, context?: LogContext) {
       return loggingService.logError(
         "Critical error occurred",
         error,

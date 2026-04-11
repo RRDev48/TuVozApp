@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { authService } from "../../start/Auth/services/auth.Service";
 
+type CurrentAuthUser = Awaited<ReturnType<typeof authService.getCurrentUser>>;
+
 export const useCurrentUser = () => {
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentAuthUser>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const checkCurrentUser = useCallback(async () => {

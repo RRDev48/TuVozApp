@@ -1,6 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   FlatList,
   Image,
@@ -10,9 +10,8 @@ import {
   View,
 } from "react-native";
 import CustomText from "../../../common/CustomText";
-import { Category } from "../../models/category.types";
+import { useCategories } from "../../hooks/useCategories";
 import { Task } from "../../models/task.types";
-import { getCategories } from "../../services/category.service";
 
 interface PendingTasksModalProps {
   visible: boolean;
@@ -33,13 +32,7 @@ export const PendingTasksModal = ({
 }: PendingTasksModalProps) => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    if (visible) {
-      getCategories().then(setCategories);
-    }
-  }, [visible, tasks]);
+  const { categories } = useCategories(visible);
 
   const pendingTasks = tasks.filter(
     (task) => task.estado === "Pendiente" || task.estado === "En Proceso",

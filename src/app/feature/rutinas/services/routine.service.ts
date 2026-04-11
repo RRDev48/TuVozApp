@@ -1,3 +1,4 @@
+import { auditLogService } from "@/src/app/feature/ajustes/services/auditLog.Service";
 import { supabase } from "@/src/lib/supabaseClient";
 import { RoutineDb } from "../models/routine.types";
 
@@ -41,5 +42,18 @@ export async function createRoutine(
     .select()
     .single();
   if (error) throw error;
+
+  await auditLogService.logEventSafe({
+    profile_id: profileId,
+    event_type: auditLogService.events.ROUTINE_CREATED,
+    description: "Routine created",
+    metadata: {
+      profile_id: profileId,
+      routine_id: data.id,
+      routine_date: date,
+    },
+    source: "routine.service.createRoutine",
+  });
+
   return data as RoutineDb;
 }

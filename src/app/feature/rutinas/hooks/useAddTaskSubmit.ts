@@ -1,12 +1,20 @@
-import { supabase } from "@/src/lib/supabaseClient";
 import { useState } from "react";
 import { Task } from "../models/task.types";
 import { createRoutine, getRoutineByDate } from "../services/routine.service";
-import {
-  createTask,
-  createTaskSteps,
-  linkTaskToRoutine,
-} from "../services/task.service";
+import { createTask, createTaskSteps } from "../services/task.service";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const possibleError = error as { message?: string };
+    return possibleError.message || fallback;
+  }
+
+  return fallback;
+}
 
 export const useAddTaskSubmit = (
   setIsLoading: (loading: boolean) => void,
@@ -80,7 +88,7 @@ export const useAddTaskSubmit = (
       const reminderDate = calculateReminderDate();
 
       const newTaskData = {
-        profile_id: profileId,
+        routine_id: routine.id,
         category_id: parseInt(category, 10),
         title: taskName.trim(),
         status: "Pendiente" as const,
@@ -91,23 +99,9 @@ export const useAddTaskSubmit = (
 
       const createdTask = await createTask(newTaskData);
 
-      const { data: existingRoutineTasks } = await supabase
-        .from("routine_tasks")
-        .select("task_order")
-        .eq("routine_id", routine.id)
-        .order("task_order", { ascending: false })
-        .limit(1);
-
-      const nextOrder =
-        existingRoutineTasks && existingRoutineTasks.length > 0
-          ? existingRoutineTasks[0].task_order + 1
-          : 1;
-
-      await linkTaskToRoutine(routine.id, createdTask.id, nextOrder);
-
       if (validSteps.length > 0) {
         const stepsToCreate = validSteps.map((stepTitle, index) => ({
-          title: stepTitle,
+          description: stepTitle,
           step_order: index + 1,
         }));
         await createTaskSteps(createdTask.id, stepsToCreate);
@@ -128,10 +122,12 @@ export const useAddTaskSubmit = (
       resetFields();
       setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error al crear la tarea:", error);
       showError(
         "Error",
-        "No se pudo crear la tarea. Por favor, inténtalo de nuevo.",
+        getErrorMessage(
+          error,
+          "No se pudo crear la tarea. Por favor, inténtalo de nuevo.",
+        ),
       );
     } finally {
       setIsLoading(false);

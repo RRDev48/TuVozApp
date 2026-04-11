@@ -1,4 +1,9 @@
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import type {
+  Profile,
+  UserRole,
+} from "@/src/app/feature/common/models/database.types";
+import { authService } from "@/src/app/feature/start/Auth/services/auth.Service";
 import { supabase } from "@/src/lib/supabaseClient";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -9,14 +14,12 @@ type ProfilesConfigScreenNavigationProp = StackNavigationProp<
   "ProfilesConfigScreen"
 >;
 
-interface CurrentUser {
-  id: string;
-  [key: string]: any;
-}
+type CurrentAuthUser = Awaited<ReturnType<typeof authService.getCurrentUser>>;
+type ProfileWithOwner = Profile & { is_owner: boolean };
 
-export const useProfilesConfig = (currentUser: CurrentUser | null) => {
+export const useProfilesConfig = (currentUser: CurrentAuthUser) => {
   const navigation = useNavigation<ProfilesConfigScreenNavigationProp>();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isLoadingRole, setIsLoadingRole] = useState(false);
 
   useEffect(() => {
@@ -35,10 +38,10 @@ export const useProfilesConfig = (currentUser: CurrentUser | null) => {
           .single();
 
         if (!error && data) {
-          setUserRole(data.role);
+          setUserRole(data.role as UserRole);
         }
-      } catch (error) {
-        console.error("Error getting user role:", error);
+      } catch {
+        setUserRole(null);
       } finally {
         setIsLoadingRole(false);
       }
@@ -77,13 +80,13 @@ export const useProfilesConfig = (currentUser: CurrentUser | null) => {
     navigation.navigate("UserType");
   }, [currentUser, userRole, navigation]);
 
-  const handleProfilePress = useCallback((profile: any) => {
-    // TODO: Cambiar al perfil seleccionado
-    console.log("Switch to profile:", profile.id);
-  }, []);
+  const handleProfilePress = useCallback(
+    (_profile: ProfileWithOwner) => {},
+    [],
+  );
 
   const handleEditProfile = useCallback(
-    (profile: any, event?: any) => {
+    (profile: ProfileWithOwner, event?: { stopPropagation?: () => void }) => {
       if (event) {
         event.stopPropagation();
       }

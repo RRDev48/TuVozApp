@@ -11,7 +11,7 @@ export const usePaginatedPictograms = ({
   itemsPerPage,
 }: UsePaginatedPictogramsProps) => {
   const paginatedPictograms = useMemo(() => {
-    const pages = [];
+    const pages: Pictogram[][] = [];
     for (let i = 0; i < pictograms.length; i += itemsPerPage) {
       pages.push(pictograms.slice(i, i + itemsPerPage));
     }

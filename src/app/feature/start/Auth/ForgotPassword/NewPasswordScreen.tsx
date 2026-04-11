@@ -7,19 +7,32 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
 import VerificationErrorModal from "../components/VerificationErrorModal";
 import VerificationSuccessModal from "../components/VerificationSuccessModal";
 import { usePasswordRecovery } from "../hooks/usePasswordRecovery";
+
+async function showFormError(
+  logAndShowError: (
+    errorMessage: string,
+    error?: Error,
+    context?: Record<string, unknown>,
+    severity?: "info" | "warning" | "error" | "critical",
+  ) => Promise<void>,
+  message: string,
+  context: Record<string, unknown>,
+) {
+  await logAndShowError(message, new Error(message), context);
+}
 
 type NewPasswordScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -67,9 +80,9 @@ const NewPasswordScreen = () => {
 
   const handleUpdatePassword = async () => {
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      logAndShowError(
+      await showFormError(
+        logAndShowError,
         "Por favor completa todos los campos",
-        new Error("Por favor completa todos los campos"),
         {
           context: "new_password_fields_empty",
           metadata: {
@@ -83,9 +96,9 @@ const NewPasswordScreen = () => {
     }
 
     if (newPassword.length < 6) {
-      logAndShowError(
+      await showFormError(
+        logAndShowError,
         "La contraseña debe tener al menos 6 caracteres",
-        new Error("La contraseña debe tener al menos 6 caracteres"),
         {
           context: "new_password_too_short",
           metadata: { email, password_length: newPassword.length },
@@ -95,14 +108,10 @@ const NewPasswordScreen = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      logAndShowError(
-        "Las contraseñas no coinciden",
-        new Error("Las contraseñas no coinciden"),
-        {
-          context: "new_password_mismatch",
-          metadata: { email, passwords_match: false },
-        },
-      );
+      await showFormError(logAndShowError, "Las contraseñas no coinciden", {
+        context: "new_password_mismatch",
+        metadata: { email, passwords_match: false },
+      });
       return;
     }
 
@@ -111,9 +120,9 @@ const NewPasswordScreen = () => {
     if (result.success) {
       setShowSuccess(true);
     } else {
-      logAndShowError(
+      await showFormError(
+        logAndShowError,
         result.error || "No se pudo actualizar la contraseña",
-        new Error(result.error || "No se pudo actualizar la contraseña"),
         {
           context: "password_update_failed",
           metadata: { email, result_error: result.error },

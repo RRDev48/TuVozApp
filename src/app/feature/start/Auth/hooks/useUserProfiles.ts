@@ -3,10 +3,18 @@ import { useCallback, useEffect, useState } from "react";
 import { authService } from "../services/auth.Service";
 import { profileService } from "../services/profile.Service";
 
+type ProfileWithOwner = Profile & { is_owner: boolean };
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+}
+
 export const useUserProfiles = () => {
-  const [profiles, setProfiles] = useState<(Profile & { is_owner: boolean })[]>(
-    [],
-  );
+  const [profiles, setProfiles] = useState<ProfileWithOwner[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -18,7 +26,7 @@ export const useUserProfiles = () => {
         setCurrentUserId(user.id);
       }
     };
-    fetchCurrentUser();
+    void fetchCurrentUser();
   }, []);
 
   const fetchProfiles = useCallback(async () => {
@@ -38,8 +46,10 @@ export const useUserProfiles = () => {
       } else {
         setError(response.error || "Error al cargar los perfiles");
       }
-    } catch (err: any) {
-      setError(err.message || "Error inesperado al cargar los perfiles");
+    } catch (error: unknown) {
+      setError(
+        getErrorMessage(error, "Error inesperado al cargar los perfiles"),
+      );
     } finally {
       setLoading(false);
     }
@@ -61,6 +71,9 @@ export const useUserProfiles = () => {
           {
             full_name: profileData.full_name,
             avatar_url: profileData.avatar_url || null,
+            email: null,
+            auth_user_id: null,
+            owner_user_id: null,
           },
           true,
         );
@@ -72,8 +85,8 @@ export const useUserProfiles = () => {
           setError(response.error || "Error al crear el perfil");
           return { success: false };
         }
-      } catch (err: any) {
-        setError(err.message || "Error inesperado al crear el perfil");
+      } catch (error: unknown) {
+        setError(getErrorMessage(error, "Error inesperado al crear el perfil"));
         return { success: false };
       } finally {
         setLoading(false);
@@ -104,8 +117,10 @@ export const useUserProfiles = () => {
           setError(response.error || "Error al actualizar el perfil");
           return { success: false };
         }
-      } catch (err: any) {
-        setError(err.message || "Error inesperado al actualizar el perfil");
+      } catch (error: unknown) {
+        setError(
+          getErrorMessage(error, "Error inesperado al actualizar el perfil"),
+        );
         return { success: false };
       } finally {
         setLoading(false);
@@ -129,8 +144,10 @@ export const useUserProfiles = () => {
           setError(response.error || "Error al eliminar el perfil");
           return { success: false };
         }
-      } catch (err: any) {
-        setError(err.message || "Error inesperado al eliminar el perfil");
+      } catch (error: unknown) {
+        setError(
+          getErrorMessage(error, "Error inesperado al eliminar el perfil"),
+        );
         return { success: false };
       } finally {
         setLoading(false);
@@ -162,8 +179,10 @@ export const useUserProfiles = () => {
           setError(response.error || "Error al desvincular el perfil");
           return { success: false };
         }
-      } catch (err: any) {
-        setError(err.message || "Error inesperado al desvincular el perfil");
+      } catch (error: unknown) {
+        setError(
+          getErrorMessage(error, "Error inesperado al desvincular el perfil"),
+        );
         return { success: false };
       } finally {
         setLoading(false);

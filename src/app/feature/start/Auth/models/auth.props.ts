@@ -1,10 +1,13 @@
+import type { UserRole } from "@/src/app/feature/common/models/database.types";
+import type { RoleId } from "../constants/roles";
+
 export interface UseCodeVerificationProps {
   codeLength?: number;
   onComplete?: (code: string) => void;
 }
 
 export interface UseRoleSelectionProps {
-  onRoleSelected?: (roleId: string) => void;
+  onRoleSelected?: (roleId: RoleId) => void;
 }
 
 export interface UseRegisterInfoProps {
@@ -21,7 +24,7 @@ export interface UseOTPVerificationProps {
   onSuccess: () => void;
   userData?: {
     name: string;
-    role: string;
+    role: UserRole;
     isOwner?: boolean;
     ownerUserId?: string;
   };

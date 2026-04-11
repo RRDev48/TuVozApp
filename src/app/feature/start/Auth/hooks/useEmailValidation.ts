@@ -11,28 +11,11 @@ export const useEmailValidation = ({
   const [confirmEmailError, setConfirmEmailError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
 
-  const commonDomains = [
-    "gmail.com",
-    "outlook.com",
-    "hotmail.com",
-    "yahoo.com",
-    "icloud.com",
-    "live.com",
-    "msn.com",
-    "aol.com",
-    "protonmail.com",
-    "zoho.com",
-    "mail.com",
-  ];
+  const normalizeEmail = (value: string) => value.trim().toLowerCase();
 
   const validateEmailFormat = (email: string): boolean => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      return false;
-    }
-
-    const domain = email.split("@")[1]?.toLowerCase();
-    return commonDomains.includes(domain);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    return emailRegex.test(email);
   };
 
   const clearErrors = () => {
@@ -45,8 +28,8 @@ export const useEmailValidation = ({
     setIsChecking(true);
     let hasError = false;
 
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedConfirmEmail = confirmEmail.trim().toLowerCase();
+    const normalizedEmail = normalizeEmail(email);
+    const normalizedConfirmEmail = normalizeEmail(confirmEmail);
 
     if (!validateEmailFormat(normalizedEmail)) {
       setEmailError("Formato de correo incorrecto");

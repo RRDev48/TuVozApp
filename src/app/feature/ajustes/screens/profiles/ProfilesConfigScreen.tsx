@@ -5,16 +5,18 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
-    ActivityIndicator,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  Text,
+  GestureResponderEvent,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { useUserProfiles } from "../../../start/Auth/hooks/useUserProfiles";
+import type { Profile } from "../../../common/models/database.types";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { useProfilesConfig } from "../../hooks/useProfilesConfig";
 
@@ -22,6 +24,8 @@ type ProfilesConfigScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "ProfilesConfigScreen"
 >;
+
+type ProfileWithOwner = Profile & { is_owner: boolean };
 
 const ProfilesConfigScreen = () => {
   const navigation = useNavigation<ProfilesConfigScreenNavigationProp>();
@@ -162,7 +166,7 @@ const ProfilesConfigScreen = () => {
   );
 
   const renderProfile = useCallback(
-    (profile: any, index: number) => (
+    (profile: ProfileWithOwner, index: number) => (
       <TouchableOpacity
         key={profile.id || index}
         style={styles.profileCard}
@@ -189,9 +193,9 @@ const ProfilesConfigScreen = () => {
         )}
         <TouchableOpacity
           style={styles.editIconButton}
-          onPress={(event) => {
+          onPress={(event: GestureResponderEvent) => {
             event.stopPropagation();
-            handleEditProfile(profile);
+            handleEditProfile(profile, event);
           }}
           activeOpacity={0.7}
         >

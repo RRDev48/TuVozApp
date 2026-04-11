@@ -6,18 +6,30 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
 import VerificationErrorModal from "../components/VerificationErrorModal";
 import { authService } from "../services/auth.Service";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+}
+
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
 
 type ForgotPasswordScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -54,8 +66,10 @@ const ForgotPasswordScreen = () => {
     useErrorHandling();
 
   const handleSend = async () => {
-    if (!email.trim()) {
-      logAndShowError(
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
+      await logAndShowError(
         "Por favor ingresa tu correo electrónico",
         new Error("Por favor ingresa tu correo electrónico"),
         {
@@ -67,13 +81,13 @@ const ForgotPasswordScreen = () => {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      logAndShowError(
+    if (!emailRegex.test(normalizedEmail)) {
+      await logAndShowError(
         "Por favor ingresa un correo electrónico válido",
         new Error("Por favor ingresa un correo electrónico válido"),
         {
           context: "forgot_password_email_invalid",
-          metadata: { email },
+          metadata: { email: normalizedEmail },
         },
       );
       return;
@@ -82,29 +96,29 @@ const ForgotPasswordScreen = () => {
     setLoading(true);
 
     try {
-      const result = await authService.sendOTP(email, false);
+      const result = await authService.sendOTP(normalizedEmail, false);
 
       if (result.success) {
-        navigation.navigate("RecoveryCode", { email });
+        navigation.navigate("RecoveryCode", { email: normalizedEmail });
       } else {
-        logAndShowError(
+        await logAndShowError(
           result.error || "No se pudo enviar el código de verificación",
           new Error(
             result.error || "No se pudo enviar el código de verificación",
           ),
           {
             context: "forgot_password_otp_send_failed",
-            metadata: { email, result_error: result.error },
+            metadata: { email: normalizedEmail, result_error: result.error },
           },
         );
       }
-    } catch (error) {
-      logAndShowError(
-        (error as Error).message || "Error inesperado",
-        error as Error,
+    } catch (error: unknown) {
+      await logAndShowError(
+        getErrorMessage(error, "Error inesperado"),
+        error instanceof Error ? error : undefined,
         {
           context: "forgot_password_unexpected_error",
-          metadata: { email },
+          metadata: { email: normalizedEmail },
         },
       );
     } finally {

@@ -4,6 +4,14 @@ import { useState } from "react";
 import { Linking } from "react-native";
 import { EmergencyProfile } from "../services/emergency.Service";
 
+function toError(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error(fallback);
+}
+
 export const useEmergencyActions = () => {
   const [sendingAlert, setSendingAlert] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -33,15 +41,11 @@ export const useEmergencyActions = () => {
 
       return location;
     } catch (error) {
-      console.error("Error obteniendo ubicación:", error);
-      logAndShowError(
-        (error as Error).message || "Error obteniendo ubicación",
-        error as Error,
-        {
-          context: "location_fetch_failed",
-          metadata: { error_type: "location_retrieval" },
-        },
-      );
+      const normalizedError = toError(error, "Error obteniendo ubicación");
+      await logAndShowError(normalizedError.message, normalizedError, {
+        context: "location_fetch_failed",
+        metadata: { error_type: "location_retrieval" },
+      });
       return null;
     }
   };
@@ -60,7 +64,7 @@ export const useEmergencyActions = () => {
     const phone = profile?.emergency_contact_phone || "";
 
     if (!phone) {
-      logAndShowError(
+      await logAndShowError(
         "No hay contacto de emergencia configurado",
         new Error("No hay contacto de emergencia configurado"),
         {
@@ -100,7 +104,7 @@ export const useEmergencyActions = () => {
           try {
             await Linking.openURL(waUrl);
           } catch (waError) {
-            logAndShowError(
+            await logAndShowError(
               "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
               new Error(
                 "No se pudo abrir WhatsApp. Por favor verifica que esté instalado.",
@@ -114,15 +118,11 @@ export const useEmergencyActions = () => {
         }
       }
     } catch (error) {
-      console.error("Error enviando alerta:", error);
-      logAndShowError(
-        (error as Error).message || "Error enviando alerta",
-        error as Error,
-        {
-          context: "emergency_alert_failed",
-          metadata: { alert_type: alertType, phone, user_name: userName },
-        },
-      );
+      const normalizedError = toError(error, "Error enviando alerta");
+      await logAndShowError(normalizedError.message, normalizedError, {
+        context: "emergency_alert_failed",
+        metadata: { alert_type: alertType, phone, user_name: userName },
+      });
     } finally {
       setSendingAlert(false);
     }

@@ -4,10 +4,8 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
-  Keyboard,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,8 +14,10 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
+import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
@@ -37,27 +37,7 @@ const AddMedicationScreen = () => {
   const route = useRoute<AddMedicationScreenRouteProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const isKeyboardVisible = useKeyboardVisibility();
 
   const {
     medicationName,
@@ -73,71 +53,53 @@ const AddMedicationScreen = () => {
     onAdd: route.params?.onAdd,
   });
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: themedColors.background,
-    },
-    contentContainer: {
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 20,
-      paddingBottom: 120,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.text,
-      marginBottom: 20,
-      textAlign: "center",
-    },
-    firstSection: {
-      marginBottom: 30,
-    },
-    dropdownButton: {
-      backgroundColor: themedColors.primary,
-      borderRadius: 16,
-      paddingVertical: 18,
-      paddingHorizontal: 24,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    dropdownButtonText: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-    },
-    frequencyList: {
-      width: "100%",
-      backgroundColor: themedColors.primary,
-      borderRadius: 16,
-      paddingVertical: 8,
-      marginBottom: 20,
-      maxHeight: 180,
-    },
-    frequencyItem: {
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: themedColors.secondary,
-    },
-    frequencyItemLast: {
-      borderBottomWidth: 0,
-    },
-    frequencyText: {
-      fontSize: 18,
-      fontWeight: "bold",
-      color: themedColors.secondary,
-    },
-    overlay: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
-  });
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+        },
+        contentContainer: {
+          flex: 1,
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 120,
+        },
+        sectionTitle: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.text,
+          marginBottom: 20,
+          textAlign: "center",
+        },
+        firstSection: {
+          marginBottom: 30,
+        },
+        dropdownButton: {
+          backgroundColor: themedColors.primary,
+          borderRadius: 16,
+          paddingVertical: 18,
+          paddingHorizontal: 24,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+        dropdownButtonText: {
+          fontSize: 18,
+          fontWeight: "bold",
+          color: themedColors.secondary,
+        },
+        overlay: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
+      }),
+    [themedColors],
+  );
 
   return (
     <View style={styles.container}>
@@ -182,25 +144,11 @@ const AddMedicationScreen = () => {
           </TouchableOpacity>
 
           {isDropdownOpen && (
-            <ScrollView
-              style={styles.frequencyList}
-              nestedScrollEnabled={true}
-              showsVerticalScrollIndicator={true}
-            >
-              {FREQUENCY_OPTIONS.map((frequency, index) => (
-                <TouchableOpacity
-                  key={frequency}
-                  style={[
-                    styles.frequencyItem,
-                    index === FREQUENCY_OPTIONS.length - 1 &&
-                      styles.frequencyItemLast,
-                  ]}
-                  onPress={() => handleSelectFrequency(frequency)}
-                >
-                  <Text style={styles.frequencyText}>{frequency}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <DropdownList
+              items={FREQUENCY_OPTIONS}
+              onSelectItem={handleSelectFrequency}
+              maxHeight={180}
+            />
           )}
         </View>
       </View>

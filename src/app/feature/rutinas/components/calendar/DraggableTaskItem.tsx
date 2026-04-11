@@ -1,16 +1,15 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import CustomText from "../../../common/CustomText";
 import { STATUS_COLOR_MAP } from "../../constants/task.constants";
+import { useCategories } from "../../hooks/useCategories";
 import { useTaskGestures } from "../../hooks/useTaskGestures";
-import { Category } from "../../models/category.types";
 import { DraggableTaskItemProps } from "../../models/component.props";
-import { getCategories } from "../../services/category.service";
 
 const styles = StyleSheet.create({
   taskContainer: {
@@ -111,11 +110,7 @@ export const DraggableTaskItem = ({
 }: DraggableTaskItemProps) => {
   const { transformText } = usePersonalization();
   const [isDragging, setIsDragging] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    getCategories().then(setCategories);
-  }, []);
+  const { categories } = useCategories();
 
   const { translateY, taskHeight, composedGesture } = useTaskGestures({
     hourHeight,

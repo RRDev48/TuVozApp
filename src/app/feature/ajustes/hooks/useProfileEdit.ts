@@ -2,6 +2,10 @@ import { useCallback, useState } from "react";
 import { useUserProfiles } from "../../start/Auth/hooks/useUserProfiles";
 import { profileManagementService } from "../services/profileManagement.Service";
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export const useProfileEdit = (profileId: string, initialName: string) => {
   const [fullName, setFullName] = useState(initialName);
   const [showError, setShowError] = useState(false);
@@ -43,8 +47,10 @@ export const useProfileEdit = (profileId: string, initialName: string) => {
             onSuccess();
           }, 1500);
         }
-      } catch (error: any) {
-        setErrorMessage("Error al actualizar el perfil");
+      } catch (error: unknown) {
+        setErrorMessage(
+          getErrorMessage(error, "Error al actualizar el perfil"),
+        );
         setShowError(true);
       } finally {
         setIsSaving(false);

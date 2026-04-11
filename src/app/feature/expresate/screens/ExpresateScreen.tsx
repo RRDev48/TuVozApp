@@ -1,3 +1,4 @@
+import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CustomText from "@/src/app/feature/common/CustomText";
@@ -32,7 +33,7 @@ import {
   ViewToken,
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
-import { Pictogram } from "../models/pictogram.types";
+import { Pictogram, PictogramCategory } from "../models/pictogram.types";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -41,14 +42,17 @@ const ExpresateScreen = () => {
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const { categories, isLoading } = usePictogramCategories();
+  const { categories, isLoading, error } = usePictogramCategories();
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const { pictograms: searchResults, isLoading: isSearching } =
-    useSearchPictograms(searchQuery);
+  const {
+    pictograms: searchResults,
+    isLoading: isSearching,
+    error: searchError,
+  } = useSearchPictograms(searchQuery);
 
   const itemsPerPage = 6;
 
@@ -98,6 +102,9 @@ const ExpresateScreen = () => {
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
+
+  // Estado para detectar si debe mostrarse la pantalla de error
+  const hasError = !isLoading && (!!error || categories.length === 0);
 
   const handleMenuItemPress = useCallback(
     (categoryId: string, categorySlug: string, categoryName: string) => {
@@ -244,7 +251,7 @@ const ExpresateScreen = () => {
   );
 
   const renderCategoryItem = useCallback(
-    (item: any) => (
+    (item: PictogramCategory) => (
       <MenuItem
         name={normalizeCategoryName(item.name)}
         route={item.slug}
@@ -284,24 +291,30 @@ const ExpresateScreen = () => {
   );
 
   const renderPage = useCallback(
-    (page: any[]) => {
-      const renderItem = isSearchMode
-        ? renderPictogramItem
-        : renderCategoryItem;
+    (page: Array<PictogramCategory | Pictogram>) => {
+      const renderGridItem = (item?: PictogramCategory | Pictogram) => {
+        if (!item) {
+          return <View style={{ flex: 1 }} />;
+        }
+
+        return isSearchMode
+          ? renderPictogramItem(item as Pictogram)
+          : renderCategoryItem(item as PictogramCategory);
+      };
 
       return (
         <View style={containerStyles.pageContainer}>
           <View style={containerStyles.gridRow}>
-            {renderItem(page[0])}
-            {page[1] ? renderItem(page[1]) : <View style={{ flex: 1 }} />}
+            {renderGridItem(page[0])}
+            {renderGridItem(page[1])}
           </View>
           <View style={containerStyles.gridRow}>
-            {page[2] ? renderItem(page[2]) : <View style={{ flex: 1 }} />}
-            {page[3] ? renderItem(page[3]) : <View style={{ flex: 1 }} />}
+            {renderGridItem(page[2])}
+            {renderGridItem(page[3])}
           </View>
           <View style={containerStyles.gridRow}>
-            {page[4] ? renderItem(page[4]) : <View style={{ flex: 1 }} />}
-            {page[5] ? renderItem(page[5]) : <View style={{ flex: 1 }} />}
+            {renderGridItem(page[4])}
+            {renderGridItem(page[5])}
           </View>
         </View>
       );
@@ -356,6 +369,54 @@ const ExpresateScreen = () => {
     ],
   );
 
+  const errorScreenStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        errorContainer: {
+          flex: 1,
+          backgroundColor: themedColors.background,
+          paddingTop: 50,
+        },
+        errorContent: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 30,
+          marginTop: -80,
+        },
+        errorIcon: {
+          width: 180,
+          height: 180,
+        },
+        errorText: {
+          fontSize: 24,
+          fontWeight: "700",
+          color: themedColors.text,
+          textAlign: "center",
+          paddingHorizontal: 20,
+        },
+      }),
+    [themedColors],
+  );
+
+  const renderErrorScreen = useCallback(
+    () => (
+      <View style={errorScreenStyles.errorContainer}>
+        <BackButton onPress={handleGoBack} />
+
+        <View style={errorScreenStyles.errorContent}>
+          <ZenithXAnimado width={180} height={180} />
+          <CustomText style={errorScreenStyles.errorText}>
+            {transformText(
+              error || "Vaya... Parece que algo salio mal, intente mas tarde",
+            )}
+          </CustomText>
+        </View>
+      </View>
+    ),
+    [error, errorScreenStyles, handleGoBack, transformText],
+  );
+
   if (isLoading) {
     return (
       <View style={containerStyles.container}>
@@ -374,6 +435,10 @@ const ExpresateScreen = () => {
     );
   }
 
+  if (hasError) {
+    return renderErrorScreen();
+  }
+
   return (
     <View
       style={[
@@ -384,7 +449,17 @@ const ExpresateScreen = () => {
       <BackButton onPress={handleGoBack} />
       <ScreenTitle text={transformText("Expresate con tarjetas")} />
 
-      {isSearchMode && searchResults.length === 0 && !isSearching ? (
+      {isSearchMode && isSearching ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CustomText>{transformText("Buscando pictogramas...")}</CustomText>
+        </View>
+      ) : isSearchMode && (searchError || searchResults.length === 0) ? (
         <View
           style={{
             flex: 1,
@@ -393,7 +468,7 @@ const ExpresateScreen = () => {
           }}
         >
           <CustomText>
-            {transformText("No se encontraron pictogramas")}
+            {transformText(searchError || "No se encontraron pictogramas")}
           </CustomText>
         </View>
       ) : (

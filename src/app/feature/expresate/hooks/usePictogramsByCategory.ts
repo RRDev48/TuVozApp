@@ -10,16 +10,22 @@ export const usePictogramsByCategory = (categoryId: string) => {
 
   const fetchPictograms = useCallback(async () => {
     if (!categoryId) {
+      setPictograms([]);
+      setError(null);
       setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
-      const { data, fromCache } = await getPictogramsByCategory(categoryId);
+      const {
+        data,
+        fromCache,
+        error: serviceError,
+      } = await getPictogramsByCategory(categoryId);
 
       setPictograms(data);
-      setError(null);
+      setError(serviceError);
 
       if (fromCache) {
         setIsLoading(false);

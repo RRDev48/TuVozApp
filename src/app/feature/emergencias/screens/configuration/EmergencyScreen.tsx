@@ -18,6 +18,10 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import CancelConfirmationModal from "../../components/alerts/CancelConfirmationModal";
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
+import {
+  DEFAULT_EMERGENCY_FORM_DATA,
+  EmergencyFormData,
+} from "../../models/emergency.types";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -91,16 +95,9 @@ const EmergencyScreen = () => {
   const { profile, profileFullName, loading } = useEmergencyProfile();
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const [formData, setFormData] = useState({
-    blood_type: "",
-    allergies: "",
-    medications: "",
-    address: "",
-    alert_type: "call",
-    emergency_contact_name: "",
-    emergency_contact_phone: "",
-    notes: "",
-  });
+  const [formData, setFormData] = useState<EmergencyFormData>(
+    DEFAULT_EMERGENCY_FORM_DATA,
+  );
 
   const fromSettings = route.params?.fromSettings;
 
@@ -111,7 +108,8 @@ const EmergencyScreen = () => {
         allergies: profile.allergies || "",
         medications: profile.medications || "",
         address: profile.address || "",
-        alert_type: profile.alert_type || "call",
+        alert_type:
+          profile.alert_type || DEFAULT_EMERGENCY_FORM_DATA.alert_type,
         emergency_contact_name: profile.emergency_contact_name || "",
         emergency_contact_phone: profile.emergency_contact_phone || "",
         notes: profile.notes || "",
@@ -166,16 +164,7 @@ const EmergencyScreen = () => {
 
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
-    setFormData({
-      blood_type: "",
-      allergies: "",
-      medications: "",
-      address: "",
-      alert_type: "call",
-      emergency_contact_name: "",
-      emergency_contact_phone: "",
-      notes: "",
-    });
+    setFormData(DEFAULT_EMERGENCY_FORM_DATA);
     navigation.goBack();
   };
 

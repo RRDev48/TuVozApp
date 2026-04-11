@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 import { auditLogService } from "../services/auditLog.Service";
-import { errorLogService } from "../services/errorLog.Service";
 
 interface UseErrorHandlingOptions {
   source?: string;
   enableAuditLogging?: boolean;
 }
+
+type ErrorContext = Record<string, unknown>;
 
 export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -16,7 +17,7 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
     async (
       errorMessage: string,
       error?: Error,
-      context?: Record<string, any>,
+      context?: ErrorContext,
       severity: "info" | "warning" | "error" | "critical" = "error",
     ) => {
       setIsLogging(true);
@@ -25,36 +26,24 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
         setErrorMessage(errorMessage);
         setShowErrorModal(true);
 
-        const logPromises = [];
-
-        if (error) {
-          logPromises.push(
-            errorLogService.logErrorWithStack(
-              errorMessage,
-              error,
-              options.source,
-              context,
-              severity,
-            ),
-          );
-        } else {
-          logPromises.push(
-            errorLogService.logError({
-              error_message: errorMessage,
-              severity,
-              source: options.source,
-              context,
-            }),
-          );
-        }
-
         if (options.enableAuditLogging) {
-          logPromises.push(
-            auditLogService.logError(errorMessage, options.source, context),
-          );
+          await auditLogService.logEventSafe({
+            event_type: auditLogService.events.ERROR_OCCURRED,
+            severity,
+            description: errorMessage,
+            metadata: {
+              ...context,
+              ...(error
+                ? {
+                    error_name: error.name,
+                    error_message: error.message,
+                    stack_trace: error.stack,
+                  }
+                : {}),
+            },
+            source: options.source,
+          });
         }
-
-        await Promise.allSettled(logPromises);
       } catch (logError) {
       } finally {
         setIsLogging(false);
@@ -71,7 +60,7 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
   );
 
   const logAndShowNetworkError = useCallback(
-    (error: Error, context?: Record<string, any>) => {
+    (error: Error, context?: ErrorContext) => {
       logAndShowError(
         "Error de conexión. Por favor verifica tu conexión a internet.",
         error,
@@ -83,7 +72,7 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
   );
 
   const logAndShowServerError = useCallback(
-    (error: Error, context?: Record<string, any>) => {
+    (error: Error, context?: ErrorContext) => {
       logAndShowError(
         "Error del servidor. Por favor intenta nuevamente.",
         error,
@@ -95,7 +84,7 @@ export const useErrorHandling = (options: UseErrorHandlingOptions = {}) => {
   );
 
   const logAndShowCriticalError = useCallback(
-    (error: Error, context?: Record<string, any>) => {
+    (error: Error, context?: ErrorContext) => {
       logAndShowError(
         "Ha ocurrido un error crítico. Por favor contacta al soporte.",
         error,

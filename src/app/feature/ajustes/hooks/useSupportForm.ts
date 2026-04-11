@@ -1,9 +1,24 @@
+import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback, useState } from "react";
 import { auditLogService } from "../services/auditLog.Service";
 import { supportService } from "../services/support.Service";
 import { useErrorHandling } from "./useErrorHandling";
 
-export const useSupportForm = (navigation: any) => {
+type SupportNavigation = StackNavigationProp<
+  RootStackParamsList,
+  "NewSupportEntryScreen"
+>;
+
+function toError(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error(fallback);
+}
+
+export const useSupportForm = (navigation: SupportNavigation) => {
   const [subject, setSubject] = useState("");
   const [query, setQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,14 +73,17 @@ export const useSupportForm = (navigation: any) => {
           errorContext,
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorContext = {
         subject: subject.trim(),
         queryLength: query.trim().length,
         error_type: "exception",
       };
 
-      logAndShowServerError(error, errorContext);
+      logAndShowServerError(
+        toError(error, "Error al crear el ticket de soporte"),
+        errorContext,
+      );
     } finally {
       setIsSubmitting(false);
     }

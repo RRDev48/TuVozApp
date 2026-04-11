@@ -21,6 +21,11 @@ import CancelConfirmationModal from "../../components/alerts/CancelConfirmationM
 import EmergencySuccessModal from "../../components/alerts/EmergencySuccessModal";
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
+import {
+  DEFAULT_EMERGENCY_FORM_DATA,
+  EmergencyAlertType,
+  EmergencyFormData,
+} from "../../models/emergency.types";
 import { emergencyService } from "../../services/emergency.Service";
 import { parsePhoneNumber } from "../../services/phoneParser";
 
@@ -33,6 +38,16 @@ type EmergencyScreen2RouteProp = RouteProp<
   RootStackParamsList,
   "EmergenciasParte2"
 >;
+
+function isEmergencyAlertType(value: string): value is EmergencyAlertType {
+  return value === "call" || value === "whatsapp_location";
+}
+
+function normalizeAlertType(value?: string): EmergencyAlertType {
+  return value && isEmergencyAlertType(value)
+    ? value
+    : DEFAULT_EMERGENCY_FORM_DATA.alert_type;
+}
 
 const EmergencyScreen2 = () => {
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
@@ -104,9 +119,20 @@ const EmergencyScreen2 = () => {
   const { showErrorModal, errorMessage, logAndShowError, closeErrorModal } =
     useErrorHandling();
 
-  const [formData, setFormData] = useState<
-    RootStackParamsList["EmergenciasParte2"]["formData"]
-  >(route.params.formData);
+  const [formData, setFormData] = useState<EmergencyFormData>(
+    route.params.formData,
+  );
+
+  const emergencyProfilePayload = {
+    blood_type: formData.blood_type,
+    allergies: formData.allergies || null,
+    medications: formData.medications || null,
+    address: formData.address || null,
+    alert_type: normalizeAlertType(formData.alert_type),
+    emergency_contact_name: formData.emergency_contact_name,
+    emergency_contact_phone: formData.emergency_contact_phone,
+    notes: formData.notes || null,
+  };
 
   const handleAddressEdit = () => {
     navigation.navigate("AddressSelection", {
@@ -146,9 +172,12 @@ const EmergencyScreen2 = () => {
 
   const handleAlertTypeEdit = () => {
     navigation.navigate("AlertModeSelection", {
-      currentAlertMode: formData.alert_type || "call",
-      onSelect: (alertMode: string) => {
-        setFormData((prev) => ({ ...prev, alert_type: alertMode }));
+      currentAlertMode: normalizeAlertType(formData.alert_type),
+      onSelect: (alertMode: EmergencyAlertType) => {
+        setFormData((prev) => ({
+          ...prev,
+          alert_type: normalizeAlertType(alertMode),
+        }));
       },
     });
   };
@@ -181,16 +210,10 @@ const EmergencyScreen2 = () => {
       }
 
       if (profile && profileId) {
-        await emergencyService.updateEmergencyProfile(profileId, {
-          blood_type: formData.blood_type,
-          allergies: formData.allergies || null,
-          medications: formData.medications || null,
-          address: formData.address || null,
-          alert_type: formData.alert_type as "call" | "whatsapp_location",
-          emergency_contact_name: formData.emergency_contact_name,
-          emergency_contact_phone: formData.emergency_contact_phone,
-          notes: formData.notes || null,
-        });
+        await emergencyService.updateEmergencyProfile(
+          profileId,
+          emergencyProfilePayload,
+        );
       } else {
         if (!profileId) {
           throw new Error("No se encontró el ID del perfil");
@@ -201,21 +224,13 @@ const EmergencyScreen2 = () => {
         await emergencyService.createEmergencyProfile({
           profile_id: profileId,
           full_name: fullName,
-          blood_type: formData.blood_type,
-          allergies: formData.allergies || null,
-          medications: formData.medications || null,
-          address: formData.address || null,
-          alert_type: formData.alert_type as "call" | "whatsapp_location",
-          emergency_contact_name: formData.emergency_contact_name,
-          emergency_contact_phone: formData.emergency_contact_phone,
-          notes: formData.notes || null,
+          ...emergencyProfilePayload,
         });
       }
 
       setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error al guardar perfil de emergencia:", error);
-      logAndShowError(
+      await logAndShowError(
         error instanceof Error
           ? error.message
           : transformText("No se pudo guardar el perfil de emergencia"),
@@ -252,14 +267,7 @@ const EmergencyScreen2 = () => {
   const handleConfirmCancel = () => {
     setShowCancelModal(false);
     setFormData({
-      blood_type: "",
-      allergies: "",
-      medications: "",
-      address: "",
-      alert_type: "call",
-      emergency_contact_name: "",
-      emergency_contact_phone: "",
-      notes: "",
+      ...DEFAULT_EMERGENCY_FORM_DATA,
     });
     navigation.navigate("Home");
   };

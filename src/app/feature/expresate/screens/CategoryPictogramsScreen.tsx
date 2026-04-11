@@ -37,7 +37,7 @@ const CategoryPictogramsScreen = () => {
 
   const { categoryId, categoryName } = route.params;
 
-  const { pictograms, isLoading } = usePictogramsByCategory(categoryId);
+  const { pictograms, isLoading, error } = usePictogramsByCategory(categoryId);
   const [currentPage, setCurrentPage] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -303,7 +303,9 @@ const CategoryPictogramsScreen = () => {
           }}
         >
           <CustomText>
-            {transformText("No hay pictogramas disponibles en esta categoría")}
+            {transformText(
+              error || "No hay pictogramas disponibles en esta categoría",
+            )}
           </CustomText>
         </View>
       </View>

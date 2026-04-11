@@ -1,11 +1,26 @@
 import { useState } from "react";
 import { authService } from "../services/auth.Service";
 
+type PasswordRecoveryResult =
+  | { success: true; session?: unknown }
+  | { success: false; error: string };
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+}
+
 export const usePasswordRecovery = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const verifyRecoveryCode = async (email: string, code: string) => {
+  const verifyRecoveryCode = async (
+    email: string,
+    code: string,
+  ): Promise<PasswordRecoveryResult> => {
     setIsVerifying(true);
 
     try {
@@ -30,17 +45,19 @@ export const usePasswordRecovery = () => {
         success: true,
         session,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al verificar código",
+        error: getErrorMessage(error, "Error al verificar código"),
       };
     } finally {
       setIsVerifying(false);
     }
   };
 
-  const updatePassword = async (newPassword: string) => {
+  const updatePassword = async (
+    newPassword: string,
+  ): Promise<PasswordRecoveryResult> => {
     setIsUpdating(true);
 
     try {
@@ -54,10 +71,10 @@ export const usePasswordRecovery = () => {
       }
 
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al actualizar contraseña",
+        error: getErrorMessage(error, "Error al actualizar contraseña"),
       };
     } finally {
       setIsUpdating(false);

@@ -6,15 +6,15 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
@@ -69,7 +69,7 @@ const RecoveryCodeScreen = () => {
     if (result.success) {
       navigation.navigate("NewPassword", { email });
     } else {
-      logAndShowError(
+      await logAndShowError(
         result.error || "Código de verificación incorrecto",
         new Error(result.error || "Código de verificación incorrecto"),
         {

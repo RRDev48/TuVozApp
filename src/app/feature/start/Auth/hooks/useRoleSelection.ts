@@ -1,12 +1,13 @@
 import { useState } from "react";
+import type { RoleId } from "../constants/roles";
 import { UseRoleSelectionProps } from "../models/auth.props";
 
 export const useRoleSelection = ({
   onRoleSelected,
 }: UseRoleSelectionProps = {}) => {
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RoleId | null>(null);
 
-  const handleRoleSelect = (roleId: string) => {
+  const handleRoleSelect = (roleId: RoleId) => {
     setSelectedRole(roleId);
   };
 

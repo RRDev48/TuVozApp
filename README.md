@@ -1,43 +1,62 @@
-npx create-expo-app@latest
+# TuVozApp
 
-npm update
+Proyecto mobile desarrollado con Expo y Supabase.
 
-npm install @supabase/supabase-js
+## Levantar el proyecto
 
-npm install @react-navigation/stack
+### 1. Instalar dependencias
 
-npm install react-native-calendars
+Desde la raiz del proyecto:
 
-npm install @react-navigation/native
+```bash
+npm install
+```
 
-npm install react-native-screens react-native-safe-area-context
+### 2. Preparar Supabase
 
-npm install react-native-gesture-handler
+Si ya existe un proyecto Supabase configurado para la app, este paso se puede saltear.
 
-npm install react-native-svg
+Si se necesita crear la base desde cero:
 
-npm install --save-dev react-native-svg-transformer
+1. Crear un proyecto nuevo en Supabase.
+2. Abrir el SQL Editor.
+3. Ejecutar el archivo `supabase/bootstrap-minimo.sql`.
 
-npm install @react-native-async-storage/async-storage
+Ese script crea lo necesario para correr la app:
 
--- IMPORTANTE
--- Modificar la función del trigger para manejar casos sin metadata
-CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
--- Solo insertar si hay metadata completa
-IF new.raw_user_meta_data->>'full_name' IS NOT NULL THEN
-INSERT INTO public.users (id, full_name, age, role)
-VALUES (
-new.id,
-new.raw_user_meta_data->>'full_name',
-COALESCE((new.raw_user_meta_data->>'age')::integer, 0),
-COALESCE(new.raw_user_meta_data->>'role', 'self')
-);
-END IF;
-RETURN new;
-END;
+- tablas principales
+- RLS
+- buckets `Avatar` y `Categorias`
+- RPC `public.create_user_with_profile`
 
-$$
-LANGUAGE plpgsql SECURITY DEFINER;
-$$
+### 3. Configurar variables de entorno
+
+Crear `.env` a partir de `.env.example`:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=
+EXPO_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+Usar la URL del proyecto Supabase y la anon key.
+
+### 4. Iniciar la app
+
+```bash
+npm run start
+```
+
+Opciones disponibles:
+
+- `npm run android`
+- `npm run web`
+
+### 5. Verificar que quedo funcionando
+
+Para validar el proyecto alcanza con comprobar:
+
+1. inicia la app
+2. funciona autenticacion con Supabase
+3. se crea usuario y perfil
+4. responden los modulos principales
+5. cargan assets desde `Avatar` y `Categorias`

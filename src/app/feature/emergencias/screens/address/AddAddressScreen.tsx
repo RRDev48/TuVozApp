@@ -3,13 +3,14 @@ import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useEffect, useMemo, useState } from "react";
-import { Keyboard, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useMemo } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useAddressForm } from "../../hooks/useAddressForm";
+import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 
 type AddAddressScreenRouteProp = RouteProp<RootStackParamsList, "AddAddress">;
 type AddAddressScreenNavigationProp = StackNavigationProp<
@@ -22,27 +23,7 @@ const AddAddressScreen = () => {
   const route = useRoute<AddAddressScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      },
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
+  const isKeyboardVisible = useKeyboardVisibility();
 
   const styles = useMemo(
     () =>

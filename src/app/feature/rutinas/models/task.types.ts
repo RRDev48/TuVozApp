@@ -1,6 +1,6 @@
 export interface TaskDb {
   id: number;
-  profile_id: string;
+  routine_id: number;
   category_id: number | null;
   title: string;
   status: "Pendiente" | "En Proceso" | "Completado" | "Cancelado";
@@ -8,19 +8,21 @@ export interface TaskDb {
   end_time: string | null;
   reminder: string | null;
   created_at: string;
+  updated_at?: string;
   category?: {
+    id: number;
     name: string;
-    image_url: string;
-  };
+    image_url: string | null;
+  } | null;
 }
 
 export interface TaskStepDb {
   id: number;
   task_id: number;
-  title: string;
   description: string | null;
   step_order: number;
   created_at: string;
+  updated_at?: string;
 }
 
 export interface RoutineTaskDb {

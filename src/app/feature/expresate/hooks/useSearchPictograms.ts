@@ -11,16 +11,21 @@ export const useSearchPictograms = (searchQuery: string) => {
   const fetchPictograms = useCallback(async () => {
     if (!searchQuery.trim()) {
       setPictograms([]);
+      setError(null);
       setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
-      const { data, fromCache } = await searchPictograms(searchQuery);
+      const {
+        data,
+        fromCache,
+        error: serviceError,
+      } = await searchPictograms(searchQuery);
 
       setPictograms(data);
-      setError(null);
+      setError(serviceError);
 
       if (fromCache) {
         setIsLoading(false);

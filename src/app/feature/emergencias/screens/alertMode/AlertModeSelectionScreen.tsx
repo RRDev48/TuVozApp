@@ -15,6 +15,7 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
+import { EmergencyAlertType } from "../../models/emergency.types";
 
 type AlertModeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -28,7 +29,10 @@ type AlertModeSelectionScreenNavigationProp = StackNavigationProp<
 const ALERT_MODES = [
   { value: "call", label: "Llamada" },
   { value: "whatsapp_location", label: "WhatsApp con ubicación" },
-];
+] as const satisfies ReadonlyArray<{
+  value: EmergencyAlertType;
+  label: string;
+}>;
 
 const AlertModeSelectionScreen = () => {
   const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
@@ -36,9 +40,8 @@ const AlertModeSelectionScreen = () => {
   const { transformText, getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
-  const [selectedAlertMode, setSelectedAlertMode] = useState<string>(
-    route.params?.currentAlertMode || "call",
-  );
+  const [selectedAlertMode, setSelectedAlertMode] =
+    useState<EmergencyAlertType>(route.params?.currentAlertMode || "call");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const styles = useMemo(
@@ -89,7 +92,7 @@ const AlertModeSelectionScreen = () => {
     [themedColors],
   );
 
-  const handleSelectAlertMode = (value: string) => {
+  const handleSelectAlertMode = (value: EmergencyAlertType) => {
     setSelectedAlertMode(value);
     setIsDropdownOpen(false);
   };
@@ -101,7 +104,7 @@ const AlertModeSelectionScreen = () => {
     navigation.goBack();
   };
 
-  const getAlertModeLabel = (value: string): string => {
+  const getAlertModeLabel = (value: EmergencyAlertType): string => {
     const mode = ALERT_MODES.find((m) => m.value === value);
     return mode ? mode.label : value;
   };

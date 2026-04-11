@@ -12,7 +12,10 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
-import { useSettingsButtons } from "../../hooks/useSettingsButtons";
+import {
+  SettingsButton,
+  useSettingsButtons,
+} from "../../hooks/useSettingsButtons";
 
 const SettingsScreen = () => {
   const { userName } = useUserData();
@@ -133,7 +136,7 @@ const SettingsScreen = () => {
   }, [navigation]);
 
   const renderButton = useCallback(
-    (button: any) => (
+    (button: SettingsButton) => (
       <TouchableOpacity
         key={button.id}
         style={styles.button}
@@ -142,7 +145,7 @@ const SettingsScreen = () => {
       >
         <View style={styles.buttonIcon}>
           <Ionicons
-            name={button.iconName as any}
+            name={button.iconName}
             size={26}
             color={themedColors.background}
           />

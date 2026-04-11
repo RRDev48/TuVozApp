@@ -30,7 +30,7 @@ const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const BloodTypeSelectionScreen = () => {
   const navigation = useNavigation<BloodTypeSelectionScreenNavigationProp>();
   const route = useRoute<BloodTypeSelectionScreenRouteProp>();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [selectedBloodType, setSelectedBloodType] = useState<string>(

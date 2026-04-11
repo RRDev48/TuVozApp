@@ -1,26 +1,86 @@
+import { auditLogService } from "@/src/app/feature/ajustes/services/auditLog.Service";
 import { supabase } from "@/src/lib/supabaseClient";
-import { RoutineTaskDb, TaskDb, TaskStepDb } from "../models/task.types";
+import { TaskDb, TaskStepDb } from "../models/task.types";
+
+type TaskCategoryRow = {
+  id: number;
+  name: string;
+  image_url: string | null;
+};
+
+type TaskRow = Omit<TaskDb, "category"> & {
+  category: TaskCategoryRow | TaskCategoryRow[] | null;
+};
+
+type TaskWithSteps = TaskDb & {
+  steps?: TaskStepDb[];
+};
+
+function normalizeTaskRow(task: TaskRow): TaskDb {
+  return {
+    ...task,
+    category: Array.isArray(task.category)
+      ? (task.category[0] ?? null)
+      : task.category,
+  };
+}
+
+function normalizeTaskRows(tasks: TaskRow[] | null): TaskDb[] {
+  return (tasks ?? []).map(normalizeTaskRow);
+}
+
+function normalizeTaskSteps(data: TaskStepDb[] | null): TaskStepDb[] {
+  return data ?? [];
+}
+
+function requireTaskRow(data: TaskRow | null, fallbackMessage: string): TaskDb {
+  if (!data) {
+    throw new Error(fallbackMessage);
+  }
+
+  return normalizeTaskRow(data);
+}
+
+async function getProfileIdByRoutineId(
+  routineId: number,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("routines")
+    .select("profile_id")
+    .eq("id", routineId)
+    .single();
+
+  if (error) {
+    return null;
+  }
+
+  return data?.profile_id || null;
+}
+
+async function getProfileIdByTaskId(taskId: number): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("routine_id")
+    .eq("id", taskId)
+    .single();
+
+  if (error || !data?.routine_id) {
+    return null;
+  }
+
+  return getProfileIdByRoutineId(data.routine_id);
+}
 
 export async function getTasksByRoutine(
   routineId: number,
 ): Promise<(TaskDb & { steps?: TaskStepDb[] })[]> {
-  const { data: routineTasks, error: rtError } = await supabase
-    .from("routine_tasks")
-    .select("task_id, task_order")
-    .eq("routine_id", routineId)
-    .order("task_order");
-
-  if (rtError) throw rtError;
-  if (!routineTasks || routineTasks.length === 0) return [];
-
-  const taskIds = routineTasks.map((rt) => rt.task_id);
-
   const { data: tasks, error: tasksError } = await supabase
     .from("tasks")
     .select(
-      "id, profile_id, category_id, title, status, start_time, end_time, reminder, created_at, category:task_categories(name, image_url)",
+      "id, routine_id, category_id, title, status, start_time, end_time, reminder, created_at, updated_at, category:task_categories(id, name, image_url)",
     )
-    .in("id", taskIds);
+    .eq("routine_id", routineId)
+    .order("created_at");
 
   if (tasksError) throw tasksError;
   if (!tasks) return [];
@@ -28,7 +88,10 @@ export async function getTasksByRoutine(
   const { data: steps, error: stepsError } = await supabase
     .from("task_steps")
     .select("*")
-    .in("task_id", taskIds)
+    .in(
+      "task_id",
+      tasks.map((t) => t.id),
+    )
     .order("step_order");
 
   if (stepsError) throw stepsError;
@@ -41,77 +104,105 @@ export async function getTasksByRoutine(
     stepsByTask[step.task_id].push(step);
   });
 
-  const tasksWithSteps = tasks.map((task: any) => ({
+  const tasksWithSteps = normalizeTaskRows(tasks as TaskRow[]).map((task) => ({
     ...task,
-    category: Array.isArray(task.category)
-      ? (task.category[0] ?? null)
-      : task.category,
     steps: stepsByTask[task.id] || [],
   }));
 
-  const orderMap = new Map(
-    routineTasks.map((rt) => [rt.task_id, rt.task_order]),
-  );
-  tasksWithSteps.sort((a, b) => {
-    const orderA = orderMap.get(a.id) || 0;
-    const orderB = orderMap.get(b.id) || 0;
-    return orderA - orderB;
-  });
-
-  return tasksWithSteps as (TaskDb & { steps?: TaskStepDb[] })[];
+  return tasksWithSteps;
 }
 
 export async function createTask(
-  task: Omit<TaskDb, "id" | "created_at" | "category">,
+  task: Omit<TaskDb, "id" | "created_at" | "updated_at" | "category">,
 ): Promise<TaskDb> {
   const { data, error } = await supabase
     .from("tasks")
     .insert(task)
     .select(
-      "id, profile_id, category_id, title, status, start_time, end_time, reminder, created_at, category:task_categories(name, image_url)",
+      "id, routine_id, category_id, title, status, start_time, end_time, reminder, created_at, updated_at, category:task_categories(id, name, image_url)",
     )
     .single();
   if (error) throw error;
 
-  const mapped = data
-    ? {
-        ...data,
-        category: Array.isArray(data.category)
-          ? (data.category[0] ?? null)
-          : data.category,
-      }
-    : data;
-  return mapped as TaskDb;
+  const mapped = requireTaskRow(
+    (data as TaskRow | null) ?? null,
+    "No se pudo normalizar la tarea creada",
+  );
+
+  await auditLogService.logEventSafe({
+    profile_id: await getProfileIdByRoutineId(task.routine_id),
+    event_type: auditLogService.events.TASK_CREATED,
+    description: "Task created",
+    metadata: {
+      task_id: mapped.id,
+      routine_id: task.routine_id,
+      title: task.title,
+    },
+    source: "task.service.createTask",
+  });
+
+  return mapped;
 }
 
-export async function linkTaskToRoutine(
-  routineId: number,
+export async function updateTask(
   taskId: number,
-  taskOrder: number,
-): Promise<RoutineTaskDb> {
+  updates: Partial<Omit<TaskDb, "id" | "created_at" | "category">>,
+): Promise<TaskDb> {
   const { data, error } = await supabase
-    .from("routine_tasks")
-    .insert({
-      routine_id: routineId,
-      task_id: taskId,
-      task_order: taskOrder,
-    })
-    .select()
+    .from("tasks")
+    .update(updates)
+    .eq("id", taskId)
+    .select(
+      "id, routine_id, category_id, title, status, start_time, end_time, reminder, created_at, updated_at, category:task_categories(id, name, image_url)",
+    )
     .single();
 
   if (error) throw error;
-  return data as RoutineTaskDb;
+
+  const mapped = requireTaskRow(
+    (data as TaskRow | null) ?? null,
+    "No se pudo normalizar la tarea actualizada",
+  );
+
+  await auditLogService.logEventSafe({
+    profile_id: await getProfileIdByTaskId(taskId),
+    event_type: auditLogService.events.TASK_UPDATED,
+    description: "Task updated",
+    metadata: { task_id: taskId, updated_fields: Object.keys(updates) },
+    source: "task.service.updateTask",
+  });
+
+  return mapped;
+}
+
+export async function deleteTask(taskId: number): Promise<void> {
+  const profileId = await getProfileIdByTaskId(taskId);
+
+  // Delete task steps first
+  await supabase.from("task_steps").delete().eq("task_id", taskId);
+
+  // Delete task
+  const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+
+  if (error) throw error;
+
+  await auditLogService.logEventSafe({
+    profile_id: profileId,
+    event_type: auditLogService.events.TASK_DELETED,
+    description: "Task deleted",
+    metadata: { task_id: taskId },
+    source: "task.service.deleteTask",
+  });
 }
 
 export async function createTaskSteps(
   taskId: number,
-  steps: Array<{ title: string; description?: string; step_order: number }>,
+  steps: Array<{ description?: string; step_order: number }>,
 ): Promise<TaskStepDb[]> {
   if (steps.length === 0) return [];
 
   const stepsToInsert = steps.map((step) => ({
     task_id: taskId,
-    title: step.title,
     description: step.description || null,
     step_order: step.step_order,
   }));
@@ -122,7 +213,16 @@ export async function createTaskSteps(
     .select();
 
   if (error) throw error;
-  return data as TaskStepDb[];
+
+  await auditLogService.logEventSafe({
+    profile_id: await getProfileIdByTaskId(taskId),
+    event_type: auditLogService.events.TASK_STEPS_CREATED,
+    description: "Task steps created",
+    metadata: { task_id: taskId, steps_count: steps.length },
+    source: "task.service.createTaskSteps",
+  });
+
+  return normalizeTaskSteps((data as TaskStepDb[] | null) ?? null);
 }
 
 export async function getTaskSteps(taskId: number): Promise<TaskStepDb[]> {
@@ -133,7 +233,7 @@ export async function getTaskSteps(taskId: number): Promise<TaskStepDb[]> {
     .order("step_order");
 
   if (error) throw error;
-  return data as TaskStepDb[];
+  return normalizeTaskSteps((data as TaskStepDb[] | null) ?? null);
 }
 
 export async function updateTaskTimes(
@@ -146,6 +246,14 @@ export async function updateTaskTimes(
     .update({ start_time: startTime, end_time: endTime })
     .eq("id", taskId);
   if (error) throw error;
+
+  await auditLogService.logEventSafe({
+    profile_id: await getProfileIdByTaskId(taskId),
+    event_type: auditLogService.events.TASK_TIMES_UPDATED,
+    description: "Task schedule updated",
+    metadata: { task_id: taskId, start_time: startTime, end_time: endTime },
+    source: "task.service.updateTaskTimes",
+  });
 }
 
 export async function updateTaskStatus(
@@ -154,7 +262,15 @@ export async function updateTaskStatus(
 ): Promise<void> {
   const { error } = await supabase
     .from("tasks")
-    .update({ status })
+    .update({ status, updated_at: new Date().toISOString() })
     .eq("id", taskId);
   if (error) throw error;
+
+  await auditLogService.logEventSafe({
+    profile_id: await getProfileIdByTaskId(taskId),
+    event_type: auditLogService.events.TASK_STATUS_UPDATED,
+    description: "Task status updated",
+    metadata: { task_id: taskId, status },
+    source: "task.service.updateTaskStatus",
+  });
 }

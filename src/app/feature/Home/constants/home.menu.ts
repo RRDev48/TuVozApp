@@ -1,4 +1,6 @@
-const homeMenuItems = [
+import { HomeMenuItem, HomeScreenMenuItem } from "../models/userData.types";
+
+const homeMenuItems: HomeMenuItem[] = [
   {
     name: "Expresate",
     component: "Expresate",
@@ -31,7 +33,7 @@ const homeMenuItems = [
   },
 ];
 
-const homeScreenMenu = [
+const homeScreenMenu: HomeScreenMenuItem[] = [
   { name: "Usuario", icon: require("../../../assets/image/adip_icon.png") },
 ];
 

@@ -1,21 +1,17 @@
 import { supabase } from "@/src/lib/supabaseClient";
+import { auditLogService } from "./auditLog.Service";
 
 export interface ProfileSettings {
   profile_id: string;
-  font_size: number;
   theme: "light" | "dark" | "system";
   uppercase: boolean;
-  high_contrast: boolean;
-  language: "es" | "en" | "pt";
+  created_at?: string;
   updated_at?: string;
 }
 
 export interface ProfileSettingsInput {
-  font_size?: number;
   theme?: "light" | "dark" | "system";
   uppercase?: boolean;
-  high_contrast?: boolean;
-  language?: "es" | "en" | "pt";
 }
 
 export class ProfileSettingsService {
@@ -61,6 +57,18 @@ export class ProfileSettingsService {
         `Error guardando configuración del perfil: ${error.message}`,
       );
     }
+
+    await auditLogService.logEventSafe({
+      profile_id: profileId,
+      event_type: auditLogService.events.SETTINGS_UPDATED,
+      description: "Profile settings updated",
+      metadata: {
+        profile_id: profileId,
+        updated_fields: Object.keys(settings),
+      },
+      source: "profileSettings.service.upsertProfileSettings",
+    });
+
     return data;
   }
 
@@ -87,6 +95,14 @@ export class ProfileSettingsService {
         `Error eliminando configuración del perfil: ${error.message}`,
       );
     }
+
+    await auditLogService.logEventSafe({
+      profile_id: profileId,
+      event_type: auditLogService.events.SETTINGS_DELETED,
+      description: "Profile settings deleted",
+      metadata: { profile_id: profileId },
+      source: "profileSettings.service.deleteProfileSettings",
+    });
   }
 
   static mapAppThemeToDbTheme(temaOscuro: boolean): "light" | "dark" {
@@ -99,11 +115,8 @@ export class ProfileSettingsService {
 
   static getDefaultSettings(): ProfileSettingsInput {
     return {
-      font_size: 16,
       theme: "light",
       uppercase: false,
-      high_contrast: false,
-      language: "es",
     };
   }
 }

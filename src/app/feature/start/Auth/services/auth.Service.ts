@@ -1,30 +1,107 @@
-import type { UserInsert } from "@/src/app/feature/common/models/database.types";
+import { auditLogService } from "@/src/app/feature/ajustes/services/auditLog.Service";
+import type {
+  UserInsert,
+  UserRole,
+} from "@/src/app/feature/common/models/database.types";
 import { supabase } from "@/src/lib/supabaseClient";
+
+type AuthProfileInput = {
+  full_name: string;
+  role: UserRole;
+  email: string;
+  isOwner?: boolean;
+  ownerUserId?: string;
+};
+
+type SignUpMetadata = {
+  full_name: string;
+  role: UserRole;
+};
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (typeof error === "object" && error !== null) {
+    const supabaseError = error as { message?: string; hint?: string };
+    return supabaseError.message || supabaseError.hint || fallback;
+  }
+
+  return fallback;
+}
+
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+
+function getPasswordResetRedirectTo() {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return `${window.location.origin}/reset-password`;
+  }
+
+  return undefined;
+}
+
+function isRpcResponseWithSuccess(
+  value: unknown,
+): value is { success: boolean; error?: string } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "success" in value &&
+    typeof (value as { success?: unknown }).success === "boolean"
+  );
+}
+
+async function logAuthEvent(
+  eventType: string,
+  description: string,
+  source: string,
+  metadata?: Record<string, unknown>,
+) {
+  await auditLogService.logEventSafe({
+    event_type: eventType,
+    description,
+    metadata,
+    source,
+  });
+}
 
 export const authService = {
   async sendPasswordResetEmail(email: string) {
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const normalizedEmail = normalizeEmail(email);
+      const { data, error } = await supabase.auth.resetPasswordForEmail(
+        normalizedEmail,
+        {
+          redirectTo: getPasswordResetRedirectTo(),
+        },
+      );
 
       if (error) {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.PASSWORD_RESET,
+        "Password reset email requested",
+        "auth.service.sendPasswordResetEmail",
+        { email: normalizedEmail },
+      );
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al enviar el correo de recuperación",
+        error: getErrorMessage(
+          error,
+          "Error al enviar el correo de recuperación",
+        ),
       };
     }
   },
 
   async signIn(email: string, password: string) {
     try {
+      const normalizedEmail = normalizeEmail(email);
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -32,19 +109,27 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.LOGIN,
+        "User logged in successfully",
+        "auth.service.signIn",
+        { email: normalizedEmail },
+      );
+
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al iniciar sesión",
+        error: getErrorMessage(error, "Error al iniciar sesión"),
       };
     }
   },
 
   async sendOTP(email: string, createUser: boolean = true) {
     try {
+      const normalizedEmail = normalizeEmail(email);
       const { data, error } = await supabase.auth.signInWithOtp({
-        email,
+        email: normalizedEmail,
         options: {
           shouldCreateUser: createUser,
           emailRedirectTo: undefined,
@@ -55,11 +140,20 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.OTP_SENT,
+        "OTP sent successfully",
+        "auth.service.sendOTP",
+        { email: normalizedEmail, create_user: createUser },
+      );
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al enviar el código de verificación",
+        error: getErrorMessage(
+          error,
+          "Error al enviar el código de verificación",
+        ),
       };
     }
   },
@@ -70,8 +164,9 @@ export const authService = {
     type: "email" | "signup" | "magiclink" = "email",
   ) {
     try {
+      const normalizedEmail = normalizeEmail(email);
       const { data, error } = await supabase.auth.verifyOtp({
-        email,
+        email: normalizedEmail,
         token,
         type,
       });
@@ -80,56 +175,56 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.OTP_VERIFIED,
+        "OTP verified successfully",
+        "auth.service.verifyOTP",
+        { email: normalizedEmail, type },
+      );
+
       return { success: true, data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         data: null,
-        error: error.message || "Código de verificación incorrecto",
+        error: getErrorMessage(error, "Código de verificación incorrecto"),
       };
     }
   },
 
-  async createUserWithProfile(
-    userId: string,
-    userData: {
-      full_name: string;
-      role: string;
-      email: string;
-      isOwner?: boolean;
-      ownerUserId?: string;
-    },
-  ) {
+  async createUserWithProfile(userId: string, userData: AuthProfileInput) {
     try {
-      const { data, error } = await supabase.rpc(
-        "create_user_profile_from_auth",
-        {
-          p_user_id: userId,
-          p_email: userData.email,
-          p_full_name: userData.full_name,
-          p_role: userData.role,
-          p_is_owner: userData.isOwner ?? true,
-          p_owner_user_id: userData.ownerUserId || null,
-        },
-      );
+      const { data, error } = await supabase.rpc("create_user_with_profile", {
+        p_id: userId,
+        p_email: normalizeEmail(userData.email),
+        p_full_name: userData.full_name,
+        p_role: userData.role,
+      });
 
       if (error) {
         throw error;
       }
 
-      if (data && typeof data === "object" && "success" in data) {
-        if (data.success) {
-          return { success: true, data };
-        } else {
-          throw new Error(data.error || "Error en la función de base de datos");
-        }
+      if (isRpcResponseWithSuccess(data) && !data.success) {
+        throw new Error(data.error || "Error en la función de base de datos");
       }
 
+      await logAuthEvent(
+        auditLogService.events.USER_PROFILE_CREATED,
+        "User and profile created successfully",
+        "auth.service.createUserWithProfile",
+        {
+          user_id: userId,
+          email: normalizeEmail(userData.email),
+          role: userData.role,
+        },
+      );
+
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || error.hint || "Error al crear usuario y perfil",
+        error: getErrorMessage(error, "Error al crear usuario y perfil"),
       };
     }
   },
@@ -152,11 +247,10 @@ export const authService = {
       }
 
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error:
-          error.message || error.hint || "Error al crear registro de usuario",
+        error: getErrorMessage(error, "Error al crear registro de usuario"),
       };
     }
   },
@@ -177,22 +271,20 @@ export const authService = {
       }
 
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al obtener registro de usuario",
+        error: getErrorMessage(error, "Error al obtener registro de usuario"),
       };
     }
   },
 
-  async signUp(
-    email: string,
-    password: string,
-    metadata?: { full_name: string; role: string },
-  ) {
+  async signUp(email: string, password: string, metadata?: SignUpMetadata) {
     try {
+      const normalizedEmail = normalizeEmail(email);
+
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
         options: {
           data: metadata,
@@ -204,11 +296,17 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.REGISTER,
+        "New user registered",
+        "auth.service.signUp",
+        { email: normalizedEmail, role: metadata?.role },
+      );
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al registrar usuario",
+        error: getErrorMessage(error, "Error al registrar usuario"),
       };
     }
   },
@@ -223,11 +321,17 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.PASSWORD_RESET,
+        "Password updated successfully",
+        "auth.service.updatePassword",
+      );
+
       return { success: true, data };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al actualizar contraseña",
+        error: getErrorMessage(error, "Error al actualizar contraseña"),
       };
     }
   },
@@ -240,11 +344,17 @@ export const authService = {
         throw error;
       }
 
+      await logAuthEvent(
+        auditLogService.events.LOGOUT,
+        "User logged out",
+        "auth.service.signOut",
+      );
+
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || "Error al cerrar sesión",
+        error: getErrorMessage(error, "Error al cerrar sesión"),
       };
     }
   },
@@ -261,40 +371,14 @@ export const authService = {
       }
 
       return user;
-    } catch (error: any) {
+    } catch (error: unknown) {
       return null;
     }
   },
   async checkEmailExists(email: string) {
     try {
-      const normalizedEmail = email.toLowerCase().trim();
+      const normalizedEmail = normalizeEmail(email);
 
-      const { data, error } = await supabase.rpc("check_email_exists", {
-        p_email: normalizedEmail,
-      });
-      if (error) {
-        if (
-          error.message.includes("function") &&
-          error.message.includes("does not exist")
-        ) {
-          return await this.checkEmailExistsFallback(normalizedEmail);
-        }
-        throw error;
-      }
-
-      const exists = data === true;
-      return { success: true, exists };
-    } catch (error: any) {
-      return {
-        success: false,
-        exists: false,
-        error: error.message || "Error al verificar el correo electrónico",
-      };
-    }
-  },
-
-  async checkEmailExistsFallback(normalizedEmail: string) {
-    try {
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("email")
@@ -307,11 +391,41 @@ export const authService = {
 
       const exists = !!userData;
       return { success: true, exists };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
         exists: false,
-        error: error.message || "Error al verificar el correo electrónico",
+        error: getErrorMessage(
+          error,
+          "Error al verificar el correo electrónico",
+        ),
+      };
+    }
+  },
+
+  async checkEmailExistsFallback(normalizedEmail: string) {
+    try {
+      const email = normalizeEmail(normalizedEmail);
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("email")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (userError && userError.code !== "PGRST116") {
+        throw userError;
+      }
+
+      const exists = !!userData;
+      return { success: true, exists };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        exists: false,
+        error: getErrorMessage(
+          error,
+          "Error al verificar el correo electrónico",
+        ),
       };
     }
   },
