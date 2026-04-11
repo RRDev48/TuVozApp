@@ -437,15 +437,36 @@ drop policy if exists favorite_pictograms_delete_linked on public.favorite_picto
 
 create policy favorite_pictograms_select_linked on public.favorite_pictograms
 for select to authenticated
-using (public.current_user_linked_to_profile(profile_id));
+using (
+  exists (
+    select 1
+    from public.user_profiles up
+    where up.profile_id = favorite_pictograms.profile_id
+      and up.user_id = auth.uid()
+  )
+);
 
 create policy favorite_pictograms_insert_linked on public.favorite_pictograms
 for insert to authenticated
-with check (public.current_user_linked_to_profile(profile_id));
+with check (
+  exists (
+    select 1
+    from public.user_profiles up
+    where up.profile_id = favorite_pictograms.profile_id
+      and up.user_id = auth.uid()
+  )
+);
 
 create policy favorite_pictograms_delete_linked on public.favorite_pictograms
 for delete to authenticated
-using (public.current_user_linked_to_profile(profile_id));
+using (
+  exists (
+    select 1
+    from public.user_profiles up
+    where up.profile_id = favorite_pictograms.profile_id
+      and up.user_id = auth.uid()
+  )
+);
 
 drop policy if exists task_categories_read_all on public.task_categories;
 create policy task_categories_read_all on public.task_categories

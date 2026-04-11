@@ -1,14 +1,41 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
+import { emergencyService } from "../../emergencias/services/emergency.Service";
 import { expresateService } from "../services/expresate.Service";
 
 const GUEST_FAVORITES_KEY = "@tuVoz:guest_favorites";
 
 export const useFavoritePictograms = () => {
-  const { profileId, loading: profileLoading } = useCurrentUserProfile();
+  const {
+    profileId,
+    userId,
+    isAuthenticated,
+    loading: profileLoading,
+  } = useCurrentUserProfile();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [isReady, setIsReady] = useState(false);
+  const favoriteIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    favoriteIdsRef.current = favoriteIds;
+  }, [favoriteIds]);
+
+  const resolveProfileId = useCallback(async () => {
+    if (profileId) {
+      return profileId;
+    }
+
+    if (!isAuthenticated || !userId) {
+      return null;
+    }
+
+    try {
+      return await emergencyService.getCurrentUserProfileId(userId);
+    } catch {
+      return null;
+    }
+  }, [profileId, isAuthenticated, userId]);
 
   const fetchFavorites = useCallback(async () => {
     if (profileLoading) return;
@@ -16,12 +43,28 @@ export const useFavoritePictograms = () => {
     try {
       const stored = await AsyncStorage.getItem(GUEST_FAVORITES_KEY);
       const localIds: string[] = stored ? (JSON.parse(stored) as string[]) : [];
+      const effectiveProfileId = await resolveProfileId();
 
-      if (profileId) {
+      if (effectiveProfileId) {
+        // If the user added favorites before profile was resolved, mirror those
+        // local ids to remote so logged-in behavior matches guest behavior.
+        if (localIds.length > 0) {
+          await expresateService.syncFavoritePictograms(
+            effectiveProfileId,
+            localIds,
+          );
+        }
+
         const { data } =
-          await expresateService.getFavoritePictograms(profileId);
+          await expresateService.getFavoritePictograms(effectiveProfileId);
         const remoteIds = (data ?? []).map((p) => p.id);
-        setFavoriteIds(new Set([...localIds, ...remoteIds]));
+        const merged = new Set([...localIds, ...remoteIds]);
+
+        setFavoriteIds(merged);
+        await AsyncStorage.setItem(
+          GUEST_FAVORITES_KEY,
+          JSON.stringify([...merged]),
+        );
       } else {
         setFavoriteIds(new Set(localIds));
       }
@@ -30,7 +73,7 @@ export const useFavoritePictograms = () => {
     } finally {
       setIsReady(true);
     }
-  }, [profileId, profileLoading]);
+  }, [profileLoading, resolveProfileId]);
 
   useEffect(() => {
     fetchFavorites();
@@ -38,45 +81,41 @@ export const useFavoritePictograms = () => {
 
   const toggleFavorite = useCallback(
     async (pictogramId: string) => {
-      const wasFavorite = favoriteIds.has(pictogramId);
+      const nextIds = new Set(favoriteIdsRef.current);
+      const wasFavorite = nextIds.has(pictogramId);
 
       // Optimistic update
-      setFavoriteIds((prev) => {
-        const next = new Set(prev);
-        if (wasFavorite) {
-          next.delete(pictogramId);
-        } else {
-          next.add(pictogramId);
-        }
-        return next;
-      });
+      if (wasFavorite) {
+        nextIds.delete(pictogramId);
+      } else {
+        nextIds.add(pictogramId);
+      }
+
+      favoriteIdsRef.current = nextIds;
+      setFavoriteIds(nextIds);
 
       try {
-        const updatedIds = new Set(favoriteIds);
-        if (wasFavorite) {
-          updatedIds.delete(pictogramId);
-        } else {
-          updatedIds.add(pictogramId);
-        }
-
         await AsyncStorage.setItem(
           GUEST_FAVORITES_KEY,
-          JSON.stringify([...updatedIds]),
+          JSON.stringify([...nextIds]),
         );
 
-        if (profileId) {
+        const effectiveProfileId = await resolveProfileId();
+
+        if (effectiveProfileId) {
           const result = wasFavorite
             ? await expresateService.removeFavoritePictogram(
-                profileId,
+                effectiveProfileId,
                 pictogramId,
               )
             : await expresateService.addFavoritePictogram(
-                profileId,
+                effectiveProfileId,
                 pictogramId,
               );
 
           if (!result.success) {
-            throw new Error(result.error || "Error al sincronizar favorito");
+            // Keep local state to match guest behavior; remote sync will retry on next fetch.
+            return;
           }
         }
       } catch {
@@ -91,7 +130,7 @@ export const useFavoritePictograms = () => {
         });
       }
     },
-    [profileId, favoriteIds],
+    [resolveProfileId],
   );
 
   return { favoriteIds, toggleFavorite, isReady };

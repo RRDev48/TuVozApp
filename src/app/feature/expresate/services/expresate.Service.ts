@@ -34,6 +34,15 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
+function isDuplicateKeyError(error: unknown): boolean {
+  if (typeof error === "object" && error !== null) {
+    const supabaseError = error as { code?: string };
+    return supabaseError.code === "23505";
+  }
+
+  return false;
+}
+
 function normalizeJoinedRow<T>(value: T | T[] | null): T | null {
   if (Array.isArray(value)) {
     return value[0] ?? null;
@@ -152,6 +161,9 @@ export const expresateService = {
       });
 
       if (error) {
+        if (isDuplicateKeyError(error)) {
+          return { success: true, error: null };
+        }
         throw error;
       }
 
@@ -168,6 +180,56 @@ export const expresateService = {
       return {
         success: false,
         error: getErrorMessage(error, "Error al agregar favorito"),
+      };
+    }
+  },
+
+  syncFavoritePictograms: async (
+    profileId: string,
+    pictogramIds: string[],
+  ): Promise<MutationResult> => {
+    try {
+      if (pictogramIds.length === 0) {
+        return { success: true, error: null };
+      }
+
+      const { data: existingRows, error: existingError } = await supabase
+        .from("favorite_pictograms")
+        .select("pictogram_id")
+        .eq("profile_id", profileId);
+
+      if (existingError) {
+        throw existingError;
+      }
+
+      const existingIds = new Set(
+        ((existingRows as Array<{ pictogram_id: string }> | null) ?? []).map(
+          (row) => row.pictogram_id,
+        ),
+      );
+
+      const missingIds = pictogramIds.filter((id) => !existingIds.has(id));
+
+      if (missingIds.length === 0) {
+        return { success: true, error: null };
+      }
+
+      const rows = missingIds.map((pictogramId) => ({
+        profile_id: profileId,
+        pictogram_id: pictogramId,
+      }));
+
+      const { error } = await supabase.from("favorite_pictograms").insert(rows);
+
+      if (error && !isDuplicateKeyError(error)) {
+        throw error;
+      }
+
+      return { success: true, error: null };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al sincronizar favoritos"),
       };
     }
   },
