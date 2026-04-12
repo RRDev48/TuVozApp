@@ -6,6 +6,11 @@ let lastPlaybackRequestAt = 0;
 
 const MIN_PLAYBACK_DELAY_MS = 650;
 
+type SpeakOptions = {
+  awaitCompletion?: boolean;
+  interruptCurrent?: boolean;
+};
+
 function wait(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(resolve, ms);
@@ -54,8 +59,14 @@ async function getVoiceOptions(language: string) {
   return { language: normalizedLanguage };
 }
 
-export async function speakPictogramText(text: string, language: string) {
+export async function speakPictogramText(
+  text: string,
+  language: string,
+  options?: SpeakOptions,
+) {
   const normalizedText = text.trim();
+  const shouldAwaitCompletion = options?.awaitCompletion ?? false;
+  const shouldInterruptCurrent = options?.interruptCurrent ?? true;
 
   if (!normalizedText) {
     return;
@@ -72,26 +83,53 @@ export async function speakPictogramText(text: string, language: string) {
 
   const voiceOptions = await getVoiceOptions(language);
 
-  try {
-    const isSpeaking = await Speech.isSpeakingAsync();
+  if (shouldInterruptCurrent) {
+    try {
+      const isSpeaking = await Speech.isSpeakingAsync();
 
-    if (isSpeaking) {
-      await Speech.stop();
-    }
-  } catch {}
+      if (isSpeaking) {
+        await Speech.stop();
+      }
+    } catch {}
+  }
 
-  Speech.speak(normalizedText, {
-    ...voiceOptions,
-    pitch: 1,
-    rate: 0.9,
-    volume: 1,
-    ...(Platform.OS === "ios" ? { useApplicationAudioSession: false } : {}),
-    onError: () => {
-      Speech.speak(normalizedText, {
-        pitch: 1,
-        rate: 0.9,
-        volume: 1,
-      });
-    },
+  if (!shouldAwaitCompletion) {
+    Speech.speak(normalizedText, {
+      ...voiceOptions,
+      pitch: 1,
+      rate: 0.9,
+      volume: 1,
+      ...(Platform.OS === "ios" ? { useApplicationAudioSession: false } : {}),
+      onError: () => {
+        Speech.speak(normalizedText, {
+          pitch: 1,
+          rate: 0.9,
+          volume: 1,
+        });
+      },
+    });
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    Speech.speak(normalizedText, {
+      ...voiceOptions,
+      pitch: 1,
+      rate: 0.9,
+      volume: 1,
+      ...(Platform.OS === "ios" ? { useApplicationAudioSession: false } : {}),
+      onDone: resolve,
+      onStopped: resolve,
+      onError: () => {
+        Speech.speak(normalizedText, {
+          pitch: 1,
+          rate: 0.9,
+          volume: 1,
+          onDone: resolve,
+          onStopped: resolve,
+          onError: () => resolve(),
+        });
+      },
+    });
   });
 }

@@ -3,6 +3,14 @@ import { speakPictogramText } from "@/src/app/feature/expresate/services/speech.
 import * as Haptics from "expo-haptics";
 import { useCallback, useState } from "react";
 
+const PHRASE_STEP_DELAY_MS = 450;
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export const useFrasesPhrase = () => {
   const MAX_PICTOGRAMS = 6;
   const [selectedPictograms, setSelectedPictograms] = useState<Pictogram[]>([]);
@@ -24,9 +32,20 @@ export const useFrasesPhrase = () => {
 
   const speakPhrase = useCallback(async () => {
     if (selectedPictograms.length === 0) return;
-    const phrase = selectedPictograms.map((p) => p.keyword).join(" ");
-    const language = selectedPictograms[0]?.language ?? "es";
-    await speakPictogramText(phrase, language);
+
+    for (let index = 0; index < selectedPictograms.length; index += 1) {
+      const pictogram = selectedPictograms[index];
+      const language = pictogram?.language ?? "es";
+
+      await speakPictogramText(pictogram.keyword, language, {
+        awaitCompletion: true,
+        interruptCurrent: index === 0,
+      });
+
+      if (index < selectedPictograms.length - 1) {
+        await wait(PHRASE_STEP_DELAY_MS);
+      }
+    }
   }, [selectedPictograms]);
 
   return {

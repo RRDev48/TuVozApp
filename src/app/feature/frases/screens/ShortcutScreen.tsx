@@ -32,7 +32,8 @@ import {
 import { useFrasesPhrase } from "../hooks/useFrasesPhrase";
 
 const { width } = Dimensions.get("window");
-const PAGE_WIDTH = width - 40;
+const PAGE_WIDTH = Math.min(width - 80, 320);
+const MAX_VISIBLE_PAGINATION_DOTS = 7;
 
 const ShortcutScreen = () => {
   const { transformText, getThemedColors, temaOscuro } = usePersonalization();
@@ -63,14 +64,14 @@ const ShortcutScreen = () => {
     usePaginatedCategories({ categories, itemsPerPage: 4 });
 
   const { paginatedPictograms: paginatedSearch, totalPages: totalSearchPages } =
-    usePaginatedPictograms({ pictograms: searchResults, itemsPerPage: 6 });
+    usePaginatedPictograms({ pictograms: searchResults, itemsPerPage: 4 });
 
   const {
     paginatedPictograms: paginatedCategory,
     totalPages: totalCategoryPictoPages,
   } = usePaginatedPictograms({
     pictograms: categoryPictograms,
-    itemsPerPage: 6,
+    itemsPerPage: 4,
   });
 
   const activePaginatedData = isSearchMode
@@ -84,6 +85,27 @@ const ShortcutScreen = () => {
     : isCategoryMode
       ? totalCategoryPictoPages
       : totalCategoryPages;
+
+  const paginationIndexes = useMemo(() => {
+    if (totalPages <= MAX_VISIBLE_PAGINATION_DOTS) {
+      return Array.from({ length: totalPages }, (_, index) => index);
+    }
+
+    const halfWindow = Math.floor(MAX_VISIBLE_PAGINATION_DOTS / 2);
+    const maxStart = totalPages - MAX_VISIBLE_PAGINATION_DOTS;
+    const start = Math.min(Math.max(currentPage - halfWindow, 0), maxStart);
+
+    return Array.from(
+      { length: MAX_VISIBLE_PAGINATION_DOTS },
+      (_, index) => start + index,
+    );
+  }, [totalPages, currentPage]);
+
+  const showLeadingOverflowDot =
+    paginationIndexes.length > 0 && paginationIndexes[0] > 0;
+  const showTrailingOverflowDot =
+    paginationIndexes.length > 0 &&
+    paginationIndexes[paginationIndexes.length - 1] < totalPages - 1;
 
   const handleCategoryPress = useCallback((category: PictogramCategory) => {
     setActiveCategoryId(category.id);
@@ -196,6 +218,13 @@ const ShortcutScreen = () => {
           paddingVertical: 8,
           gap: 8,
         },
+        paginationOverflowDot: {
+          width: 5,
+          height: 5,
+          borderRadius: 3,
+          backgroundColor: themedColors.secondary,
+          opacity: 0.45,
+        },
         paginationDot: {
           width: 8,
           height: 8,
@@ -211,28 +240,33 @@ const ShortcutScreen = () => {
         // — Carousel —
         carouselContainer: {
           flex: 1,
-          paddingHorizontal: 20,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        carouselList: {
+          width: PAGE_WIDTH,
+          alignSelf: "center",
         },
         pageContainer: {
           width: PAGE_WIDTH,
-          paddingHorizontal: 5,
+          paddingHorizontal: 8,
         },
         gridRow: {
           flexDirection: "row",
           justifyContent: "space-between",
-          marginBottom: 15,
+          marginBottom: 8,
         },
         itemContainer: {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          marginVertical: 10,
+          marginVertical: 4,
         },
         buttonContainer: {
-          width: 130,
-          height: 130,
+          width: 108,
+          height: 108,
           backgroundColor: themedColors.cardBackground,
-          borderRadius: 30,
+          borderRadius: 26,
           alignItems: "center",
           justifyContent: "center",
         },
@@ -249,8 +283,8 @@ const ShortcutScreen = () => {
           zIndex: 1,
         },
         image: {
-          width: 70,
-          height: 70,
+          width: 68,
+          height: 68,
           resizeMode: "contain",
         },
         icon: {
@@ -258,13 +292,14 @@ const ShortcutScreen = () => {
           height: 70,
         },
         textCard: {
-          fontSize: 18,
+          fontSize: 14,
           fontWeight: "bold",
-          lineHeight: 22,
+          lineHeight: 18,
           textAlign: "center",
           color: themedColors.text,
-          marginTop: 5,
-          minHeight: 44,
+          marginTop: 4,
+          minHeight: 32,
+          maxWidth: 110,
         },
         // — Search —
         searchContainer: {
@@ -292,12 +327,15 @@ const ShortcutScreen = () => {
         },
         // — Bottom action bar —
         bottomBar: {
-          flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          paddingHorizontal: 40,
           paddingVertical: 12,
-          gap: 40,
+        },
+        actionButtonsRow: {
+          width: 180,
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
         },
         deleteButton: {
           width: 52,
@@ -306,6 +344,10 @@ const ShortcutScreen = () => {
           backgroundColor: themedColors.cardBackground,
           alignItems: "center",
           justifyContent: "center",
+        },
+        deleteButtonLeft: {
+          position: "absolute",
+          left: 0,
         },
         playButton: {
           width: 60,
@@ -408,7 +450,6 @@ const ShortcutScreen = () => {
         ? [
             [page[0], page[1]],
             [page[2], page[3]],
-            [page[4], page[5]],
           ]
         : [
             [page[0], page[1]],
@@ -453,6 +494,13 @@ const ShortcutScreen = () => {
         >
           {Array.from({ length: 6 }).map((_, index) => {
             const pictogram = selectedPictograms[index];
+            const translatedKeyword = pictogram
+              ? transformText(pictogram.keyword)
+              : "";
+            const capitalizedKeyword = translatedKeyword
+              ? translatedKeyword.charAt(0).toUpperCase() +
+                translatedKeyword.slice(1)
+              : "";
 
             return (
               <View key={`phrase-slot-${index}`} style={styles.phraseItem}>
@@ -476,7 +524,7 @@ const ShortcutScreen = () => {
                   )}
                 </View>
                 <CustomText style={styles.phraseItemText} numberOfLines={1}>
-                  {pictogram ? transformText(pictogram.keyword) : ""}
+                  {capitalizedKeyword}
                 </CustomText>
               </View>
             );
@@ -487,16 +535,22 @@ const ShortcutScreen = () => {
       {/* Pagination dots */}
       {totalPages > 1 && (
         <View style={styles.paginationContainer}>
-          {Array.from({ length: totalPages }).map((_, i) => (
+          {showLeadingOverflowDot && (
+            <View style={styles.paginationOverflowDot} />
+          )}
+          {paginationIndexes.map((pageIndex) => (
             <View
-              key={i}
+              key={pageIndex}
               style={
-                i === currentPage
+                pageIndex === currentPage
                   ? styles.paginationDotActive
                   : styles.paginationDot
               }
             />
           ))}
+          {showTrailingOverflowDot && (
+            <View style={styles.paginationOverflowDot} />
+          )}
         </View>
       )}
 
@@ -577,6 +631,7 @@ const ShortcutScreen = () => {
         ) : (
           <FlatList
             ref={flatListRef}
+            style={styles.carouselList}
             data={activePaginatedData}
             renderItem={({ item }) => renderPage(item)}
             keyExtractor={(_, index) => index.toString()}
@@ -593,22 +648,24 @@ const ShortcutScreen = () => {
 
       {/* Barra inferior */}
       <View style={styles.bottomBar}>
-        {selectedPictograms.length > 0 && (
+        <View style={styles.actionButtonsRow}>
+          {selectedPictograms.length > 0 && (
+            <TouchableOpacity
+              style={[styles.deleteButton, styles.deleteButtonLeft]}
+              onPress={removeLastPictogram}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="backspace-outline" size={26} color="#E53935" />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={removeLastPictogram}
+            style={styles.playButton}
+            onPress={() => void speakPhrase()}
             activeOpacity={0.7}
           >
-            <Ionicons name="backspace-outline" size={26} color="#E53935" />
+            <Ionicons name="play" size={28} color="#FFFFFF" />
           </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => void speakPhrase()}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="play" size={28} color="#FFFFFF" />
-        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
