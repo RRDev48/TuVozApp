@@ -5,13 +5,13 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
-    ActivityIndicator,
-    GestureResponderEvent,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  GestureResponderEvent,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import type { Profile } from "../../../common/models/database.types";
@@ -85,15 +85,14 @@ const ProfilesConfigScreen = () => {
         avatarContainer: {
           width: 60,
           height: 60,
-          borderRadius: 15,
+          borderRadius: 30,
           backgroundColor: themedColors.primary,
-          justifyContent: "center",
-          alignItems: "center",
+          overflow: "hidden",
           marginRight: 16,
         },
         avatarImage: {
-          width: 45,
-          height: 45,
+          width: 60,
+          height: 60,
         },
         profileInfo: {
           flex: 1,
@@ -174,13 +173,17 @@ const ProfilesConfigScreen = () => {
       >
         <View style={styles.avatarContainer}>
           <Image
-            source={require("../../../../assets/image/adip_icon.png")}
+            source={
+              profile.avatar_url
+                ? { uri: profile.avatar_url }
+                : require("../../../../assets/image/adip_icon.png")
+            }
             style={styles.avatarImage}
-            resizeMode="contain"
+            resizeMode="cover"
           />
         </View>
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{profile.full_name}</Text>
+          <Text style={styles.profileName}>{profile.display_name}</Text>
         </View>
         {index === 0 && (
           <Ionicons

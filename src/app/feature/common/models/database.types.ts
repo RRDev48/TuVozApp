@@ -14,7 +14,7 @@ export interface User {
 }
 export interface Profile {
   id: string;
-  full_name: string;
+  display_name: string;
   avatar_url: string | null;
   created_at: string;
   email: string | null;

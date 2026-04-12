@@ -118,4 +118,53 @@ export const userService = {
       };
     }
   },
+
+  getProfileDisplayData: async (): Promise<{
+    displayName: string | null;
+    avatarUrl: string | null;
+    error: string | null;
+  }> => {
+    try {
+      const { user, error: authError } = await userService.getCurrentUser();
+
+      if (authError) {
+        return { displayName: null, avatarUrl: null, error: authError };
+      }
+
+      if (!user) {
+        return { displayName: null, avatarUrl: null, error: null };
+      }
+
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("profiles(display_name, avatar_url)")
+        .eq("user_id", user.id)
+        .eq("is_owner", true)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      const profile = data?.profiles as
+        | { display_name: string | null; avatar_url: string | null }
+        | null
+        | undefined;
+
+      return {
+        displayName: profile?.display_name ?? null,
+        avatarUrl: profile?.avatar_url ?? null,
+        error: null,
+      };
+    } catch (error: unknown) {
+      return {
+        displayName: null,
+        avatarUrl: null,
+        error: getErrorMessage(
+          error,
+          "No se pudo obtener los datos del perfil",
+        ),
+      };
+    }
+  },
 };

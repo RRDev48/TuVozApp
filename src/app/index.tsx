@@ -2,6 +2,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ActiveProfileProvider } from "./contexts/ActiveProfileContext";
 import ExpresateProvider from "./contexts/ExpresateContext";
 import PersonalizationProvider from "./contexts/PersonalizationContext";
 import StackNavigator from "./navigation/Navigator";
@@ -15,11 +16,13 @@ const PictomindApp = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PersonalizationProvider>
-        <ExpresateProvider>
-          <StackNavigator />
-        </ExpresateProvider>
-      </PersonalizationProvider>
+      <ActiveProfileProvider>
+        <PersonalizationProvider>
+          <ExpresateProvider>
+            <StackNavigator />
+          </ExpresateProvider>
+        </PersonalizationProvider>
+      </ActiveProfileProvider>
     </GestureHandlerRootView>
   );
 };

@@ -8,8 +8,7 @@ import type {
 } from "@/src/app/feature/common/models/database.types";
 import { supabase } from "@/src/lib/supabaseClient";
 
-const profileSelectFields =
-  "id, full_name, avatar_url, created_at, email, auth_user_id, owner_user_id";
+const profileSelectFields = "id, display_name, avatar_url, created_at";
 
 type ProfileWithOwner = Profile & { is_owner: boolean };
 type UserWithOwner = User & { is_owner: boolean };
@@ -49,12 +48,26 @@ function buildFallbackProfile(
 ): Profile {
   return {
     id: profileId,
-    full_name: profileData.full_name,
+    display_name: profileData.display_name,
     avatar_url: profileData.avatar_url,
     created_at: new Date().toISOString(),
     email: profileData.email,
     auth_user_id: profileData.auth_user_id,
     owner_user_id: profileData.owner_user_id,
+  };
+}
+
+function normalizeProfileRecord(
+  profile: Pick<Profile, "id" | "display_name" | "avatar_url" | "created_at">,
+): Profile {
+  return {
+    id: profile.id,
+    display_name: profile.display_name,
+    avatar_url: profile.avatar_url ?? null,
+    created_at: profile.created_at,
+    email: null,
+    auth_user_id: null,
+    owner_user_id: null,
   };
 }
 
@@ -75,9 +88,14 @@ async function logProfileEvent(
 }
 
 async function insertProfile(profileData: ProfileInsert) {
+  const insertPayload = {
+    display_name: profileData.display_name,
+    avatar_url: profileData.avatar_url ?? null,
+  };
+
   const { data, error } = await supabase
     .from("profiles")
-    .insert(profileData)
+    .insert(insertPayload)
     .select(profileSelectFields)
     .single();
 
@@ -127,6 +145,119 @@ async function linkUserToProfileRecord(
 }
 
 export const profileService = {
+  async ensureSelfProfileForUser(userId: string) {
+    try {
+      const { data: linkedRows, error: linkedError } = await supabase
+        .from("user_profiles")
+        .select("profile_id")
+        .eq("user_id", userId)
+        .limit(1);
+
+      if (linkedError) {
+        throw linkedError;
+      }
+
+      if ((linkedRows || []).length > 0) {
+        return { success: true };
+      }
+
+      const { data: directProfiles, error: directProfilesError } =
+        await supabase
+          .from("profiles")
+          .select("id")
+          .or(`auth_user_id.eq.${userId},owner_user_id.eq.${userId}`)
+          .limit(1);
+
+      if (directProfilesError) {
+        throw directProfilesError;
+      }
+
+      if ((directProfiles || []).length > 0) {
+        return { success: true };
+      }
+
+      const { data: userRow, error: userError } = await supabase
+        .from("users")
+        .select("id, email, full_name, role")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (userError && userError.code !== "PGRST116") {
+        throw userError;
+      }
+
+      let ensuredUser = userRow;
+
+      if (!ensuredUser) {
+        const {
+          data: { user: authUser },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !authUser?.id) {
+          throw (
+            authError || new Error("No se pudo obtener usuario autenticado")
+          );
+        }
+
+        const fallbackEmail = authUser.email?.trim().toLowerCase();
+        if (!fallbackEmail) {
+          throw new Error("No se encontró email del usuario autenticado");
+        }
+
+        const metadataName =
+          (authUser.user_metadata?.full_name as string | undefined)?.trim() ||
+          (authUser.user_metadata?.name as string | undefined)?.trim() ||
+          fallbackEmail.split("@")[0] ||
+          "Usuario";
+
+        const { data: upsertedUser, error: upsertUserError } = await supabase
+          .from("users")
+          .upsert(
+            {
+              id: authUser.id,
+              email: fallbackEmail,
+              full_name: metadataName,
+              role: "self",
+            },
+            { onConflict: "id" },
+          )
+          .select("id, email, full_name, role")
+          .single();
+
+        if (upsertUserError || !upsertedUser) {
+          throw (
+            upsertUserError ||
+            new Error("No se pudo crear/actualizar el usuario interno")
+          );
+        }
+
+        ensuredUser = upsertedUser;
+      }
+
+      const { error: rpcError } = await supabase.rpc(
+        "create_user_with_profile",
+        {
+          p_id: ensuredUser.id,
+          p_email: ensuredUser.email,
+          p_full_name: ensuredUser.full_name,
+          p_role: ensuredUser.role,
+        },
+      );
+
+      if (rpcError) {
+        throw rpcError;
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al asegurar perfil propio"),
+      };
+    }
+  },
+
   async createProfile(profileData: ProfileInsert) {
     try {
       const data = await insertProfile(profileData);
@@ -136,7 +267,7 @@ export const profileService = {
         data.id,
         "Profile created",
         "profile.service.createProfile",
-        { profile_id: data.id, full_name: data.full_name },
+        { profile_id: data.id, display_name: data.display_name },
       );
 
       return { success: true, data };
@@ -222,12 +353,9 @@ export const profileService = {
           profile_id,
           profiles (
             id,
-            full_name,
+            display_name,
             avatar_url,
-            created_at,
-            email,
-            auth_user_id,
-            owner_user_id
+            created_at
           )
         `,
         )
@@ -235,15 +363,6 @@ export const profileService = {
 
       if (linkedError) {
         throw linkedError;
-      }
-
-      const { data: ownedProfiles, error: ownedError } = await supabase
-        .from("profiles")
-        .select(profileSelectFields)
-        .eq("owner_user_id", userId);
-
-      if (ownedError) {
-        throw ownedError;
       }
 
       const linkedProfilesData =
@@ -256,29 +375,18 @@ export const profileService = {
             }
 
             return {
-              ...profile,
+              ...normalizeProfileRecord(profile),
               is_owner: item.is_owner,
             } satisfies ProfileWithOwner;
           })
           .filter((profile): profile is ProfileWithOwner => profile !== null) ||
         [];
 
-      const ownedProfilesData =
-        (ownedProfiles || []).map((profile) => ({
-          ...(profile as Profile),
-          is_owner: false,
-        })) || [];
-
       const allProfilesMap = new Map<string, ProfileWithOwner>();
 
       linkedProfilesData.forEach((profile) =>
         allProfilesMap.set(profile.id, profile),
       );
-      ownedProfilesData.forEach((profile) => {
-        if (!allProfilesMap.has(profile.id)) {
-          allProfilesMap.set(profile.id, profile);
-        }
-      });
 
       const profiles = Array.from(allProfilesMap.values());
 
@@ -312,9 +420,21 @@ export const profileService = {
 
   async updateProfile(profileId: string, updates: Partial<ProfileInsert>) {
     try {
+      const updatePayload: Partial<
+        Pick<Profile, "display_name" | "avatar_url">
+      > = {};
+
+      if (typeof updates.display_name !== "undefined") {
+        updatePayload.display_name = updates.display_name;
+      }
+
+      if (typeof updates.avatar_url !== "undefined") {
+        updatePayload.avatar_url = updates.avatar_url;
+      }
+
       const { data, error } = await supabase
         .from("profiles")
-        .update(updates)
+        .update(updatePayload)
         .eq("id", profileId)
         .select(profileSelectFields)
         .single();

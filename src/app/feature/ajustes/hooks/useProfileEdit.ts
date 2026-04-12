@@ -1,3 +1,5 @@
+import { useActiveProfile } from "@/src/app/contexts/ActiveProfileContext";
+import * as ImagePicker from "expo-image-picker";
 import { useCallback, useState } from "react";
 import { useUserProfiles } from "../../start/Auth/hooks/useUserProfiles";
 import { profileManagementService } from "../services/profileManagement.Service";
@@ -6,13 +8,52 @@ function getErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
 }
 
-export const useProfileEdit = (profileId: string, initialName: string) => {
+export const useProfileEdit = (
+  profileId: string,
+  initialName: string,
+  initialAvatarUrl: string | null,
+) => {
   const [fullName, setFullName] = useState(initialName);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isPickingImage, setIsPickingImage] = useState(false);
   const { updateProfile } = useUserProfiles();
+  const { update: updateActiveProfile } = useActiveProfile();
+
+  const handlePickAvatar = useCallback(async () => {
+    try {
+      setIsPickingImage(true);
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permissionResult.granted) {
+        setErrorMessage("Necesitamos permiso para acceder a tus imágenes");
+        setShowError(true);
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      setAvatarUrl(result.assets[0].uri);
+    } catch {
+      setErrorMessage("No se pudo seleccionar la imagen");
+      setShowError(true);
+    } finally {
+      setIsPickingImage(false);
+    }
+  }, []);
 
   const handleSave = useCallback(
     async (onSuccess?: () => void) => {
@@ -26,19 +67,71 @@ export const useProfileEdit = (profileId: string, initialName: string) => {
 
       try {
         const newName = fullName.trim();
+        const hasNameChanged = newName !== initialName;
+        const hasAvatarChanged = avatarUrl !== initialAvatarUrl;
 
-        const result = await profileManagementService.updateProfileName(
-          profileId,
-          newName,
-        );
-
-        if (!result.success) {
-          setErrorMessage(result.error || "Error al actualizar el perfil");
-          setShowError(true);
+        if (!hasNameChanged && !hasAvatarChanged) {
+          if (onSuccess) {
+            onSuccess();
+          }
           return;
         }
 
-        await updateProfile(profileId, { full_name: newName });
+        if (hasNameChanged) {
+          const nameResult = await profileManagementService.updateProfileName(
+            profileId,
+            newName,
+          );
+
+          if (!nameResult.success) {
+            setErrorMessage(
+              nameResult.error || "Error al actualizar el perfil",
+            );
+            setShowError(true);
+            return;
+          }
+        }
+
+        if (hasAvatarChanged && avatarUrl) {
+          const uploadResult = await profileManagementService.uploadAvatar(
+            profileId,
+            avatarUrl,
+          );
+
+          if (!uploadResult.success) {
+            setErrorMessage(uploadResult.error || "Error al subir el avatar");
+            setShowError(true);
+            return;
+          }
+
+          const publicUrl = uploadResult.url;
+
+          const avatarResult =
+            await profileManagementService.updateProfileAvatar(
+              profileId,
+              publicUrl,
+            );
+
+          if (!avatarResult.success) {
+            setErrorMessage(
+              avatarResult.error || "Error al actualizar el avatar",
+            );
+            setShowError(true);
+            return;
+          }
+
+          setAvatarUrl(publicUrl);
+        }
+
+        await updateProfile(profileId, {
+          display_name: newName,
+          avatar_url: avatarUrl,
+        });
+
+        await updateActiveProfile({
+          displayName: hasNameChanged ? newName : undefined,
+          avatarUrl: hasAvatarChanged ? avatarUrl : undefined,
+        });
 
         setShowSuccess(true);
 
@@ -56,7 +149,15 @@ export const useProfileEdit = (profileId: string, initialName: string) => {
         setIsSaving(false);
       }
     },
-    [fullName, profileId, updateProfile],
+    [
+      avatarUrl,
+      fullName,
+      initialAvatarUrl,
+      initialName,
+      profileId,
+      updateProfile,
+      updateActiveProfile,
+    ],
   );
 
   const closeError = useCallback(() => {
@@ -70,6 +171,9 @@ export const useProfileEdit = (profileId: string, initialName: string) => {
   return {
     fullName,
     setFullName,
+    avatarUrl,
+    isPickingImage,
+    handlePickAvatar,
     showError,
     showSuccess,
     errorMessage,

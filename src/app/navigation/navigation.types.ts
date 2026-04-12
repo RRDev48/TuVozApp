@@ -119,7 +119,7 @@ type RootStackParamsList = {
   ProfileEdit: {
     profile: {
       id: string;
-      full_name: string;
+      display_name: string;
       avatar_url?: string | null;
     };
   };

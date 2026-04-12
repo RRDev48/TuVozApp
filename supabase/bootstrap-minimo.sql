@@ -31,7 +31,7 @@ create table if not exists public.users (
 
 create table if not exists public.profiles (
   id uuid primary key default gen_random_uuid(),
-  full_name text not null,
+  display_name text not null,
   avatar_url text,
   email text,
   auth_user_id uuid,
@@ -708,7 +708,7 @@ begin
   limit 1;
 
   if v_profile_id is null then
-    insert into public.profiles (full_name, avatar_url, email, auth_user_id, owner_user_id)
+    insert into public.profiles (display_name, avatar_url, email, auth_user_id, owner_user_id)
     values (p_full_name, null, lower(trim(p_email)), p_id, p_id)
     returning id into v_profile_id;
 
@@ -721,7 +721,7 @@ begin
     on conflict (profile_id) do nothing;
   else
     update public.profiles
-    set full_name = p_full_name,
+    set display_name = p_full_name,
         email = lower(trim(p_email)),
         auth_user_id = coalesce(auth_user_id, p_id),
         owner_user_id = coalesce(owner_user_id, p_id)
@@ -751,3 +751,60 @@ values
   ('Avatar', 'Avatar', true),
   ('Categorias', 'Categorias', true)
 on conflict (id) do update set public = excluded.public;
+
+-- ============================================================
+-- Storage RLS policies para el bucket Avatar
+-- Los usuarios autenticados solo pueden operar sobre su propia
+-- carpeta ({profile_id}/...). La lectura es pública (bucket público).
+-- ============================================================
+drop policy if exists avatar_insert on storage.objects;
+drop policy if exists avatar_update on storage.objects;
+drop policy if exists avatar_delete on storage.objects;
+drop policy if exists avatar_select on storage.objects;
+
+create policy avatar_select on storage.objects
+  for select
+  using (bucket_id = 'Avatar');
+
+create policy avatar_insert on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'Avatar'
+    and (storage.foldername(name))[1] in (
+      select p.id::text
+      from public.user_profiles up
+      join public.profiles p on p.id = up.profile_id
+      where up.user_id = auth.uid()
+    )
+  );
+
+create policy avatar_update on storage.objects
+  for update to authenticated
+  using (
+    bucket_id = 'Avatar'
+    and (storage.foldername(name))[1] in (
+      select p.id::text
+      from public.user_profiles up
+      join public.profiles p on p.id = up.profile_id
+      where up.user_id = auth.uid()
+    )
+  );
+
+create policy avatar_delete on storage.objects
+  for delete to authenticated
+  using (
+    bucket_id = 'Avatar'
+    and (storage.foldername(name))[1] in (
+      select p.id::text
+      from public.user_profiles up
+      join public.profiles p on p.id = up.profile_id
+      where up.user_id = auth.uid()
+    )
+  );
+
+-- ============================================================
+-- MIGRACIÓN: renombrar profiles.full_name → profiles.display_name
+-- Ejecutar una sola vez sobre bases de datos existentes.
+-- ============================================================
+alter table public.profiles
+  rename column full_name to display_name;

@@ -13,14 +13,15 @@ import {
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
 import getGreeting from "../actions/actions";
-import homeMenu from "../constants/home.menu";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { useHomeMenu } from "../hooks/useHomeMenu";
 import { useUserData } from "../hooks/useUserData";
 import { HomeMenuItem, HomeRouteName } from "../models/userData.types";
 
+const ADIP_ICON = require("@/src/app/assets/image/adip_icon.png");
+
 const HomeScreen = () => {
-  const { userName } = useUserData();
+  const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
   const { isAuthenticated } = useAuthentication();
   const filteredMenuItems = useHomeMenu(isAuthenticated);
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
@@ -45,6 +46,7 @@ const HomeScreen = () => {
         height: 60,
         borderRadius: 30,
         backgroundColor: themedColors.primary,
+        overflow: "hidden",
       },
       greetingText: {
         fontSize: 24,
@@ -122,10 +124,14 @@ const HomeScreen = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.headerContainer}>
-        <Image
-          source={homeMenu.homeScreenMenu[0].icon}
-          style={styles.userIcon}
-        />
+        {!isLoadingUser && (
+          <Image
+            source={avatarUrl ? { uri: avatarUrl } : ADIP_ICON}
+            style={styles.userIcon}
+            resizeMode="cover"
+          />
+        )}
+        {isLoadingUser && <View style={styles.userIcon} />}
         <Text style={styles.greetingText}>{getGreeting(userName)}</Text>
       </View>
 

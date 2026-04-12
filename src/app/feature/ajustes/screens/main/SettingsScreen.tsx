@@ -13,12 +13,13 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import {
-    SettingsButton,
-    useSettingsButtons,
+  SettingsButton,
+  useSettingsButtons,
 } from "../../hooks/useSettingsButtons";
 
+const ADIP_ICON = require("../../../../assets/image/adip_icon.png");
 const SettingsScreen = () => {
-  const { userName } = useUserData();
+  const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
   const { getThemedColors, transformText, reloadLocalPreferences } =
     usePersonalization();
   const themedColors = getThemedColors();
@@ -47,12 +48,11 @@ const SettingsScreen = () => {
           height: 80,
           borderRadius: 40,
           backgroundColor: themedColors.primary,
-          justifyContent: "center",
-          alignItems: "center",
+          overflow: "hidden",
         },
         avatarImage: {
-          width: 60,
-          height: 60,
+          width: 80,
+          height: 80,
         },
         greetingText: {
           fontSize: 18,
@@ -181,11 +181,13 @@ const SettingsScreen = () => {
       <View style={styles.userInfoContainer}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatarCircle}>
-            <Image
-              source={require("../../../../assets/image/adip_icon.png")}
-              style={styles.avatarImage}
-              resizeMode="contain"
-            />
+            {!isLoadingUser && (
+              <Image
+                source={avatarUrl ? { uri: avatarUrl } : ADIP_ICON}
+                style={styles.avatarImage}
+                resizeMode="cover"
+              />
+            )}
           </View>
         </View>
         <CustomText style={styles.greetingText}>

@@ -4,7 +4,7 @@ import { auditLogService } from "./auditLog.Service";
 
 type ProfileSummary = {
   id: string;
-  full_name: string;
+  display_name: string;
   avatar_url: string | null;
   created_at: string;
 };
@@ -127,7 +127,7 @@ export const profileManagementService = {
     try {
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, created_at")
+        .select("id, display_name, avatar_url, created_at")
         .eq("id", profileId)
         .single();
 
@@ -148,7 +148,7 @@ export const profileManagementService = {
     try {
       const { data: profile, error } = await supabase
         .from("profiles")
-        .update({ full_name: newName })
+        .update({ display_name: newName })
         .eq("id", profileId)
         .select()
         .single();
@@ -161,7 +161,7 @@ export const profileManagementService = {
         profile_id: profileId,
         event_type: auditLogService.events.PROFILE_UPDATED,
         description: "Profile name updated",
-        metadata: { profile_id: profileId, updated_fields: ["full_name"] },
+        metadata: { profile_id: profileId, updated_fields: ["display_name"] },
         source: "profileManagement.service.updateProfileName",
       });
 
@@ -170,6 +170,41 @@ export const profileManagementService = {
       return {
         success: false,
         error: getErrorMessage(error, "Error al actualizar el perfil"),
+      };
+    }
+  },
+
+  async uploadAvatar(
+    profileId: string,
+    localUri: string,
+  ): Promise<
+    { success: true; url: string } | { success: false; error: string }
+  > {
+    try {
+      const response = await fetch(localUri);
+      const blob = await response.blob();
+
+      const ext = localUri.split(".").pop()?.split("?")[0] ?? "jpg";
+      const path = `${profileId}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("Avatar")
+        .upload(path, blob, {
+          contentType: blob.type || `image/${ext}`,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from("Avatar").getPublicUrl(path);
+
+      return { success: true, url: data.publicUrl };
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al subir el avatar"),
       };
     }
   },

@@ -29,8 +29,25 @@ export const useUserProfiles = () => {
     void fetchCurrentUser();
   }, []);
 
+  const resolveCurrentUserId = useCallback(async () => {
+    if (currentUserId) {
+      return currentUserId;
+    }
+
+    const user = await authService.getCurrentUser();
+
+    if (!user?.id) {
+      return null;
+    }
+
+    setCurrentUserId(user.id);
+    return user.id;
+  }, [currentUserId]);
+
   const fetchProfiles = useCallback(async () => {
-    if (!currentUserId) {
+    const resolvedUserId = await resolveCurrentUserId();
+
+    if (!resolvedUserId) {
       setError("No hay usuario autenticado");
       return;
     }
@@ -39,9 +56,29 @@ export const useUserProfiles = () => {
     setError(null);
 
     try {
-      const response = await profileService.getUserProfiles(currentUserId);
+      const response = await profileService.getUserProfiles(resolvedUserId);
 
       if (response.success && response.data) {
+        if (response.data.length > 0) {
+          setProfiles(response.data);
+          return;
+        }
+
+        const ensureResult =
+          await profileService.ensureSelfProfileForUser(resolvedUserId);
+
+        if (!ensureResult.success) {
+          setProfiles(response.data);
+          return;
+        }
+
+        const refreshed = await profileService.getUserProfiles(resolvedUserId);
+
+        if (refreshed.success && refreshed.data) {
+          setProfiles(refreshed.data);
+          return;
+        }
+
         setProfiles(response.data);
       } else {
         setError(response.error || "Error al cargar los perfiles");
@@ -53,11 +90,16 @@ export const useUserProfiles = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentUserId]);
+  }, [resolveCurrentUserId]);
 
   const createProfile = useCallback(
-    async (profileData: { full_name: string; avatar_url?: string | null }) => {
-      if (!currentUserId) {
+    async (profileData: {
+      display_name: string;
+      avatar_url?: string | null;
+    }) => {
+      const resolvedUserId = await resolveCurrentUserId();
+
+      if (!resolvedUserId) {
         setError("No hay usuario autenticado");
         return { success: false };
       }
@@ -67,9 +109,9 @@ export const useUserProfiles = () => {
 
       try {
         const response = await profileService.createProfileForUser(
-          currentUserId,
+          resolvedUserId,
           {
-            full_name: profileData.full_name,
+            display_name: profileData.display_name,
             avatar_url: profileData.avatar_url || null,
             email: null,
             auth_user_id: null,
@@ -92,14 +134,14 @@ export const useUserProfiles = () => {
         setLoading(false);
       }
     },
-    [currentUserId, fetchProfiles],
+    [resolveCurrentUserId, fetchProfiles],
   );
 
   const updateProfile = useCallback(
     async (
       profileId: string,
       updates: {
-        full_name?: string;
+        display_name?: string;
         age?: number | null;
         avatar_url?: string | null;
       },
@@ -158,7 +200,9 @@ export const useUserProfiles = () => {
 
   const unlinkProfile = useCallback(
     async (profileId: string) => {
-      if (!currentUserId) {
+      const resolvedUserId = await resolveCurrentUserId();
+
+      if (!resolvedUserId) {
         setError("No hay usuario autenticado");
         return { success: false };
       }
@@ -168,7 +212,7 @@ export const useUserProfiles = () => {
 
       try {
         const response = await profileService.unlinkUserFromProfile(
-          currentUserId,
+          resolvedUserId,
           profileId,
         );
 
@@ -188,7 +232,7 @@ export const useUserProfiles = () => {
         setLoading(false);
       }
     },
-    [currentUserId, fetchProfiles],
+    [resolveCurrentUserId, fetchProfiles],
   );
 
   useEffect(() => {

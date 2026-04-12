@@ -5,6 +5,7 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -34,11 +35,15 @@ const ProfileEditScreen = () => {
   const themedColors = getThemedColors();
 
   const profileId = route.params.profile.id;
-  const initialName = route.params.profile.full_name;
+  const initialName = route.params.profile.display_name;
+  const initialAvatarUrl = route.params.profile.avatar_url ?? null;
 
   const {
     fullName,
     setFullName,
+    avatarUrl,
+    isPickingImage,
+    handlePickAvatar,
     showError: showEditError,
     showSuccess,
     errorMessage: editErrorMessage,
@@ -46,7 +51,7 @@ const ProfileEditScreen = () => {
     handleSave,
     closeError: closeEditError,
     closeSuccess,
-  } = useProfileEdit(profileId, initialName);
+  } = useProfileEdit(profileId, initialName, initialAvatarUrl);
 
   const {
     showConfirmDelete,
@@ -101,6 +106,32 @@ const ProfileEditScreen = () => {
           fontWeight: "bold",
           color: themedColors.text,
           marginBottom: 10,
+        },
+        avatarSection: {
+          alignItems: "center",
+          marginBottom: 24,
+        },
+        avatarPreview: {
+          width: 120,
+          height: 120,
+          borderRadius: 60,
+          backgroundColor: themedColors.cardBackground,
+          borderWidth: 2,
+          borderColor: themedColors.primary,
+          marginBottom: 12,
+        },
+        avatarButton: {
+          backgroundColor: themedColors.cardBackground,
+          borderRadius: 12,
+          paddingVertical: 12,
+          paddingHorizontal: 18,
+          borderWidth: 1,
+          borderColor: themedColors.primary,
+        },
+        avatarButtonText: {
+          color: themedColors.background,
+          fontWeight: "bold",
+          fontSize: 14,
         },
         input: {
           backgroundColor: themedColors.cardBackground,
@@ -161,9 +192,29 @@ const ProfileEditScreen = () => {
       </View>
 
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>
-          {transformText("¡Vamos a conocernos!")}
-        </Text>
+        <View style={styles.avatarSection}>
+          <Image
+            source={
+              avatarUrl
+                ? { uri: avatarUrl }
+                : require("../../../../assets/image/adip_icon.png")
+            }
+            style={styles.avatarPreview}
+            resizeMode="cover"
+          />
+          <TouchableOpacity
+            style={styles.avatarButton}
+            onPress={() => void handlePickAvatar()}
+            disabled={isSaving || isDeleting || isPickingImage}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.avatarButtonText}>
+              {transformText(
+                isPickingImage ? "Cargando imagen..." : "Cambiar avatar",
+              )}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.fieldLabel}>
           {transformText("Nombre completo")}

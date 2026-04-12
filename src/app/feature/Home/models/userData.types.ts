@@ -19,6 +19,7 @@ export interface HomeScreenMenuItem {
 
 export interface UseUserDataReturn {
   userName: string | null;
+  avatarUrl: string | null;
   loading: boolean;
   error: string | null;
   refreshUser: () => Promise<void>;

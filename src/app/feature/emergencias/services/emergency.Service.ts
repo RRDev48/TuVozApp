@@ -166,13 +166,13 @@ export const emergencyService = {
   async getProfileFullName(profileId: string): Promise<string> {
     const { data, error } = await supabase
       .from("profiles")
-      .select("full_name")
+      .select("display_name")
       .eq("id", profileId)
       .single();
 
     if (error) throw error;
 
-    return data.full_name || "";
+    return data.display_name || "";
   },
 
   async clearEmergencyProfile(profileId: string): Promise<void> {
