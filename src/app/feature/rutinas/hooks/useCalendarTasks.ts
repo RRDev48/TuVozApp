@@ -53,6 +53,9 @@ export const useCalendarTasks = (tasks: Task[]) => {
   };
 
   const taskPositions = useMemo(() => {
+    // Retornar array vacío inmediatamente si no hay tareas
+    if (tasks.length === 0) return [];
+
     const positions = tasks.map((task) => {
       const startMinutes = timeToMinutes(task.horarioDesde);
       const endMinutes = timeToMinutes(task.horarioHasta);

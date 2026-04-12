@@ -23,18 +23,24 @@ function isTaskStatus(value: string): value is TaskStatus {
 
 export const useRoutineTasks = (routineId: number) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadTasks = useCallback(async () => {
     if (!routineId) {
       setTasks([]);
+      setIsLoading(false);
       return;
     }
 
+    setIsLoading(true);
     const tasksDb = await getTasksByRoutine(routineId);
     setTasks(mapTasksFromDB(tasksDb));
+    setIsLoading(false);
   }, [routineId]);
 
   useEffect(() => {
+    // Limpiar tareas inmediatamente cuando cambia el routineId
+    setTasks([]);
     loadTasks();
   }, [loadTasks]);
 

@@ -19,8 +19,9 @@ import ChangeWeek from "../components/week/ChangeWeek";
 import { useAchievementCelebration } from "../hooks/useAchievementCelebration";
 import { useModals } from "../hooks/useModals";
 import { useRoutineProgress } from "../hooks/useRoutineProgress";
-import { useRoutineTasks } from "../hooks/useRoutineTasks";
+import { useTaskOperations } from "../hooks/useTaskOperations";
 import { useWeekRoutine } from "../hooks/useWeekRoutine";
+import { useWeekTasksPreload } from "../hooks/useWeekTasksPreload";
 import { Task } from "../models/task.types";
 
 export const RoutineScreen = () => {
@@ -71,17 +72,35 @@ export const RoutineScreen = () => {
     handleChangeWeek,
   } = useWeekRoutine(profileId || "");
 
+  // Precargar todas las tareas de la semana
+  const { getTasksForDay, reloadWeekTasks } = useWeekTasksPreload(
+    profileId || "",
+    daysOfWeek,
+  );
+
+  // Obtener tareas del día seleccionado (ya precargadas)
+  const selectedDayTasks = useMemo(() => {
+    if (!daysOfWeek[selectedDayIndex]) return [];
+    return getTasksForDay(daysOfWeek[selectedDayIndex]);
+  }, [daysOfWeek, selectedDayIndex, getTasksForDay]);
+
+  // Todas las tareas de la semana para progress
+  const allWeekTasks = useMemo(() => {
+    return daysOfWeek.flatMap((day) => getTasksForDay(day));
+  }, [daysOfWeek, getTasksForDay]);
+
+  // Operaciones sobre tareas
   const {
-    tasks,
     addTask,
     removeTask,
     replaceTask,
     updateTaskState,
     handleTaskTimeChange,
-  } = useRoutineTasks(routineId);
+  } = useTaskOperations(selectedDayTasks, reloadWeekTasks);
+
   const tasksRefreshTrigger = useMemo(() => {
-    return tasks.map((t) => `${t.id}-${t.estado}`).join(",");
-  }, [tasks]);
+    return allWeekTasks.map((t) => `${t.id}-${t.estado}`).join(",");
+  }, [allWeekTasks]);
 
   const {
     isAddTaskModalVisible,
@@ -188,7 +207,7 @@ export const RoutineScreen = () => {
         <ProgressItem
           routineId={routineId}
           refreshTrigger={tasksRefreshTrigger}
-          tasks={tasks}
+          tasks={allWeekTasks}
         />
       </View>
 
@@ -220,9 +239,11 @@ export const RoutineScreen = () => {
         - Permite ajustar la hora de una tarea (onTaskTimeChange).
         - Permite abrir los detalles de una tarea (onTaskPress).
         - Permite crear una tarea nueva tocando una hora vacía (onHourPress).
+        Key única por día para forzar re-render limpio al cambiar de día.
       */}
       <DayCalendarView
-        tasks={tasks}
+        key={`day-${selectedDayIndex}-${routineId}`}
+        tasks={selectedDayTasks}
         onTaskTimeChange={handleTaskTimeChange}
         onTaskPress={handleTaskPress}
         onHourPress={handleHourPress}
