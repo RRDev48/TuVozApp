@@ -8,11 +8,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -38,7 +38,6 @@ const EmergencyProfileScreen = () => {
         },
         scrollContent: {
           padding: 20,
-          paddingBottom: 150,
         },
         loadingContainer: {
           flex: 1,

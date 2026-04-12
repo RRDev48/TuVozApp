@@ -7,12 +7,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -45,7 +45,6 @@ const EditAddressScreen = () => {
           flex: 1,
           paddingHorizontal: 20,
           paddingTop: 20,
-          paddingBottom: 180,
         },
         sectionTitle: {
           fontSize: 18,

@@ -6,12 +6,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -19,8 +19,8 @@ import CancelConfirmationModal from "../../components/alerts/CancelConfirmationM
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
 import {
-  DEFAULT_EMERGENCY_FORM_DATA,
-  EmergencyFormData,
+    DEFAULT_EMERGENCY_FORM_DATA,
+    EmergencyFormData,
 } from "../../models/emergency.types";
 
 type EmergencyScreenNavigationProp = StackNavigationProp<
@@ -45,7 +45,6 @@ const EmergencyScreen = () => {
         },
         scrollContent: {
           padding: 20,
-          paddingBottom: 120,
         },
         loadingContainer: {
           flex: 1,

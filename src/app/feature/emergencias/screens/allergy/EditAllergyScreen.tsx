@@ -64,7 +64,6 @@ const EditAllergyScreen = () => {
           flex: 1,
           paddingHorizontal: 20,
           paddingTop: 20,
-          paddingBottom: 180,
         },
         sectionTitle: {
           fontSize: 18,

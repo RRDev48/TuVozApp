@@ -8,12 +8,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -22,9 +22,9 @@ import EmergencySuccessModal from "../../components/alerts/EmergencySuccessModal
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
 import {
-  DEFAULT_EMERGENCY_FORM_DATA,
-  EmergencyAlertType,
-  EmergencyFormData,
+    DEFAULT_EMERGENCY_FORM_DATA,
+    EmergencyAlertType,
+    EmergencyFormData,
 } from "../../models/emergency.types";
 import { emergencyService } from "../../services/emergency.Service";
 import { parsePhoneNumber } from "../../services/phoneParser";
@@ -64,7 +64,6 @@ const EmergencyScreen2 = () => {
         },
         scrollContent: {
           padding: 20,
-          paddingBottom: 120,
         },
         loadingContainer: {
           flex: 1,

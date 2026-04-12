@@ -5,11 +5,11 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo, useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -61,7 +61,6 @@ const BloodTypeSelectionScreen = () => {
           flex: 1,
           paddingHorizontal: 20,
           paddingTop: 20,
-          paddingBottom: 120,
           alignItems: "center",
         },
         sectionTitle: {

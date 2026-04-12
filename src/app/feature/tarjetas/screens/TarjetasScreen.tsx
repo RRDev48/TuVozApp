@@ -19,7 +19,6 @@ const CardsScreen = () => {
         container: {
           flex: 1,
           backgroundColor: themedColors.background,
-          paddingTop: 50,
         },
         backButton: {
           flexDirection: "row",
@@ -38,7 +37,7 @@ const CardsScreen = () => {
           justifyContent: "center",
           alignItems: "center",
           gap: 30,
-          marginTop: -80,
+          marginTop: -30,
         },
         icon: {
           width: 180,

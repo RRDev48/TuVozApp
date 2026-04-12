@@ -8,7 +8,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text
+  Text,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -40,7 +40,6 @@ const NotesScreen = () => {
           flex: 1,
           paddingHorizontal: 20,
           paddingTop: 20,
-          paddingBottom: 120,
         },
         sectionTitle: {
           fontSize: 18,

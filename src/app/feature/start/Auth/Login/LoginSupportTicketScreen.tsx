@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
     paddingHorizontal: 18,
-    paddingBottom: 12,
   },
   logoContainer: {
     flexDirection: "row",

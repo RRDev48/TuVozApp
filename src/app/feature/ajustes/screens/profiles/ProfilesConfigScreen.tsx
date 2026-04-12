@@ -5,18 +5,18 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  GestureResponderEvent,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    GestureResponderEvent,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
+import type { Profile } from "../../../common/models/database.types";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { useUserProfiles } from "../../../start/Auth/hooks/useUserProfiles";
-import type { Profile } from "../../../common/models/database.types";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { useProfilesConfig } from "../../hooks/useProfilesConfig";
 
@@ -145,7 +145,6 @@ const ProfilesConfigScreen = () => {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          paddingBottom: 100,
         },
         emptyText: {
           fontSize: 16,
