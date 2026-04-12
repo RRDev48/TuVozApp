@@ -133,6 +133,7 @@ export const TaskDetailsModal = ({
 
   const borderColor = getStatusColor(task.estado || "Pendiente");
   const isTaskCompleted = task.estado === "Completado";
+  const canEditOrDelete = task.estado === "Pendiente" || !task.estado;
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
@@ -145,7 +146,7 @@ export const TaskDetailsModal = ({
           {/* Fila de cabecera: iconos editar/eliminar a la izquierda, cerrar a la derecha */}
           <View style={styles.headerRow}>
             <View style={styles.actionIcons}>
-              {onEditTask && (
+              {onEditTask && canEditOrDelete && (
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={onEditTask}
@@ -157,7 +158,7 @@ export const TaskDetailsModal = ({
                   />
                 </TouchableOpacity>
               )}
-              {onDeleteTask && (
+              {onDeleteTask && canEditOrDelete && (
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={onDeleteTask}
