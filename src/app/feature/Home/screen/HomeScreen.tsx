@@ -25,7 +25,7 @@ const HomeScreen = () => {
   const { isAuthenticated } = useAuthentication();
   const filteredMenuItems = useHomeMenu(isAuthenticated);
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = useMemo(() => {
@@ -33,6 +33,7 @@ const HomeScreen = () => {
       screenContainer: {
         flex: 1,
         padding: 20,
+        paddingTop: 28,
         backgroundColor: themedColors.background,
       },
       headerContainer: {
@@ -47,6 +48,11 @@ const HomeScreen = () => {
         borderRadius: 30,
         backgroundColor: themedColors.primary,
         overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: temaOscuro ? 0.4 : 0.15,
+        shadowRadius: 6,
+        elevation: 4,
       },
       greetingText: {
         fontSize: 24,
@@ -67,6 +73,12 @@ const HomeScreen = () => {
         borderRadius: 30,
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: temaOscuro ? 0.35 : 0.1,
+        shadowRadius: 6,
+        elevation: 3,
       },
       textCard: {
         fontSize: 20,
@@ -80,7 +92,7 @@ const HomeScreen = () => {
         height: 70,
       },
     });
-  }, [themedColors]);
+  }, [themedColors, temaOscuro]);
 
   const handleMenuPress = useCallback(
     (route: HomeRouteName) => {
