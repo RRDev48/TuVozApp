@@ -120,6 +120,7 @@ export const RoutineScreen = () => {
 
   useAchievementCelebration({
     percent,
+    routineId,
     onShowAchievement: openAchievementModal,
   });
 
