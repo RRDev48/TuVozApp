@@ -134,9 +134,7 @@ async function logEvent(data: CreateAuditLogData) {
 async function logEventSafe(data: CreateAuditLogData) {
   try {
     await logEvent(data);
-  } catch {
-    // Never break the main app flow because of audit logging.
-  }
+  } catch {}
 }
 
 async function getUserAuditLogs(limit: number = 50) {

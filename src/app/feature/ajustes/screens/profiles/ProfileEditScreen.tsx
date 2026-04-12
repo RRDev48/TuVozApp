@@ -5,11 +5,13 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import ConfirmationModal from "../../../common/alerts/ConfirmationModal";
 import ErrorModal from "../../../common/alerts/ErrorModal";
@@ -148,7 +150,10 @@ const ProfileEditScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <BackButton onPress={() => navigation.goBack()} />
 
       <View style={styles.headerContainer}>
@@ -222,7 +227,7 @@ const ProfileEditScreen = () => {
         onConfirm={() => confirmDelete(profileId, handleDeleteComplete)}
         onCancel={cancelDelete}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

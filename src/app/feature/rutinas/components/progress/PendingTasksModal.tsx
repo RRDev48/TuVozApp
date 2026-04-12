@@ -45,11 +45,11 @@ export const PendingTasksModal = ({
 
   const getProgressColor = (percentage: number): string => {
     if (percentage >= 100) {
-      return "#4caf50"; // Verde
+      return "#4caf50";
     } else if (percentage >= 50) {
-      return "#ffc107"; // Amarillo
+      return "#ffc107";
     } else {
-      return "#f44336"; // Rojo
+      return "#f44336";
     }
   };
 

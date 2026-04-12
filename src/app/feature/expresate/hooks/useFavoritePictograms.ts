@@ -46,8 +46,6 @@ export const useFavoritePictograms = () => {
       const effectiveProfileId = await resolveProfileId();
 
       if (effectiveProfileId) {
-        // If the user added favorites before profile was resolved, mirror those
-        // local ids to remote so logged-in behavior matches guest behavior.
         if (localIds.length > 0) {
           await expresateService.syncFavoritePictograms(
             effectiveProfileId,
@@ -84,7 +82,6 @@ export const useFavoritePictograms = () => {
       const nextIds = new Set(favoriteIdsRef.current);
       const wasFavorite = nextIds.has(pictogramId);
 
-      // Optimistic update
       if (wasFavorite) {
         nextIds.delete(pictogramId);
       } else {
@@ -114,7 +111,6 @@ export const useFavoritePictograms = () => {
               );
 
           if (!result.success) {
-            // Keep local state to match guest behavior; remote sync will retry on next fetch.
             return;
           }
         }

@@ -31,13 +31,16 @@ import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
 import ForgotPasswordScreen from "../feature/start/Auth/ForgotPassword/ForgotPasswordScreen";
 import NewPasswordScreen from "../feature/start/Auth/ForgotPassword/NewPasswordScreen";
 import RecoveryCodeScreen from "../feature/start/Auth/ForgotPassword/RecoveryCodeScreen";
+import LoginHelpScreen from "../feature/start/Auth/Login/LoginHelpScreen";
 import LoginScreen from "../feature/start/Auth/Login/LoginScreen";
+import LoginSupportTicketScreen from "../feature/start/Auth/Login/LoginSupportTicketScreen";
 import CodeVerificationScreen from "../feature/start/Auth/Register/CodeVerificationScreen";
 import EmailVerificationScreen from "../feature/start/Auth/Register/EmailVerificationScreen";
 import PasswordSetupScreen from "../feature/start/Auth/Register/PasswordSetupScreen";
 import RegisterInfoScreen from "../feature/start/Auth/Register/RegisterInfoScreen";
 import RoleSelectionScreen from "../feature/start/Auth/Register/RoleSelectionScreen";
 import UserTypeScreen from "../feature/start/Auth/Register/UserTypeScreen";
+import TermsAndConditionsScreen from "../feature/start/Auth/TermsAndConditions/TermsAndConditionsScreen";
 import OnboardingScreen from "../feature/start/Onboarding/screen/OnboardingScreen";
 import SplashScreen from "../feature/start/Splash/screen/SplashScreen";
 import CardsScreen from "../feature/tarjetas/screens/TarjetasScreen";
@@ -49,6 +52,8 @@ const authScreens = [
   { name: "Splash", component: SplashScreen },
   { name: "Onboarding", component: OnboardingScreen },
   { name: "Login", component: LoginScreen },
+  { name: "LoginHelp", component: LoginHelpScreen },
+  { name: "LoginSupportTicket", component: LoginSupportTicketScreen },
   { name: "ForgotPassword", component: ForgotPasswordScreen },
   { name: "RecoveryCode", component: RecoveryCodeScreen },
   { name: "NewPassword", component: NewPasswordScreen },
@@ -58,6 +63,7 @@ const authScreens = [
   { name: "EmailVerification", component: EmailVerificationScreen },
   { name: "CodeVerification", component: CodeVerificationScreen },
   { name: "PasswordSetup", component: PasswordSetupScreen },
+  { name: "TermsAndConditions", component: TermsAndConditionsScreen },
 ];
 
 const emergencyScreens = [

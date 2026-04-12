@@ -9,6 +9,8 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -145,12 +147,15 @@ const PasswordSetupScreen = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    // TODO: Abrir política de privacidad
+    navigation.navigate("TermsAndConditions");
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         {/* Header con botón atrás y barra de progreso */}
         <View style={styles.headerContainer}>
           <View style={styles.headerRow}>
@@ -278,7 +283,7 @@ const PasswordSetupScreen = () => {
           message={errorMessage}
           onClose={closeErrorModal}
         />
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };

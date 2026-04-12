@@ -76,7 +76,6 @@ const ExpresateScreen = () => {
 
   const totalPages = isSearchMode ? totalPictogramPages : totalCategoryPages;
 
-  // Resetear página cuando cambia el modo de búsqueda o el estado del teclado
   useEffect(() => {
     setCurrentPage(0);
     flatListRef.current?.scrollToIndex({ index: 0, animated: false });
@@ -87,7 +86,6 @@ const ExpresateScreen = () => {
     flatListRef.current?.scrollToIndex({ index: 0, animated: false });
   }, [isKeyboardOpen]);
 
-  // Manejar teclado
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
@@ -112,7 +110,6 @@ const ExpresateScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
-  // Estado para detectar si debe mostrarse la pantalla de error
   const hasError = !isLoading && (!!error || categories.length === 0);
 
   const handleMenuItemPress = useCallback(

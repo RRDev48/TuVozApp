@@ -196,7 +196,8 @@ create index if not exists idx_task_steps_task on public.task_steps(task_id);
 
 create table if not exists public.support_tickets (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.users(id) on delete cascade,
+  user_id uuid references public.users(id) on delete cascade,
+  contact_email text,
   subject text not null,
   message text not null,
   status text not null default 'open' check (status in ('open', 'in_progress', 'resolved', 'closed')),
@@ -205,7 +206,16 @@ create table if not exists public.support_tickets (
   updated_at timestamptz not null default now()
 );
 
+-- Compatibility for existing databases where support_tickets was created
+-- before anonymous support flow was introduced.
+alter table public.support_tickets
+  alter column user_id drop not null;
+
+alter table public.support_tickets
+  add column if not exists contact_email text;
+
 create index if not exists idx_support_tickets_user on public.support_tickets(user_id);
+create index if not exists idx_support_tickets_contact_email on public.support_tickets(contact_email);
 
 create table if not exists public.support_messages (
   id uuid primary key default gen_random_uuid(),
@@ -616,6 +626,7 @@ using (
 
 drop policy if exists support_tickets_select_own on public.support_tickets;
 drop policy if exists support_tickets_insert_own on public.support_tickets;
+drop policy if exists support_tickets_insert_public on public.support_tickets;
 drop policy if exists support_tickets_update_own on public.support_tickets;
 
 create policy support_tickets_select_own on public.support_tickets
@@ -625,6 +636,14 @@ using (user_id = auth.uid());
 create policy support_tickets_insert_own on public.support_tickets
 for insert to authenticated
 with check (user_id = auth.uid());
+
+create policy support_tickets_insert_public on public.support_tickets
+for insert to anon, authenticated
+with check (
+  user_id is null
+  and contact_email is not null
+  and length(trim(contact_email)) > 0
+);
 
 create policy support_tickets_update_own on public.support_tickets
 for update to authenticated
@@ -723,6 +742,7 @@ $$;
 
 grant usage on schema public to anon, authenticated, service_role;
 grant all on all tables in schema public to authenticated, service_role;
+grant insert on table public.support_tickets to anon;
 grant all on all sequences in schema public to authenticated, service_role;
 grant execute on all functions in schema public to authenticated, service_role;
 

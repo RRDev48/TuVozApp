@@ -58,8 +58,6 @@ const CategoryPictogramsScreen = () => {
 
   const itemsPerPage = 6;
 
-  // Sort once when both pictograms and favorites are ready. Never re-sort
-  // on subsequent favorite toggles to avoid visual jumping.
   useEffect(() => {
     if (sortedOnceRef.current || pictograms.length === 0 || !favoritesReady) {
       return;

@@ -1,7 +1,7 @@
 import type { UserRole } from "@/src/app/feature/common/models/database.types";
 import type {
-  EmergencyAlertType,
-  EmergencyFormData,
+    EmergencyAlertType,
+    EmergencyFormData,
 } from "@/src/app/feature/emergencias/models/emergency.types";
 
 type AddScreenParams = {
@@ -12,6 +12,8 @@ type RootStackParamsList = {
   Splash: undefined;
   Onboarding: undefined;
   Login: undefined;
+  LoginHelp: undefined;
+  LoginSupportTicket: undefined;
   ForgotPassword: undefined;
   RecoveryCode: { email: string };
   NewPassword: { email: string };
@@ -31,6 +33,7 @@ type RootStackParamsList = {
     isOwner?: boolean;
     ownerUserId?: string;
   };
+  TermsAndConditions: undefined;
   CodeVerification: {
     email: string;
     password: string;

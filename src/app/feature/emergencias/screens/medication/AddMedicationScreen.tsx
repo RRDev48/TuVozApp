@@ -6,6 +6,8 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -102,7 +104,10 @@ const AddMedicationScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {isDropdownOpen && (
         <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
           <View style={styles.overlay} />
@@ -161,7 +166,7 @@ const AddMedicationScreen = () => {
         message="Por favor ingrese el nombre de la medicación"
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

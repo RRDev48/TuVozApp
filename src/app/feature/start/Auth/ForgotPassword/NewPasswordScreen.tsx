@@ -9,6 +9,8 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Keyboard,
+    KeyboardAvoidingView,
+    Platform,
     StyleSheet,
     Text,
     TextInput,
@@ -137,7 +139,10 @@ const NewPasswordScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {/* Header con botón atrás y logo */}
       <BackButton
         onPress={() => navigation.navigate("Login")}
@@ -262,7 +267,7 @@ const NewPasswordScreen = () => {
         message={errorMessage}
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -4,7 +4,13 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text
+} from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
@@ -55,7 +61,10 @@ const AddAddressScreen = () => {
     });
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <BackButton onPress={() => navigation.goBack()} />
 
       <ScreenTitle text={transformText("Agregar dirección")} />
@@ -82,7 +91,7 @@ const AddAddressScreen = () => {
         message="Por favor ingrese una dirección"
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

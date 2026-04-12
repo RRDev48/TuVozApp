@@ -41,7 +41,7 @@ export const useSearchPictograms = (searchQuery: string) => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchPictograms();
-    }, 300); // Debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [fetchPictograms]);

@@ -45,6 +45,13 @@ export interface CreateSupportTicketData {
   priority?: "low" | "normal" | "high";
 }
 
+export interface CreateGuestSupportTicketData {
+  email: string;
+  subject: string;
+  message: string;
+  priority?: "low" | "normal" | "high";
+}
+
 export interface CreateSupportMessageData {
   ticket_id: string;
   message: string;
@@ -53,7 +60,8 @@ export interface CreateSupportMessageData {
 
 export interface SupportTicket {
   id: string;
-  user_id: string;
+  user_id: string | null;
+  contact_email: string | null;
   subject: string;
   message: string;
   status: "open" | "in_progress" | "resolved" | "closed";
@@ -89,6 +97,42 @@ async function createSupportTicket(
     {
       ticket_id: ticket.id,
       subject: data.subject,
+      priority: data.priority || "normal",
+    },
+  );
+
+  return { success: true, data: ticket };
+}
+
+async function createGuestSupportTicket(
+  data: CreateGuestSupportTicketData,
+): Promise<SupportResult<SupportTicket>> {
+  const normalizedEmail = data.email.trim().toLowerCase();
+
+  const { data: ticket, error } = await supabase
+    .from("support_tickets")
+    .insert({
+      user_id: null,
+      contact_email: normalizedEmail,
+      subject: data.subject,
+      message: data.message,
+      priority: data.priority || "normal",
+      status: "open",
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  await logSupportEvent(
+    auditLogService.events.SUPPORT_TICKET_CREATED,
+    `Guest support ticket created: ${data.subject}`,
+    "support.service.createGuestTicket",
+    {
+      ticket_id: ticket.id,
+      contact_email: normalizedEmail,
       priority: data.priority || "normal",
     },
   );
@@ -218,6 +262,17 @@ export const supportService = {
       }
 
       return await createSupportTicket(data, user.id);
+    } catch (error: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al crear el ticket"),
+      };
+    }
+  },
+
+  async createGuestTicket(data: CreateGuestSupportTicketData) {
+    try {
+      return await createGuestSupportTicket(data);
     } catch (error: unknown) {
       return {
         success: false,

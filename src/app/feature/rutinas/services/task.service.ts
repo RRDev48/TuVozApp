@@ -178,10 +178,8 @@ export async function updateTask(
 export async function deleteTask(taskId: number): Promise<void> {
   const profileId = await getProfileIdByTaskId(taskId);
 
-  // Delete task steps first
   await supabase.from("task_steps").delete().eq("task_id", taskId);
 
-  // Delete task
   const { error } = await supabase.from("tasks").delete().eq("id", taskId);
 
   if (error) throw error;

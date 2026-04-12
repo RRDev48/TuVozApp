@@ -7,11 +7,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -91,7 +92,10 @@ const EditAddressScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <BackButton onPress={() => navigation.goBack()} />
 
       <ScreenTitle text={transformText("Editar dirección")} />
@@ -133,7 +137,7 @@ const EditAddressScreen = () => {
         onConfirm={confirmDelete}
         onCancel={() => setShowConfirmModal(false)}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

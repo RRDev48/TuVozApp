@@ -6,7 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useRef, useState } from "react";
 import {
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   StatusBar,
   StyleSheet,
   Switch,
@@ -258,45 +260,34 @@ const AddTaskModal = ({
     const newValue = !isAllDayEnabled;
     setIsAllDayEnabled(newValue);
     if (newValue) {
-      // Si se activa "Todo el día", establecer horario completo
       handleTimeSelected("00:00", "23:59");
     } else {
-      // Si se desactiva, limpiar los campos
       handleTimeSelected("", "");
     }
   };
 
   const formatTimeInput = (text: string, currentValue: string): string => {
-    // Remover todo excepto números
     let filteredText = text.replace(/[^0-9]/g, "");
 
-    // Obtener solo los números del valor actual para comparar
     const currentFiltered = currentValue.replace(/[^0-9]/g, "");
 
-    // Si el texto nuevo es más corto que el actual (incluyendo caracteres especiales),
-    // o si tiene menos dígitos, estamos borrando
     const isDeleting =
       text.length < currentValue.length ||
       filteredText.length < currentFiltered.length;
 
-    // Si el usuario está borrando, no formatear
     if (isDeleting) {
-      // Limitar a 4 dígitos
       if (filteredText.length > 4) {
         filteredText = filteredText.substring(0, 4);
       }
       return filteredText;
     }
 
-    // Limitar a 4 dígitos
     if (filteredText.length > 4) {
       filteredText = filteredText.substring(0, 4);
     }
 
-    // Validar horas y minutos
     if (filteredText.length >= 1) {
       const firstDigit = parseInt(filteredText[0], 10);
-      // Si el primer dígito es mayor a 2, es inválido para horas
       if (firstDigit > 2) {
         return currentValue;
       }
@@ -304,7 +295,6 @@ const AddTaskModal = ({
 
     if (filteredText.length >= 2) {
       const hours = parseInt(filteredText.substring(0, 2), 10);
-      // Horas deben estar entre 00 y 23
       if (hours > 23) {
         return currentValue;
       }
@@ -312,7 +302,6 @@ const AddTaskModal = ({
 
     if (filteredText.length >= 3) {
       const firstMinuteDigit = parseInt(filteredText[2], 10);
-      // Si el primer dígito de minutos es mayor a 5, es inválido
       if (firstMinuteDigit > 5) {
         return currentValue;
       }
@@ -320,13 +309,11 @@ const AddTaskModal = ({
 
     if (filteredText.length === 4) {
       const minutes = parseInt(filteredText.substring(2, 4), 10);
-      // Minutos deben estar entre 00 y 59
       if (minutes > 59) {
         return currentValue;
       }
     }
 
-    // Formatear solo si hay 2 o más dígitos
     if (filteredText.length >= 2) {
       const hours = filteredText.substring(0, 2);
       const minutes = filteredText.substring(2, 4);
@@ -392,7 +379,10 @@ const AddTaskModal = ({
       onRequestClose={handleCancelClick}
     >
       <View style={styles.overlay}>
-        <View style={styles.addTaskModalContainer}>
+        <KeyboardAvoidingView
+          style={styles.addTaskModalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           {/* Botón de cierre (X) que dispara el flujo de confirmación de cancelación. */}
           <TouchableOpacity
             onPress={handleCancelClick}
@@ -603,7 +593,7 @@ const AddTaskModal = ({
               <Text style={styles.addStepButtonText}>+</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </View>
 
       {/* Modal de éxito que se muestra cuando la tarea se creó correctamente. */}

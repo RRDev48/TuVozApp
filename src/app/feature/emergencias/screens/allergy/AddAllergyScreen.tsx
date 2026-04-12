@@ -6,19 +6,21 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
-import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
+import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
 type AddAllergyScreenNavigationProp = StackNavigationProp<
@@ -96,7 +98,10 @@ const AddAllergyScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {isDropdownOpen && (
         <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
           <View style={styles.overlay} />
@@ -155,7 +160,7 @@ const AddAllergyScreen = () => {
         message="Por favor ingrese el nombre de la alergia"
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

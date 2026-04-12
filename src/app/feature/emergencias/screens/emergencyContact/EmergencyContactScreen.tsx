@@ -7,12 +7,14 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo, useState } from "react";
 import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -207,7 +209,10 @@ const EmergencyContactScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {isDropdownOpen && (
         <TouchableWithoutFeedback onPress={() => setIsDropdownOpen(false)}>
           <View style={styles.overlay} />
@@ -292,7 +297,7 @@ const EmergencyContactScreen = () => {
         message={errorMessage}
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

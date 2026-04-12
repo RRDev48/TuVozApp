@@ -254,7 +254,6 @@ export const profileManagementService = {
         throw new Error("Usuario no autenticado");
       }
 
-      // Get all profiles owned by this user
       const { data: userProfiles, error: profilesError } = await supabase
         .from("user_profiles")
         .select("profile_id")
@@ -265,7 +264,6 @@ export const profileManagementService = {
         throw profilesError;
       }
 
-      // Delete all data for these profiles
       for (const userProfile of userProfiles || []) {
         const deleteResult = await deleteProfileAndData(userProfile.profile_id);
 

@@ -6,14 +6,16 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ProgressBar from "../components/ProgressBar";
@@ -91,12 +93,15 @@ const EmailVerificationScreen = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    // TODO: Abrir política de privacidad
+    navigation.navigate("TermsAndConditions");
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         {/* Header con botón atrás y barra de progreso */}
         <View style={styles.headerContainer}>
           <View style={styles.headerRow}>
@@ -213,7 +218,7 @@ const EmailVerificationScreen = () => {
         >
           <Text style={styles.termsText}>Términos y Condiciones</Text>
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };

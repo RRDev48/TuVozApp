@@ -7,6 +7,8 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -121,12 +123,15 @@ const LoginScreen = () => {
   };
 
   const handleHelp = () => {
-    // TODO: Navegar a pantalla de ayuda
+    navigation.navigate("LoginHelp");
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         {/* Header con botón atrás y logo */}
         <BackButton
           onPress={() => navigation.navigate("Onboarding")}
@@ -269,7 +274,7 @@ const LoginScreen = () => {
           message={errorMessage}
           onClose={closeErrorModal}
         />
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };

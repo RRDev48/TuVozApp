@@ -6,13 +6,15 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
@@ -127,11 +129,14 @@ const ForgotPasswordScreen = () => {
   };
 
   const handleHelp = () => {
-    // TODO: Navegar a pantalla de ayuda
+    navigation.navigate("LoginHelp");
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       {/* Header con botón atrás y logo */}
       <BackButton
         onPress={() => navigation.navigate("Login")}
@@ -231,7 +236,7 @@ const ForgotPasswordScreen = () => {
         message={errorMessage}
         onClose={closeErrorModal}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

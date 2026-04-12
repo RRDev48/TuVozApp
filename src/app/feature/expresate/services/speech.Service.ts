@@ -60,9 +60,7 @@ export async function speakPictogramText(text: string, language: string) {
     if (isSpeaking) {
       await Speech.stop();
     }
-  } catch {
-    // Ignore state lookup failures and still attempt to speak.
-  }
+  } catch {}
 
   Speech.speak(normalizedText, {
     ...voiceOptions,
