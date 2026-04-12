@@ -8,11 +8,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo } from "react";
 import {
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -36,8 +36,11 @@ const EmergencyProfileScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        scrollContent: {
-          padding: 20,
+        content: {
+          flex: 1,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+          paddingBottom: 140,
         },
         loadingContainer: {
           flex: 1,
@@ -47,26 +50,51 @@ const EmergencyProfileScreen = () => {
         section: {
           backgroundColor: themedColors.primary,
           borderRadius: 16,
-          padding: 20,
-          marginBottom: 5,
+          padding: 14,
+          marginBottom: 10,
         },
         sectionTitle: {
-          fontSize: 18,
-          fontWeight: "bold",
+          fontSize: 14,
+          fontWeight: "700",
           color: themedColors.secondary,
-          marginBottom: 12,
-          textAlign: "center",
+          marginBottom: 8,
+          textTransform: "uppercase",
+          letterSpacing: 0.8,
+          opacity: 0.8,
         },
         infoRow: {
           flexDirection: "row",
           alignItems: "center",
-          marginBottom: 8,
+          paddingVertical: 7,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: themedColors.secondary + "33",
+        },
+        infoRowLast: {
+          borderBottomWidth: 0,
+          paddingBottom: 0,
+        },
+        infoRowStacked: {
+          flexDirection: "column",
+          alignItems: "flex-start",
+          paddingVertical: 7,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: themedColors.secondary + "33",
+        },
+        infoRowStackedLast: {
+          borderBottomWidth: 0,
+          paddingBottom: 0,
+        },
+        infoLabelRow: {
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 4,
         },
         infoLabel: {
-          fontSize: 16,
-          fontWeight: "medium",
+          fontSize: 14,
+          fontWeight: "600",
           color: themedColors.secondary,
           marginLeft: 8,
+          opacity: 0.8,
         },
         infoValue: {
           fontSize: 16,
@@ -74,6 +102,12 @@ const EmergencyProfileScreen = () => {
           marginLeft: 8,
           flex: 1,
           textAlign: "right",
+        },
+        infoValueStacked: {
+          fontSize: 15,
+          color: themedColors.secondary,
+          marginLeft: 28,
+          marginTop: 2,
         },
         buttonsContainer: {
           position: "absolute",
@@ -97,7 +131,7 @@ const EmergencyProfileScreen = () => {
           fontWeight: "bold",
         },
         alertButton: {
-          backgroundColor: colors.blue,
+          backgroundColor: colors.green,
           borderRadius: 16,
           paddingVertical: 16,
           alignItems: "center",
@@ -147,11 +181,11 @@ const EmergencyProfileScreen = () => {
 
       <ScreenTitle text={transformText("Perfil de Emergencia")} />
 
-      <View style={styles.scrollContent}>
+      <View style={styles.content}>
         {/* Nombre */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{transformText("Nombre")}</Text>
-          <View style={styles.infoRow}>
+          <View style={[styles.infoRow, styles.infoRowLast]}>
             <Ionicons name="person" size={20} color={themedColors.secondary} />
             <Text style={styles.infoValue}>{profileFullName}</Text>
           </View>
@@ -173,20 +207,32 @@ const EmergencyProfileScreen = () => {
             </Text>
           </View>
 
-          <View style={styles.infoRow}>
-            <Ionicons name="warning" size={20} color={themedColors.secondary} />
-            <Text style={styles.infoLabel}>{transformText("Alergias:")}</Text>
-            <Text style={styles.infoValue}>
+          <View style={styles.infoRowStacked}>
+            <View style={styles.infoLabelRow}>
+              <Ionicons
+                name="warning"
+                size={20}
+                color={themedColors.secondary}
+              />
+              <Text style={styles.infoLabel}>{transformText("Alergias:")}</Text>
+            </View>
+            <Text style={styles.infoValueStacked}>
               {profile?.allergies || "Ninguna"}
             </Text>
           </View>
 
-          <View style={styles.infoRow}>
-            <Ionicons name="medical" size={20} color={themedColors.secondary} />
-            <Text style={styles.infoLabel}>
-              {transformText("Medicaciones:")}
-            </Text>
-            <Text style={styles.infoValue}>
+          <View style={[styles.infoRowStacked, styles.infoRowStackedLast]}>
+            <View style={styles.infoLabelRow}>
+              <Ionicons
+                name="medical"
+                size={20}
+                color={themedColors.secondary}
+              />
+              <Text style={styles.infoLabel}>
+                {transformText("Medicaciones:")}
+              </Text>
+            </View>
+            <Text style={styles.infoValueStacked}>
               {profile?.medications || "Ninguna"}
             </Text>
           </View>
@@ -198,22 +244,28 @@ const EmergencyProfileScreen = () => {
             {transformText("Notas y Dirección")}
           </Text>
 
-          <View style={styles.infoRow}>
-            <Ionicons
-              name="document-text"
-              size={20}
-              color={themedColors.secondary}
-            />
-            <Text style={styles.infoLabel}>{transformText("Notas:")}</Text>
-            <Text style={styles.infoValue}>
+          <View style={styles.infoRowStacked}>
+            <View style={styles.infoLabelRow}>
+              <Ionicons
+                name="document-text"
+                size={20}
+                color={themedColors.secondary}
+              />
+              <Text style={styles.infoLabel}>{transformText("Notas:")}</Text>
+            </View>
+            <Text style={styles.infoValueStacked}>
               {profile?.notes || "Sin notas"}
             </Text>
           </View>
 
-          <View style={styles.infoRow}>
-            <Ionicons name="home" size={20} color={themedColors.secondary} />
-            <Text style={styles.infoLabel}>{transformText("Dirección:")}</Text>
-            <Text style={styles.infoValue}>
+          <View style={[styles.infoRowStacked, styles.infoRowStackedLast]}>
+            <View style={styles.infoLabelRow}>
+              <Ionicons name="home" size={20} color={themedColors.secondary} />
+              <Text style={styles.infoLabel}>
+                {transformText("Dirección:")}
+              </Text>
+            </View>
+            <Text style={styles.infoValueStacked}>
               {profile?.address || "No configurada"}
             </Text>
           </View>

@@ -4,7 +4,7 @@ import { colors } from "../design-system/themes/globalColors-theme";
 import { useCurrentUserProfile } from "../feature/ajustes/hooks/useCurrentUserProfile";
 import { useProfileSettings } from "../feature/ajustes/hooks/useProfileSettings";
 import { ProfileSettingsService } from "../feature/ajustes/services/profileSettings.Service";
-import { PersonalizationContextType } from "./(models)/personalization.types";
+import { PersonalizationContextType } from "./models/personalization.types";
 
 const PersonalizationContext = createContext<
   PersonalizationContextType | undefined

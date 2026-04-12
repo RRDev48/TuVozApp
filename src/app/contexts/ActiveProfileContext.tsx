@@ -55,7 +55,9 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
 
   if (error || !data) return null;
 
-  const profile = data.profiles as
+  const profile = (
+    Array.isArray(data.profiles) ? data.profiles[0] : data.profiles
+  ) as
     | { display_name: string | null; avatar_url: string | null }
     | null
     | undefined;
