@@ -2,6 +2,15 @@ import * as Speech from "expo-speech";
 import { Platform } from "react-native";
 
 let cachedVoices: Speech.Voice[] | null = null;
+let lastPlaybackRequestAt = 0;
+
+const MIN_PLAYBACK_DELAY_MS = 650;
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 function normalizeLanguage(language: string) {
   return language === "es" ? "es-ES" : language;
@@ -51,6 +60,15 @@ export async function speakPictogramText(text: string, language: string) {
   if (!normalizedText) {
     return;
   }
+
+  const now = Date.now();
+  const elapsedSinceLastRequest = now - lastPlaybackRequestAt;
+
+  if (elapsedSinceLastRequest < MIN_PLAYBACK_DELAY_MS) {
+    await wait(MIN_PLAYBACK_DELAY_MS - elapsedSinceLastRequest);
+  }
+
+  lastPlaybackRequestAt = Date.now();
 
   const voiceOptions = await getVoiceOptions(language);
 
