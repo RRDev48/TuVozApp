@@ -92,10 +92,17 @@ export const useRoutineTasks = (routineId: number) => {
     [loadTasks],
   );
 
+  const replaceTask = useCallback((updatedTask: Task) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
+    );
+  }, []);
+
   return {
     tasks,
     addTask,
     removeTask,
+    replaceTask,
     updateTaskState,
     handleTaskTimeChange,
   };

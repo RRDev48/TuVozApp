@@ -6,11 +6,14 @@ const normalizeTime = (time: string | null): string => {
 };
 
 export const mapTaskFromDB = (
-  taskDb: TaskDb & { steps?: TaskStepDb[] },
+  taskDb: TaskDb & { steps?: TaskStepDb[]; _routineDate?: string },
 ): Task => ({
   id: String(taskDb.id),
   categoriaId: taskDb.category_id ? String(taskDb.category_id) : "",
-  diaRutina: "",
+  categoriaNombre: Array.isArray(taskDb.category)
+    ? (taskDb.category[0]?.name ?? "")
+    : (taskDb.category?.name ?? ""),
+  diaRutina: taskDb._routineDate ?? "",
   horarioDesde: normalizeTime(taskDb.start_time),
   horarioHasta: normalizeTime(taskDb.end_time),
   pasos: taskDb.steps

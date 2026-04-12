@@ -1,9 +1,9 @@
 import {
-  ImageSourcePropType,
-  ImageStyle,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
+    ImageSourcePropType,
+    ImageStyle,
+    StyleProp,
+    TextStyle,
+    ViewStyle,
 } from "react-native";
 import { Task } from "./task.types";
 
@@ -72,6 +72,8 @@ export interface AddTaskModalProps {
   onClose: () => void;
   updateTasks: (newTask: Task) => void;
   profileId: string;
+  taskToEdit?: Task | null;
+  onTaskUpdated?: (task: Task) => void;
 }
 
 export interface TaskStepModalProps {

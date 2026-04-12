@@ -36,6 +36,7 @@ export interface RoutineTaskDb {
 export interface Task {
   id?: string;
   categoriaId: string;
+  categoriaNombre?: string;
   diaRutina: string;
   horarioDesde: string;
   horarioHasta: string;

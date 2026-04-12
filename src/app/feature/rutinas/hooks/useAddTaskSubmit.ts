@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Task } from "../models/task.types";
 import { createRoutine, getRoutineByDate } from "../services/routine.service";
-import { createTask, createTaskSteps } from "../services/task.service";
+import {
+  createTask,
+  createTaskSteps,
+  replaceTaskSteps,
+  updateTask,
+} from "../services/task.service";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -22,6 +27,7 @@ export const useAddTaskSubmit = (
   resetFields: () => void,
   updateTasks: (task: Task) => void,
   profileId: string,
+  onTaskUpdated?: (task: Task) => void,
 ) => {
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorTitle, setErrorTitle] = useState("");
@@ -136,6 +142,83 @@ export const useAddTaskSubmit = (
 
   return {
     handleAddTask,
+    handleEditTask: async (
+      taskId: string,
+      taskName: string,
+      taskStartTime: string,
+      taskEndTime: string,
+      category: string,
+      dueDate: Date | null,
+      steps: { id: number; text: string }[],
+      calculateReminderDate: () => Date | null,
+      formatDateToDB: (date: Date) => string,
+    ) => {
+      try {
+        setIsLoading(true);
+        if (!taskName.trim()) {
+          showError("Error", "Por favor, ingresa el nombre de la tarea.");
+          setIsLoading(false);
+          return;
+        }
+        if (!taskStartTime || !taskEndTime) {
+          showError("Error", "Por favor, selecciona el horario de la tarea.");
+          setIsLoading(false);
+          return;
+        }
+        if (!category) {
+          showError("Error", "Por favor, selecciona una categoría.");
+          setIsLoading(false);
+          return;
+        }
+        if (!dueDate) {
+          showError("Error", "Por favor, selecciona una fecha.");
+          setIsLoading(false);
+          return;
+        }
+        const reminderDate = calculateReminderDate();
+        const updatedTaskDb = await updateTask(Number(taskId), {
+          category_id: parseInt(category, 10),
+          title: taskName.trim(),
+          start_time: taskStartTime,
+          end_time: taskEndTime,
+          reminder: reminderDate ? reminderDate.toISOString() : null,
+        });
+        const validSteps = steps
+          .map((s) => s.text.trim())
+          .filter((t) => t.length > 0);
+        await replaceTaskSteps(
+          updatedTaskDb.id,
+          validSteps.map((description, index) => ({
+            description,
+            step_order: index + 1,
+          })),
+        );
+        const formattedDate = formatDateToDB(dueDate);
+        const taskForUI: Task = {
+          id: taskId,
+          categoriaId: category,
+          horarioDesde: taskStartTime,
+          horarioHasta: taskEndTime,
+          pasos: validSteps,
+          titulo: taskName.trim(),
+          diaRutina: formattedDate,
+          estado: updatedTaskDb.status,
+        };
+        (onTaskUpdated ?? updateTasks)(taskForUI);
+        resetFields();
+        setShowSuccessModal(true);
+      } catch (error) {
+        showError(
+          "Error",
+          getErrorMessage(
+            error,
+            "No se pudo guardar la tarea. Por favor, inténtalo de nuevo.",
+          ),
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
     errorModalVisible,
     errorTitle,
     errorMessage,

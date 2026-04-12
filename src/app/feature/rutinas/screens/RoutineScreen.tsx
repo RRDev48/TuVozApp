@@ -71,8 +71,14 @@ export const RoutineScreen = () => {
     handleChangeWeek,
   } = useWeekRoutine(profileId || "");
 
-  const { tasks, addTask, removeTask, updateTaskState, handleTaskTimeChange } =
-    useRoutineTasks(routineId);
+  const {
+    tasks,
+    addTask,
+    removeTask,
+    replaceTask,
+    updateTaskState,
+    handleTaskTimeChange,
+  } = useRoutineTasks(routineId);
   const tasksRefreshTrigger = useMemo(() => {
     return tasks.map((t) => `${t.id}-${t.estado}`).join(",");
   }, [tasks]);
@@ -99,11 +105,20 @@ export const RoutineScreen = () => {
   });
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditingTask, setIsEditingTask] = useState(false);
+  const taskToEdit = isEditingTask ? selectedTask : null;
 
   const handleEditTask = useCallback(() => {
+    setIsEditingTask(true);
     closeTaskDetails();
     toggleAddTask();
   }, [closeTaskDetails, toggleAddTask]);
+
+  const handleCloseAddTaskModal = useCallback(() => {
+    toggleAddTask();
+    setIsEditingTask(false);
+    setSelectedTask(null);
+  }, [toggleAddTask]);
 
   const handleDeleteTask = useCallback(() => {
     closeTaskDetails();
@@ -230,12 +245,14 @@ export const RoutineScreen = () => {
       */}
       <AddTaskModal
         visible={isAddTaskModalVisible}
-        onClose={toggleAddTask}
+        onClose={handleCloseAddTaskModal}
         selectedDate={selectedDate}
         selectedStartHour={startSelectedHour}
         calculateEndHour={endSelectedHour}
         updateTasks={addTask}
         profileId={profileId}
+        taskToEdit={taskToEdit}
+        onTaskUpdated={replaceTask}
       />
 
       {/*

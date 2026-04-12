@@ -3,7 +3,7 @@ import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
 import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   FlatList,
   Keyboard,
@@ -39,9 +39,12 @@ const AddTaskModal = ({
   calculateEndHour,
   updateTasks,
   profileId,
+  taskToEdit,
+  onTaskUpdated,
 }: AddTaskModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAllDayEnabled, setIsAllDayEnabled] = useState(false);
+  const isEditMode = !!taskToEdit;
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -219,6 +222,7 @@ const AddTaskModal = ({
     handleRemoveStep,
     handleStepChange,
     resetFields,
+    loadTaskForEdit,
     calculateReminderDate,
     formatDateToDB,
     formatDate,
@@ -239,6 +243,7 @@ const AddTaskModal = ({
 
   const {
     handleAddTask: submitTask,
+    handleEditTask: submitEditTask,
     errorModalVisible,
     errorTitle,
     errorMessage,
@@ -249,7 +254,15 @@ const AddTaskModal = ({
     resetFields,
     updateTasks,
     profileId,
+    onTaskUpdated,
   );
+
+  useEffect(() => {
+    if (visible && taskToEdit) {
+      loadTaskForEdit(taskToEdit);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, taskToEdit]);
   const flatListRef = useRef<FlatList<{ id: number; text: string }> | null>(
     null,
   );
@@ -341,16 +354,30 @@ const AddTaskModal = ({
   };
 
   const handleAddTask = () => {
-    submitTask(
-      taskName,
-      taskStartTime,
-      taskEndTime,
-      category,
-      dueDate,
-      steps,
-      calculateReminderDate,
-      formatDateToDB,
-    );
+    if (isEditMode && taskToEdit?.id) {
+      submitEditTask(
+        taskToEdit.id,
+        taskName,
+        taskStartTime,
+        taskEndTime,
+        category,
+        dueDate,
+        steps,
+        calculateReminderDate,
+        formatDateToDB,
+      );
+    } else {
+      submitTask(
+        taskName,
+        taskStartTime,
+        taskEndTime,
+        category,
+        dueDate,
+        steps,
+        calculateReminderDate,
+        formatDateToDB,
+      );
+    }
   };
 
   const handleSuccessModalClose = () => {
@@ -411,8 +438,8 @@ const AddTaskModal = ({
             >
               <CustomText style={styles.createTaskButtonText}>
                 {isLoading
-                  ? transformText("Creando...")
-                  : transformText("Crear")}
+                  ? transformText(isEditMode ? "Guardando..." : "Creando...")
+                  : transformText(isEditMode ? "Guardar" : "Crear")}
               </CustomText>
             </TouchableOpacity>
 
@@ -631,18 +658,28 @@ const AddTaskModal = ({
         </TouchableWithoutFeedback>
       </View>
 
-      {/* Modal de éxito que se muestra cuando la tarea se creó correctamente. */}
+      {/* Modal de éxito que se muestra cuando la tarea se creó/editó correctamente. */}
       <SuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
-        title={transformText("Tarea creada")}
-        message={transformText("La tarea se ha creado exitosamente")}
+        title={transformText(
+          isEditMode ? "Tarea editada con éxito" : "Tarea creada",
+        )}
+        message={transformText(
+          isEditMode
+            ? "La tarea se ha editado correctamente"
+            : "La tarea se ha creado exitosamente",
+        )}
       />
 
       {/* Modal de confirmación que aparece al intentar cerrar sin guardar cambios. */}
       <ConfirmationModal
         visible={showConfirmCancelModal}
-        title={transformText("¿Desea cancelar la creación de la tarea?")}
+        title={transformText(
+          isEditMode
+            ? "¿Desea cancelar la edición de la tarea?"
+            : "¿Desea cancelar la creación de la tarea?",
+        )}
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelCancel}
       />

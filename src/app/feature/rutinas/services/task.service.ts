@@ -109,7 +109,14 @@ export async function getTasksByRoutine(
     steps: stepsByTask[task.id] || [],
   }));
 
-  return tasksWithSteps;
+  const { data: routine } = await supabase
+    .from("routines")
+    .select("routine_date")
+    .eq("id", routineId)
+    .single();
+  const routineDate: string = routine?.routine_date ?? "";
+
+  return tasksWithSteps.map((task) => ({ ...task, _routineDate: routineDate }));
 }
 
 export async function createTask(
@@ -221,6 +228,15 @@ export async function createTaskSteps(
   });
 
   return normalizeTaskSteps((data as TaskStepDb[] | null) ?? null);
+}
+
+export async function replaceTaskSteps(
+  taskId: number,
+  steps: Array<{ description?: string; step_order: number }>,
+): Promise<TaskStepDb[]> {
+  await supabase.from("task_steps").delete().eq("task_id", taskId);
+  if (steps.length === 0) return [];
+  return createTaskSteps(taskId, steps);
 }
 
 export async function getTaskSteps(taskId: number): Promise<TaskStepDb[]> {

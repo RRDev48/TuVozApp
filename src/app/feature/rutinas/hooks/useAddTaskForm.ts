@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Task } from "../models/task.types";
 
 export const useAddTaskForm = (
   selectedDate: Date | null,
@@ -71,6 +72,43 @@ export const useAddTaskForm = (
     setTaskEndTime("");
   };
 
+  const loadTaskForEdit = (task: Task) => {
+    setTaskName(task.titulo);
+    if (task.diaRutina) {
+      const [year, month, day] = task.diaRutina.split("-").map(Number);
+      setDueDate(new Date(year, month - 1, day));
+    }
+    setTaskStartTime(task.horarioDesde || "");
+    setTaskEndTime(task.horarioHasta || "");
+    setCategory(task.categoriaId || "");
+    setCategoryName(task.categoriaNombre || "");
+    setSteps(
+      task.pasos.length > 0
+        ? task.pasos.map((text, i) => ({ id: i + 1, text }))
+        : [{ id: 1, text: "" }],
+    );
+    if (task.recordatorio && task.horarioDesde && task.diaRutina) {
+      const [h, m] = task.horarioDesde.split(":").map(Number);
+      const [yr, mo, dy] = task.diaRutina.split("-").map(Number);
+      const taskStart = new Date(yr, mo - 1, dy, h, m, 0, 0).getTime();
+      const reminderTime = new Date(task.recordatorio).getTime();
+      const offsetMs = taskStart - reminderTime;
+      const REMINDER_OPTIONS = [
+        { label: "10 Minutos Antes", value: 600000 },
+        { label: "1 Hora Antes", value: 3600000 },
+        { label: "1 D\u00eda Antes", value: 86400000 },
+      ];
+      const match = REMINDER_OPTIONS.find((opt) => opt.value === offsetMs);
+      setReminder(
+        match
+          ? { label: match.label, offsetMs: match.value }
+          : { label: null, offsetMs: null },
+      );
+    } else {
+      setReminder({ label: null, offsetMs: null });
+    }
+  };
+
   const calculateReminderDate = (): Date | null => {
     if (!reminder.offsetMs || !dueDate || !taskStartTime) return null;
 
@@ -115,6 +153,7 @@ export const useAddTaskForm = (
     handleRemoveStep,
     handleStepChange,
     resetFields,
+    loadTaskForEdit,
     calculateReminderDate,
     formatDateToDB,
     formatDate,
