@@ -156,6 +156,11 @@ const CategoryPictogramsScreen = () => {
           alignItems: "center",
           justifyContent: "center",
           overflow: "hidden",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: temaOscuro ? 0.35 : 0.1,
+          shadowRadius: 6,
+          elevation: 3,
         },
         heartButton: {
           position: "absolute",
