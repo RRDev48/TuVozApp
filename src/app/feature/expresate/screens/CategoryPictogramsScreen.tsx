@@ -1,5 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
+import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage";
 import CustomText from "@/src/app/feature/common/CustomText";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
 import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavoritePictograms";
@@ -20,7 +21,6 @@ import React, {
 import {
   Dimensions,
   FlatList,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -82,10 +82,6 @@ const CategoryPictogramsScreen = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     void speakPictogramText(pictogram.keyword, pictogram.language);
-  }, []);
-
-  const getArasaacImageUrl = useCallback((arasaacId: string) => {
-    return `https://api.arasaac.org/v1/pictograms/${arasaacId}`;
   }, []);
 
   const onViewableItemsChanged = useCallback(
@@ -208,10 +204,10 @@ const CategoryPictogramsScreen = () => {
         >
           <View style={containerStyles.cardWrapper}>
             <View style={containerStyles.buttonContainer}>
-              <Image
-                source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+              <CachedPictogramImage
+                arasaacId={item.arasaac_id}
                 style={containerStyles.image}
-                defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+                placeholder={require("@/src/app/assets/icon/Ajustes.png")}
               />
             </View>
             <TouchableOpacity
@@ -235,7 +231,6 @@ const CategoryPictogramsScreen = () => {
     [
       containerStyles,
       handlePictogramPress,
-      getArasaacImageUrl,
       transformText,
       favoriteIds,
       toggleFavorite,

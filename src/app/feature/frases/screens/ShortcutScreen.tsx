@@ -1,5 +1,6 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
+import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage";
 import CustomText from "@/src/app/feature/common/CustomText";
 import MenuItem from "@/src/app/feature/common/menu/MenuItem";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
@@ -21,7 +22,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -135,11 +135,6 @@ const ShortcutScreen = () => {
   const viewabilityConfigCallbackPairs = useRef([
     { viewabilityConfig, onViewableItemsChanged },
   ]);
-
-  const getArasaacImageUrl = useCallback(
-    (arasaacId: string) => `https://api.arasaac.org/v1/pictograms/${arasaacId}`,
-    [],
-  );
 
   const styles = useMemo(
     () =>
@@ -401,10 +396,10 @@ const ShortcutScreen = () => {
         >
           <View style={styles.cardWrapper}>
             <View style={styles.buttonContainer}>
-              <Image
-                source={{ uri: getArasaacImageUrl(item.arasaac_id) }}
+              <CachedPictogramImage
+                arasaacId={item.arasaac_id}
                 style={styles.image}
-                defaultSource={require("@/src/app/assets/icon/Ajustes.png")}
+                placeholder={require("@/src/app/assets/icon/Ajustes.png")}
               />
             </View>
             {isFavorite && (
@@ -419,7 +414,7 @@ const ShortcutScreen = () => {
         </TouchableOpacity>
       );
     },
-    [styles, favoriteIds, getArasaacImageUrl, transformText, addPictogram],
+    [styles, favoriteIds, transformText, addPictogram],
   );
 
   const renderCategoryCard = useCallback(
@@ -511,8 +506,8 @@ const ShortcutScreen = () => {
                   ]}
                 >
                   {pictogram ? (
-                    <Image
-                      source={{ uri: getArasaacImageUrl(pictogram.arasaac_id) }}
+                    <CachedPictogramImage
+                      arasaacId={pictogram.arasaac_id}
                       style={styles.phraseImage}
                     />
                   ) : (
