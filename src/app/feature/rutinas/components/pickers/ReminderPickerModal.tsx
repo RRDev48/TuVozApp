@@ -1,71 +1,11 @@
+import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import React from "react";
+import React, { useMemo } from "react";
 import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "../../../common/CustomText";
 import { useReminderPicker } from "../../hooks/useReminderPicker";
 import { ReminderModalProps } from "../../models/component.props";
 import { ReminderOptionButton } from "./ReminderOptionButton";
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.transparent,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  sharedModalContainer: {
-    width: "80%",
-    backgroundColor: colors.white,
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-  },
-
-  reminderTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: colors.blue,
-  },
-
-  optionsContainer: {
-    width: "100%",
-    marginBottom: 20,
-  },
-
-  selectedOptionText: {
-    color: colors.blue,
-  },
-
-  setReminderButton: {
-    marginTop: 20,
-    backgroundColor: colors.blue,
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
-  },
-
-  setReminderButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-
-  closeWhitTextButton: {
-    backgroundColor: colors.red,
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    width: "100%",
-    alignItems: "center",
-  },
-
-  closeWhitTextButtonText: {
-    color: colors.white,
-    fontWeight: "bold",
-  },
-});
 
 export const ReminderPickerModal = ({
   visible,
@@ -73,6 +13,72 @@ export const ReminderPickerModal = ({
   onSetReminder,
   initialSelectedOption,
 }: ReminderModalProps) => {
+  const { getThemedColors, temaOscuro } = usePersonalization();
+  const themedColors = getThemedColors();
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.45)",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        sharedModalContainer: {
+          width: "80%",
+          backgroundColor: themedColors.background,
+          borderRadius: 16,
+          padding: 20,
+          alignItems: "center",
+          borderWidth: 1.5,
+          borderColor: themedColors.primary,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: temaOscuro ? 0.45 : 0.18,
+          shadowRadius: 10,
+          elevation: 8,
+        },
+        reminderTitle: {
+          fontSize: 20,
+          fontWeight: "bold",
+          marginBottom: 20,
+          color: themedColors.primary,
+        },
+        optionsContainer: {
+          width: "100%",
+          marginBottom: 20,
+        },
+        selectedOptionText: {
+          color: themedColors.primary,
+        },
+        setReminderButton: {
+          marginTop: 20,
+          backgroundColor: themedColors.primary,
+          padding: 10,
+          borderRadius: 10,
+          width: "100%",
+          alignItems: "center",
+        },
+        setReminderButtonText: {
+          color: themedColors.background,
+          fontWeight: "bold",
+        },
+        closeWhitTextButton: {
+          backgroundColor: colors.red,
+          padding: 10,
+          borderRadius: 10,
+          marginTop: 10,
+          width: "100%",
+          alignItems: "center",
+        },
+        closeWhitTextButtonText: {
+          color: colors.white,
+          fontWeight: "bold",
+        },
+      }),
+    [themedColors, temaOscuro],
+  );
   const {
     selectedOption,
     setSelectedOption,

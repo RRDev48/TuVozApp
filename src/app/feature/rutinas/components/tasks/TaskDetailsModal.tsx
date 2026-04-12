@@ -1,11 +1,11 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import {
   FlatList,
   Modal,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -17,6 +17,8 @@ export const TaskDetailsModal = ({
   task,
   onClose,
   onStartTask,
+  onEditTask,
+  onDeleteTask,
 }: TaskDetailsModalProps) => {
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
@@ -70,6 +72,31 @@ export const TaskDetailsModal = ({
           fontWeight: "bold",
           fontSize: 16,
         },
+        headerRow: {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          marginBottom: 16,
+        },
+        actionIcons: {
+          flexDirection: "row",
+          gap: 6,
+        },
+        iconButton: {
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        closeButton: {
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          alignItems: "center",
+          justifyContent: "center",
+        },
         startTaskButton: {
           backgroundColor: "#8BC34A",
           padding: 12,
@@ -85,18 +112,6 @@ export const TaskDetailsModal = ({
           color: colors.white,
           fontSize: 16,
           fontWeight: "bold",
-        },
-        closeXButton: {
-          position: "absolute",
-          top: 10,
-          right: 10,
-          borderRadius: 20,
-          padding: 5,
-        },
-        closeXButtonText: {
-          fontSize: 30,
-          fontWeight: "bold",
-          color: colors.red,
         },
       }),
     [themedColors],
@@ -127,10 +142,38 @@ export const TaskDetailsModal = ({
         <View
           style={[styles.detailsContainer, { borderColor, borderWidth: 5 }]}
         >
-          {/* Botón "X" para cerrar el modal sin iniciar la tarea. */}
-          <TouchableOpacity onPress={onClose} style={styles.closeXButton}>
-            <Text style={styles.closeXButtonText}>×</Text>
-          </TouchableOpacity>
+          {/* Fila de cabecera: iconos editar/eliminar a la izquierda, cerrar a la derecha */}
+          <View style={styles.headerRow}>
+            <View style={styles.actionIcons}>
+              {onEditTask && (
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={onEditTask}
+                >
+                  <Ionicons
+                    name="pencil-outline"
+                    size={25}
+                    color={themedColors.primary}
+                  />
+                </TouchableOpacity>
+              )}
+              {onDeleteTask && (
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={onDeleteTask}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={25}
+                    color={themedColors.primary}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close" size={25} color={colors.red} />
+            </TouchableOpacity>
+          </View>
 
           {/* Título principal de la tarea. */}
           <CustomText style={styles.taskDetailsTitle}>{task.titulo}</CustomText>

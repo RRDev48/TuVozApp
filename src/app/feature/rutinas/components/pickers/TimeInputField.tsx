@@ -38,6 +38,7 @@ export const TimeInputField = ({
           borderRadius: 5,
           paddingHorizontal: 10,
           backgroundColor: themedColors.primary,
+          color: themedColors.secondary,
           fontSize: 15,
           fontWeight: "bold",
           minWidth: 80,

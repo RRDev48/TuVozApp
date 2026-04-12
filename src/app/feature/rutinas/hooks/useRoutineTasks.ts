@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Task } from "../models/task.types";
 import {
-    getTasksByRoutine,
-    updateTaskStatus,
-    updateTaskTimes,
+  deleteTask,
+  getTasksByRoutine,
+  updateTaskStatus,
+  updateTaskTimes,
 } from "../services/task.service";
 import { mapTasksFromDB } from "./useTaskMapper";
 
@@ -79,9 +80,22 @@ export const useRoutineTasks = (routineId: number) => {
     [loadTasks],
   );
 
+  const removeTask = useCallback(
+    async (taskId: string) => {
+      try {
+        await deleteTask(Number(taskId));
+        setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      } catch {
+        await loadTasks();
+      }
+    },
+    [loadTasks],
+  );
+
   return {
     tasks,
     addTask,
+    removeTask,
     updateTaskState,
     handleTaskTimeChange,
   };

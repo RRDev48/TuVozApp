@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
+import ConfirmationModal from "../../common/alerts/ConfirmationModal";
 import BackButton from "../../common/BackButton";
 import ScreenTitle from "../../common/ScreenTitle";
 import { AchievementModal } from "../components/achievement/AchievementModal";
@@ -25,7 +26,7 @@ import { Task } from "../models/task.types";
 export const RoutineScreen = () => {
   const navigation = useNavigation();
   const { profileId, loading: profileLoading } = useCurrentUserProfile();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [startSelectedHour, setSelectedHour] = useState("");
@@ -52,9 +53,13 @@ export const RoutineScreen = () => {
           borderRadius: 50,
           padding: 15,
           elevation: 5,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: temaOscuro ? 0.45 : 0.2,
+          shadowRadius: 6,
         },
       }),
-    [themedColors],
+    [themedColors, temaOscuro],
   );
 
   const {
@@ -66,7 +71,7 @@ export const RoutineScreen = () => {
     handleChangeWeek,
   } = useWeekRoutine(profileId || "");
 
-  const { tasks, addTask, updateTaskState, handleTaskTimeChange } =
+  const { tasks, addTask, removeTask, updateTaskState, handleTaskTimeChange } =
     useRoutineTasks(routineId);
   const tasksRefreshTrigger = useMemo(() => {
     return tasks.map((t) => `${t.id}-${t.estado}`).join(",");
@@ -92,6 +97,26 @@ export const RoutineScreen = () => {
     percent,
     onShowAchievement: openAchievementModal,
   });
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleEditTask = useCallback(() => {
+    closeTaskDetails();
+    toggleAddTask();
+  }, [closeTaskDetails, toggleAddTask]);
+
+  const handleDeleteTask = useCallback(() => {
+    closeTaskDetails();
+    setShowDeleteConfirm(true);
+  }, [closeTaskDetails]);
+
+  const confirmDeleteTask = useCallback(async () => {
+    if (selectedTask?.id) {
+      await removeTask(selectedTask.id);
+    }
+    setShowDeleteConfirm(false);
+    setSelectedTask(null);
+  }, [selectedTask, removeTask]);
 
   const handleTaskPress = useCallback(
     (task: Task) => {
@@ -223,6 +248,8 @@ export const RoutineScreen = () => {
         task={selectedTask}
         onClose={closeTaskDetails}
         onStartTask={startTask}
+        onEditTask={handleEditTask}
+        onDeleteTask={handleDeleteTask}
       />
 
       {/*
@@ -247,6 +274,15 @@ export const RoutineScreen = () => {
         visible={isAchievementModalVisible}
         onClose={closeAchievementModal}
         autoCloseDelay={5000}
+      />
+
+      <ConfirmationModal
+        visible={showDeleteConfirm}
+        title={transformText("¿Eliminar esta tarea?")}
+        confirmText={transformText("Eliminar")}
+        cancelText={transformText("Cancelar")}
+        onConfirm={confirmDeleteTask}
+        onCancel={() => setShowDeleteConfirm(false)}
       />
     </View>
   );

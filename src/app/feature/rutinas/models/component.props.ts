@@ -87,6 +87,8 @@ export interface TaskDetailsModalProps {
   task: Task | null;
   onClose: () => void;
   onStartTask: () => void;
+  onEditTask?: () => void;
+  onDeleteTask?: () => void;
 }
 
 export interface StepItemModalProps {

@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import {
@@ -30,7 +31,7 @@ export const PendingTasksModal = ({
   total,
   percent,
 }: PendingTasksModalProps) => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const { categories } = useCategories(visible);
 
@@ -86,8 +87,8 @@ export const PendingTasksModal = ({
         header: {
           alignItems: "center",
           paddingVertical: 15,
-          borderBottomWidth: 1,
-          borderBottomColor: themedColors.primary,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: themedColors.secondary + "40",
         },
         title: {
           fontSize: 22,
@@ -103,7 +104,7 @@ export const PendingTasksModal = ({
           justifyContent: "center",
           alignItems: "center",
           marginBottom: 12,
-          backgroundColor: themedColors.cardBackground,
+          backgroundColor: colors.white,
         },
         percentText: {
           fontSize: 28,
@@ -142,8 +143,13 @@ export const PendingTasksModal = ({
           marginBottom: 10,
           width: "100%",
           alignItems: "center",
-          borderWidth: 1,
-          borderColor: themedColors.secondary,
+          borderWidth: StyleSheet.hairlineWidth,
+          borderColor: themedColors.secondary + "30",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: temaOscuro ? 0.3 : 0.08,
+          shadowRadius: 4,
+          elevation: 2,
         },
         categoryIconContainer: {
           width: 45,
@@ -207,12 +213,12 @@ export const PendingTasksModal = ({
         },
         emptyText: {
           fontSize: 16,
-          color: themedColors.secondary,
+          color: themedColors.primary,
           marginTop: 10,
           textAlign: "center",
         },
       }),
-    [themedColors],
+    [themedColors, temaOscuro],
   );
 
   const renderTaskItem = ({ item }: { item: Task }) => {
@@ -283,7 +289,7 @@ export const PendingTasksModal = ({
         <View style={styles.modalContainer}>
           {/* Botón de cerrar */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close" size={28} color={themedColors.text} />
+            <Ionicons name="close" size={28} color={colors.red} />
           </TouchableOpacity>
 
           {/* Encabezado con progreso */}

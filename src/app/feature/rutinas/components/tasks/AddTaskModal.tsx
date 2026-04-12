@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo, useRef, useState } from "react";
 import {
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -15,6 +16,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import ErrorModal from "../../../common/alerts/ErrorModal";
@@ -184,6 +186,11 @@ const AddTaskModal = ({
           width: "100%",
           paddingHorizontal: 10,
           marginBottom: 20,
+        },
+        switchWrapper: {
+          borderRadius: 20,
+          borderWidth: 2,
+          padding: 1,
         },
         switchLabel: {
           fontSize: 16,
@@ -379,221 +386,249 @@ const AddTaskModal = ({
       onRequestClose={handleCancelClick}
     >
       <View style={styles.overlay}>
-        <KeyboardAvoidingView
-          style={styles.addTaskModalContainer}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          {/* Botón de cierre (X) que dispara el flujo de confirmación de cancelación. */}
-          <TouchableOpacity
-            onPress={handleCancelClick}
-            style={styles.closeXButton}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <KeyboardAvoidingView
+            style={styles.addTaskModalContainer}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <Text style={styles.closeXButtonText}>×</Text>
-          </TouchableOpacity>
+            {/* Botón de cierre (X) que dispara el flujo de confirmación de cancelación. */}
+            <TouchableOpacity
+              onPress={handleCancelClick}
+              style={styles.closeXButton}
+            >
+              <Text style={styles.closeXButtonText}>×</Text>
+            </TouchableOpacity>
 
-          {/* Botón para crear la tarea. Muestra estado de carga y se deshabilita
+            {/* Botón para crear la tarea. Muestra estado de carga y se deshabilita
               mientras la tarea se está enviando. */}
-          <TouchableOpacity
-            style={[
-              styles.createTaskButton,
-              isLoading && styles.createTaskButtonDisabled,
-            ]}
-            onPress={handleAddTask}
-            disabled={isLoading}
-          >
-            <CustomText style={styles.createTaskButtonText}>
-              {isLoading ? transformText("Creando...") : transformText("Crear")}
-            </CustomText>
-          </TouchableOpacity>
-
-          {/* Emoji contextual según la hora del día (sol/luna). */}
-          <Text style={styles.emoji}>
-            {new Date().getHours() >= 6 && new Date().getHours() < 18
-              ? "🌞"
-              : "🌙"}
-          </Text>
-
-          {/* Campo de texto para el título de la nueva tarea. */}
-          <TextInput
-            placeholder={transformText('"Nueva tarea"')}
-            placeholderTextColor={themedColors.text}
-            style={styles.inputTitleTask}
-            value={taskName}
-            onChangeText={setTaskName}
-          />
-
-          {/* Selector de fecha de vencimiento de la tarea con su modal asociado. */}
-          <View style={styles.dataFields}>
             <TouchableOpacity
-              style={styles.datetButton}
-              onPress={() => setIsCalendarVisible(true)}
+              style={[
+                styles.createTaskButton,
+                isLoading && styles.createTaskButtonDisabled,
+              ]}
+              onPress={handleAddTask}
+              disabled={isLoading}
             >
-              <Ionicons
-                name="calendar-outline"
-                size={24}
-                color={themedColors.primary}
-              />
-              <TextInput
-                placeholder={transformText("Hoy")}
-                placeholderTextColor={themedColors.primary}
-                style={styles.dateTextButton}
-                value={formatDate(dueDate)}
-                editable={false}
-                pointerEvents="none"
-              />
-            </TouchableOpacity>
-
-            <DatePickerModal
-              visible={isRoutineCalendarVisible}
-              onClose={() => setIsCalendarVisible(false)}
-              onDateSelect={(dateString: string) => {
-                const selectedDate = new Date(dateString);
-                const localDate = new Date(
-                  selectedDate.getTime() +
-                    selectedDate.getTimezoneOffset() * 60000,
-                );
-                setDueDate(localDate);
-              }}
-            />
-          </View>
-
-          {/* Selector de horario de la tarea (desde/hasta) con campos de entrada directos. */}
-          <View style={styles.timeInputsContainer}>
-            <View style={styles.timeInputsRow}>
-              <TimeInputField
-                icon={
-                  <Ionicons
-                    name="time-outline"
-                    size={24}
-                    color={themedColors.primary}
-                  />
-                }
-                label={transformText("Desde:")}
-                value={taskStartTime}
-                error={false}
-                placeholder="00:00"
-                onChangeText={handleStartTimeChange}
-                editable={!isAllDayEnabled}
-              />
-
-              <TimeInputField
-                icon={
-                  <Ionicons
-                    name="time-outline"
-                    size={24}
-                    color={themedColors.text}
-                  />
-                }
-                label={transformText("Hasta:")}
-                value={taskEndTime}
-                error={false}
-                placeholder="23:59"
-                onChangeText={handleEndTimeChange}
-                editable={!isAllDayEnabled}
-              />
-            </View>
-
-            {/* Switch para activar/desactivar "Todo el día" */}
-            <View style={styles.switchContainer}>
-              <CustomText style={styles.switchLabel}>
-                {transformText("Todo el día")}
-              </CustomText>
-              <Switch
-                onValueChange={toggleAllDaySwitch}
-                value={isAllDayEnabled}
-              />
-            </View>
-          </View>
-
-          {/* Selector de recordatorio para la tarea con su modal asociado. */}
-          <View style={styles.dataFields}>
-            <TouchableOpacity
-              style={styles.datetButton}
-              onPress={() => setIsReminderVisible(true)}
-            >
-              <Ionicons
-                name="alarm-outline"
-                size={24}
-                color={themedColors.primary}
-              />
-              <TextInput
-                placeholder={transformText("Añadir recordatorio")}
-                placeholderTextColor={themedColors.primary}
-                style={styles.dateTextButton}
-                value={
-                  reminder.label
-                    ? `${transformText("Recordatorio")}: ${reminder.label}`
-                    : ""
-                }
-                editable={false}
-                pointerEvents="none"
-              />
-            </TouchableOpacity>
-
-            <ReminderPickerModal
-              visible={isReminderVisible}
-              onClose={() => setIsReminderVisible(false)}
-              onSetReminder={handleReminderSet}
-              initialSelectedOption={reminder.label ?? null}
-            />
-          </View>
-
-          {/* Selector de categoría de la tarea con listado de categorías disponibles. */}
-          <View style={styles.categoryField}>
-            <TouchableOpacity
-              style={styles.categoryButton}
-              onPress={() => setIsCategoryVisible(true)}
-            >
-              <CustomText style={styles.categoryButtonText}>
-                {categoryName || transformText("Seleccionar categoría")}
+              <CustomText style={styles.createTaskButtonText}>
+                {isLoading
+                  ? transformText("Creando...")
+                  : transformText("Crear")}
               </CustomText>
             </TouchableOpacity>
 
-            <CategorPickeryModal
-              visible={isCategoryVisible}
-              onClose={() => setIsCategoryVisible(false)}
-              onCategorySelect={(
-                selectedCategoryId: string,
-                selectedCategoryName: string,
-              ) => {
-                handleCategorySelect(selectedCategoryId, selectedCategoryName);
-                setIsCategoryVisible(false);
-              }}
+            {/* Emoji contextual según la hora del día (sol/luna). */}
+            <Text style={styles.emoji}>
+              {new Date().getHours() >= 6 && new Date().getHours() < 18
+                ? "🌞"
+                : "🌙"}
+            </Text>
+
+            {/* Campo de texto para el título de la nueva tarea. */}
+            <TextInput
+              placeholder={transformText('"Nueva tarea"')}
+              placeholderTextColor={themedColors.text}
+              style={styles.inputTitleTask}
+              value={taskName}
+              onChangeText={setTaskName}
             />
-          </View>
 
-          {/* Sección de gestión de pasos de la tarea (lista + botón para agregar). */}
-          <View style={styles.mainStepsContainer}>
-            <CustomText style={styles.stepsTitle}>
-              {transformText("Pasos")}
-            </CustomText>
-
-            <FlatList
-              ref={flatListRef}
-              data={steps}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item, index }) => (
-                <StepItem
-                  id={item.id}
-                  text={item.text}
-                  index={index}
-                  stepsCount={steps.length}
-                  onTextChange={handleStepChange}
-                  onRemove={handleRemoveStep}
+            {/* Selector de fecha de vencimiento de la tarea con su modal asociado. */}
+            <View style={styles.dataFields}>
+              <TouchableOpacity
+                style={styles.datetButton}
+                onPress={() => setIsCalendarVisible(true)}
+              >
+                <Ionicons
+                  name="calendar-outline"
+                  size={24}
+                  color={themedColors.primary}
                 />
-              )}
-              onContentSizeChange={scrollToEnd}
-            />
+                <TextInput
+                  placeholder={transformText("Hoy")}
+                  placeholderTextColor={themedColors.primary}
+                  style={styles.dateTextButton}
+                  value={formatDate(dueDate)}
+                  editable={false}
+                  pointerEvents="none"
+                />
+              </TouchableOpacity>
 
-            {/* Botón para agregar un nuevo paso al final de la lista. */}
-            <TouchableOpacity
-              style={styles.addStepButton}
-              onPress={handleAddStepAndScroll}
-            >
-              <Text style={styles.addStepButtonText}>+</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
+              <DatePickerModal
+                visible={isRoutineCalendarVisible}
+                onClose={() => setIsCalendarVisible(false)}
+                onDateSelect={(dateString: string) => {
+                  const selectedDate = new Date(dateString);
+                  const localDate = new Date(
+                    selectedDate.getTime() +
+                      selectedDate.getTimezoneOffset() * 60000,
+                  );
+                  setDueDate(localDate);
+                }}
+              />
+            </View>
+
+            {/* Selector de horario de la tarea (desde/hasta) con campos de entrada directos. */}
+            <View style={styles.timeInputsContainer}>
+              <View style={styles.timeInputsRow}>
+                <TimeInputField
+                  icon={
+                    <Ionicons
+                      name="time-outline"
+                      size={24}
+                      color={themedColors.primary}
+                    />
+                  }
+                  label={transformText("Desde:")}
+                  value={taskStartTime}
+                  error={false}
+                  placeholder="00:00"
+                  onChangeText={handleStartTimeChange}
+                  editable={!isAllDayEnabled}
+                />
+
+                <TimeInputField
+                  icon={
+                    <Ionicons
+                      name="time-outline"
+                      size={24}
+                      color={themedColors.text}
+                    />
+                  }
+                  label={transformText("Hasta:")}
+                  value={taskEndTime}
+                  error={false}
+                  placeholder="23:59"
+                  onChangeText={handleEndTimeChange}
+                  editable={!isAllDayEnabled}
+                />
+              </View>
+
+              {/* Switch para activar/desactivar "Todo el día" */}
+              <View style={styles.switchContainer}>
+                <CustomText style={styles.switchLabel}>
+                  {transformText("Todo el día")}
+                </CustomText>
+                <View
+                  style={[
+                    styles.switchWrapper,
+                    {
+                      borderColor: isAllDayEnabled
+                        ? colors.green
+                        : themedColors.secondary + "80",
+                    },
+                  ]}
+                >
+                  <Switch
+                    onValueChange={toggleAllDaySwitch}
+                    value={isAllDayEnabled}
+                    trackColor={{
+                      false: themedColors.secondary,
+                      true: colors.green,
+                    }}
+                    thumbColor={
+                      isAllDayEnabled
+                        ? themedColors.primary
+                        : themedColors.secondary
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* Selector de recordatorio para la tarea con su modal asociado. */}
+            <View style={styles.dataFields}>
+              <TouchableOpacity
+                style={styles.datetButton}
+                onPress={() => setIsReminderVisible(true)}
+              >
+                <Ionicons
+                  name="alarm-outline"
+                  size={24}
+                  color={themedColors.primary}
+                />
+                <TextInput
+                  placeholder={transformText("Añadir recordatorio")}
+                  placeholderTextColor={themedColors.primary}
+                  style={styles.dateTextButton}
+                  value={
+                    reminder.label
+                      ? `${transformText("Recordatorio")}: ${reminder.label}`
+                      : ""
+                  }
+                  editable={false}
+                  pointerEvents="none"
+                />
+              </TouchableOpacity>
+
+              <ReminderPickerModal
+                visible={isReminderVisible}
+                onClose={() => setIsReminderVisible(false)}
+                onSetReminder={handleReminderSet}
+                initialSelectedOption={reminder.label ?? null}
+              />
+            </View>
+
+            {/* Selector de categoría de la tarea con listado de categorías disponibles. */}
+            <View style={styles.categoryField}>
+              <TouchableOpacity
+                style={styles.categoryButton}
+                onPress={() => setIsCategoryVisible(true)}
+              >
+                <CustomText style={styles.categoryButtonText}>
+                  {categoryName || transformText("Seleccionar categoría")}
+                </CustomText>
+              </TouchableOpacity>
+
+              <CategorPickeryModal
+                visible={isCategoryVisible}
+                onClose={() => setIsCategoryVisible(false)}
+                onCategorySelect={(
+                  selectedCategoryId: string,
+                  selectedCategoryName: string,
+                ) => {
+                  handleCategorySelect(
+                    selectedCategoryId,
+                    selectedCategoryName,
+                  );
+                  setIsCategoryVisible(false);
+                }}
+              />
+            </View>
+
+            {/* Sección de gestión de pasos de la tarea (lista + botón para agregar). */}
+            <View style={styles.mainStepsContainer}>
+              <CustomText style={styles.stepsTitle}>
+                {transformText("Pasos")}
+              </CustomText>
+
+              <FlatList
+                ref={flatListRef}
+                data={steps}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item, index }) => (
+                  <StepItem
+                    id={item.id}
+                    text={item.text}
+                    index={index}
+                    stepsCount={steps.length}
+                    onTextChange={handleStepChange}
+                    onRemove={handleRemoveStep}
+                  />
+                )}
+                onContentSizeChange={scrollToEnd}
+                style={{ maxHeight: 180 }}
+              />
+
+              {/* Botón para agregar un nuevo paso al final de la lista. */}
+              <TouchableOpacity
+                style={styles.addStepButton}
+                onPress={handleAddStepAndScroll}
+              >
+                <Text style={styles.addStepButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
       </View>
 
       {/* Modal de éxito que se muestra cuando la tarea se creó correctamente. */}

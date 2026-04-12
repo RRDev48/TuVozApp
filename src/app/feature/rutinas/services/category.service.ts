@@ -37,7 +37,9 @@ export async function getCategories(forceRefresh = false): Promise<Category[]> {
     }
 
     const mapped = mapCategoryRows((data as CategoryRow[] | null) ?? null);
-    categoriesCache = mapped;
+    if (mapped.length > 0) {
+      categoriesCache = mapped;
+    }
     return mapped;
   })();
 
