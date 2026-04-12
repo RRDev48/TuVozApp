@@ -113,6 +113,8 @@ type RootStackParamsList = {
     onSelect: (name: string, phone: string) => void;
   };
 
+  Logros: undefined;
+
   Ajustes: undefined;
   PersonalizationScreen: undefined;
   ProfilesConfigScreen: undefined;

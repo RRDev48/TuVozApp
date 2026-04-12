@@ -1,6 +1,8 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
 import {
   Dimensions,
@@ -9,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import RootStackParamsList from "../../../../navigation/navigation.types";
 import CustomText from "../../../common/CustomText";
 import { useAutoClose } from "../../hooks/useAutoClose";
 import { AchievementModalProps } from "../../models/component.props";
@@ -21,6 +24,7 @@ export const AchievementModal = ({
   autoCloseDelay = 3000,
 }: AchievementModalProps) => {
   const { transformText } = usePersonalization();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
   useAutoClose(visible, onClose, autoCloseDelay);
 
@@ -118,9 +122,14 @@ export const AchievementModal = ({
             {transformText("¡Felicidades! Sigan trabajando así de bien.")}
           </CustomText>
 
-          {/* Botón de acción principal; actualmente solo cierra el modal.
-              En el futuro podría navegar a una pantalla con todos los logros. */}
-          <TouchableOpacity style={styles.button} onPress={onClose}>
+          {/* Botón de acción principal: cierra el modal y navega a LogrosScreen */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              onClose();
+              navigation.navigate("Logros");
+            }}
+          >
             <CustomText style={styles.buttonText}>
               {transformText("Ver todos los logros")}
             </CustomText>

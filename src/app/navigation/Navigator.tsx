@@ -27,6 +27,7 @@ import CategoryPictogramsScreen from "../feature/expresate/screens/CategoryPicto
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
+import LogrosScreen from "../feature/rutinas/screens/LogrosScreen";
 import RoutineScreen from "../feature/rutinas/screens/RoutineScreen";
 import ForgotPasswordScreen from "../feature/start/Auth/ForgotPassword/ForgotPasswordScreen";
 import NewPasswordScreen from "../feature/start/Auth/ForgotPassword/NewPasswordScreen";
@@ -95,6 +96,7 @@ const mainScreens = [
   { name: "Expresate", component: ExpresateScreen },
   { name: "CategoryPictograms", component: CategoryPictogramsScreen },
   { name: "Rutinas", component: RoutineScreen },
+  { name: "Logros", component: LogrosScreen },
   { name: "Tarjetas", component: CardsScreen },
   { name: "Frases", component: ShortcutScreen },
   { name: "Emergencias", component: EmergencyScreen },
