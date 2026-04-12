@@ -2,7 +2,8 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
 import SuccessModal from "@/src/app/feature/common/alerts/SuccessModal";
-import React, { useMemo, useState } from "react";
+import { speakPictogramText } from "@/src/app/feature/expresate/services/speech.Service";
+import React, { useEffect, useMemo, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CustomText from "../../../common/CustomText";
 import { useTaskStepModal } from "../../hooks/useTaskStepModal";
@@ -31,15 +32,14 @@ export const TaskStepModal = ({
         },
         detailsContainer: {
           width: "90%",
-          height: "70%",
+          maxHeight: "75%",
           backgroundColor: themedColors.background,
           borderRadius: 20,
           padding: 20,
-          justifyContent: "space-between",
         },
         titleTaskContainer: {
           alignItems: "center",
-          marginBottom: 10,
+          marginBottom: 20,
         },
         taskDetailsTitle: {
           fontSize: 22,
@@ -47,18 +47,18 @@ export const TaskStepModal = ({
           color: themedColors.primary,
         },
         stepContainer: {
-          flex: 1,
           width: "100%",
-          justifyContent: "flex-end",
+          justifyContent: "center",
           alignItems: "center",
+          paddingVertical: 40,
+          minHeight: 200,
         },
         taskStepText: {
-          fontSize: 24,
+          fontSize: 28,
           color: themedColors.primary,
           textAlign: "center",
           fontWeight: "bold",
-          padding: 10,
-          marginBottom: 50,
+          lineHeight: 38,
         },
         buttonContainer: {
           flexDirection: "row",
@@ -115,6 +115,18 @@ export const TaskStepModal = ({
       onClose,
     );
 
+  // Leer el paso actual cuando cambie
+  useEffect(() => {
+    if (visible && task?.pasos[currentStepIndex]) {
+      const timeout = setTimeout(() => {
+        void speakPictogramText(task.pasos[currentStepIndex], "es", {
+          interruptCurrent: true,
+        });
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentStepIndex, visible, task?.pasos]);
+
   const handleCancelClick = () => {
     setShowConfirmCancelModal(true);
   };
@@ -159,6 +171,14 @@ export const TaskStepModal = ({
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.detailsOverlay}>
         <View style={styles.detailsContainer}>
+          {/* Botón "X" de cierre en la esquina superior derecha */}
+          <TouchableOpacity
+            onPress={handleCancelClick}
+            style={styles.closeXButton}
+          >
+            <Text style={styles.closeXButtonText}>×</Text>
+          </TouchableOpacity>
+
           {/* Encabezado que muestra el número de paso actual y el total. */}
           <View style={styles.titleTaskContainer}>
             <CustomText style={styles.taskDetailsTitle}>
@@ -205,15 +225,6 @@ export const TaskStepModal = ({
               </CustomText>
             </TouchableOpacity>
           </View>
-
-          {/* Botón "X" de cierre rápido del modal, reutilizando el estilo
-              general de cierre definido para los modales de tareas. */}
-          <TouchableOpacity
-            onPress={handleCancelClick}
-            style={styles.closeXButton}
-          >
-            <Text style={styles.closeXButtonText}>×</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
