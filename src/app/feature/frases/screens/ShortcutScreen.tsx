@@ -264,6 +264,11 @@ const ShortcutScreen = () => {
           borderRadius: 26,
           alignItems: "center",
           justifyContent: "center",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: temaOscuro ? 0.35 : 0.1,
+          shadowRadius: 6,
+          elevation: 3,
         },
         cardWrapper: {
           position: "relative",
@@ -325,6 +330,8 @@ const ShortcutScreen = () => {
           justifyContent: "center",
           alignItems: "center",
           paddingVertical: 12,
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: themedColors.secondary + "30",
         },
         actionButtonsRow: {
           width: 180,
@@ -478,9 +485,11 @@ const ShortcutScreen = () => {
 
       {/* Barra de pictogramas seleccionados */}
       <View style={styles.phraseBar}>
-        <CustomText style={styles.phraseHintText}>
-          {transformText("Seleccione un picto y aparecerá aquí")}
-        </CustomText>
+        {selectedPictograms.length === 0 && (
+          <CustomText style={styles.phraseHintText}>
+            {transformText("Seleccione un picto y aparecerá aquí")}
+          </CustomText>
+        )}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -511,11 +520,7 @@ const ShortcutScreen = () => {
                       style={styles.phraseImage}
                     />
                   ) : (
-                    <Ionicons
-                      name="location-outline"
-                      size={18}
-                      color={themedColors.secondary}
-                    />
+                    <View style={styles.phraseSlotMarker} />
                   )}
                 </View>
                 <CustomText style={styles.phraseItemText} numberOfLines={1}>
