@@ -105,19 +105,23 @@ export const CategorPickeryModal = ({
               data={categories}
               keyExtractor={(item) => item.id}
               style={styles.optionsContainer}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.optionButton}
-                  onPress={() => {
-                    onCategorySelect(item.id, item.nombre);
-                    onClose();
-                  }}
-                >
-                  <CustomText style={styles.optionText}>
-                    {item.nombre}
-                  </CustomText>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const categoryKey = `category_${item.nombre.toLowerCase().replace(/\s+/g, '_')}`;
+                const translatedName = t(categoryKey) !== categoryKey ? t(categoryKey) : item.nombre;
+                return (
+                  <TouchableOpacity
+                    style={styles.optionButton}
+                    onPress={() => {
+                      onCategorySelect(item.id, item.nombre);
+                      onClose();
+                    }}
+                  >
+                    <CustomText style={styles.optionText}>
+                      {translatedName}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              }}
             />
           )}
         </View>

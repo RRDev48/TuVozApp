@@ -148,9 +148,16 @@ const ExpresateScreen = () => {
     void speakWithQueue(pictogram.keyword, pictogram.language);
   }, []);
 
-  const normalizeCategoryName = useCallback((name: string) => {
+  const normalizeCategoryName = useCallback((name: string, slug?: string) => {
+    if (slug) {
+      const translationKey = `category_${slug}`;
+      const translated = t(translationKey);
+      if (translated !== translationKey) {
+        return translated;
+      }
+    }
     return name;
-  }, []);
+  }, [t]);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -290,7 +297,7 @@ const ExpresateScreen = () => {
   const renderCategoryItem = useCallback(
     (item: PictogramCategory) => (
       <MenuItem
-        name={normalizeCategoryName(item.name)}
+        name={normalizeCategoryName(item.name, item.slug)}
         route={item.slug}
         image={require("@/src/app/assets/icon/Ajustes.png")}
         styles={containerStyles}
