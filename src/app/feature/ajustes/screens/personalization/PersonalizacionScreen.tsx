@@ -4,7 +4,7 @@ import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -32,6 +32,12 @@ const PersonalizacionScreen = () => {
   } = usePersonalization();
 
   const themedColors = getThemedColors();
+
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: !idiomaCargando,
+    });
+  }, [navigation, idiomaCargando]);
 
   const styles = useMemo(
     () =>
