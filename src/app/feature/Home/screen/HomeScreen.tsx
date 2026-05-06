@@ -3,7 +3,7 @@ import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import {
   FlatList,
   Image,
@@ -29,6 +29,12 @@ const HomeScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
+
+  useEffect(() => {
+    navigation.setOptions({
+      gestureEnabled: false,
+    });
+  }, [navigation]);
 
   const styles = useMemo(() => {
     return StyleSheet.create({
