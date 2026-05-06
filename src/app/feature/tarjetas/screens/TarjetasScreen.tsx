@@ -8,6 +8,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
+import i18n from "@/src/app/i18n";
 
 const CardsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
@@ -45,12 +46,12 @@ const CardsScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text="Tarjetas" />
+      <ScreenTitle text={i18n.t('cards')} />
 
       {/* Contenido centrado */}
       <View style={styles.content}>
         <ZenithXAnimado width={180} height={180} />
-        <CustomText style={styles.text}>Próximamente</CustomText>
+        <CustomText style={styles.text}>{i18n.t('comingSoon')}</CustomText>
       </View>
     </View>
   );
