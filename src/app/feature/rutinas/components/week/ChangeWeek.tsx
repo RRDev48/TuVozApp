@@ -1,12 +1,14 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "../../../common/CustomText";
+import { useWeekRoutine } from "../../hooks/useWeekRoutine";
 import { ChangeWeekProps } from "../../models/component.props";
 
-const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
-  const { getThemedColors, transformText } = usePersonalization();
+const ChangeWeek = ({ onChangeWeek, currentWeekStart }: ChangeWeekProps) => {
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = useMemo(
@@ -47,7 +49,7 @@ const ChangeWeek = ({ currentWeekStart, onChangeWeek }: ChangeWeekProps) => {
 
       {/* Texto central que funciona como encabezado de la sección de rutinas. */}
       <CustomText style={styles.title}>
-        {transformText("¿Comenzamos el día?")}
+        {i18n.t('startDay')}
       </CustomText>
 
       {/* Botón para ir a la semana siguiente (suma 7 días). */}

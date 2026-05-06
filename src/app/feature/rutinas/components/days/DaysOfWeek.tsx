@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo } from "react";
@@ -15,7 +16,7 @@ export const DaysOfWeek = ({
   setSelectedDayIndex,
   profileId,
 }: DaysOfWeekProps) => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const weekDates = useWeekDays(currentWeekStart);
   const medals = useWeekMedals(profileId, weekDates);
@@ -95,7 +96,7 @@ export const DaysOfWeek = ({
               adjustsFontSizeToFit
               minimumFontScale={0.8}
             >
-              {transformText(day.toLocaleString("es-ES", { weekday: "short" }))}
+              {day.toLocaleString(i18n.language === 'es' ? 'es-ES' : 'en-US', { weekday: "short" })}
             </CustomText>
             {/* Número de día del mes (1-31) */}
             <CustomText

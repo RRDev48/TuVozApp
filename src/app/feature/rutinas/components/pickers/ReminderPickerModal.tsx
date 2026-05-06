@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo } from "react";
@@ -100,7 +101,7 @@ export const ReminderPickerModal = ({
       <View style={styles.overlay}>
         <View style={styles.sharedModalContainer}>
           <CustomText style={styles.reminderTitle}>
-            {"Establecer Recordatorio"}
+            {i18n.t('setReminder')}
           </CustomText>
 
           {/* Lista de opciones de recordatorio disponibles.
@@ -120,7 +121,7 @@ export const ReminderPickerModal = ({
           {/* Texto informativo que muestra la opción actualmente seleccionada. */}
           {selectedOption && (
             <CustomText style={styles.selectedOptionText}>
-              {"Opción Seleccionada:"} {getSelectedLabel()}
+              {i18n.t('selectedOption')}: {getSelectedLabel()}
             </CustomText>
           )}
 
@@ -130,7 +131,7 @@ export const ReminderPickerModal = ({
             style={styles.setReminderButton}
           >
             <CustomText style={styles.setReminderButtonText}>
-              {"Establecer Recordatorio"}
+              {i18n.t('setReminder')}
             </CustomText>
           </TouchableOpacity>
 
@@ -140,7 +141,7 @@ export const ReminderPickerModal = ({
             style={styles.closeWhitTextButton}
           >
             <CustomText style={styles.closeWhitTextButtonText}>
-              {"Cerrar"}
+              {i18n.t('close')}
             </CustomText>
           </TouchableOpacity>
         </View>

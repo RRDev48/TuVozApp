@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -108,7 +109,6 @@ export const DraggableTaskItem = ({
   onPositionChange,
   onPress,
 }: DraggableTaskItemProps) => {
-  const { transformText } = usePersonalization();
   const [isDragging, setIsDragging] = useState(false);
   const { categories } = useCategories();
 
@@ -206,9 +206,7 @@ export const DraggableTaskItem = ({
                     <Ionicons name="list-outline" size={12} color="#fff" />
                     <CustomText style={styles.stepsText}>
                       {task.pasos.length}{" "}
-                      {transformText(
-                        task.pasos.length !== 1 ? "pasos" : "paso",
-                      )}
+                      {i18n.t(task.pasos.length !== 1 ? 'stepsAbbrev' : 'step')}
                     </CustomText>
                   </View>
                 )}

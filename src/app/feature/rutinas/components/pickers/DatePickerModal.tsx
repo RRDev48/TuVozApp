@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo, useState } from "react";
@@ -71,7 +72,7 @@ export const DatePickerModal = ({
       <View style={styles.overlay}>
         <View style={styles.calendarContainer}>
           <CustomText style={styles.calendarTitle}>
-            {"Selecciona una fecha"}
+            {i18n.t('selectDate')}
           </CustomText>
 
           {/* Calendario mensual interactivo.
@@ -99,7 +100,7 @@ export const DatePickerModal = ({
             style={styles.closeWhitTextButton}
           >
             <CustomText style={styles.closeWhitTextButtonText}>
-              {"Cerrar"}
+              {i18n.t('close')}
             </CustomText>
           </TouchableOpacity>
         </View>

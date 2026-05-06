@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
@@ -13,7 +14,7 @@ export const StepItem = ({
   onTextChange,
   onRemove,
 }: StepItemModalProps) => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = useMemo(
@@ -56,7 +57,7 @@ export const StepItem = ({
       <CustomText style={styles.stepNumber}>{id}.</CustomText>
 
       <TextInput
-        placeholder={transformText("Paso")}
+        placeholder={i18n.t('stepPlaceholder')}
         placeholderTextColor={themedColors.primary}
         style={styles.stepsInput}
         value={text}

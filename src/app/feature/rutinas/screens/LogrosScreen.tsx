@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -12,13 +13,7 @@ import { LogroItem, useLogros } from "../hooks/useLogros";
 const GRAY_LOCKED = "#9E9E9E";
 
 /** Hexágono/placa para un logro individual */
-const LogroBadge = ({
-  item,
-  transformText,
-}: {
-  item: LogroItem;
-  transformText: (t: string) => string;
-}) => {
+const LogroBadge = ({ item }: { item: LogroItem }) => {
   const color = item.unlocked ? item.color : GRAY_LOCKED;
   const opacity = item.unlocked ? 1 : 0.6;
 
@@ -46,7 +41,7 @@ const LogroBadge = ({
           { color: item.unlocked ? "#FFFFFF" : GRAY_LOCKED },
         ]}
       >
-        {transformText(item.label)}
+        {item.label}
       </CustomText>
     </View>
   );
@@ -79,7 +74,7 @@ const badgeStyles = StyleSheet.create({
 
 const LogrosScreen = () => {
   const navigation = useNavigation();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const { profileId } = useCurrentUserProfile();
 
@@ -155,7 +150,7 @@ const LogrosScreen = () => {
   return (
     <View style={styles.screen}>
       <BackButton onPress={() => navigation.goBack()} />
-      <ScreenTitle text={transformText("Logros")} />
+      <ScreenTitle text={i18n.t('achievements')} />
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Stats rápidas */}
@@ -163,56 +158,44 @@ const LogrosScreen = () => {
           <View style={styles.statItem}>
             <CustomText style={styles.statValue}>{rachaActual}</CustomText>
             <CustomText style={styles.statLabel}>
-              {transformText("Racha actual")}
+              {i18n.t('currentStreak')}
             </CustomText>
           </View>
           <View style={styles.statItem}>
             <CustomText style={styles.statValue}>{rachaMasLarga}</CustomText>
             <CustomText style={styles.statLabel}>
-              {transformText("Mejor racha")}
+              {i18n.t('bestStreak')}
             </CustomText>
           </View>
         </View>
 
         {/* Racha más larga */}
         <CustomText style={styles.sectionTitle}>
-          {transformText("Racha más larga")}
+          {i18n.t('longestStreak')}
         </CustomText>
         <View style={styles.grid}>
           {racha.map((item) => (
-            <LogroBadge
-              key={item.id}
-              item={item}
-              transformText={transformText}
-            />
+            <LogroBadge key={item.id} item={item} />
           ))}
         </View>
 
         {/* Objetivos */}
         <CustomText style={styles.sectionTitle}>
-          {transformText("Objetivos")}
+          {i18n.t('goals')}
         </CustomText>
         <View style={styles.grid}>
           {objetivos.map((item) => (
-            <LogroBadge
-              key={item.id}
-              item={item}
-              transformText={transformText}
-            />
+            <LogroBadge key={item.id} item={item} />
           ))}
         </View>
 
         {/* Hábitos */}
         <CustomText style={styles.sectionTitle}>
-          {transformText("Hábitos")}
+          {i18n.t('habits')}
         </CustomText>
         <View style={[styles.grid, { marginBottom: 32 }]}>
           {habitos.map((item) => (
-            <LogroBadge
-              key={item.id}
-              item={item}
-              transformText={transformText}
-            />
+            <LogroBadge key={item.id} item={item} />
           ))}
         </View>
       </ScrollView>

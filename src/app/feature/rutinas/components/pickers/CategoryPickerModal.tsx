@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo } from "react";
@@ -91,12 +92,12 @@ export const CategorPickeryModal = ({
           </TouchableOpacity>
 
           <CustomText style={styles.categoryTitle}>
-            {"Selecciona una categoría"}
+            {i18n.t('selectCategory')}
           </CustomText>
 
           {loading ? (
             <CustomText style={{ textAlign: "center", marginTop: 20 }}>
-              {"Cargando..."}
+              {i18n.t('loading')}
             </CustomText>
           ) : (
             <FlatList

@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,7 +28,7 @@ import { Task } from "../models/task.types";
 export const RoutineScreen = () => {
   const navigation = useNavigation();
   const { profileId, loading: profileLoading } = useCurrentUserProfile();
-  const { getThemedColors, transformText, temaOscuro } = usePersonalization();
+  const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [startSelectedHour, setSelectedHour] = useState("");
@@ -202,7 +203,7 @@ export const RoutineScreen = () => {
     <View style={styles.screenContainer}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Rutinas")} />
+      <ScreenTitle text={i18n.t('routines')} />
 
       <View style={styles.headerContainer}>
         <ProgressItem
@@ -317,9 +318,9 @@ export const RoutineScreen = () => {
 
       <ConfirmationModal
         visible={showDeleteConfirm}
-        title={transformText("¿Eliminar esta tarea?")}
-        confirmText={transformText("Eliminar")}
-        cancelText={transformText("Cancelar")}
+        title={i18n.t('deleteTaskConfirm')}
+        confirmText={i18n.t('delete')}
+        cancelText={i18n.t('cancel')}
         onConfirm={confirmDeleteTask}
         onCancel={() => setShowDeleteConfirm(false)}
       />
