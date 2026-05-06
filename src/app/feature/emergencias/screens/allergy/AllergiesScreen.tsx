@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -9,8 +10,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
-import i18n from "@/src/app/i18n";
-
 type AllergiesScreenRouteProp = RouteProp<
   RootStackParamsList,
   "AllergiesSelection"
@@ -21,6 +20,7 @@ type AllergiesScreenNavigationProp = StackNavigationProp<
 >;
 
 const AllergiesScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AllergiesScreenNavigationProp>();
   const route = useRoute<AllergiesScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -89,16 +89,16 @@ const AllergiesScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('allergies')} />
+      <ScreenTitle text={t('allergies')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('haveAllergy')}
+          {t('haveAllergy')}
         </Text>
 
         <AddButton
           onPress={handleAddAllergy}
-          text={i18n.t('addNew')}
+          text={t('addNew')}
         />
 
         {allergies.map((allergy, index) => {

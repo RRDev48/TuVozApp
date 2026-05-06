@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +14,7 @@ type SplashScreenNavigationProp = StackNavigationProp<
 >;
 
 const SplashScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<SplashScreenNavigationProp>();
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const SplashScreen = () => {
 
         {/* Powered by section */}
         <View style={styles.poweredByContainer}>
-          <Text style={styles.poweredByText}>{i18n.t('poweredBy')}</Text>
+          <Text style={styles.poweredByText}>{t('poweredBy')}</Text>
           {/* Icono ZenithX Animado */}
           <ZenithXAnimado width={60} height={60} />
         </View>

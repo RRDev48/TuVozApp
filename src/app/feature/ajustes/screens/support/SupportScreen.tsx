@@ -1,10 +1,10 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import CustomText from "@/src/app/feature/common/CustomText";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo, useState } from "react";
-import i18n from "@/src/app/i18n";
 import {
   ActivityIndicator,
   ScrollView,
@@ -18,6 +18,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import { supportService, SupportTicket } from "../../services/support.Service";
 
 const SupportScreen = () => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>() ?? ({} as StackNavigationProp<RootStackParamsList>);
@@ -147,17 +148,17 @@ const SupportScreen = () => {
   };
 
   const statusLabels = {
-    open: i18n.t('statusOpen'),
-    in_progress: i18n.t('statusInProgress'),
-    resolved: i18n.t('statusResolved'),
-    closed: i18n.t('statusClosed'),
+    open: t('statusOpen'),
+    in_progress: t('statusInProgress'),
+    resolved: t('statusResolved'),
+    closed: t('statusClosed'),
   };
 
   return (
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={i18n.t('myEntries')} />
+      <ScreenTitle text={t('myEntries')} />
 
       {/* Contenido */}
       {isLoading ? (
@@ -175,10 +176,10 @@ const SupportScreen = () => {
             style={{ marginBottom: 20, marginTop: -100 }}
           />
           <CustomText style={styles.emptyStateTitle}>
-            {i18n.t('noEntriesYet')}
+            {t('noEntriesYet')}
           </CustomText>
           <CustomText style={styles.emptyStateText}>
-            {i18n.t('noEntriesDescription')}
+            {t('noEntriesDescription')}
           </CustomText>
         </ScrollView>
       ) : (
@@ -242,7 +243,7 @@ const SupportScreen = () => {
           onPress={handleNewEntry}
         >
           <CustomText style={styles.newEntryButtonText}>
-            {i18n.t('newEntry')}
+            {t('newEntry')}
           </CustomText>
         </TouchableOpacity>
       </View>

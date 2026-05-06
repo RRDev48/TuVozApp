@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
@@ -16,6 +16,7 @@ type UserTypeScreenNavigationProp = StackNavigationProp<
 type UserTypeOption = "self" | "other" | null;
 
 const UserTypeScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<UserTypeScreenNavigationProp>();
   const [selectedType, setSelectedType] = useState<UserTypeOption>(null);
 
@@ -26,7 +27,7 @@ const UserTypeScreen = () => {
     if (selectedType === "self") {
       navigation.navigate("RegisterInfo", { role: "self" });
     } else {
-      navigation.navigate("RoleSelection");
+      navigation.navigate("RoleSelection", {});
     }
   };
 
@@ -48,7 +49,7 @@ const UserTypeScreen = () => {
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>{i18n.t('forWhoConfigure')}</Text>
+      <Text style={styles.title}>{t("forWhoConfigure")}</Text>
 
       {/* Opciones */}
       <View style={styles.optionsWrapper}>
@@ -71,7 +72,7 @@ const UserTypeScreen = () => {
                 />
               </View>
             </TouchableOpacity>
-            <Text style={styles.optionText}>{i18n.t('forMe')}</Text>
+            <Text style={styles.optionText}>{t("forMe")}</Text>
           </View>
 
           {/* Para otro */}
@@ -92,7 +93,7 @@ const UserTypeScreen = () => {
                 />
               </View>
             </TouchableOpacity>
-            <Text style={styles.optionText}>{i18n.t('forAnother')}</Text>
+            <Text style={styles.optionText}>{t("forAnother")}</Text>
           </View>
         </View>
       </View>
@@ -108,7 +109,9 @@ const UserTypeScreen = () => {
           activeOpacity={0.8}
           disabled={!selectedType}
         >
-          <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
+          <Text style={styles.continueButtonText}>
+            {t("continueButton")}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

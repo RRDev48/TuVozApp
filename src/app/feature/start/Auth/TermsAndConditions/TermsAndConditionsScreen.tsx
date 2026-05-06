@@ -1,7 +1,7 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "@/src/app/assets/image/tuvoz.svg";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
@@ -21,31 +21,32 @@ type TermsNavigationProp = StackNavigationProp<
 >;
 
 const TermsAndConditionsScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<TermsNavigationProp>();
   const sections = [
     {
-      title: i18n.t('acceptanceOfUse'),
-      text: i18n.t('acceptanceOfUseText'),
+      title: t('acceptanceOfUse'),
+      text: t('acceptanceOfUseText'),
     },
     {
-      title: i18n.t('useOfApplication'),
-      text: i18n.t('useOfApplicationText'),
+      title: t('useOfApplication'),
+      text: t('useOfApplicationText'),
     },
     {
-      title: i18n.t('accountAndSecurity'),
-      text: i18n.t('accountAndSecurityText'),
+      title: t('accountAndSecurity'),
+      text: t('accountAndSecurityText'),
     },
     {
-      title: i18n.t('privacyAndData'),
-      text: i18n.t('privacyAndDataText'),
+      title: t('privacyAndData'),
+      text: t('privacyAndDataText'),
     },
     {
-      title: i18n.t('serviceAvailability'),
-      text: i18n.t('serviceAvailabilityText'),
+      title: t('serviceAvailability'),
+      text: t('serviceAvailabilityText'),
     },
     {
-      title: i18n.t('changesInTerms'),
-      text: i18n.t('changesInTermsText'),
+      title: t('changesInTerms'),
+      text: t('changesInTermsText'),
     },
   ];
 
@@ -64,9 +65,9 @@ const TermsAndConditionsScreen = () => {
       </View>
 
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>{i18n.t('termsAndConditionsTitle')}</Text>
+        <Text style={styles.title}>{t('termsAndConditionsTitle')}</Text>
         <Text style={styles.subtitle}>
-          {i18n.t('termsSubtitle')}
+          {t('termsSubtitle')}
         </Text>
       </View>
 
@@ -97,7 +98,7 @@ const TermsAndConditionsScreen = () => {
           activeOpacity={0.85}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.buttonText}>{i18n.t('understood')}</Text>
+          <Text style={styles.buttonText}>{t('understood')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

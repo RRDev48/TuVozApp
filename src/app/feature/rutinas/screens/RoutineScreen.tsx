@@ -1,5 +1,5 @@
-import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -26,6 +26,7 @@ import { useWeekTasksPreload } from "../hooks/useWeekTasksPreload";
 import { Task } from "../models/task.types";
 
 export const RoutineScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation();
   const { profileId, loading: profileLoading } = useCurrentUserProfile();
   const { getThemedColors, temaOscuro } = usePersonalization();
@@ -203,7 +204,7 @@ export const RoutineScreen = () => {
     <View style={styles.screenContainer}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('routines')} />
+      <ScreenTitle text={t('routines')} />
 
       <View style={styles.headerContainer}>
         <ProgressItem
@@ -318,9 +319,9 @@ export const RoutineScreen = () => {
 
       <ConfirmationModal
         visible={showDeleteConfirm}
-        title={i18n.t('deleteTaskConfirm')}
-        confirmText={i18n.t('delete')}
-        cancelText={i18n.t('cancel')}
+        title={t('deleteTaskConfirm')}
+        confirmText={t('delete')}
+        cancelText={t('cancel')}
         onConfirm={confirmDeleteTask}
         onCancel={() => setShowDeleteConfirm(false)}
       />

@@ -1,6 +1,6 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "@/src/app/assets/image/tuvoz.svg";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { supportService } from "@/src/app/feature/ajustes/services/support.Service";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
@@ -30,6 +30,7 @@ type LoginSupportTicketNavigationProp = StackNavigationProp<
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const LoginSupportTicketScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<LoginSupportTicketNavigationProp>();
 
   const [email, setEmail] = useState("");
@@ -87,7 +88,7 @@ const LoginSupportTicketScreen = () => {
 
     if (!result.success) {
       setErrorMessage(
-        result.error || i18n.t("createTicketError"),
+        result.error || t("createTicketError"),
       );
       setShowErrorModal(true);
       return;
@@ -142,7 +143,7 @@ const LoginSupportTicketScreen = () => {
               isKeyboardVisible && styles.titleKeyboardVisible,
             ]}
           >
-            {i18n.t("createSupportTicketTitle")}
+            {t("createSupportTicketTitle")}
           </Text>
           <Text
             style={[
@@ -150,7 +151,7 @@ const LoginSupportTicketScreen = () => {
               isKeyboardVisible && styles.subtitleKeyboardVisible,
             ]}
           >
-            {i18n.t("createSupportTicketSubtitle")}
+            {t("createSupportTicketSubtitle")}
           </Text>
         </View>
 
@@ -161,7 +162,7 @@ const LoginSupportTicketScreen = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>{i18n.t("emailField")}</Text>
+            <Text style={styles.label}>{t("emailField")}</Text>
             <TextInput
               style={styles.input}
               value={email}
@@ -174,23 +175,23 @@ const LoginSupportTicketScreen = () => {
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>{i18n.t("subjectField")}</Text>
+            <Text style={styles.label}>{t("subjectField")}</Text>
             <TextInput
               style={styles.input}
               value={subject}
               onChangeText={setSubject}
-              placeholder={i18n.t("describeBriefly")}
+              placeholder={t("describeBriefly")}
               placeholderTextColor={colors.gray}
             />
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>{i18n.t("queryField")}</Text>
+            <Text style={styles.label}>{t("queryField")}</Text>
             <TextInput
               style={styles.textArea}
               value={message}
               onChangeText={setMessage}
-              placeholder={i18n.t("tellUsWhatHappens")}
+              placeholder={t("tellUsWhatHappens")}
               placeholderTextColor={colors.gray}
               multiline
               numberOfLines={6}
@@ -215,20 +216,20 @@ const LoginSupportTicketScreen = () => {
             onPress={handleSubmit}
           >
             <Text style={styles.buttonText}>
-              {isSubmitting ? i18n.t("sending") : i18n.t("sendTicket")}
+              {isSubmitting ? t("sending") : t("sendTicket")}
             </Text>
           </TouchableOpacity>
         </View>
 
         <SuccessModal
           visible={showSuccessModal}
-          title={i18n.t("ticketSentSuccessfully")}
+          title={t("ticketSentSuccessfully")}
           onClose={handleSuccessClose}
         />
 
         <ErrorModal
           visible={showErrorModal}
-          title={i18n.t("errorTitle")}
+          title={t("errorTitle")}
           message={errorMessage}
           onClose={() => setShowErrorModal(false)}
         />

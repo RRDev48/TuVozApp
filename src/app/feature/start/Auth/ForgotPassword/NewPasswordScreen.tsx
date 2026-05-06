@@ -1,6 +1,6 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -45,6 +45,7 @@ type NewPasswordScreenNavigationProp = StackNavigationProp<
 type NewPasswordScreenRouteProp = RouteProp<RootStackParamsList, "NewPassword">;
 
 const NewPasswordScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<NewPasswordScreenNavigationProp>();
   const route = useRoute<NewPasswordScreenRouteProp>();
   const { email = "" } = route.params || {};
@@ -85,7 +86,7 @@ const NewPasswordScreen = () => {
     if (!newPassword.trim() || !confirmPassword.trim()) {
       await showFormError(
         logAndShowError,
-        i18n.t('completeAllFields'),
+        t('completeAllFields'),
         {
           context: "new_password_fields_empty",
           metadata: {
@@ -101,7 +102,7 @@ const NewPasswordScreen = () => {
     if (newPassword.length < 6) {
       await showFormError(
         logAndShowError,
-        i18n.t('min6Characters'),
+        t('min6Characters'),
         {
           context: "new_password_too_short",
           metadata: { email, password_length: newPassword.length },
@@ -111,7 +112,7 @@ const NewPasswordScreen = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      await showFormError(logAndShowError, i18n.t('passwordsNotMatch'), {
+      await showFormError(logAndShowError, t('passwordsNotMatch'), {
         context: "new_password_mismatch",
         metadata: { email, passwords_match: false },
       });
@@ -125,7 +126,7 @@ const NewPasswordScreen = () => {
     } else {
       await showFormError(
         logAndShowError,
-        result.error || i18n.t('updatePasswordError'),
+        result.error || t('updatePasswordError'),
         {
           context: "password_update_failed",
           metadata: { email, result_error: result.error },
@@ -167,19 +168,19 @@ const NewPasswordScreen = () => {
       <Text
         style={[styles.title, isKeyboardVisible && styles.titleKeyboardVisible]}
       >
-        {i18n.t('passwordSetupTitle')}
+        {t('passwordSetupTitle')}
       </Text>
 
       {/* Formulario */}
       <View style={styles.form}>
         {/* Campo Nueva Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>{i18n.t('enterPasswordLabel')}</Text>
+          <Text style={styles.label}>{t('enterPasswordLabel')}</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.input}
-                placeholder={i18n.t('passwordLabel')}
+                placeholder={t('passwordLabel')}
                 placeholderTextColor={colors.gray}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -202,12 +203,12 @@ const NewPasswordScreen = () => {
 
         {/* Campo Confirmar Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>{i18n.t('confirmPasswordLabel')}</Text>
+          <Text style={styles.label}>{t('confirmPasswordLabel')}</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.input}
-                placeholder={i18n.t('confirmPasswordPlaceholder')}
+                placeholder={t('confirmPasswordPlaceholder')}
                 placeholderTextColor={colors.gray}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -248,7 +249,7 @@ const NewPasswordScreen = () => {
           {isUpdating ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.updateButtonText}>{i18n.t('updatePasswordButton')}</Text>
+            <Text style={styles.updateButtonText}>{t('updatePasswordButton')}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -256,15 +257,15 @@ const NewPasswordScreen = () => {
       {/* Alert de éxito */}
       <VerificationSuccessModal
         visible={showSuccess}
-        title={i18n.t('passwordUpdatedTitle')}
-        message={i18n.t('passwordUpdatedMessage')}
+        title={t('passwordUpdatedTitle')}
+        message={t('passwordUpdatedMessage')}
         onClose={handleCloseSuccess}
         gifType="verificado"
       />
 
       <VerificationErrorModal
         visible={showErrorModal}
-        title={i18n.t('errorTitle')}
+        title={t('errorTitle')}
         message={errorMessage}
         onClose={closeErrorModal}
       />

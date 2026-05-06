@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
@@ -51,6 +52,7 @@ function normalizeAlertType(value?: string): EmergencyAlertType {
 }
 
 const EmergencyScreen2 = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
   const route = useRoute<EmergencyScreen2RouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -192,7 +194,7 @@ const EmergencyScreen2 = () => {
         !formData.alert_type
       ) {
         logAndShowError(
-          i18n.t('emergencyValidationError'),
+          t('emergencyValidationError'),
           new Error("Campos obligatorios faltantes"),
           {
             context: "emergency_profile_validation_failed",
@@ -231,7 +233,7 @@ const EmergencyScreen2 = () => {
       await logAndShowError(
         error instanceof Error
           ? error.message
-          : i18n.t('couldNotSave'),
+          : t('couldNotSave'),
         error instanceof Error ? error : new Error("Profile save error"),
         {
           context: "emergency_profile_save_failed",
@@ -286,7 +288,7 @@ const EmergencyScreen2 = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('emergencies2')} />
+      <ScreenTitle text={t('emergencies2')} />
 
       <ScrollView
         style={styles.container}
@@ -300,7 +302,7 @@ const EmergencyScreen2 = () => {
               color={themedColors.background}
             />
           }
-          label={i18n.t('notes')}
+          label={t('notes')}
           value={formData.notes || ""}
           onPress={handleNotesEdit}
         />
@@ -309,7 +311,7 @@ const EmergencyScreen2 = () => {
           icon={
             <Ionicons name="home" size={26} color={themedColors.background} />
           }
-          label={i18n.t('address')}
+          label={t('address')}
           value={formData.address || ""}
           onPress={handleAddressEdit}
         />
@@ -318,7 +320,7 @@ const EmergencyScreen2 = () => {
           icon={
             <Ionicons name="call" size={26} color={themedColors.background} />
           }
-          label={i18n.t('emergencyContact')}
+          label={t('emergencyContact')}
           value={
             formData.emergency_contact_name && formData.emergency_contact_phone
               ? `${formData.emergency_contact_name} - ${formData.emergency_contact_phone}`
@@ -337,7 +339,7 @@ const EmergencyScreen2 = () => {
               color={themedColors.background}
             />
           }
-          label={i18n.t('alertMode')}
+          label={t('alertMode')}
           value={getAlertTypeLabel(formData.alert_type)}
           onPress={handleAlertTypeEdit}
         />
@@ -346,7 +348,7 @@ const EmergencyScreen2 = () => {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
           <Text style={styles.cancelButtonText}>
-            {i18n.t('cancel')}
+            {t('cancel')}
           </Text>
         </TouchableOpacity>
 
@@ -359,7 +361,7 @@ const EmergencyScreen2 = () => {
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
             <Text style={styles.saveButtonText}>
-              {i18n.t('saveData')}
+              {t('saveData')}
             </Text>
           )}
         </TouchableOpacity>
@@ -378,7 +380,7 @@ const EmergencyScreen2 = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
+        title={t('error')}
         message={errorMessage}
         onClose={closeErrorModal}
       />

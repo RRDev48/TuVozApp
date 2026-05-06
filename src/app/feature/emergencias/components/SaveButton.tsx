@@ -1,10 +1,11 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { SaveButtonProps } from "../models/component.props";
 
 const SaveButton = ({ onPress, text, bottom = 40 }: SaveButtonProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
 
   const styles = StyleSheet.create({
@@ -29,7 +30,7 @@ const SaveButton = ({ onPress, text, bottom = 40 }: SaveButtonProps) => {
   return (
     <TouchableOpacity style={styles.saveButton} onPress={onPress}>
       <Text style={styles.saveButtonText}>
-        {text || i18n.t('saveChanges')}
+        {text || t('saveChanges')}
       </Text>
     </TouchableOpacity>
   );

@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
@@ -34,6 +34,7 @@ type RecoveryCodeScreenRouteProp = RouteProp<
 >;
 
 const RecoveryCodeScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<RecoveryCodeScreenNavigationProp>();
   const route = useRoute<RecoveryCodeScreenRouteProp>();
   const { email = "" } = route.params || {};
@@ -71,8 +72,8 @@ const RecoveryCodeScreen = () => {
       navigation.navigate("NewPassword", { email });
     } else {
       await logAndShowError(
-        result.error || i18n.t("invalidVerificationCode"),
-        new Error(result.error || i18n.t("invalidVerificationCode")),
+        result.error || t("invalidVerificationCode"),
+        new Error(result.error || t("invalidVerificationCode")),
         {
           context: "recovery_code_verification_failed",
           metadata: { email },
@@ -143,7 +144,7 @@ const RecoveryCodeScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          {i18n.t("verificationTitle")}
+          {t("verificationTitle")}
         </Text>
 
         {/* Descripción */}
@@ -153,7 +154,7 @@ const RecoveryCodeScreen = () => {
             isKeyboardVisible && styles.descriptionKeyboardVisible,
           ]}
         >
-          {i18n.t("verificationDescription")}{"\n"}
+          {t("verificationDescription")}{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
 
@@ -178,7 +179,7 @@ const RecoveryCodeScreen = () => {
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title={i18n.t("errorTitle")}
+          title={t("errorTitle")}
           message={errorMessage}
           onClose={closeErrorModal}
         />

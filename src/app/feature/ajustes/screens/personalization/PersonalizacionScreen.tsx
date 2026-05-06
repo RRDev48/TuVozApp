@@ -1,9 +1,12 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import type { Language } from "@/src/app/contexts/models/personalization.types";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import React, { useCallback, useMemo } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Switch,
@@ -12,15 +15,18 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
-import i18n from "@/src/app/i18n";
 
 const PersonalizacionScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const {
     soloMayusculas,
     temaOscuro,
+    idioma,
+    idiomaCargando,
     setSoloMayusculas,
     setTemaOscuro,
+    setIdioma,
     resetToDefaults,
     getThemedColors,
   } = usePersonalization();
@@ -82,10 +88,48 @@ const PersonalizacionScreen = () => {
           alignItems: "center",
           marginTop: 10,
         },
+        resetButtonDisabled: {
+          opacity: 0.5,
+        },
         resetButtonText: {
           color: colors.white,
           fontSize: 16,
           fontWeight: "600",
+        },
+        languageContainer: {
+          marginBottom: 40,
+        },
+        languageRow: {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+        languageLoadingContainer: {
+          height: 50,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        languageButton: {
+          paddingVertical: 8,
+          paddingHorizontal: 16,
+          borderRadius: 8,
+          borderWidth: 2,
+        },
+        languageButtonActive: {
+          borderColor: colors.green,
+        },
+        languageButtonInactive: {
+          borderColor: colors.gray,
+        },
+        languageButtonText: {
+          fontSize: 16,
+          fontWeight: "600",
+        },
+        languageButtonTextActive: {
+          color: colors.green,
+        },
+        languageButtonTextInactive: {
+          color: themedColors.text,
         },
       }),
     [themedColors],
@@ -103,16 +147,16 @@ const PersonalizacionScreen = () => {
 
   return (
     <View style={styles.container}>
-      <BackButton onPress={handleGoBack} />
+      <BackButton onPress={handleGoBack} disabled={idiomaCargando} />
 
-      <ScreenTitle text={i18n.t('personalization')} />
+      <ScreenTitle text={t('personalization')} />
 
       <ScrollView style={styles.content}>
         {/* Opción: Solo Mayúsculas */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>
-              {i18n.t('uppercaseOnly')}
+              {t('uppercaseOnly')}
             </CustomText>
             <View
               style={[
@@ -136,7 +180,7 @@ const PersonalizacionScreen = () => {
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>
-              {i18n.t('darkTheme')}
+              {t('darkTheme')}
             </CustomText>
             <View
               style={[
@@ -156,15 +200,76 @@ const PersonalizacionScreen = () => {
           </View>
         </View>
 
+        {/* Opción: Idioma */}
+        <View style={styles.languageContainer}>
+          <CustomText style={styles.optionTitle}>{t('language')}</CustomText>
+          {idiomaCargando ? (
+            <View style={styles.languageLoadingContainer}>
+              <ActivityIndicator size="large" color={colors.green} />
+            </View>
+          ) : (
+            <View style={styles.languageRow}>
+              <TouchableOpacity
+                style={[
+                  styles.languageButton,
+                  idioma === "es"
+                    ? styles.languageButtonActive
+                    : styles.languageButtonInactive,
+                ]}
+                onPress={() => setIdioma("es")}
+                activeOpacity={0.8}
+                disabled={idiomaCargando}
+              >
+                <CustomText
+                  style={[
+                    styles.languageButtonText,
+                    idioma === "es"
+                      ? styles.languageButtonTextActive
+                      : styles.languageButtonTextInactive,
+                  ]}
+                >
+                  Español
+                </CustomText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.languageButton,
+                  idioma === "en"
+                    ? styles.languageButtonActive
+                    : styles.languageButtonInactive,
+                ]}
+                onPress={() => setIdioma("en")}
+                activeOpacity={0.8}
+                disabled={idiomaCargando}
+              >
+                <CustomText
+                  style={[
+                    styles.languageButtonText,
+                    idioma === "en"
+                      ? styles.languageButtonTextActive
+                      : styles.languageButtonTextInactive,
+                  ]}
+                >
+                  English
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
         {/* Botón para resetear configuración */}
         <View style={styles.optionContainer}>
           <TouchableOpacity
-            style={styles.resetButton}
+            style={[
+              styles.resetButton,
+              idiomaCargando && styles.resetButtonDisabled,
+            ]}
             onPress={handleResetToDefaults}
             activeOpacity={0.8}
+            disabled={idiomaCargando}
           >
             <CustomText style={styles.resetButtonText}>
-              {i18n.t('resetToDefaults')}
+              {t('resetToDefaults')}
             </CustomText>
           </TouchableOpacity>
         </View>

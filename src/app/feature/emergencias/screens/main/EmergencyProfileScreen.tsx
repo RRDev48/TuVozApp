@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
@@ -26,6 +26,7 @@ type EmergencyProfileScreenNavigationProp = StackNavigationProp<
 >;
 
 const EmergencyProfileScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EmergencyProfileScreenNavigationProp>();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
@@ -180,12 +181,12 @@ const EmergencyProfileScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('emergencyProfile')} />
+      <ScreenTitle text={t('emergencyProfile')} />
 
       <View style={styles.content}>
         {/* Nombre */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{i18n.t('name')}</Text>
+          <Text style={styles.sectionTitle}>{t('name')}</Text>
           <View style={[styles.infoRow, styles.infoRowLast]}>
             <Ionicons name="person" size={20} color={themedColors.secondary} />
             <Text style={styles.infoValue}>{profileFullName}</Text>
@@ -195,16 +196,16 @@ const EmergencyProfileScreen = () => {
         {/* Información Médica */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('medicalInfo')}
+            {t('medicalInfo')}
           </Text>
 
           <View style={styles.infoRow}>
             <Ionicons name="water" size={20} color={themedColors.secondary} />
             <Text style={styles.infoLabel}>
-              {i18n.t('bloodType')}:
+              {t('bloodType')}:
             </Text>
             <Text style={styles.infoValue}>
-              {profile?.blood_type || i18n.t('notConfigured')}
+              {profile?.blood_type || t('notConfigured')}
             </Text>
           </View>
 
@@ -215,10 +216,10 @@ const EmergencyProfileScreen = () => {
                 size={20}
                 color={themedColors.secondary}
               />
-              <Text style={styles.infoLabel}>{i18n.t('allergies')}:</Text>
+              <Text style={styles.infoLabel}>{t('allergies')}:</Text>
             </View>
             <Text style={styles.infoValueStacked}>
-              {profile?.allergies || i18n.t('none')}
+              {profile?.allergies || t('none')}
             </Text>
           </View>
 
@@ -230,11 +231,11 @@ const EmergencyProfileScreen = () => {
                 color={themedColors.secondary}
               />
               <Text style={styles.infoLabel}>
-                {i18n.t('medications')}:
+                {t('medications')}:
               </Text>
             </View>
             <Text style={styles.infoValueStacked}>
-              {profile?.medications || i18n.t('none')}
+              {profile?.medications || t('none')}
             </Text>
           </View>
         </View>
@@ -242,7 +243,7 @@ const EmergencyProfileScreen = () => {
         {/* Notas y Dirección */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('notesAndAddress')}
+            {t('notesAndAddress')}
           </Text>
 
           <View style={styles.infoRowStacked}>
@@ -252,10 +253,10 @@ const EmergencyProfileScreen = () => {
                 size={20}
                 color={themedColors.secondary}
               />
-              <Text style={styles.infoLabel}>{i18n.t('notes')}:</Text>
+              <Text style={styles.infoLabel}>{t('notes')}:</Text>
             </View>
             <Text style={styles.infoValueStacked}>
-              {profile?.notes || i18n.t('noNotes')}
+              {profile?.notes || t('noNotes')}
             </Text>
           </View>
 
@@ -263,11 +264,11 @@ const EmergencyProfileScreen = () => {
             <View style={styles.infoLabelRow}>
               <Ionicons name="home" size={20} color={themedColors.secondary} />
               <Text style={styles.infoLabel}>
-                {i18n.t('address')}:
+                {t('address')}:
               </Text>
             </View>
             <Text style={styles.infoValueStacked}>
-              {profile?.address || i18n.t('notConfigured')}
+              {profile?.address || t('notConfigured')}
             </Text>
           </View>
         </View>
@@ -280,7 +281,7 @@ const EmergencyProfileScreen = () => {
         >
           <Ionicons name="call" size={24} color={colors.white} />
           <Text style={styles.emergencyButtonText}>
-            {i18n.t('emergency911')}
+            {t('emergency911')}
           </Text>
         </TouchableOpacity>
 
@@ -295,7 +296,7 @@ const EmergencyProfileScreen = () => {
             <>
               <Ionicons name="notifications" size={24} color={colors.white} />
               <Text style={styles.alertButtonText}>
-                {i18n.t('sendAlert')}
+                {t('sendAlert')}
               </Text>
             </>
           )}
@@ -304,16 +305,16 @@ const EmergencyProfileScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
+        title={t('error')}
         message={errorMessage}
         onClose={closeErrorModal}
       />
 
       <ConfirmationModal
         visible={showConfirmModal}
-        title={i18n.t('emergencyCallConfirm')}
-        confirmText={i18n.t('call')}
-        cancelText={i18n.t('cancel')}
+        title={t('emergencyCallConfirm')}
+        confirmText={t('call')}
+        cancelText={t('cancel')}
         onConfirm={confirmEmergencyCall}
         onCancel={() => setShowConfirmModal(false)}
       />

@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
@@ -17,6 +17,7 @@ export const TaskStepModal = ({
   onRestart,
   updateTaskState,
 }: TaskStepModalProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
@@ -183,7 +184,7 @@ export const TaskStepModal = ({
           {/* Encabezado que muestra el número de paso actual y el total. */}
           <View style={styles.titleTaskContainer}>
             <CustomText style={styles.taskDetailsTitle}>
-              {i18n.t('stepNumber', { current: currentStepIndex + 1, total: task.pasos.length })}
+              {t('stepNumber', { current: currentStepIndex + 1, total: task.pasos.length })}
             </CustomText>
           </View>
 
@@ -207,7 +208,7 @@ export const TaskStepModal = ({
               disabled={currentStepIndex === 0}
             >
 <CustomText style={styles.buttonText}>
-                {i18n.t('backStep')}
+                {t('backStep')}
               </CustomText>
             </TouchableOpacity>
 
@@ -219,8 +220,8 @@ export const TaskStepModal = ({
             >
               <CustomText style={styles.buttonText}>
                 {currentStepIndex < task.pasos.length - 1
-                  ? i18n.t('nextStep')
-                  : i18n.t('finishTask')}
+                  ? t('nextStep')
+                  : t('finishTask')}
               </CustomText>
             </TouchableOpacity>
 
@@ -232,8 +233,8 @@ export const TaskStepModal = ({
             >
               <CustomText style={styles.buttonText}>
                 {currentStepIndex < task.pasos.length - 1
-                  ? i18n.t('nextStep')
-                  : i18n.t('finishTask')}
+                  ? t('nextStep')
+                  : t('finishTask')}
               </CustomText>
             </TouchableOpacity>
           </View>
@@ -244,14 +245,14 @@ export const TaskStepModal = ({
       <SuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
-        title={i18n.t('taskCompleted')}
-        message={i18n.t('taskCompletedSuccess')}
+        title={t('taskCompleted')}
+        message={t('taskCompletedSuccess')}
       />
 
       {/* Modal de confirmación que aparece al intentar cerrar sin completar. */}
       <ConfirmationModal
         visible={showConfirmCancelModal}
-        title={i18n.t('exitWithoutCompleting')}
+        title={t('exitWithoutCompleting')}
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelCancel}
       />

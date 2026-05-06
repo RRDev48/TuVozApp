@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo } from "react";
@@ -19,6 +19,7 @@ export const CategorPickeryModal = ({
   onCategorySelect,
 }: CategoryModalProps) => {
   const { categories, loading } = useCategories(visible);
+  const { t } = useLanguageRefresh();
   const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -92,12 +93,12 @@ export const CategorPickeryModal = ({
           </TouchableOpacity>
 
           <CustomText style={styles.categoryTitle}>
-            {i18n.t('selectCategory')}
+            {t('selectCategory')}
           </CustomText>
 
           {loading ? (
             <CustomText style={{ textAlign: "center", marginTop: 20 }}>
-              {i18n.t('loading')}
+              {t('loading')}
             </CustomText>
           ) : (
             <FlatList

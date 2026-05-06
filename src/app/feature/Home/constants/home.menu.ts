@@ -1,34 +1,43 @@
-import i18n from "@/src/app/i18n";
 import { HomeMenuItem, HomeScreenMenuItem } from "../models/userData.types";
+
+export const HOME_MENU_KEYS = {
+  EXPRESS_YOURSELF: "expressYourself",
+  ROUTINES: "routines",
+  CARDS: "cards",
+  PHRASES: "phrases",
+  EMERGENCIES: "emergencies",
+  SETTINGS: "settings",
+  PROFILE: "profile",
+} as const;
 
 const homeMenuItems: HomeMenuItem[] = [
   {
-    name: i18n.t("expressYourself"),
+    nameKey: HOME_MENU_KEYS.EXPRESS_YOURSELF,
     component: "Expresate",
     icon: require("../../../assets/icon/Expresate.png"),
   },
   {
-    name: i18n.t("routines"),
+    nameKey: HOME_MENU_KEYS.ROUTINES,
     component: "Rutinas",
     icon: require("../../../assets/icon/Rutinas.png"),
   },
   {
-    name: i18n.t("cards"),
+    nameKey: HOME_MENU_KEYS.CARDS,
     component: "Tarjetas",
     icon: require("../../../assets/icon/Tarjetas.png"),
   },
   {
-    name: i18n.t("phrases"),
+    nameKey: HOME_MENU_KEYS.PHRASES,
     component: "Frases",
     icon: require("../../../assets/icon/Frases.png"),
   },
   {
-    name: i18n.t("emergencies"),
+    nameKey: HOME_MENU_KEYS.EMERGENCIES,
     component: "Emergencias",
     icon: require("../../../assets/icon/Emergencias.png"),
   },
   {
-    name: i18n.t("settings"),
+    nameKey: HOME_MENU_KEYS.SETTINGS,
     component: "Ajustes",
     icon: require("../../../assets/icon/Ajustes.png"),
   },
@@ -36,7 +45,7 @@ const homeMenuItems: HomeMenuItem[] = [
 
 const homeScreenMenu: HomeScreenMenuItem[] = [
   {
-    name: i18n.t("profile"),
+    nameKey: HOME_MENU_KEYS.PROFILE,
     icon: require("../../../assets/image/adip_icon.png"),
   },
 ];

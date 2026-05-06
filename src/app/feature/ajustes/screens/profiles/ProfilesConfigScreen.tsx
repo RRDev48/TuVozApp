@@ -1,10 +1,10 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
-import i18n from "@/src/app/i18n";
 import {
   ActivityIndicator,
   GestureResponderEvent,
@@ -29,6 +29,7 @@ type ProfilesConfigScreenNavigationProp = StackNavigationProp<
 type ProfileWithOwner = Profile & { is_owner: boolean };
 
 const ProfilesConfigScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<ProfilesConfigScreenNavigationProp>();
   const { getThemedColors, transformText } = usePersonalization();
   const themedColors = getThemedColors();
@@ -217,7 +218,7 @@ const ProfilesConfigScreen = () => {
     return (
       <View style={styles.container}>
         <BackButton onPress={() => navigation.goBack()} />
-<ScreenTitle text={i18n.t('myPersonalProfiles')} />
+<ScreenTitle text={t('myPersonalProfiles')} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={themedColors.primary} />
         </View>
@@ -229,7 +230,7 @@ const ProfilesConfigScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('myPersonalProfiles')} />
+      <ScreenTitle text={t('myPersonalProfiles')} />
 
       <View style={styles.contentContainer}>
         {profiles.length > 0 ? (
@@ -237,7 +238,7 @@ const ProfilesConfigScreen = () => {
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              {i18n.t(
+              {t(
                 currentUser
                   ? 'noProfilesConfigured'
                   : 'loginToViewProfiles',
@@ -260,7 +261,7 @@ const ProfilesConfigScreen = () => {
         >
           <Text style={styles.addButtonText}>+</Text>
           <Text style={styles.addButtonText}>
-            {i18n.t('addNew')}
+            {t('addNew')}
           </Text>
         </TouchableOpacity>
       </View>

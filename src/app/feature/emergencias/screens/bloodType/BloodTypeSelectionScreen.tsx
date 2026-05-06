@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,8 +16,6 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
-import i18n from "@/src/app/i18n";
-
 type BloodTypeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
   "BloodTypeSelection"
@@ -29,6 +28,7 @@ type BloodTypeSelectionScreenNavigationProp = StackNavigationProp<
 const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const BloodTypeSelectionScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<BloodTypeSelectionScreenNavigationProp>();
   const route = useRoute<BloodTypeSelectionScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -108,11 +108,11 @@ const BloodTypeSelectionScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('bloodType')} />
+      <ScreenTitle text={t('bloodType')} />
 
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('yourBloodType')}
+          {t('yourBloodType')}
         </Text>
 
         <TouchableOpacity

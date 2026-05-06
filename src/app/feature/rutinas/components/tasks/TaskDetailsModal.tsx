@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ export const TaskDetailsModal = ({
   onEditTask,
   onDeleteTask,
 }: TaskDetailsModalProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -181,7 +182,7 @@ export const TaskDetailsModal = ({
           <CustomText style={styles.taskDetailsTitle}>{task.titulo}</CustomText>
           {/* Información de fecha y hora planificada para la tarea. */}
           <CustomText style={styles.taskDateDetailsText}>
-            {i18n.t('dateAndHour', { date: task.diaRutina, hour: task.horarioDesde })}
+            {t('dateAndHour', { date: task.diaRutina, hour: task.horarioDesde })}
           </CustomText>
 
           <View style={styles.stepsContainer}>
@@ -214,8 +215,8 @@ export const TaskDetailsModal = ({
           >
             <CustomText style={styles.startTaskButtonText}>
               {isTaskCompleted
-                ? i18n.t('taskCompleted')
-                : i18n.t('startTask')}
+                ? t('taskCompleted')
+                : t('startTask')}
             </CustomText>
           </TouchableOpacity>
         </View>

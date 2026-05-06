@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -13,7 +14,6 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
-import i18n from "@/src/app/i18n";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useAddressForm } from "../../hooks/useAddressForm";
@@ -26,6 +26,7 @@ type AddAddressScreenNavigationProp = StackNavigationProp<
 >;
 
 const AddAddressScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AddAddressScreenNavigationProp>();
   const route = useRoute<AddAddressScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -67,15 +68,15 @@ const AddAddressScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('addAddress')} />
+      <ScreenTitle text={t('addAddress')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('whatIsYourAddress')}
+          {t('whatIsYourAddress')}
         </Text>
 
         <ThemedTextInput
-          placeholder={i18n.t('writeYourAddress')}
+          placeholder={t('writeYourAddress')}
           value={address}
           onChangeText={setAddress}
           multiline

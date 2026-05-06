@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
@@ -22,7 +23,6 @@ import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
 import { COUNTRY_CODES } from "../../services/phoneParser";
-import i18n from "@/src/app/i18n";
 
 type EmergencyContactScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -34,6 +34,7 @@ type EmergencyContactScreenNavigationProp = StackNavigationProp<
 >;
 
 const EmergencyContactScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EmergencyContactScreenNavigationProp>();
   const route = useRoute<EmergencyContactScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -169,8 +170,8 @@ const EmergencyContactScreen = () => {
   const handleSave = () => {
     if (contactName.trim() === "") {
       logAndShowError(
-        i18n.t('pleaseEnterContactName'),
-        new Error(i18n.t('pleaseEnterContactName')),
+        t('pleaseEnterContactName'),
+        new Error(t('pleaseEnterContactName')),
         {
           context: "emergency_contact_name_empty",
           metadata: { contact_name_length: contactName.length },
@@ -181,8 +182,8 @@ const EmergencyContactScreen = () => {
 
     if (phoneNumber.trim() === "") {
       logAndShowError(
-        i18n.t('pleaseEnterPhoneNumber'),
-        new Error(i18n.t('pleaseEnterPhoneNumber')),
+        t('pleaseEnterPhoneNumber'),
+        new Error(t('pleaseEnterPhoneNumber')),
         {
           context: "emergency_contact_phone_empty",
           metadata: {
@@ -221,16 +222,16 @@ const EmergencyContactScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('emergencyContact')} />
+      <ScreenTitle text={t('emergencyContact')} />
 
       <ScrollView style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('contactName')}
+            {t('contactName')}
           </Text>
 
           <ThemedTextInput
-            placeholder={i18n.t('fullName')}
+            placeholder={t('fullName')}
             value={contactName}
             onChangeText={setContactName}
           />
@@ -238,7 +239,7 @@ const EmergencyContactScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {i18n.t('phoneNumber')}
+            {t('phoneNumber')}
           </Text>
 
           <View style={styles.phoneContainer}>
@@ -256,7 +257,7 @@ const EmergencyContactScreen = () => {
             </TouchableOpacity>
 
             <ThemedTextInput
-              placeholder={i18n.t('number')}
+              placeholder={t('number')}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
               style={styles.phoneInput}
@@ -293,7 +294,7 @@ const EmergencyContactScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
+        title={t('error')}
         message={errorMessage}
         onClose={closeErrorModal}
       />

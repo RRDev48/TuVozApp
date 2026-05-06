@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -9,7 +10,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
-import i18n from "@/src/app/i18n";
 
 type MedicationsScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -21,6 +21,7 @@ type MedicationsScreenNavigationProp = StackNavigationProp<
 >;
 
 const MedicationsScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<MedicationsScreenNavigationProp>();
   const route = useRoute<MedicationsScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -90,16 +91,16 @@ const MedicationsScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('medications')} />
+      <ScreenTitle text={t('medications')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('takeMedication')}
+          {t('takeMedication')}
         </Text>
 
         <AddButton
           onPress={handleAddMedication}
-          text={i18n.t('addNew')}
+          text={t('addNew')}
         />
 
         {medications.map((medication, index) => {

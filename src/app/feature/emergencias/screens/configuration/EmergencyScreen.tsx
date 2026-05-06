@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -22,8 +23,6 @@ import {
     DEFAULT_EMERGENCY_FORM_DATA,
     EmergencyFormData,
 } from "../../models/emergency.types";
-import i18n from "@/src/app/i18n";
-
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
   "Emergencias"
@@ -32,6 +31,7 @@ type EmergencyScreenNavigationProp = StackNavigationProp<
 type EmergencyScreenRouteProp = RouteProp<RootStackParamsList, "Emergencias">;
 
 const EmergencyScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EmergencyScreenNavigationProp>();
   const route = useRoute<EmergencyScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -184,7 +184,7 @@ const EmergencyScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('emergenciesTitle')} />
+      <ScreenTitle text={t('emergenciesTitle')} />
 
       <ScrollView
         style={styles.container}
@@ -194,7 +194,7 @@ const EmergencyScreen = () => {
           icon={
             <Ionicons name="person" size={26} color={themedColors.background} />
           }
-          label={i18n.t('fullName')}
+          label={t('fullName')}
           value={profileFullName}
           showArrow={false}
         />
@@ -203,7 +203,7 @@ const EmergencyScreen = () => {
           icon={
             <Ionicons name="water" size={26} color={themedColors.background} />
           }
-          label={i18n.t('bloodType')}
+          label={t('bloodType')}
           value={formData.blood_type || ""}
           onPress={handleBloodTypeEdit}
         />
@@ -216,7 +216,7 @@ const EmergencyScreen = () => {
               color={themedColors.background}
             />
           }
-          label={i18n.t('allergies')}
+          label={t('allergies')}
           value={formData.allergies || ""}
           onPress={handleAllergiesEdit}
         />
@@ -229,7 +229,7 @@ const EmergencyScreen = () => {
               color={themedColors.background}
             />
           }
-          label={i18n.t('medications')}
+          label={t('medications')}
           value={formData.medications || ""}
           onPress={handleMedicationsEdit}
         />
@@ -238,7 +238,7 @@ const EmergencyScreen = () => {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
           <Text style={styles.cancelButtonText}>
-            {i18n.t('cancel')}
+            {t('cancel')}
           </Text>
         </TouchableOpacity>
 
@@ -247,7 +247,7 @@ const EmergencyScreen = () => {
           onPress={() => navigation.navigate("EmergenciasParte2", { formData })}
         >
           <Text style={styles.nextButtonText}>
-            {i18n.t('next')}
+            {t('next')}
           </Text>
         </TouchableOpacity>
       </View>

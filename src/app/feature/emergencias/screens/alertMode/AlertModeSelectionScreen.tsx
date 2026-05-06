@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,7 +17,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import { EmergencyAlertType } from "../../models/emergency.types";
-import i18n from "@/src/app/i18n";
 
 type AlertModeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -36,6 +36,7 @@ const ALERT_MODES = [
 }>;
 
 const AlertModeSelectionScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
   const route = useRoute<AlertModeSelectionScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -106,11 +107,11 @@ const AlertModeSelectionScreen = () => {
 
   const getAlertModeLabel = (value: EmergencyAlertType): string => {
     const mode = ALERT_MODES.find((m) => m.value === value);
-    return mode ? i18n.t(mode.labelKey) : value;
+    return mode ? t(mode.labelKey) : value;
   };
 
   const getAlertModeLabelForDropdown = (labelKey: string): string => {
-    return i18n.t(labelKey);
+    return t(labelKey);
   };
 
   return (
@@ -123,11 +124,11 @@ const AlertModeSelectionScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('alertModeTitle')} />
+      <ScreenTitle text={t('alertModeTitle')} />
 
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('howActivateAlert')}
+          {t('howActivateAlert')}
         </Text>
 
         <TouchableOpacity

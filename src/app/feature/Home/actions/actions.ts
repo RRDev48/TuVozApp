@@ -1,6 +1,6 @@
-import i18n from "@/src/app/i18n";
+type TranslateFunction = (key: string) => string;
 
-const getGreeting = (name?: string | null): string => {
+const getGreeting = (name?: string | null, t?: TranslateFunction): string => {
   const hour: number = new Date().getHours();
   const userName = name ? ` ${name}` : "";
 
@@ -13,7 +13,12 @@ const getGreeting = (name?: string | null): string => {
     greetingKey = 'goodEvening';
   }
 
-  return `${i18n.t(greetingKey)}${userName}!`;
+  const translate = t || ((key: string) => {
+    const { i18n } = require("@/src/app/i18n");
+    return i18n.t(key);
+  });
+
+  return `${translate(greetingKey)}${userName}!`;
 };
 
 export default getGreeting;

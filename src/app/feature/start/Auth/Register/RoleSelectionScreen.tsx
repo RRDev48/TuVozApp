@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import {
   useNavigation,
@@ -26,6 +26,7 @@ type RoleSelectionScreenNavigationProp = StackNavigationProp<
 >;
 
 const RoleSelectionScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<RoleSelectionScreenNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamsList, "RoleSelection">>();
 
@@ -60,7 +61,7 @@ const RoleSelectionScreen = () => {
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>{i18n.t('whatRoleDoYouHave')}</Text>
+      <Text style={styles.title}>{t('whatRoleDoYouHave')}</Text>
 
       {/* Opciones de rol */}
       <View style={styles.rolesContainer}>
@@ -90,7 +91,7 @@ const RoleSelectionScreen = () => {
           activeOpacity={0.8}
           disabled={!isRoleSelected}
         >
-          <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
+          <Text style={styles.continueButtonText}>{t('continueButton')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

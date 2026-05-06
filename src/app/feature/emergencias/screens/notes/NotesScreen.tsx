@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -15,7 +16,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
-import i18n from "@/src/app/i18n";
 
 type NotesScreenRouteProp = RouteProp<RootStackParamsList, "NotesSelection">;
 type NotesScreenNavigationProp = StackNavigationProp<
@@ -24,6 +24,7 @@ type NotesScreenNavigationProp = StackNavigationProp<
 >;
 
 const NotesScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<NotesScreenNavigationProp>();
   const route = useRoute<NotesScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -69,15 +70,15 @@ const NotesScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('notes')} />
+      <ScreenTitle text={t('notes')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('additionalInformation')}
+          {t('additionalInformation')}
         </Text>
 
         <ThemedTextInput
-          placeholder={i18n.t('writeNotes')}
+          placeholder={t('writeNotes')}
           value={notes}
           onChangeText={setNotes}
           multiline

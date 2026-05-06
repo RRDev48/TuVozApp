@@ -1,5 +1,6 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage";
 import CustomText from "@/src/app/feature/common/CustomText";
@@ -37,12 +38,12 @@ import MenuItem from "../../common/menu/MenuItem";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
 import { speakWithQueue } from "../services/speechQueue.Service";
 import { pictogramCacheService } from "../services/pictogramCache.Service";
-import i18n from "@/src/app/i18n";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
 
 const ExpresateScreen = () => {
+  const { t } = useLanguageRefresh();
   const { transformText, getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
@@ -469,7 +470,7 @@ const ExpresateScreen = () => {
           <ZenithXAnimado width={180} height={180} />
            <CustomText style={errorScreenStyles.errorText}>
              {transformText(
-               error || i18n.t('somethingWentWrong'),
+               error || t('somethingWentWrong'),
              )}
            </CustomText>
         </View>
@@ -482,7 +483,7 @@ const ExpresateScreen = () => {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-         <ScreenTitle text={transformText(i18n.t('expressWithCards'))} />
+         <ScreenTitle text={transformText(t('expressWithCards'))} />
         <View
           style={{
             flex: 1,
@@ -490,7 +491,7 @@ const ExpresateScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText(i18n.t('loadingCategories'))}</CustomText>
+          <CustomText>{transformText(t('loadingCategories'))}</CustomText>
         </View>
       </View>
     );
@@ -508,7 +509,7 @@ const ExpresateScreen = () => {
       ]}
     >
       <BackButton onPress={handleGoBack} />
-      <ScreenTitle text={transformText(i18n.t('expressWithCards'))} />
+      <ScreenTitle text={transformText(t('expressWithCards'))} />
 
       {isSearchMode && isSearching ? (
         <View
@@ -518,7 +519,7 @@ const ExpresateScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText(i18n.t('searchingPictograms'))}</CustomText>
+          <CustomText>{transformText(t('searchingPictograms'))}</CustomText>
         </View>
       ) : isSearchMode && (searchError || searchResults.length === 0) ? (
         <View
@@ -529,7 +530,7 @@ const ExpresateScreen = () => {
           }}
         >
           <CustomText>
-            {transformText(searchError || i18n.t('noPictogramsFound'))}
+            {transformText(searchError || t('noPictogramsFound'))}
           </CustomText>
         </View>
       ) : (
@@ -552,7 +553,7 @@ const ExpresateScreen = () => {
           />
           <TextInput
             style={containerStyles.searchInput}
-            placeholder={transformText(i18n.t('searchPictogram'))}
+            placeholder={transformText(t('searchPictogram'))}
             placeholderTextColor={themedColors.secondary}
             value={searchQuery}
             onChangeText={setSearchQuery}

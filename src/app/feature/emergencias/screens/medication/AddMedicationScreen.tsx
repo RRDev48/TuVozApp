@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -24,7 +25,6 @@ import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
 } from "../../hooks/useMedicationForm";
-import i18n from "@/src/app/i18n";
 
 type AddMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -36,6 +36,7 @@ type AddMedicationScreenNavigationProp = StackNavigationProp<
 >;
 
 const AddMedicationScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AddMedicationScreenNavigationProp>();
   const route = useRoute<AddMedicationScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -116,16 +117,16 @@ const AddMedicationScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('addMedication')} />
+      <ScreenTitle text={t('addMedication')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('whatMedicationTake')}
+            {t('whatMedicationTake')}
           </Text>
 
           <ThemedTextInput
-            placeholder={i18n.t('medicationName')}
+            placeholder={t('medicationName')}
             value={medicationName}
             onChangeText={setMedicationName}
           />
@@ -133,7 +134,7 @@ const AddMedicationScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {i18n.t('howOften')}
+            {t('howOften')}
           </Text>
 
           <TouchableOpacity
@@ -162,8 +163,8 @@ const AddMedicationScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
-        message={i18n.t('pleaseEnterMedicationName')}
+        title={t('error')}
+        message={t('pleaseEnterMedicationName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

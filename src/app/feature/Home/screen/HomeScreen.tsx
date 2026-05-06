@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -21,6 +22,7 @@ import { HomeMenuItem, HomeRouteName } from "../models/userData.types";
 const ADIP_ICON = require("@/src/app/assets/image/adip_icon.png");
 
 const HomeScreen = () => {
+  const { t } = useLanguageRefresh();
   const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
   const { isAuthenticated } = useAuthentication();
   const filteredMenuItems = useHomeMenu(isAuthenticated);
@@ -144,7 +146,7 @@ const HomeScreen = () => {
           />
         )}
         {isLoadingUser && <View style={styles.userIcon} />}
-        <Text style={styles.greetingText}>{getGreeting(userName)}</Text>
+        <Text style={styles.greetingText}>{getGreeting(userName, t)}</Text>
       </View>
 
       <FlatList

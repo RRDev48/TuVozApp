@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { useUserData } from "@/src/app/feature/Home/hooks/useUserData";
@@ -7,10 +8,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
-import i18n from "@/src/app/i18n";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import Translate from "../../../common/Translate";
 import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import {
@@ -20,9 +21,9 @@ import {
 
 const ADIP_ICON = require("../../../../assets/image/adip_icon.png");
 const SettingsScreen = () => {
+  const { t } = useLanguageRefresh();
   const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
-  const { getThemedColors, reloadLocalPreferences } =
-    usePersonalization();
+  const { getThemedColors, reloadLocalPreferences } = usePersonalization();
   const themedColors = getThemedColors();
   const { currentUser, isLoading } = useCurrentUser();
   const buttons = useSettingsButtons(currentUser, isLoading);
@@ -155,10 +156,10 @@ const SettingsScreen = () => {
         </View>
         <View style={styles.buttonTextContainer}>
           <CustomText style={styles.buttonTitle}>
-            {i18n.t(button.titleKey)}
+            <Translate>{button.titleKey}</Translate>
           </CustomText>
           <CustomText style={styles.buttonSubtitle}>
-            {i18n.t(button.subtitleKey)}
+            <Translate>{button.subtitleKey}</Translate>
           </CustomText>
         </View>
         <Ionicons
@@ -176,7 +177,7 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={i18n.t('settingsTitle')} />
+      <ScreenTitle text={t("settingsTitle")} />
 
       {/* Avatar y saludo del usuario */}
       <View style={styles.userInfoContainer}>
@@ -192,7 +193,9 @@ const SettingsScreen = () => {
           </View>
         </View>
         <CustomText style={styles.greetingText}>
-          {userName ? i18n.t('greetingWithName', { name: userName }) : i18n.t('greetingFallback')}
+          {userName
+            ? t("greetingWithName", { name: userName })
+            : t("greetingFallback")}
         </CustomText>
       </View>
 
@@ -202,9 +205,7 @@ const SettingsScreen = () => {
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>
-          {i18n.t('logout')}
-        </Text>
+        <Text style={styles.logoutButtonText}>{t("logout")}</Text>
       </TouchableOpacity>
     </View>
   );

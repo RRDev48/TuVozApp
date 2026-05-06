@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
@@ -14,7 +15,6 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import i18n from "@/src/app/i18n";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
@@ -29,6 +29,7 @@ type EditAddressScreenNavigationProp = StackNavigationProp<
 >;
 
 const EditAddressScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EditAddressScreenNavigationProp>();
   const route = useRoute<EditAddressScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -98,15 +99,15 @@ const EditAddressScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('editAddress')} />
+      <ScreenTitle text={t('editAddress')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('whatIsYourAddress')}
+          {t('whatIsYourAddress')}
         </Text>
 
         <ThemedTextInput
-          placeholder={i18n.t('writeYourAddress')}
+          placeholder={t('writeYourAddress')}
           value={address}
           onChangeText={setAddress}
           multiline
@@ -118,7 +119,7 @@ const EditAddressScreen = () => {
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>
-          {i18n.t('deleteAddress')}
+          {t('deleteAddress')}
         </Text>
       </TouchableOpacity>
 

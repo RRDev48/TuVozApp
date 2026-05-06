@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
@@ -22,6 +22,7 @@ const ConfirmationModal = ({
   showDelay = 0,
   confirmDelay = 0,
 }: ConfirmationModalProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [showModal, setShowModal] = useState(false);
@@ -131,13 +132,13 @@ const ConfirmationModal = ({
             onPress={handleConfirm}
           >
             <Text style={styles.confirmButtonText}>
-              {confirmText ? confirmText : i18n.t('yes')}
+              {confirmText ? confirmText : t('yes')}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
             <Text style={styles.cancelButtonText}>
-              {cancelText ? cancelText : i18n.t('no')}
+              {cancelText ? cancelText : t('no')}
             </Text>
           </TouchableOpacity>
         </View>

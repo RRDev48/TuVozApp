@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,6 +32,7 @@ export const PendingTasksModal = ({
   total,
   percent,
 }: PendingTasksModalProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const { categories } = useCategories(visible);
@@ -256,7 +257,7 @@ export const PendingTasksModal = ({
               color={themedColors.secondary}
             />
             <CustomText style={styles.taskSteps}>
-              {item.pasos?.length || 0} {i18n.t('stepsAbbrev')}
+              {item.pasos?.length || 0} {t('stepsAbbrev')}
             </CustomText>
           </View>
           <View
@@ -296,7 +297,7 @@ export const PendingTasksModal = ({
           {/* Encabezado con progreso */}
           <View style={styles.header}>
             <CustomText style={styles.title}>
-              {i18n.t('routineProgress')}
+              {t('routineProgress')}
             </CustomText>
 
             {/* Círculo de progreso */}
@@ -311,12 +312,12 @@ export const PendingTasksModal = ({
             </View>
 
             <CustomText style={styles.completedText}>
-              {i18n.t('completedTasks')} {completed}{" "}
-              {i18n.t('of')} {total}
+              {t('completedTasks')} {completed}{" "}
+              {t('of')} {total}
             </CustomText>
             {completed > 0 && (
               <CustomText style={styles.encouragementText}>
-                {i18n.t('keepItUp')}
+                {t('keepItUp')}
               </CustomText>
             )}
           </View>
@@ -324,7 +325,7 @@ export const PendingTasksModal = ({
           {/* Lista de tareas pendientes */}
           <View style={styles.tasksSection}>
             <CustomText style={styles.sectionTitle}>
-              {i18n.t('pendingTasks')} ({pendingTasks.length})
+              {t('pendingTasks')} ({pendingTasks.length})
             </CustomText>
             {pendingTasks.length > 0 ? (
               <FlatList
@@ -345,7 +346,7 @@ export const PendingTasksModal = ({
                   color={themedColors.primary}
                 />
                 <CustomText style={styles.emptyText}>
-                  {i18n.t('allTasksCompleted')}
+                  {t('allTasksCompleted')}
                 </CustomText>
               </View>
             )}

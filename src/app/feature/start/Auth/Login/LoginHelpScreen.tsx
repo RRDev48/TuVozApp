@@ -1,6 +1,6 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "@/src/app/assets/image/tuvoz.svg";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
@@ -21,28 +21,29 @@ type LoginHelpNavigationProp = StackNavigationProp<
 >;
 
 const LoginHelpScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<LoginHelpNavigationProp>();
 
   const steps = [
     {
-      title: i18n.t("verifyEmailStep"),
-      text: i18n.t("verifyEmailStepText"),
+      title: t("verifyEmailStep"),
+      text: t("verifyEmailStepText"),
     },
     {
-      title: i18n.t("checkPasswordStep"),
-      text: i18n.t("checkPasswordStepText"),
+      title: t("checkPasswordStep"),
+      text: t("checkPasswordStepText"),
     },
     {
-      title: i18n.t("recoverAccessStep"),
-      text: i18n.t("recoverAccessStepText"),
+      title: t("recoverAccessStep"),
+      text: t("recoverAccessStepText"),
     },
     {
-      title: i18n.t("confirmConnectionStep"),
-      text: i18n.t("confirmConnectionStepText"),
+      title: t("confirmConnectionStep"),
+      text: t("confirmConnectionStepText"),
     },
     {
-      title: i18n.t("contactSupportStep"),
-      text: i18n.t("contactSupportStepText"),
+      title: t("contactSupportStep"),
+      text: t("contactSupportStepText"),
     },
   ];
 
@@ -61,9 +62,9 @@ const LoginHelpScreen = () => {
       </View>
 
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>{i18n.t("loginHelpTitle")}</Text>
+        <Text style={styles.title}>{t("loginHelpTitle")}</Text>
         <Text style={styles.subtitle}>
-          {i18n.t("loginHelpSubtitle")}
+          {t("loginHelpSubtitle")}
         </Text>
       </View>
 
@@ -81,13 +82,13 @@ const LoginHelpScreen = () => {
               <Text style={styles.sectionTitle}>{step.title}</Text>
             </View>
             <Text style={styles.paragraph}>{step.text}</Text>
-            {step.title === i18n.t("contactSupportStep") ? (
+            {step.title === t("contactSupportStep") ? (
               <TouchableOpacity
                 onPress={() => navigation.navigate("LoginSupportTicket")}
                 activeOpacity={0.75}
                 style={styles.supportButton}
               >
-                <Text style={styles.supportButtonText}>{i18n.t("createTicketNow")}</Text>
+                <Text style={styles.supportButtonText}>{t("createTicketNow")}</Text>
               </TouchableOpacity>
             ) : null}
             {index < steps.length - 1 ? (
@@ -103,7 +104,7 @@ const LoginHelpScreen = () => {
           activeOpacity={0.85}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.buttonText}>{i18n.t("backButton")}</Text>
+          <Text style={styles.buttonText}>{t("backButton")}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

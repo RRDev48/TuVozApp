@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage";
 import CustomText from "@/src/app/feature/common/CustomText";
@@ -30,13 +31,13 @@ import {
   ViewToken,
 } from "react-native";
 import { useFrasesPhrase } from "../hooks/useFrasesPhrase";
-import i18n from "@/src/app/i18n";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = Math.min(width - 80, 320);
 const MAX_VISIBLE_PAGINATION_DOTS = 7;
 
 const ShortcutScreen = () => {
+  const { t } = useLanguageRefresh();
   const { transformText, getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
@@ -482,13 +483,13 @@ const ShortcutScreen = () => {
   return (
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
-      <ScreenTitle text={i18n.t('phrases')} />
+      <ScreenTitle text={t('phrases')} />
 
       {/* Barra de pictogramas seleccionados */}
       <View style={styles.phraseBar}>
         {selectedPictograms.length === 0 && (
           <CustomText style={styles.phraseHintText}>
-            {i18n.t('selectPictogramHint')}
+            {t('selectPictogramHint')}
           </CustomText>
         )}
         <ScrollView
@@ -566,7 +567,7 @@ const ShortcutScreen = () => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder={i18n.t('filter')}
+            placeholder={t('filter')}
             placeholderTextColor={themedColors.secondary}
             value={searchQuery}
             onChangeText={(text) => {
@@ -605,7 +606,7 @@ const ShortcutScreen = () => {
               color={themedColors.primary}
             />
             <CustomText style={styles.breadcrumbText}>
-              {i18n.t('categories')}
+              {t('categories')}
             </CustomText>
           </TouchableOpacity>
           <CustomText style={styles.breadcrumbSeparator}>/</CustomText>
@@ -621,13 +622,13 @@ const ShortcutScreen = () => {
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <CustomText>{i18n.t('loadingCategories')}</CustomText>
+            <CustomText>{t('loadingCategories')}</CustomText>
           </View>
         ) : isSearchMode && isSearching ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <CustomText>{i18n.t('searchingPictograms')}</CustomText>
+            <CustomText>{t('searchingPictograms')}</CustomText>
           </View>
         ) : (
           <FlatList

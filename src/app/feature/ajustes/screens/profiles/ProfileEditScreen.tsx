@@ -1,10 +1,10 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
-import i18n from "@/src/app/i18n";
 import {
   Image,
   KeyboardAvoidingView,
@@ -30,6 +30,7 @@ type ProfileEditScreenNavigationProp = StackNavigationProp<
 >;
 
 const ProfileEditScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<ProfileEditScreenNavigationProp>();
   const route = useRoute<ProfileEditScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -189,7 +190,7 @@ const ProfileEditScreen = () => {
       <BackButton onPress={() => navigation.goBack()} />
 
       <View style={styles.headerContainer}>
-        <ScreenTitle text={i18n.t('editingProfile')} />
+        <ScreenTitle text={t('editingProfile')} />
       </View>
 
       <View style={styles.contentContainer}>
@@ -210,19 +211,19 @@ const ProfileEditScreen = () => {
             activeOpacity={0.8}
           >
             <Text style={styles.avatarButtonText}>
-              {i18n.t(isPickingImage ? 'loadingImage' : 'changeAvatar')}
+              {t(isPickingImage ? 'loadingImage' : 'changeAvatar')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <Text style={styles.fieldLabel}>
-          {i18n.t('fullName')}
+          {t('fullName')}
         </Text>
         <TextInput
           style={styles.input}
           value={fullName}
           onChangeText={setFullName}
-          placeholder={i18n.t('enterName')}
+          placeholder={t('enterName')}
           placeholderTextColor={`${themedColors.background}80`}
         />
       </View>
@@ -236,7 +237,7 @@ const ProfileEditScreen = () => {
           disabled={isSaving || isDeleting}
         >
           <Text style={styles.continueButtonText}>
-            {i18n.t(isSaving ? 'saving' : 'continueButton')}
+            {t(isSaving ? 'saving' : 'continueButton')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -248,13 +249,13 @@ const ProfileEditScreen = () => {
         disabled={isSaving || isDeleting}
       >
         <Text style={styles.deleteButtonText}>
-          {i18n.t(isDeleting ? 'deleting' : 'deleteProfile')}
+          {t(isDeleting ? 'deleting' : 'deleteProfile')}
         </Text>
       </TouchableOpacity>
 
       <ErrorModal
         visible={showEditError || showDeleteError}
-        title={i18n.t('errorTitle')}
+        title={t('errorTitle')}
         message={editErrorMessage || deleteErrorMessage}
         onClose={() => {
           closeEditError();
@@ -264,16 +265,16 @@ const ProfileEditScreen = () => {
 
       <SuccessModal
         visible={showSuccess}
-        title={i18n.t('successTitle')}
-        message={i18n.t('profileUpdated')}
+        title={t('successTitle')}
+        message={t('profileUpdated')}
         onClose={closeSuccess}
       />
 
       <ConfirmationModal
         visible={showConfirmDelete}
-        title={i18n.t('confirmDeleteProfile')}
-        confirmText={i18n.t('deleteButton')}
-        cancelText={i18n.t('cancelButton')}
+        title={t('confirmDeleteProfile')}
+        confirmText={t('deleteButton')}
+        cancelText={t('cancelButton')}
         onConfirm={handleDelete}
         onCancel={cancelDelete}
       />

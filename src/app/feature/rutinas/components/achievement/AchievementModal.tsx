@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,6 +24,7 @@ export const AchievementModal = ({
   onClose,
   autoCloseDelay = 3000,
 }: AchievementModalProps) => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
 
   useAutoClose(visible, onClose, autoCloseDelay);
@@ -106,7 +107,7 @@ export const AchievementModal = ({
         <View style={styles.container}>
           {/* Título principal del modal de logro */}
           <CustomText style={styles.title}>
-            {i18n.t('newAchievement')}
+            {t('newAchievement')}
           </CustomText>
 
           {/* Icono representativo del logro alcanzado */}
@@ -119,7 +120,7 @@ export const AchievementModal = ({
 
           {/* Mensaje motivacional que refuerza el logro alcanzado */}
           <CustomText style={styles.message}>
-            {i18n.t('congratulationsMessage')}
+            {t('congratulationsMessage')}
           </CustomText>
 
           {/* Botón de acción principal: cierra el modal y navega a LogrosScreen */}
@@ -131,7 +132,7 @@ export const AchievementModal = ({
             }}
           >
             <CustomText style={styles.buttonText}>
-              {i18n.t('viewAllAchievements')}
+              {t('viewAllAchievements')}
             </CustomText>
           </TouchableOpacity>
         </View>

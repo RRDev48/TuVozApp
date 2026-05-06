@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,6 +36,7 @@ type LoginScreenNavigationProp = StackNavigationProp<
 >;
 
 const LoginScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,8 +75,8 @@ const LoginScreen = () => {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail || !password.trim()) {
-      if (!normalizedEmail) setEmailError(i18n.t('enterYourEmail'));
-      if (!password.trim()) setPasswordError(i18n.t('enterYourPassword'));
+      if (!normalizedEmail) setEmailError(t('enterYourEmail'));
+      if (!password.trim()) setPasswordError(t('enterYourPassword'));
       return;
     }
 
@@ -87,12 +88,12 @@ const LoginScreen = () => {
       if (response.success) {
         navigation.navigate("Home");
       } else {
-        setEmailError(i18n.t('incorrectCredentials'));
-        setPasswordError(i18n.t('incorrectCredentials'));
+        setEmailError(t('incorrectCredentials'));
+        setPasswordError(t('incorrectCredentials'));
 
         await logAndShowError(
-          response.error || i18n.t('incorrectCredentials'),
-          new Error(response.error || i18n.t('incorrectCredentials')),
+          response.error || t('incorrectCredentials'),
+          new Error(response.error || t('incorrectCredentials')),
           {
             context: "login_failed",
             metadata: { email: normalizedEmail },
@@ -101,7 +102,7 @@ const LoginScreen = () => {
         );
       }
     } catch (error: unknown) {
-      const message = getErrorMessage(error, i18n.t('loginError'));
+      const message = getErrorMessage(error, t('loginError'));
 
       setEmailError(message);
       setPasswordError(message);
@@ -159,19 +160,19 @@ const LoginScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          {i18n.t('loginTitle')}
+          {t('loginTitle')}
         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t('emailLabel')}</Text>
+            <Text style={styles.label}>{t('emailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder={i18n.t('emailField')}
+                  placeholder={t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={email}
                   onChangeText={(text) => {
@@ -197,12 +198,12 @@ const LoginScreen = () => {
 
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t('passwordLabelLogin')}</Text>
+            <Text style={styles.label}>{t('passwordLabelLogin')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder={i18n.t('passwordLabel')}
+                  placeholder={t('passwordLabel')}
                   placeholderTextColor={colors.gray}
                   value={password}
                   onChangeText={(text) => {
@@ -237,7 +238,7 @@ const LoginScreen = () => {
             activeOpacity={0.7}
           >
             <Text style={styles.forgotPasswordText}>
-              {i18n.t('forgotPasswordLink')}
+              {t('forgotPasswordLink')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -256,22 +257,22 @@ const LoginScreen = () => {
             disabled={isLoading}
           >
             <Text style={styles.continueButtonText}>
-              {isLoading ? i18n.t('loggingIn') : i18n.t('continueButton')}
+              {isLoading ? t('loggingIn') : t('continueButton')}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Ayuda */}
         <View style={styles.helpContainer}>
-          <Text style={styles.helpText}>{i18n.t('helpText')} </Text>
+          <Text style={styles.helpText}>{t('helpText')} </Text>
           <TouchableOpacity onPress={handleHelp} activeOpacity={0.7}>
-            <Text style={styles.helpLink}>{i18n.t('help')}</Text>
+            <Text style={styles.helpLink}>{t('help')}</Text>
           </TouchableOpacity>
         </View>
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title={i18n.t('errorTitle')}
+          title={t('errorTitle')}
           message={errorMessage}
           onClose={closeErrorModal}
         />

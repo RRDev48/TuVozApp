@@ -4,7 +4,8 @@ import { colors } from "../design-system/themes/globalColors-theme";
 import { useCurrentUserProfile } from "../feature/ajustes/hooks/useCurrentUserProfile";
 import { useProfileSettings } from "../feature/ajustes/hooks/useProfileSettings";
 import { ProfileSettingsService } from "../feature/ajustes/services/profileSettings.Service";
-import { PersonalizationContextType } from "./models/personalization.types";
+import { Language, PersonalizationContextType } from "./models/personalization.types";
+import { changeLanguage } from "../i18n";
 
 const PersonalizationContext = createContext<
   PersonalizationContextType | undefined
@@ -13,6 +14,7 @@ const PersonalizationContext = createContext<
 const STORAGE_KEYS = {
   SOLO_MAYUSCULAS: "@personalization_soloMayusculas",
   TEMA_OSCURO: "@personalization_temaOscuro",
+  IDIOMA: "@personalization_idioma",
 };
 
 const PersonalizationProvider = ({
@@ -40,6 +42,9 @@ const PersonalizationProvider = ({
 
   const [localSoloMayusculas, setLocalSoloMayusculasState] = useState(false);
   const [localTemaOscuro, setLocalTemaOscuroState] = useState(false);
+  const [localIdioma, setLocalIdiomaState] = useState<Language>("es");
+  const [idiomaCargando, setIdiomaCargando] = useState(false);
+  const [languageRefresh, setLanguageRefresh] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -52,9 +57,10 @@ const PersonalizationProvider = ({
 
   const loadLocalPreferences = async () => {
     try {
-      const [mayusculas, temaOscuroValue] = await Promise.all([
+      const [mayusculas, temaOscuroValue, idiomaValue] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.SOLO_MAYUSCULAS),
         AsyncStorage.getItem(STORAGE_KEYS.TEMA_OSCURO),
+        AsyncStorage.getItem(STORAGE_KEYS.IDIOMA),
       ]);
 
       if (mayusculas !== null)
@@ -64,6 +70,15 @@ const PersonalizationProvider = ({
       if (temaOscuroValue !== null)
         setLocalTemaOscuroState(JSON.parse(temaOscuroValue));
       else setLocalTemaOscuroState(false);
+
+      if (idiomaValue !== null) {
+        const parsedIdioma = JSON.parse(idiomaValue) as Language;
+        setLocalIdiomaState(parsedIdioma);
+        await changeLanguage(parsedIdioma);
+      } else {
+        setLocalIdiomaState("es");
+        await changeLanguage("es");
+      }
     } catch (error) {
     } finally {
       setLoaded(true);
@@ -113,6 +128,20 @@ const PersonalizationProvider = ({
     } catch (error) {}
   };
 
+  const setIdioma = async (value: Language) => {
+    try {
+      setIdiomaCargando(true);
+      await AsyncStorage.setItem(STORAGE_KEYS.IDIOMA, JSON.stringify(value));
+      setLocalIdiomaState(value);
+      await changeLanguage(value);
+      setLanguageRefresh((prev) => prev + 1);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+    } catch (error) {
+    } finally {
+      setIdiomaCargando(false);
+    }
+  };
+
   const setSoloMayusculas = hasProfile
     ? (value: boolean) => {
         return setSoloMayusculasAuthenticated(value);
@@ -134,6 +163,8 @@ const PersonalizationProvider = ({
     : localSoloMayusculas;
 
   const temaOscuro = hasProfile ? getThemeForApp() : localTemaOscuro;
+
+  const idioma = localIdioma;
 
   const resetToDefaults = async () => {
     if (hasProfile) {
@@ -179,10 +210,14 @@ const PersonalizationProvider = ({
       value={{
         soloMayusculas,
         temaOscuro,
+        idioma,
+        idiomaCargando,
+        languageRefresh,
         isAuthenticated,
         currentUserId: userId,
         setSoloMayusculas,
         setTemaOscuro,
+        setIdioma,
         transformText,
         getThemedColors,
         resetToDefaults,

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { ScreenTitleProps } from "./models/component.props";
 
 const ScreenTitle = ({ text }: ScreenTitleProps) => {
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, languageRefresh } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({

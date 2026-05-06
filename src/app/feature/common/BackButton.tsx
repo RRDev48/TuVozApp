@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,7 +9,9 @@ import { BackButtonProps } from "./models/component.props";
 const BackButton = ({
   onPress,
   disablePersonalization = false,
+  disabled = false,
 }: BackButtonProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -20,6 +22,7 @@ const BackButton = ({
       paddingHorizontal: 20,
       paddingTop: 40,
       paddingBottom: 10,
+      opacity: disabled ? 0.5 : 1,
     },
     backText: {
       fontSize: 16,
@@ -30,17 +33,21 @@ const BackButton = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.backButton}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={styles.backButton}
+      disabled={disabled}
+    >
       <Ionicons
         name="chevron-back"
         size={24}
         color={disablePersonalization ? colors.black : themedColors.text}
       />
       {disablePersonalization ? (
-        <Text style={styles.backText}>{i18n.t('back')}</Text>
+        <Text style={styles.backText}>{t('back')}</Text>
       ) : (
         <CustomText style={styles.backText}>
-          {i18n.t('back')}
+          {t('back')}
         </CustomText>
       )}
     </TouchableOpacity>

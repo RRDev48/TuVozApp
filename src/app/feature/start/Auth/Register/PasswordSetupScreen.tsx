@@ -1,7 +1,7 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -43,6 +43,7 @@ type PasswordSetupScreenRouteProp = RouteProp<
 >;
 
 const PasswordSetupScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<PasswordSetupScreenNavigationProp>();
   const route = useRoute<PasswordSetupScreenRouteProp>();
   const {
@@ -179,19 +180,19 @@ const PasswordSetupScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          {i18n.t("passwordSetupTitle")}
+          {t("passwordSetupTitle")}
         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t("enterPassword")}*</Text>
+            <Text style={styles.label}>{t("enterPassword")}*</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder={i18n.t("min8Characters")}
+                  placeholder={t("min8Characters")}
                   placeholderTextColor={colors.gray}
                   value={password}
                   onChangeText={setPassword}
@@ -217,7 +218,7 @@ const PasswordSetupScreen = () => {
 
           {/* Campo Confirmar Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t("confirmPassword")}*</Text>
+            <Text style={styles.label}>{t("confirmPassword")}*</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
@@ -266,7 +267,7 @@ const PasswordSetupScreen = () => {
             disabled={!isFormValid}
           >
             <Text style={styles.continueButtonText}>
-              {i18n.t("continueButton")}
+              {t("continueButton")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -278,13 +279,13 @@ const PasswordSetupScreen = () => {
           activeOpacity={0.7}
         >
           <Text style={styles.termsText}>
-            {i18n.t("termsAndConditionsLink")}
+            {t("termsAndConditionsLink")}
           </Text>
         </TouchableOpacity>
 
         <ErrorModal
           visible={showErrorModal}
-          title={i18n.t("errorTitle")}
+          title={t("errorTitle")}
           message={errorMessage}
           onClose={closeErrorModal}
         />

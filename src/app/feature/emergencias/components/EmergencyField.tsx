@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -11,6 +11,7 @@ export const EmergencyField = ({
   onPress,
   showArrow = true,
 }: EmergencyFieldProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -57,8 +58,8 @@ export const EmergencyField = ({
     <View style={styles.container}>
       <View style={styles.iconContainer}>{icon}</View>
       <View style={styles.textContainer}>
-        <Text style={styles.label}>{i18n.t(label)}</Text>
-        <Text style={styles.value}>{value || i18n.t('none')}</Text>
+        <Text style={styles.label}>{t(label)}</Text>
+        <Text style={styles.value}>{value || t('none')}</Text>
       </View>
       {showArrow && <Text style={styles.arrow}>›</Text>}
     </View>

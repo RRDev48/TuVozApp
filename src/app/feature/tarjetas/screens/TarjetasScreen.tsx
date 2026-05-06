@@ -1,4 +1,5 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CustomText from "@/src/app/feature/common/CustomText";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
@@ -8,9 +9,9 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import ZenithXAnimado from "../../../assets/icon/ZenithXAnimado.svg";
-import i18n from "@/src/app/i18n";
 
 const CardsScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
@@ -46,12 +47,12 @@ const CardsScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('cards')} />
+      <ScreenTitle text={t('cards')} />
 
       {/* Contenido centrado */}
       <View style={styles.content}>
         <ZenithXAnimado width={180} height={180} />
-        <CustomText style={styles.text}>{i18n.t('comingSoon')}</CustomText>
+        <CustomText style={styles.text}>{t('comingSoon')}</CustomText>
       </View>
     </View>
   );

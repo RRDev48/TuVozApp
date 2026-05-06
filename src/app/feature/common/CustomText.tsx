@@ -13,7 +13,7 @@ export const CustomText = ({
   disablePersonalization = false,
   ...props
 }: CustomTextProps) => {
-  const { transformText } = usePersonalization();
+  const { transformText, languageRefresh } = usePersonalization();
 
   if (disablePersonalization) {
     return (

@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
@@ -8,6 +8,7 @@ import { useWeekRoutine } from "../../hooks/useWeekRoutine";
 import { ChangeWeekProps } from "../../models/component.props";
 
 const ChangeWeek = ({ onChangeWeek, currentWeekStart }: ChangeWeekProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -49,7 +50,7 @@ const ChangeWeek = ({ onChangeWeek, currentWeekStart }: ChangeWeekProps) => {
 
       {/* Texto central que funciona como encabezado de la sección de rutinas. */}
       <CustomText style={styles.title}>
-        {i18n.t('startDay')}
+        {t('startDay')}
       </CustomText>
 
       {/* Botón para ir a la semana siguiente (suma 7 días). */}

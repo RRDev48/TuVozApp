@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -34,6 +34,7 @@ type CodeVerificationScreenRouteProp = RouteProp<
 >;
 
 const CodeVerificationScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<CodeVerificationScreenNavigationProp>();
   const route = useRoute<CodeVerificationScreenRouteProp>();
   const {
@@ -140,7 +141,7 @@ const CodeVerificationScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          {i18n.t("verificationTitle")}
+          {t("verificationTitle")}
         </Text>
 
         {/* Descripción */}
@@ -150,7 +151,7 @@ const CodeVerificationScreen = () => {
             isKeyboardVisible && styles.descriptionKeyboardVisible,
           ]}
         >
-          {i18n.t("verificationDescription")}{"\n"}
+          {t("verificationDescription")}{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
 
@@ -175,14 +176,14 @@ const CodeVerificationScreen = () => {
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title={i18n.t("errorTitle")}
+          title={t("errorTitle")}
           message={errorMessage}
           onClose={closeErrorModal}
         />
 
         <VerificationSuccessModal
           visible={showSuccessAlert}
-          title={i18n.t("verificationSuccessTitle")}
+          title={t("verificationSuccessTitle")}
           onClose={handleSuccessModalClose}
           gifType="llave"
         />

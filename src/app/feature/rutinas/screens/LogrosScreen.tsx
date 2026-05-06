@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -73,6 +73,7 @@ const badgeStyles = StyleSheet.create({
 });
 
 const LogrosScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation();
   const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
@@ -150,7 +151,7 @@ const LogrosScreen = () => {
   return (
     <View style={styles.screen}>
       <BackButton onPress={() => navigation.goBack()} />
-      <ScreenTitle text={i18n.t('achievements')} />
+      <ScreenTitle text={t('achievements')} />
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Stats rápidas */}
@@ -158,20 +159,20 @@ const LogrosScreen = () => {
           <View style={styles.statItem}>
             <CustomText style={styles.statValue}>{rachaActual}</CustomText>
             <CustomText style={styles.statLabel}>
-              {i18n.t('currentStreak')}
+              {t('currentStreak')}
             </CustomText>
           </View>
           <View style={styles.statItem}>
             <CustomText style={styles.statValue}>{rachaMasLarga}</CustomText>
             <CustomText style={styles.statLabel}>
-              {i18n.t('bestStreak')}
+              {t('bestStreak')}
             </CustomText>
           </View>
         </View>
 
         {/* Racha más larga */}
         <CustomText style={styles.sectionTitle}>
-          {i18n.t('longestStreak')}
+          {t('longestStreak')}
         </CustomText>
         <View style={styles.grid}>
           {racha.map((item) => (
@@ -181,7 +182,7 @@ const LogrosScreen = () => {
 
         {/* Objetivos */}
         <CustomText style={styles.sectionTitle}>
-          {i18n.t('goals')}
+          {t('goals')}
         </CustomText>
         <View style={styles.grid}>
           {objetivos.map((item) => (
@@ -191,7 +192,7 @@ const LogrosScreen = () => {
 
         {/* Hábitos */}
         <CustomText style={styles.sectionTitle}>
-          {i18n.t('habits')}
+          {t('habits')}
         </CustomText>
         <View style={[styles.grid, { marginBottom: 32 }]}>
           {habitos.map((item) => (

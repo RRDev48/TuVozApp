@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -9,8 +10,6 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
-import i18n from "@/src/app/i18n";
-
 type AddressScreenRouteProp = RouteProp<
   RootStackParamsList,
   "AddressSelection"
@@ -21,6 +20,7 @@ type AddressScreenNavigationProp = StackNavigationProp<
 >;
 
 const AddressScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AddressScreenNavigationProp>();
   const route = useRoute<AddressScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -90,16 +90,16 @@ const AddressScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('address')} />
+      <ScreenTitle text={t('address')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {i18n.t('whatIsYourAddress')}
+          {t('whatIsYourAddress')}
         </Text>
 
         <AddButton
           onPress={handleAddAddress}
-          text={i18n.t('addNew')}
+          text={t('addNew')}
         />
 
         {addresses.map((address, index) => (

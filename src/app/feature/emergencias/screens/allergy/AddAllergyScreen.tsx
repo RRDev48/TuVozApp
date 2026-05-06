@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -21,8 +22,6 @@ import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
-import i18n from "@/src/app/i18n";
-
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
 type AddAllergyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -30,6 +29,7 @@ type AddAllergyScreenNavigationProp = StackNavigationProp<
 >;
 
 const AddAllergyScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<AddAllergyScreenNavigationProp>();
   const route = useRoute<AddAllergyScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -110,16 +110,16 @@ const AddAllergyScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('addAllergy')} />
+      <ScreenTitle text={t('addAllergy')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('whatAllergy')}
+            {t('whatAllergy')}
           </Text>
 
           <ThemedTextInput
-            placeholder={i18n.t('allergyName')}
+            placeholder={t('allergyName')}
             value={allergyName}
             onChangeText={setAllergyName}
           />
@@ -127,7 +127,7 @@ const AddAllergyScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {i18n.t('whatDegree')}
+            {t('whatDegree')}
           </Text>
 
           <TouchableOpacity
@@ -156,8 +156,8 @@ const AddAllergyScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
-        message={i18n.t('pleaseEnterAllergyName')}
+        title={t('error')}
+        message={t('pleaseEnterAllergyName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

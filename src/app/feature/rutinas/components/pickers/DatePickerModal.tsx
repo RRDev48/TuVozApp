@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useMemo, useState } from "react";
@@ -13,6 +13,7 @@ export const DatePickerModal = ({
   onDateSelect,
 }: CalendarModalProps) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const { t } = useLanguageRefresh();
   const { getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -72,7 +73,7 @@ export const DatePickerModal = ({
       <View style={styles.overlay}>
         <View style={styles.calendarContainer}>
           <CustomText style={styles.calendarTitle}>
-            {i18n.t('selectDate')}
+            {t('selectDate')}
           </CustomText>
 
           {/* Calendario mensual interactivo.
@@ -100,7 +101,7 @@ export const DatePickerModal = ({
             style={styles.closeWhitTextButton}
           >
             <CustomText style={styles.closeWhitTextButtonText}>
-              {i18n.t('close')}
+              {t('close')}
             </CustomText>
           </TouchableOpacity>
         </View>

@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
@@ -8,6 +8,7 @@ const EmergencySuccessModal = ({
   visible,
   onClose,
 }: EmergencySuccessModalProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
@@ -62,7 +63,7 @@ const EmergencySuccessModal = ({
         </View>
 
         <Text style={styles.title}>
-          {i18n.t('emergencySavedSuccess')}
+          {t('emergencySavedSuccess')}
         </Text>
       </View>
     </Modal>

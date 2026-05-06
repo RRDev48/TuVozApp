@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
@@ -13,6 +13,7 @@ export const ProgressItem = ({
   refreshTrigger,
   tasks = [],
 }: ProgressItemProps) => {
+  const { t } = useLanguageRefresh();
   const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -70,7 +71,7 @@ export const ProgressItem = ({
             style={styles.icon}
           />
           <CustomText style={styles.progressText}>
-            {i18n.t('progress')}{" "}
+            {t('progress')}{" "}
             <CustomText style={styles.percentText}>
               {percent.toFixed(0)}%
             </CustomText>{" "}

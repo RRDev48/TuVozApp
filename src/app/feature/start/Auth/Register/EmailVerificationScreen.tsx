@@ -1,5 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -33,6 +33,7 @@ type EmailVerificationScreenRouteProp = RouteProp<
 >;
 
 const EmailVerificationScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EmailVerificationScreenNavigationProp>();
   const route = useRoute<EmailVerificationScreenRouteProp>();
   const {
@@ -125,19 +126,19 @@ const EmailVerificationScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          {i18n.t('emailVerificationTitle')}
+          {t('emailVerificationTitle')}
         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t('enterYourEmailLabel')}</Text>
+            <Text style={styles.label}>{t('enterYourEmailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder={i18n.t('emailField')}
+                  placeholder={t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={email}
                   onChangeText={setEmail}
@@ -160,12 +161,12 @@ const EmailVerificationScreen = () => {
 
           {/* Campo Confirmar Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{i18n.t('repeatYourEmailLabel')}</Text>
+            <Text style={styles.label}>{t('repeatYourEmailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder={i18n.t('emailField')}
+                  placeholder={t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={confirmEmail}
                   onChangeText={setConfirmEmail}
@@ -206,7 +207,7 @@ const EmailVerificationScreen = () => {
             {isChecking ? (
               <ActivityIndicator color={colors.white} />
             ) : (
-              <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
+              <Text style={styles.continueButtonText}>{t('continueButton')}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -217,7 +218,7 @@ const EmailVerificationScreen = () => {
           style={styles.termsContainer}
           activeOpacity={0.7}
         >
-          <Text style={styles.termsText}>{i18n.t('termsAndConditionsLink')}</Text>
+          <Text style={styles.termsText}>{t('termsAndConditionsLink')}</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

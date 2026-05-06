@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import BackButton from "@/src/app/feature/common/BackButton";
 import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage";
@@ -39,6 +40,7 @@ type CategoryPictogramsScreenRouteProp = RouteProp<
 >;
 
 const CategoryPictogramsScreen = () => {
+  const { t } = useLanguageRefresh();
   const { transformText, getThemedColors, temaOscuro } = usePersonalization();
   const themedColors = getThemedColors();
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
@@ -345,7 +347,7 @@ const CategoryPictogramsScreen = () => {
             alignItems: "center",
           }}
         >
-           <CustomText>{transformText(i18n.t('loadingPictograms'))}</CustomText>
+           <CustomText>{transformText(t('loadingPictograms'))}</CustomText>
         </View>
       </View>
     );
@@ -365,7 +367,7 @@ const CategoryPictogramsScreen = () => {
         >
            <CustomText>
              {transformText(
-               error || i18n.t('noPictogramsInCategory'),
+               error || t('noPictogramsInCategory'),
              )}
            </CustomText>
         </View>

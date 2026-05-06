@@ -1,3 +1,4 @@
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
@@ -22,8 +23,6 @@ import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
-import i18n from "@/src/app/i18n";
-
 type EditAllergyScreenRouteProp = RouteProp<RootStackParamsList, "EditAllergy">;
 type EditAllergyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -31,6 +30,7 @@ type EditAllergyScreenNavigationProp = StackNavigationProp<
 >;
 
 const EditAllergyScreen = () => {
+  const { t } = useLanguageRefresh();
   const navigation = useNavigation<EditAllergyScreenNavigationProp>();
   const route = useRoute<EditAllergyScreenRouteProp>();
   const { getThemedColors } = usePersonalization();
@@ -132,16 +132,16 @@ const EditAllergyScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={i18n.t('editAllergy')} />
+      <ScreenTitle text={t('editAllergy')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {i18n.t('whatAllergy')}
+            {t('whatAllergy')}
           </Text>
 
           <ThemedTextInput
-            placeholder={i18n.t('allergyName')}
+            placeholder={t('allergyName')}
             value={allergyName}
             onChangeText={setAllergyName}
           />
@@ -149,7 +149,7 @@ const EditAllergyScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {i18n.t('whatDegree')}
+            {t('whatDegree')}
           </Text>
 
           <TouchableOpacity
@@ -177,13 +177,13 @@ const EditAllergyScreen = () => {
       <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <Text style={styles.deleteButtonText}>{i18n.t('deleteAllergy')}</Text>
+        <Text style={styles.deleteButtonText}>{t('deleteAllergy')}</Text>
       </TouchableOpacity>
 
       <ErrorModal
         visible={showErrorModal}
-        title={i18n.t('error')}
-        message={i18n.t('pleaseEnterAllergyName')}
+        title={t('error')}
+        message={t('pleaseEnterAllergyName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

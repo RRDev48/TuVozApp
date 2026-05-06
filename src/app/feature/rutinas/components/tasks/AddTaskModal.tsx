@@ -1,4 +1,4 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import ConfirmationModal from "@/src/app/feature/common/alerts/ConfirmationModal";
@@ -43,6 +43,7 @@ const AddTaskModal = ({
   taskToEdit,
   onTaskUpdated,
 }: AddTaskModalProps) => {
+  const { t } = useLanguageRefresh();
   const [isLoading, setIsLoading] = useState(false);
   const [isAllDayEnabled, setIsAllDayEnabled] = useState(false);
   const isEditMode = !!taskToEdit;
@@ -439,8 +440,8 @@ const AddTaskModal = ({
             >
               <CustomText style={styles.createTaskButtonText}>
                 {isLoading
-                  ? i18n.t(isEditMode ? 'saving' : 'creating')
-                  : i18n.t(isEditMode ? 'save' : 'create')}
+                  ? t(isEditMode ? 'saving' : 'creating')
+                  : t(isEditMode ? 'save' : 'create')}
               </CustomText>
             </TouchableOpacity>
 
@@ -453,7 +454,7 @@ const AddTaskModal = ({
 
             {/* Campo de texto para el título de la nueva tarea. */}
             <TextInput
-              placeholder={i18n.t('newTaskPlaceholder')}
+              placeholder={t('newTaskPlaceholder')}
               placeholderTextColor={themedColors.text}
               style={styles.inputTitleTask}
               value={taskName}
@@ -472,7 +473,7 @@ const AddTaskModal = ({
                   color={themedColors.primary}
                 />
                 <TextInput
-                  placeholder={i18n.t('today')}
+                  placeholder={t('today')}
                   placeholderTextColor={themedColors.primary}
                   style={styles.dateTextButton}
                   value={formatDate(dueDate)}
@@ -506,7 +507,7 @@ const AddTaskModal = ({
                       color={themedColors.primary}
                     />
                   }
-                  label={i18n.t('from')}
+                  label={t('from')}
                   value={taskStartTime}
                   error={false}
                   placeholder="00:00"
@@ -522,7 +523,7 @@ const AddTaskModal = ({
                       color={themedColors.text}
                     />
                   }
-                  label={i18n.t('to')}
+                  label={t('to')}
                   value={taskEndTime}
                   error={false}
                   placeholder="23:59"
@@ -534,7 +535,7 @@ const AddTaskModal = ({
               {/* Switch para activar/desactivar "Todo el día" */}
               <View style={styles.switchContainer}>
                 <CustomText style={styles.switchLabel}>
-                  {i18n.t('allDay')}
+                  {t('allDay')}
                 </CustomText>
                 <View
                   style={[
@@ -575,12 +576,12 @@ const AddTaskModal = ({
                   color={themedColors.primary}
                 />
                 <TextInput
-                  placeholder={i18n.t('addReminder')}
+                  placeholder={t('addReminder')}
                   placeholderTextColor={themedColors.primary}
                   style={styles.dateTextButton}
                   value={
                     reminder.label
-                      ? `${i18n.t('reminder')}: ${reminder.label}`
+                      ? `${t('reminder')}: ${reminder.label}`
                       : ""
                   }
                   editable={false}
@@ -603,7 +604,7 @@ const AddTaskModal = ({
                 onPress={() => setIsCategoryVisible(true)}
               >
                 <CustomText style={styles.categoryButtonText}>
-                  {categoryName || i18n.t('selectCategory')}
+                  {categoryName || t('selectCategory')}
                 </CustomText>
               </TouchableOpacity>
 
@@ -626,7 +627,7 @@ const AddTaskModal = ({
             {/* Sección de gestión de pasos de la tarea (lista + botón para agregar). */}
             <View style={styles.mainStepsContainer}>
               <CustomText style={styles.stepsTitle}>
-                {i18n.t('steps')}
+                {t('steps')}
               </CustomText>
 
               <FlatList
@@ -663,14 +664,14 @@ const AddTaskModal = ({
       <SuccessModal
         visible={showSuccessModal}
         onClose={handleSuccessModalClose}
-        title={i18n.t(isEditMode ? 'taskEditedSuccess' : 'taskCreated')}
-        message={i18n.t(isEditMode ? 'taskEditedMessage' : 'taskCreatedMessage')}
+        title={t(isEditMode ? 'taskEditedSuccess' : 'taskCreated')}
+        message={t(isEditMode ? 'taskEditedMessage' : 'taskCreatedMessage')}
       />
 
       {/* Modal de confirmación que aparece al intentar cerrar sin guardar cambios. */}
       <ConfirmationModal
         visible={showConfirmCancelModal}
-        title={i18n.t(isEditMode ? 'cancelEditConfirm' : 'cancelCreateConfirm')}
+        title={t(isEditMode ? 'cancelEditConfirm' : 'cancelCreateConfirm')}
         onConfirm={handleConfirmCancel}
         onCancel={handleCancelCancel}
       />
