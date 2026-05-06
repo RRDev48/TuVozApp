@@ -9,6 +9,7 @@ import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePag
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
 import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
+import { usePictogramPreloader } from "@/src/app/feature/expresate/hooks/usePictogramPreloader";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -34,7 +35,8 @@ import {
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
-import { speakPictogramText } from "../services/speech.Service";
+import { speakWithQueue } from "../services/speechQueue.Service";
+import { pictogramCacheService } from "../services/pictogramCache.Service";
 import i18n from "@/src/app/i18n";
 
 const { width } = Dimensions.get("window");
@@ -50,6 +52,18 @@ const ExpresateScreen = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const { favoriteIds, toggleFavorite } = useFavoritePictograms();
+  const { preloadInBackground } = usePictogramPreloader();
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      const allIds: string[] = [];
+      categories.slice(0, 6).forEach((cat) => {
+        const baseIds = ["3436", "3437", "162", "2530", "1043", "2088", "1053", "1580", "2522", "1379"];
+        allIds.push(...baseIds.slice(0, 4));
+      });
+      preloadInBackground(allIds);
+    }
+  }, [categories, preloadInBackground]);
 
   const {
     pictograms: searchResults,
@@ -107,6 +121,10 @@ const ExpresateScreen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    pictogramCacheService.initialize();
+  }, []);
+
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -126,7 +144,7 @@ const ExpresateScreen = () => {
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    void speakPictogramText(pictogram.keyword, pictogram.language);
+    void speakWithQueue(pictogram.keyword, pictogram.language);
   }, []);
 
   const normalizeCategoryName = useCallback((name: string) => {
