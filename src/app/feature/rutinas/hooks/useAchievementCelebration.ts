@@ -13,10 +13,14 @@ export const useAchievementCelebration = ({
   onShowAchievement,
 }: UseAchievementCelebrationParams) => {
   const hasShownAchievement = useRef(false);
+  const isShowingRef = useRef(false);
   const lastRoutineId = useRef<number>(0);
 
   useEffect(() => {
-    // Reset si cambia la rutina
+    if (isShowingRef.current) {
+      return;
+    }
+
     if (lastRoutineId.current !== routineId) {
       hasShownAchievement.current = false;
       lastRoutineId.current = routineId;
@@ -24,22 +28,23 @@ export const useAchievementCelebration = ({
 
     const checkAndShowAchievement = async () => {
       if (percent >= 100 && !hasShownAchievement.current && routineId > 0) {
+        isShowingRef.current = true;
+
         const achievementId =
           achievementTrackingService.getRoutineAchievementId(routineId);
 
-        // Verificar si ya fue mostrado anteriormente
         const alreadyShown =
           await achievementTrackingService.hasBeenShown(achievementId);
 
         if (!alreadyShown) {
           hasShownAchievement.current = true;
-
-          // Marcar como mostrado antes de mostrar el modal
           await achievementTrackingService.markAsShown(achievementId);
 
           setTimeout(() => {
             onShowAchievement();
           }, 100);
+        } else {
+          isShowingRef.current = false;
         }
       }
     };
