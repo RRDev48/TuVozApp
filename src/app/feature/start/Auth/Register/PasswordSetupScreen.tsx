@@ -7,6 +7,7 @@ import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
+import i18n from "@/src/app/i18n";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -172,25 +173,25 @@ const PasswordSetupScreen = () => {
         </View>
 
         {/* Título */}
-        <Text
-          style={[
-            styles.title,
-            isKeyboardVisible && styles.titleKeyboardVisible,
-          ]}
-        >
-          Para continuar, necesitamos{"\n"}una contraseña segura.
-        </Text>
+         <Text
+           style={[
+             styles.title,
+             isKeyboardVisible && styles.titleKeyboardVisible,
+           ]}
+         >
+           {i18n.t('passwordSetupTitle')}
+         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Ingresa tu Contraseña*</Text>
+             <Text style={styles.label}>{i18n.t('enterPassword')}*</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Mínimo 8 caracteres"
+                   placeholder={i18n.t('min8Characters')}
                   placeholderTextColor={colors.gray}
                   value={password}
                   onChangeText={setPassword}
@@ -216,7 +217,7 @@ const PasswordSetupScreen = () => {
 
           {/* Campo Confirmar Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Repite tu Contraseña*</Text>
+             <Text style={styles.label}>{i18n.t('confirmPassword')}*</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
@@ -264,7 +265,7 @@ const PasswordSetupScreen = () => {
             activeOpacity={0.8}
             disabled={!isFormValid}
           >
-            <Text style={styles.continueButtonText}>Continuar</Text>
+             <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -277,12 +278,12 @@ const PasswordSetupScreen = () => {
           <Text style={styles.termsText}>Términos y Condiciones</Text>
         </TouchableOpacity>
 
-        <ErrorModal
-          visible={showErrorModal}
-          title="Error"
-          message={errorMessage}
-          onClose={closeErrorModal}
-        />
+         <ErrorModal
+           visible={showErrorModal}
+           title={i18n.t('errorTitle')}
+           message={errorMessage}
+           onClose={closeErrorModal}
+         />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );

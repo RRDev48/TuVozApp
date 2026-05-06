@@ -28,6 +28,7 @@ import {
 } from "react-native";
 import { Pictogram } from "../models/pictogram.types";
 import { speakPictogramText } from "../services/speech.Service";
+import i18n from "@/src/app/i18n";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -344,7 +345,7 @@ const CategoryPictogramsScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText("Cargando pictogramas...")}</CustomText>
+           <CustomText>{transformText(i18n.t('loadingPictograms'))}</CustomText>
         </View>
       </View>
     );
@@ -362,11 +363,11 @@ const CategoryPictogramsScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>
-            {transformText(
-              error || "No hay pictogramas disponibles en esta categoría",
-            )}
-          </CustomText>
+           <CustomText>
+             {transformText(
+               error || i18n.t('noPictogramsInCategory'),
+             )}
+           </CustomText>
         </View>
       </View>
     );

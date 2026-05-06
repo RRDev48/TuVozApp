@@ -35,6 +35,7 @@ import {
 import MenuItem from "../../common/menu/MenuItem";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
 import { speakPictogramText } from "../services/speech.Service";
+import i18n from "@/src/app/i18n";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -448,11 +449,11 @@ const ExpresateScreen = () => {
 
         <View style={errorScreenStyles.errorContent}>
           <ZenithXAnimado width={180} height={180} />
-          <CustomText style={errorScreenStyles.errorText}>
-            {transformText(
-              error || "Vaya... Parece que algo salio mal, intente mas tarde",
-            )}
-          </CustomText>
+           <CustomText style={errorScreenStyles.errorText}>
+             {transformText(
+               error || i18n.t('somethingWentWrong'),
+             )}
+           </CustomText>
         </View>
       </View>
     ),
@@ -463,7 +464,7 @@ const ExpresateScreen = () => {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-        <ScreenTitle text={transformText("Expresate con tarjetas")} />
+         <ScreenTitle text={transformText(i18n.t('expressWithCards'))} />
         <View
           style={{
             flex: 1,
@@ -471,7 +472,7 @@ const ExpresateScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText("Cargando categorías...")}</CustomText>
+          <CustomText>{transformText(i18n.t('loadingCategories'))}</CustomText>
         </View>
       </View>
     );
@@ -489,7 +490,7 @@ const ExpresateScreen = () => {
       ]}
     >
       <BackButton onPress={handleGoBack} />
-      <ScreenTitle text={transformText("Expresate con tarjetas")} />
+      <ScreenTitle text={transformText(i18n.t('expressWithCards'))} />
 
       {isSearchMode && isSearching ? (
         <View
@@ -499,7 +500,7 @@ const ExpresateScreen = () => {
             alignItems: "center",
           }}
         >
-          <CustomText>{transformText("Buscando pictogramas...")}</CustomText>
+          <CustomText>{transformText(i18n.t('searchingPictograms'))}</CustomText>
         </View>
       ) : isSearchMode && (searchError || searchResults.length === 0) ? (
         <View
@@ -510,7 +511,7 @@ const ExpresateScreen = () => {
           }}
         >
           <CustomText>
-            {transformText(searchError || "No se encontraron pictogramas")}
+            {transformText(searchError || i18n.t('noPictogramsFound'))}
           </CustomText>
         </View>
       ) : (
@@ -533,7 +534,7 @@ const ExpresateScreen = () => {
           />
           <TextInput
             style={containerStyles.searchInput}
-            placeholder={transformText("Buscar pictograma...")}
+            placeholder={transformText(i18n.t('searchPictogram'))}
             placeholderTextColor={themedColors.secondary}
             value={searchQuery}
             onChangeText={setSearchQuery}

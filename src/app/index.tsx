@@ -6,6 +6,8 @@ import { ActiveProfileProvider } from "./contexts/ActiveProfileContext";
 import ExpresateProvider from "./contexts/ExpresateContext";
 import PersonalizationProvider from "./contexts/PersonalizationContext";
 import StackNavigator from "./navigation/Navigator";
+import i18n from "./i18n";
+import "./performance"; // Initialize performance monitoring
 
 SplashScreen.preventAutoHideAsync();
 

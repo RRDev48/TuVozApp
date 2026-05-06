@@ -105,13 +105,6 @@ const mainScreens = [
   { name: "Ajustes", component: SettingsScreen },
 ];
 
-const expresateScreens = [
-  { name: "Acciones", component: SettingsScreen },
-  { name: "Objetos", component: SettingsScreen },
-  { name: "Preguntas", component: SettingsScreen },
-  { name: "Animales", component: SettingsScreen },
-];
-
 const StackNavigator = () => {
   return (
     <Stack.Navigator
@@ -149,14 +142,6 @@ const StackNavigator = () => {
       ))}
 
       {mainScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
-
-      {expresateScreens.map((screen) => (
         <Stack.Screen
           key={screen.name}
           name={screen.name as keyof RootStackParamsList}
