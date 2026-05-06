@@ -1,33 +1,32 @@
 # TuVozApp
 
-<div align="center">
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Expo](https://img.shields.io/badge/Expo-54.0-blue)
-![React Native](https://img.shields.io/badge/React%20Native-0.76-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
-![Supabase](https://img.shields.io/badge/Supabase-2.91-green)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![Version](https://img.shields.io/badge/v1.0.0-3178c6?style=flat-square)](https://github.com/rrdev/TuVozApp)
+[![Expo](https://img.shields.io/badge/Expo-54.0-black?style=flat-square)](https://expo.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6?style=flat-square)](https://www.typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-3-3ecf8e?style=flat-square)](https://supabase.com)
+[![License](https://img.shields.io/badge/License-MIT-3ecf8e?style=flat-square)](LICENSE)
+
 **Proyecto mobile desarrollado con Expo y Supabase**
-</div>
 ---
 ## Tabla de Contenidos
+
 | # | Sección | Descripción |
 |---|---------|-------------|
-| 1 | [📋 Requisitos Previos](#1-requisitos-previos) | Herramientas necesarias |
-| 2 | [💾 Instalación](#2-instalación) | Cómo clonar e instalar |
-| 3 | [🗄️ Configuración de Supabase](#3-configuración-de-supabase) | Setup de base de datos |
-| 4 | [🔐 Variables de Entorno](#4-variables-de-entorno) | Configuración de credenciales |
-| 5 | [▶️ Ejecutar la App](#5-ejecutar-la-app) | Comandos de ejecución |
-| 6 | [⚡ Funcionalidades](#6-funcionalidades) | Características de la app |
-| 7 | [📁 Estructura del Proyecto](#7-estructura-del-proyecto) | Organización de archivos |
-| 8 | [🛠️ Tech Stack](#8-tech-stack) | Tecnologías utilizadas |
-| 9 | [📦 Build para Producción](#9-build-para-producción) | Generar APK/IPA |
-| 10 | [🔧 Troubleshooting](#10-troubleshooting) | Solución de problemas |
-| 11 | [❓ FAQ](#11-faq) | Preguntas frecuentes |
-| 12 | [👤 Créditos](#12-créditos) | Información del desarrollador |
-| 13 | [📜 Licencia](#13-licencia) | Términos de uso |
+| 1 | [📋 Requisitos Previos](#requisitos-previos) | Herramientas necesarias |
+| 2 | [💾 Instalación](#instalación) | Cómo clonar e instalar |
+| 3 | [🗄️ Configuración de Supabase](#configuración-de-supabase) | Setup de base de datos |
+| 4 | [🔐 Variables de Entorno](#variables-de-entorno) | Configuración de credenciales |
+| 5 | [▶️ Ejecutar la App](#ejecutar-la-app) | Comandos de ejecución |
+| 6 | [⚡ Funcionalidades](#funcionalidades) | Características de la app |
+| 7 | [📁 Estructura del Proyecto](#estructura-del-proyecto) | Organización de archivos |
+| 8 | [🛠️ Tech Stack](#tech-stack) | Tecnologías utilizadas |
+| 9 | [📦 Build para Producción](#build-para-producción) | Generar APK/IPA |
+| 10 | [🔧 Troubleshooting](#troubleshooting) | Solución de problemas |
+| 11 | [❓ FAQ](#faq) | Preguntas frecuentes |
+| 12 | [👤 Créditos](#créditos) | Información del desarrollador |
+| 13 | [📜 Licencia](#licencia) | Términos de uso |
 ---
-## 1. Requisitos Previos
+## Requisitos Previos
 - **Node.js** (versión 18.x LTS o superior)
 - **npm** o **yarn**
 - **Expo CLI** (se instala automáticamente)
@@ -35,7 +34,7 @@
 - Para Android: **Android Studio** o un emulador configurado
 - Para iOS: **Xcode** (solo macOS)
 ---
-## 2. Instalación
+## Instalación
 1. Clonar el repositorio:
    ```bash
    git clone <URL_DEL_REPOSITORIO>
@@ -170,19 +169,32 @@ Si necesitas modificar código nativo:
 npx expo prebuild
 Esto generará las carpetas android e ios para desarrollo nativo.
 ---
-10. Troubleshooting
-Error: "Unable to resolve module"
+
+## Troubleshooting
+
+### Error: "Unable to resolve module"
+
+```bash
 # Limpiar caché y reinstalar
 rm -rf node_modules
 npm install
 npx expo start --clear
-Error de conexión con Supabase
-1. Verificar que las variables de entorno estén correctas en .env
+```
+
+### Error de conexión con Supabase
+
+1. Verificar que las variables de entorno estén correctas en `.env`
 2. Confirmar que el proyecto Supabase esté activo
 3. Revisar las políticas RLS en Supabase
-La app no detecta cambios
+
+### La app no detecta cambios
+
+```bash
 npx expo start --clear
-Problemas con emulador Android
+```
+
+### Problemas con emulador Android
+
 1. Verificar que Android Studio esté instalado
 2. Asegurarse de tener un emulador configurado
 3. Ejecutar:
@@ -196,30 +208,49 @@ Build falla en iOS
       cd ios && pod install && cd ..
    2. Verificar versión de Xcode
 ---
-11. FAQ
-¿Cómo ejecutar la app en mi celular?
-1. Escanea el código QR que aparece al ejecutar npm run start
-2. O conecta tu dispositivo por USB y ejecuta npm run android
-¿Necesito cuenta de Supabase?
-Sí, la app requiere un proyecto de Supabase para funcionar. Puedes crear uno gratis en supabase.com (https://supabase.com).
-¿La app funciona sin internet?
+
+## FAQ
+
+### ¿Cómo ejecutar la app en mi celular?
+
+1. Escanea el código QR que aparece al ejecutar `npm run start`
+2. O conecta tu dispositivo por USB y ejecuta `npm run android`
+
+### ¿Necesito cuenta de Supabase?
+
+Sí, la app requiere un proyecto de Supabase para funcionar. Puedes crear uno gratis en [supabase.com](https://supabase.com).
+
+### ¿La app funciona sin internet?
+
 Algunas funciones requieren conexión (autenticación, cargar datos), pero la app está diseñada para funcionar offline cuando sea posible.
-¿Cómo contacto al desarrollador?
+
+### ¿Cómo contacto al desarrollador?
+
 Para reportar bugs o sugerencias, puedes crear un issue en el repositorio o contactar directamente.
-¿Puedo contribuir al proyecto?
-Sí, puedes crear un fork y enviar pull requests. Ver sección Contribuir (#contribuir).
+
+### ¿Puedo contribuir al proyecto?
+
+Sí, puedes crear un fork y enviar pull requests. Ver sección [Contribuir](#contribuir).
+
 ---
-12. Créditos
-Campo
-Desarrollador
-Año
-Tecnología principal
-Backend
+
+## Créditos
+| Campo | Información |
+|:------|:------------|
+| **Desarrollador** | RRDev |
+| **Año** | 2026 |
+| **Tech Stack** | Expo + React Native + TypeScript |
+| **Backend** | Supabase |
+
 ---
-## 13. Licencia
+
+## Licencia
+
 MIT License
+
 ---
-Scripts Disponibles
+
+## Scripts Disponibles
 Script
 npm run start
 npm run android
@@ -228,8 +259,10 @@ npm run web
 npm run lint
 npm run reset-project
 ---
-Contribuir
-1. Crear una rama: git checkout -b feature/nueva-funcionalidad
-2. Hacer commit: git commit -m "Agregar nueva funcionalidad"
-3. Push: git push origin feature/nueva-funcionalidad
+
+## Contribuir
+
+1. Crear una rama: `git checkout -b feature/nueva-funcionalidad`
+2. Hacer commit: `git commit -m "Agregar nueva funcionalidad"`
+3. Push: `git push origin feature/nueva-funcionalidad`
 4. Crear Pull Request
