@@ -1,5 +1,6 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "@/src/app/assets/image/tuvoz.svg";
+import i18n from "@/src/app/i18n";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { supportService } from "@/src/app/feature/ajustes/services/support.Service";
 import ErrorModal from "@/src/app/feature/common/alerts/ErrorModal";
@@ -86,7 +87,7 @@ const LoginSupportTicketScreen = () => {
 
     if (!result.success) {
       setErrorMessage(
-        result.error || "No pudimos crear tu ticket. Intentalo nuevamente.",
+        result.error || i18n.t("createTicketError"),
       );
       setShowErrorModal(true);
       return;
@@ -141,7 +142,7 @@ const LoginSupportTicketScreen = () => {
               isKeyboardVisible && styles.titleKeyboardVisible,
             ]}
           >
-            Crear Ticket de Soporte
+            {i18n.t("createSupportTicketTitle")}
           </Text>
           <Text
             style={[
@@ -149,7 +150,7 @@ const LoginSupportTicketScreen = () => {
               isKeyboardVisible && styles.subtitleKeyboardVisible,
             ]}
           >
-            Completa tus datos para que podamos ayudarte a recuperar el acceso.
+            {i18n.t("createSupportTicketSubtitle")}
           </Text>
         </View>
 
@@ -160,7 +161,7 @@ const LoginSupportTicketScreen = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Correo electronico*</Text>
+            <Text style={styles.label}>{i18n.t("emailField")}</Text>
             <TextInput
               style={styles.input}
               value={email}
@@ -173,23 +174,23 @@ const LoginSupportTicketScreen = () => {
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Asunto*</Text>
+            <Text style={styles.label}>{i18n.t("subjectField")}</Text>
             <TextInput
               style={styles.input}
               value={subject}
               onChangeText={setSubject}
-              placeholder="Describe brevemente el problema"
+              placeholder={i18n.t("describeBriefly")}
               placeholderTextColor={colors.gray}
             />
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Consulta*</Text>
+            <Text style={styles.label}>{i18n.t("queryField")}</Text>
             <TextInput
               style={styles.textArea}
               value={message}
               onChangeText={setMessage}
-              placeholder="Cuéntanos qué sucede al iniciar sesión"
+              placeholder={i18n.t("tellUsWhatHappens")}
               placeholderTextColor={colors.gray}
               multiline
               numberOfLines={6}
@@ -214,20 +215,20 @@ const LoginSupportTicketScreen = () => {
             onPress={handleSubmit}
           >
             <Text style={styles.buttonText}>
-              {isSubmitting ? "Enviando..." : "Enviar ticket"}
+              {isSubmitting ? i18n.t("sending") : i18n.t("sendTicket")}
             </Text>
           </TouchableOpacity>
         </View>
 
         <SuccessModal
           visible={showSuccessModal}
-          title="Ticket enviado correctamente"
+          title={i18n.t("ticketSentSuccessfully")}
           onClose={handleSuccessClose}
         />
 
         <ErrorModal
           visible={showErrorModal}
-          title="Error"
+          title={i18n.t("errorTitle")}
           message={errorMessage}
           onClose={() => setShowErrorModal(false)}
         />

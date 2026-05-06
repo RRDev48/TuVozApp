@@ -1,6 +1,7 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "@/src/app/assets/image/tuvoz.svg";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
@@ -23,28 +24,28 @@ const TermsAndConditionsScreen = () => {
   const navigation = useNavigation<TermsNavigationProp>();
   const sections = [
     {
-      title: "Aceptacion de uso",
-      text: "Al utilizar TuVoz, aceptas estos terminos y condiciones de forma voluntaria. Si no estas de acuerdo, puedes dejar de usar la aplicacion en cualquier momento.",
+      title: i18n.t('acceptanceOfUse'),
+      text: i18n.t('acceptanceOfUseText'),
     },
     {
-      title: "Uso de la aplicacion",
-      text: "TuVoz esta orientada a facilitar la comunicacion y el acceso a herramientas de apoyo. Debes usarla de manera responsable y conforme a la ley aplicable.",
+      title: i18n.t('useOfApplication'),
+      text: i18n.t('useOfApplicationText'),
     },
     {
-      title: "Cuenta y seguridad",
-      text: "Eres responsable de mantener la confidencialidad de tu cuenta y de cualquier accion realizada desde ella. Recomendamos proteger tu contrasena y no compartirla con terceros.",
+      title: i18n.t('accountAndSecurity'),
+      text: i18n.t('accountAndSecurityText'),
     },
     {
-      title: "Privacidad y datos",
-      text: "Los datos que ingreses se usan para brindarte las funcionalidades de la app. TuVoz procura aplicar buenas practicas de seguridad para el manejo de la informacion.",
+      title: i18n.t('privacyAndData'),
+      text: i18n.t('privacyAndDataText'),
     },
     {
-      title: "Disponibilidad del servicio",
-      text: "La aplicacion puede presentar actualizaciones, mantenimientos o interrupciones ocasionales. Trabajamos para mantener su disponibilidad y mejorar continuamente la experiencia.",
+      title: i18n.t('serviceAvailability'),
+      text: i18n.t('serviceAvailabilityText'),
     },
     {
-      title: "Cambios en los terminos",
-      text: "Estos terminos pueden modificarse para reflejar mejoras del servicio o ajustes legales. El uso continuo de la app implica aceptacion de los cambios publicados.",
+      title: i18n.t('changesInTerms'),
+      text: i18n.t('changesInTermsText'),
     },
   ];
 
@@ -63,9 +64,9 @@ const TermsAndConditionsScreen = () => {
       </View>
 
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>Terminos y Condiciones</Text>
+        <Text style={styles.title}>{i18n.t('termsAndConditionsTitle')}</Text>
         <Text style={styles.subtitle}>
-          Lee esta informacion para conocer las reglas basicas de uso de TuVoz.
+          {i18n.t('termsSubtitle')}
         </Text>
       </View>
 
@@ -96,7 +97,7 @@ const TermsAndConditionsScreen = () => {
           activeOpacity={0.85}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.buttonText}>Entendido</Text>
+          <Text style={styles.buttonText}>{i18n.t('understood')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

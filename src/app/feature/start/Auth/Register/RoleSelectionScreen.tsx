@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import {
   useNavigation,
@@ -59,7 +60,7 @@ const RoleSelectionScreen = () => {
       </View>
 
       {/* Título */}
-      <Text style={styles.title}>Que rol Cumplis?</Text>
+      <Text style={styles.title}>{i18n.t('whatRoleDoYouHave')}</Text>
 
       {/* Opciones de rol */}
       <View style={styles.rolesContainer}>
@@ -89,7 +90,7 @@ const RoleSelectionScreen = () => {
           activeOpacity={0.8}
           disabled={!isRoleSelected}
         >
-          <Text style={styles.continueButtonText}>Continuar</Text>
+          <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

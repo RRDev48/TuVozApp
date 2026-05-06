@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
@@ -35,13 +36,12 @@ const OnboardingScreen = () => {
 
       {/* Título */}
       <Text style={styles.title}>
-        Conectando personas,{"\n"}empoderando voces
+        {i18n.t('connectingPeople')}
       </Text>
 
       {/* Descripción */}
       <Text style={styles.description}>
-        Descubre en TuVoz herramientas que simplifican tu comunicación en todas
-        las formas
+        {i18n.t('discoverTuVoz')}
       </Text>
 
       {/* Botones */}
@@ -51,7 +51,7 @@ const OnboardingScreen = () => {
           onPress={handleLogin}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Ya tengo una cuenta en TuVoz</Text>
+          <Text style={styles.buttonText}>{i18n.t('alreadyHaveAccount')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -59,7 +59,7 @@ const OnboardingScreen = () => {
           onPress={handleRegister}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Deseo registrarme en TuVoz</Text>
+          <Text style={styles.buttonText}>{i18n.t('wantToRegister')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -69,7 +69,7 @@ const OnboardingScreen = () => {
         style={styles.skipContainer}
         activeOpacity={0.6}
       >
-        <Text style={styles.skipText}>Omitir el registro</Text>
+        <Text style={styles.skipText}>{i18n.t('skipRegistration')}</Text>
       </TouchableOpacity>
     </View>
   );

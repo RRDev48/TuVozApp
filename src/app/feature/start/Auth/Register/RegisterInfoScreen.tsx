@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -112,7 +113,7 @@ const RegisterInfoScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          ¿Cuál es tu nombre?
+          {i18n.t('whatIsYourName')}
         </Text>
 
         {/* Subtítulo */}
@@ -122,8 +123,7 @@ const RegisterInfoScreen = () => {
             isKeyboardVisible && styles.subtitleKeyboardVisible,
           ]}
         >
-          ¡Nos alegra mucho que estés aquí! {"\n"} ¿Cómo te gustaría que te
-          llamemos?
+          {i18n.t('gladYouAreHere')}
         </Text>
 
         {/* Espaciador */}
@@ -138,7 +138,7 @@ const RegisterInfoScreen = () => {
         <View style={styles.inputWrapper}>
           <TextInput
             style={styles.input}
-            placeholder="Ingresa tu nombre"
+            placeholder={i18n.t('enterYourName')}
             placeholderTextColor={colors.gray}
             value={name}
             onChangeText={handleNameChange}
@@ -172,7 +172,7 @@ const RegisterInfoScreen = () => {
             activeOpacity={0.8}
             disabled={!isFormValid}
           >
-            <Text style={styles.continueButtonText}>Continuar</Text>
+            <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

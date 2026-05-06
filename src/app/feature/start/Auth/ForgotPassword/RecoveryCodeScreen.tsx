@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
@@ -70,8 +71,8 @@ const RecoveryCodeScreen = () => {
       navigation.navigate("NewPassword", { email });
     } else {
       await logAndShowError(
-        result.error || "Código de verificación incorrecto",
-        new Error(result.error || "Código de verificación incorrecto"),
+        result.error || i18n.t("invalidVerificationCode"),
+        new Error(result.error || i18n.t("invalidVerificationCode")),
         {
           context: "recovery_code_verification_failed",
           metadata: { email },
@@ -142,7 +143,7 @@ const RecoveryCodeScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          Introduce tu código de{"\n"}verificación.
+          {i18n.t("verificationTitle")}
         </Text>
 
         {/* Descripción */}
@@ -152,7 +153,7 @@ const RecoveryCodeScreen = () => {
             isKeyboardVisible && styles.descriptionKeyboardVisible,
           ]}
         >
-          Hemos enviado un código de 6 dígitos a{"\n"}
+          {i18n.t("verificationDescription")}{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
 
@@ -177,7 +178,7 @@ const RecoveryCodeScreen = () => {
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title="Error"
+          title={i18n.t("errorTitle")}
           message={errorMessage}
           onClose={closeErrorModal}
         />

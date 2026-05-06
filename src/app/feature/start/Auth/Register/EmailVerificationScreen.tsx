@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -124,19 +125,19 @@ const EmailVerificationScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          Para continuar, necesitamos{"\n"}un correo electrónico válido.
+          {i18n.t('emailVerificationTitle')}
         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Ingresa tu Email*</Text>
+            <Text style={styles.label}>{i18n.t('enterYourEmailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder="micorreo64@gmail.com"
+                  placeholder={i18n.t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={email}
                   onChangeText={setEmail}
@@ -159,12 +160,12 @@ const EmailVerificationScreen = () => {
 
           {/* Campo Confirmar Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Repite tu Email*</Text>
+            <Text style={styles.label}>{i18n.t('repeatYourEmailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder="micorreo64@gmail.com"
+                  placeholder={i18n.t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={confirmEmail}
                   onChangeText={setConfirmEmail}
@@ -205,7 +206,7 @@ const EmailVerificationScreen = () => {
             {isChecking ? (
               <ActivityIndicator color={colors.white} />
             ) : (
-              <Text style={styles.continueButtonText}>Continuar</Text>
+              <Text style={styles.continueButtonText}>{i18n.t('continueButton')}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -216,7 +217,7 @@ const EmailVerificationScreen = () => {
           style={styles.termsContainer}
           activeOpacity={0.7}
         >
-          <Text style={styles.termsText}>Términos y Condiciones</Text>
+          <Text style={styles.termsText}>{i18n.t('termsAndConditionsLink')}</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

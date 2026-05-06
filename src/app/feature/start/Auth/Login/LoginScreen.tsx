@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -73,8 +74,8 @@ const LoginScreen = () => {
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail || !password.trim()) {
-      if (!normalizedEmail) setEmailError("Por favor ingresa tu email");
-      if (!password.trim()) setPasswordError("Por favor ingresa tu contraseña");
+      if (!normalizedEmail) setEmailError(i18n.t('enterYourEmail'));
+      if (!password.trim()) setPasswordError(i18n.t('enterYourPassword'));
       return;
     }
 
@@ -86,12 +87,12 @@ const LoginScreen = () => {
       if (response.success) {
         navigation.navigate("Home");
       } else {
-        setEmailError("Credenciales incorrectas");
-        setPasswordError("Credenciales incorrectas");
+        setEmailError(i18n.t('incorrectCredentials'));
+        setPasswordError(i18n.t('incorrectCredentials'));
 
         await logAndShowError(
-          response.error || "Credenciales incorrectas",
-          new Error(response.error || "Credenciales incorrectas"),
+          response.error || i18n.t('incorrectCredentials'),
+          new Error(response.error || i18n.t('incorrectCredentials')),
           {
             context: "login_failed",
             metadata: { email: normalizedEmail },
@@ -100,7 +101,7 @@ const LoginScreen = () => {
         );
       }
     } catch (error: unknown) {
-      const message = getErrorMessage(error, "Error al iniciar sesión");
+      const message = getErrorMessage(error, i18n.t('loginError'));
 
       setEmailError(message);
       setPasswordError(message);
@@ -158,19 +159,19 @@ const LoginScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          Completa tus datos para{"\n"}iniciar sesión
+          {i18n.t('loginTitle')}
         </Text>
 
         {/* Formulario */}
         <View style={styles.form}>
           {/* Campo Email */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Como es tu correo electronico?</Text>
+            <Text style={styles.label}>{i18n.t('emailLabel')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Email*"
+                  placeholder={i18n.t('emailField')}
                   placeholderTextColor={colors.gray}
                   value={email}
                   onChangeText={(text) => {
@@ -196,12 +197,12 @@ const LoginScreen = () => {
 
           {/* Campo Contraseña */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Y tu contraseña?</Text>
+            <Text style={styles.label}>{i18n.t('passwordLabelLogin')}</Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputRow}>
                 <TextInput
                   style={styles.input}
-                  placeholder="Contraseña*"
+                  placeholder={i18n.t('passwordLabel')}
                   placeholderTextColor={colors.gray}
                   value={password}
                   onChangeText={(text) => {
@@ -236,7 +237,7 @@ const LoginScreen = () => {
             activeOpacity={0.7}
           >
             <Text style={styles.forgotPasswordText}>
-              ¿Olvidaste tu contraseña?
+              {i18n.t('forgotPasswordLink')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -255,22 +256,22 @@ const LoginScreen = () => {
             disabled={isLoading}
           >
             <Text style={styles.continueButtonText}>
-              {isLoading ? "Iniciando sesión..." : "Continuar"}
+              {isLoading ? i18n.t('loggingIn') : i18n.t('continueButton')}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Ayuda */}
         <View style={styles.helpContainer}>
-          <Text style={styles.helpText}>¿Problemas para iniciar sesion? </Text>
+          <Text style={styles.helpText}>{i18n.t('helpText')} </Text>
           <TouchableOpacity onPress={handleHelp} activeOpacity={0.7}>
-            <Text style={styles.helpLink}>Ayuda</Text>
+            <Text style={styles.helpLink}>{i18n.t('help')}</Text>
           </TouchableOpacity>
         </View>
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title="Error"
+          title={i18n.t('errorTitle')}
           message={errorMessage}
           onClose={closeErrorModal}
         />

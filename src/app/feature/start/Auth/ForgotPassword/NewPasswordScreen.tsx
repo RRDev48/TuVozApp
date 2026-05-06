@@ -1,5 +1,6 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useErrorHandling } from "@/src/app/feature/ajustes/hooks/useErrorHandling";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import type { RouteProp } from "@react-navigation/native";
@@ -84,7 +85,7 @@ const NewPasswordScreen = () => {
     if (!newPassword.trim() || !confirmPassword.trim()) {
       await showFormError(
         logAndShowError,
-        "Por favor completa todos los campos",
+        i18n.t('completeAllFields'),
         {
           context: "new_password_fields_empty",
           metadata: {
@@ -100,7 +101,7 @@ const NewPasswordScreen = () => {
     if (newPassword.length < 6) {
       await showFormError(
         logAndShowError,
-        "La contraseña debe tener al menos 6 caracteres",
+        i18n.t('min6Characters'),
         {
           context: "new_password_too_short",
           metadata: { email, password_length: newPassword.length },
@@ -110,7 +111,7 @@ const NewPasswordScreen = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      await showFormError(logAndShowError, "Las contraseñas no coinciden", {
+      await showFormError(logAndShowError, i18n.t('passwordsNotMatch'), {
         context: "new_password_mismatch",
         metadata: { email, passwords_match: false },
       });
@@ -124,7 +125,7 @@ const NewPasswordScreen = () => {
     } else {
       await showFormError(
         logAndShowError,
-        result.error || "No se pudo actualizar la contraseña",
+        result.error || i18n.t('updatePasswordError'),
         {
           context: "password_update_failed",
           metadata: { email, result_error: result.error },
@@ -166,19 +167,19 @@ const NewPasswordScreen = () => {
       <Text
         style={[styles.title, isKeyboardVisible && styles.titleKeyboardVisible]}
       >
-        Para continuar, necesitamos{"\n"}una contraseña segura.
+        {i18n.t('passwordSetupTitle')}
       </Text>
 
       {/* Formulario */}
       <View style={styles.form}>
         {/* Campo Nueva Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Ingresa tu Contraseña*</Text>
+          <Text style={styles.label}>{i18n.t('enterPasswordLabel')}</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.input}
-                placeholder="Contraseña*"
+                placeholder={i18n.t('passwordLabel')}
                 placeholderTextColor={colors.gray}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -201,12 +202,12 @@ const NewPasswordScreen = () => {
 
         {/* Campo Confirmar Contraseña */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Confirmar Contraseña*</Text>
+          <Text style={styles.label}>{i18n.t('confirmPasswordLabel')}</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.input}
-                placeholder="Confirmar contraseña*"
+                placeholder={i18n.t('confirmPasswordPlaceholder')}
                 placeholderTextColor={colors.gray}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
@@ -247,7 +248,7 @@ const NewPasswordScreen = () => {
           {isUpdating ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.updateButtonText}>Actualizar contraseña</Text>
+            <Text style={styles.updateButtonText}>{i18n.t('updatePasswordButton')}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -255,15 +256,15 @@ const NewPasswordScreen = () => {
       {/* Alert de éxito */}
       <VerificationSuccessModal
         visible={showSuccess}
-        title="Contraseña actualizada"
-        message="Tu contraseña ha sido actualizada correctamente"
+        title={i18n.t('passwordUpdatedTitle')}
+        message={i18n.t('passwordUpdatedMessage')}
         onClose={handleCloseSuccess}
         gifType="verificado"
       />
 
       <VerificationErrorModal
         visible={showErrorModal}
-        title="Error"
+        title={i18n.t('errorTitle')}
         message={errorMessage}
         onClose={closeErrorModal}
       />

@@ -1,4 +1,5 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
+import i18n from "@/src/app/i18n";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -139,7 +140,7 @@ const CodeVerificationScreen = () => {
             isKeyboardVisible && styles.titleKeyboardVisible,
           ]}
         >
-          Introduce tu código de{"\n"}verificación.
+          {i18n.t("verificationTitle")}
         </Text>
 
         {/* Descripción */}
@@ -149,7 +150,7 @@ const CodeVerificationScreen = () => {
             isKeyboardVisible && styles.descriptionKeyboardVisible,
           ]}
         >
-          Hemos enviado un código de 6 dígitos a{"\n"}
+          {i18n.t("verificationDescription")}{"\n"}
           <Text style={styles.email}>{email}</Text>
         </Text>
 
@@ -174,14 +175,14 @@ const CodeVerificationScreen = () => {
 
         <VerificationErrorModal
           visible={showErrorModal}
-          title="Error"
+          title={i18n.t("errorTitle")}
           message={errorMessage}
           onClose={closeErrorModal}
         />
 
         <VerificationSuccessModal
           visible={showSuccessAlert}
-          title="Verificación exitosa"
+          title={i18n.t("verificationSuccessTitle")}
           onClose={handleSuccessModalClose}
           gifType="llave"
         />

@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
+import i18n from "@/src/app/i18n";
 import {
   ActivityIndicator,
   Keyboard,
@@ -72,8 +73,8 @@ const ForgotPasswordScreen = () => {
 
     if (!normalizedEmail) {
       await logAndShowError(
-        "Por favor ingresa tu correo electrónico",
-        new Error("Por favor ingresa tu correo electrónico"),
+        i18n.t('enterYourEmail'),
+        new Error(i18n.t('enterYourEmail')),
         {
           context: "forgot_password_email_empty",
           metadata: { email_length: email.length },
@@ -85,8 +86,8 @@ const ForgotPasswordScreen = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(normalizedEmail)) {
       await logAndShowError(
-        "Por favor ingresa un correo electrónico válido",
-        new Error("Por favor ingresa un correo electrónico válido"),
+        i18n.t('enterYourEmail'),
+        new Error(i18n.t('enterYourEmail')),
         {
           context: "forgot_password_email_invalid",
           metadata: { email: normalizedEmail },
@@ -104,9 +105,9 @@ const ForgotPasswordScreen = () => {
         navigation.navigate("RecoveryCode", { email: normalizedEmail });
       } else {
         await logAndShowError(
-          result.error || "No se pudo enviar el código de verificación",
+          result.error || i18n.t('somethingWentWrong'),
           new Error(
-            result.error || "No se pudo enviar el código de verificación",
+            result.error || i18n.t('somethingWentWrong'),
           ),
           {
             context: "forgot_password_otp_send_failed",
@@ -116,7 +117,7 @@ const ForgotPasswordScreen = () => {
       }
     } catch (error: unknown) {
       await logAndShowError(
-        getErrorMessage(error, "Error inesperado"),
+        i18n.t('somethingWentWrong'),
         error instanceof Error ? error : undefined,
         {
           context: "forgot_password_unexpected_error",
@@ -160,7 +161,7 @@ const ForgotPasswordScreen = () => {
       <Text
         style={[styles.title, isKeyboardVisible && styles.titleKeyboardVisible]}
       >
-        ¿Olvidaste tu contraseña?
+        {i18n.t('forgotPassword')}
       </Text>
 
       {/* Subtítulo */}
@@ -170,19 +171,19 @@ const ForgotPasswordScreen = () => {
           isKeyboardVisible && styles.subtitleKeyboardVisible,
         ]}
       >
-        Rellena tus datos para recuperar tu contraseña
+        {i18n.t('recoverPassword')}
       </Text>
 
       {/* Formulario */}
       <View style={styles.form}>
         {/* Campo Email */}
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Como es tu correo electronico?</Text>
+          <Text style={styles.label}>{i18n.t('enterEmail')}</Text>
           <View style={styles.inputWrapper}>
             <View style={styles.inputRow}>
               <TextInput
                 style={styles.input}
-                placeholder="Email*"
+                placeholder={i18n.t('emailField')}
                 placeholderTextColor={colors.gray}
                 value={email}
                 onChangeText={setEmail}
@@ -217,22 +218,22 @@ const ForgotPasswordScreen = () => {
           {loading ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.sendButtonText}>Enviar</Text>
+            <Text style={styles.sendButtonText}>{i18n.t('continue')}</Text>
           )}
         </TouchableOpacity>
       </View>
 
       {/* Ayuda */}
       <View style={styles.helpContainer}>
-        <Text style={styles.helpText}>¿Problemas para iniciar sesion? </Text>
+        <Text style={styles.helpText}>{i18n.t('helpText')} </Text>
         <TouchableOpacity onPress={handleHelp} activeOpacity={0.7}>
-          <Text style={styles.helpLink}>Ayuda</Text>
+          <Text style={styles.helpLink}>{i18n.t('help')}</Text>
         </TouchableOpacity>
       </View>
 
       <VerificationErrorModal
         visible={showErrorModal}
-        title="Error"
+        title={i18n.t('errorTitle')}
         message={errorMessage}
         onClose={closeErrorModal}
       />
