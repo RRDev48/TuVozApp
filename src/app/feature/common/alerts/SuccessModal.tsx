@@ -1,6 +1,7 @@
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React, { useEffect, useState } from "react";
-import { Image, Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
+import OptimizedGif from "../OptimizedGif";
 import { SuccessModalProps } from "../models/alert.props";
 
 const SuccessModal = ({
@@ -87,7 +88,7 @@ const SuccessModal = ({
     >
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Image source={gifSource} style={styles.gifImage} />
+          <OptimizedGif source={gifSource} style={styles.gifImage} />
         </View>
 
         <Text style={styles.title}>{title}</Text>

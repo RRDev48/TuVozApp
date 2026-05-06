@@ -2,13 +2,13 @@ import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import {
-  Image,
   Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import OptimizedGif from "@/src/app/feature/common/OptimizedGif";
 import { CancelConfirmationModalProps } from "../../models/modal.props";
 
 const CancelConfirmationModal = ({
@@ -87,7 +87,7 @@ const CancelConfirmationModal = ({
       <View style={styles.container}>
         {/* Icono de advertencia */}
         <View style={styles.iconContainer}>
-          <Image
+          <OptimizedGif
             source={require("@/src/app/assets/gif/alerta.gif")}
             style={styles.gifImage}
           />

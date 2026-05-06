@@ -1,6 +1,7 @@
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
-import { Image, Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
+import OptimizedGif from "@/src/app/feature/common/OptimizedGif";
 
 interface VerificationSuccessModalProps {
   visible: boolean;
@@ -53,7 +54,7 @@ const VerificationSuccessModal = ({
     >
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Image source={gifSource} style={styles.gifImage} />
+          <OptimizedGif source={gifSource} style={styles.gifImage} />
         </View>
 
         <Text style={styles.title}>{title}</Text>

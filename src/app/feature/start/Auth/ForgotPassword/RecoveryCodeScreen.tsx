@@ -7,7 +7,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-    Image,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
@@ -17,6 +16,7 @@ import {
     TextInput,
     View,
 } from "react-native";
+import OptimizedGif from "../../../common/OptimizedGif";
 import AppLogo from "../../../../assets/image/AppLogo.svg";
 import BackButton from "../../../common/BackButton";
 import VerificationErrorModal from "../components/VerificationErrorModal";
@@ -127,13 +127,12 @@ const RecoveryCodeScreen = () => {
             isKeyboardVisible && styles.iconContainerKeyboardVisible,
           ]}
         >
-          <Image
+          <OptimizedGif
             source={require("../../../../assets/gif/llave.gif")}
             style={[
               styles.mailIcon,
               isKeyboardVisible && styles.mailIconKeyboardVisible,
             ]}
-            resizeMode="contain"
           />
         </View>
 

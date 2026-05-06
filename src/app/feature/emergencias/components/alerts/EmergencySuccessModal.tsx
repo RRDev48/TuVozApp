@@ -1,7 +1,8 @@
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
-import { Image, Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
+import OptimizedGif from "@/src/app/feature/common/OptimizedGif";
 import { EmergencySuccessModalProps } from "../../models/modal.props";
 
 const EmergencySuccessModal = ({
@@ -56,7 +57,7 @@ const EmergencySuccessModal = ({
       <View style={styles.container}>
         {/* Icono de check animado */}
         <View style={styles.iconContainer}>
-          <Image
+          <OptimizedGif
             source={require("@/src/app/assets/gif/verificado.gif")}
             style={styles.gifImage}
           />

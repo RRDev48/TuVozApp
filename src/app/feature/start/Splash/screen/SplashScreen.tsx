@@ -1,4 +1,5 @@
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
+import usePreloadGifs from "@/src/app/contexts/usePreloadGifs";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +17,7 @@ type SplashScreenNavigationProp = StackNavigationProp<
 const SplashScreen = () => {
   const { t } = useLanguageRefresh();
   const navigation = useNavigation<SplashScreenNavigationProp>();
+  usePreloadGifs();
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -6,7 +6,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -16,6 +15,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import OptimizedGif from "../../../common/OptimizedGif";
 import BackButton from "../../../common/BackButton";
 import ProgressBar from "../components/ProgressBar";
 import VerificationErrorModal from "../components/VerificationErrorModal";
@@ -126,10 +126,9 @@ const CodeVerificationScreen = () => {
         {/* Icono de correo */}
         {!isKeyboardVisible && (
           <View style={styles.iconContainer}>
-            <Image
+            <OptimizedGif
               source={require("../../../../assets/gif/llave.gif")}
               style={styles.mailIcon}
-              resizeMode="contain"
             />
           </View>
         )}

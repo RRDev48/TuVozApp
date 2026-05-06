@@ -3,13 +3,13 @@ import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
   Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import OptimizedGif from "../OptimizedGif";
 import { ErrorModalProps } from "../models/alert.props";
 
 const ErrorModal = ({
@@ -112,7 +112,7 @@ const ErrorModal = ({
     >
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Image
+          <OptimizedGif
             source={require("@/src/app/assets/gif/alerta.gif")}
             style={styles.gifImage}
           />
