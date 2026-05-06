@@ -41,80 +41,115 @@
    cd TuVozApp
 2. Instalar dependencias:
       npm install
-   
 ---
-3. Configuración de Supabase
-Opción A: Usar un proyecto existente
+
+## Configuración de Supabase
+
+### Opción A: Usar un proyecto existente
+
 Si ya tienes un proyecto Supabase configurado, puedes saltar este paso.
-Opción B: Crear base de datos desde cero
-1. Crear un nuevo proyecto en Supabase (https://supabase.com)
-2. Abrir el SQL Editor
-3. Ejecutar el archivo supabase/bootstrap-minimo.sql
+
+### Opción B: Crear base de datos desde cero
+
+1. Crear un nuevo proyecto en [Supabase](https://supabase.com)
+2. Abrir el **SQL Editor**
+3. Ejecutar el archivo `supabase/bootstrap-minimo.sql`
+
 Este script crea:
 - Tablas principales
 - Políticas RLS (Row Level Security)
-- Buckets: Avatar y Categorias
-- Función RPC: public.create_user_with_profile
+- Buckets: `Avatar` y `Categorias`
+- Función RPC: `public.create_user_with_profile`
 ---
-4. Variables de Entorno
+
+## Variables de Entorno
+
 1. Copiar el archivo de ejemplo:
-      cp .env.example .env
-   
-2. Editar .env con los valores de tu proyecto Supabase:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Editar `.env` con los valores de tu proyecto Supabase:
+
+```env
 # Supabase (obligatorio)
 EXPO_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
+
 # Opcional: APIs externas
 # EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=
 # EXPO_PUBLIC_SENTRY_DSN=
-Dónde encontrar las credenciales de Supabase:
+```
+
+**Dónde encontrar las credenciales de Supabase:**
 - URL: Configuración → API → Project URL
-- Anon Key: Configuración → API → Project API keys → anon key
+- Anon Key: Configuración → API → Project API keys → `anon` key
 ---
-5. Ejecutar la App
-Desarrollo
+
+## Ejecutar la App
+
+### Desarrollo
+
+```bash
 npm run start
-Plataformas específicas
+```
+
+### Plataformas específicas
+
+```bash
 npm run android   # Android
 npm run ios        # iOS (solo macOS)
 npm run web        # Navegador web
-Verificación
+```
+
+### Verificación
+
 Para confirmar que la app funciona correctamente:
+
 1. La app inicia sin errores
 2. La autenticación con Supabase funciona
 3. Se crea usuario y perfil correctamente
 4. Los módulos principales responden
-5. Los assets cargan desde los buckets Avatar y Categorias
+5. Los assets cargan desde los buckets `Avatar` y `Categorias`
 ---
-6. Funcionalidades
-🚀 Autenticación
+
+## Funcionalidades
+
+### 🚀 Autenticación
 - Registro e inicio de sesión
 - Verificación de email
 - Gestión de sesiones
-📋 Perfil de Usuario
+
+### 📋 Perfil de Usuario
 - Información personal
 - Preferencias de tema (claro/oscuro)
 - Configuración de idioma
-📅 Rutinas
+
+### 📅 Rutinas
 - Creación y gestión de rutinas semanales
 - Seguimiento de tareas diarias
 - Vista de calendario por día
 - Modal para agregar/editar tareas
 - Detalles de tareas con pasos
 - Progreso del día
-🚨 Emergencias
+
+### 🚨 Emergencias
 - Perfil de emergencia completo
 - Contacto de emergencia
 - Alertas médicas (alergias, medicamentos, tipo de sangre)
 - Notas importantes
-- Envío de alertas por WhatsApp y SMS al contacto de emergencia
+- **Envío de alertas por WhatsApp y SMS** al contacto de emergencia
 - Botón de llamada al 911
-⚙️ Ajustes
+
+### ⚙️ Ajustes
 - Configuración de cuenta
 - Preferencias de personalización
 - Gestión de idioma
 ---
-7. Estructura del Proyecto
+
+## Estructura del Proyecto
+
+```
 TuVozApp/
 ├── src/
 │   ├── app/
@@ -136,38 +171,60 @@ TuVozApp/
 │   └── bootstrap-minimo.sql  # Script de base de datos
 ├── package.json
 └── README.md
+```
 ---
-8. Tech Stack
-Tecnología
-Expo
-React Native
-TypeScript
-Supabase
-React Navigation
-Zustand
-Expo Location
-Expo Linking
+
+## Tech Stack
+
+| Tecnología | Descripción |
+|------------|-------------|
+| **Expo** | Framework para React Native |
+| **React Native** | Biblioteca para interfaces móviles |
+| **TypeScript** | Tipado estático |
+| **Supabase** | Backend como servicio (Auth, DB, Storage) |
+| **React Navigation** | Navegación de la app |
+| **Zustand** | Gestión de estado global |
+| **Expo Location** | Acceso a ubicación |
+| **Expo Linking** | Deep linking y abrir apps externas |
 ---
-9. Build para Producción
-Android (APK)
+
+## Build para Producción
+
+### Android (APK)
+
 1. Generar el build de Android:
-      npx expo run:android --variant release
-   
+   ```bash
+   npx expo run:android --variant release
+   ```
+
 2. El APK se generará en:
-      android/app/build/outputs/apk/release/
-   
-iOS (IPA)
+   ```
+   android/app/build/outputs/apk/release/
+   ```
+
+### iOS (IPA)
+
 > Solo disponible en macOS con Xcode instalado
+
 1. Generar el build de iOS:
-      npx expo run:ios --configuration Release
-   
+   ```bash
+   npx expo run:ios --configuration Release
+   ```
+
 2. El IPA se generará en:
-      ios/build/Build/Products/Release-iphoneos/
-   
-Prebuild (para builds nativos)
+   ```
+   ios/build/Build/Products/Release-iphoneos/
+   ```
+
+### Prebuild (para builds nativos)
+
 Si necesitas modificar código nativo:
+
+```bash
 npx expo prebuild
-Esto generará las carpetas android e ios para desarrollo nativo.
+```
+
+Esto generará las carpetas `android` e `ios` para desarrollo nativo.
 ---
 
 ## Troubleshooting
@@ -251,13 +308,15 @@ MIT License
 ---
 
 ## Scripts Disponibles
-Script
-npm run start
-npm run android
-npm run ios
-npm run web
-npm run lint
-npm run reset-project
+
+| Script | Descripción |
+|--------|-------------|
+| `npm run start` | Inicia el servidor de desarrollo |
+| `npm run android` | Abre en emulador Android |
+| `npm run ios` | Abre en simulador iOS |
+| `npm run web` | Abre en navegador web |
+| `npm run lint` | Ejecuta linter |
+| `npm run reset-project` | Reinicia el proyecto Expo |
 ---
 
 ## Contribuir
