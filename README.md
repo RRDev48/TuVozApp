@@ -1,163 +1,121 @@
 # TuVozApp
 
-Proyecto mobile desarrollado con **Expo** y **Supabase**.
-
+<div align="center">
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Expo](https://img.shields.io/badge/Expo-54.0-blue)
+![React Native](https://img.shields.io/badge/React%20Native-0.76-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![Supabase](https://img.shields.io/badge/Supabase-2.91-green)
+![License](https://img.shields.io/badge/license-MIT-green)
+**Proyecto mobile desarrollado con Expo y Supabase**
+</div>
 ---
-
 ## Tabla de Contenidos
-
-1. [Requisitos Previos](#requisitos-previos)
-2. [Instalación](#instalación)
-3. [Configuración de Supabase](#configuración-de-supabase)
-4. [Variables de Entorno](#variables-de-entorno)
-5. [Ejecutar la App](#ejecutar-la-app)
-6. [Funcionalidades](#funcionalidades)
-7. [Estructura del Proyecto](#estructura-del-proyecto)
-8. [Tech Stack](#tech-stack)
-9. [Build para Producción](#build-para-producción)
-10. [Troubleshooting](#troubleshooting)
-11. [Contribuir](#contribuir)
-12. [Licencia](#licencia)
-
+| # | Sección | Descripción |
+|---|---------|-------------|
+| 1 | [📋 Requisitos Previos](#1-requisitos-previos) | Herramientas necesarias |
+| 2 | [💾 Instalación](#2-instalación) | Cómo clonar e instalar |
+| 3 | [🗄️ Configuración de Supabase](#3-configuración-de-supabase) | Setup de base de datos |
+| 4 | [🔐 Variables de Entorno](#4-variables-de-entorno) | Configuración de credenciales |
+| 5 | [▶️ Ejecutar la App](#5-ejecutar-la-app) | Comandos de ejecución |
+| 6 | [⚡ Funcionalidades](#6-funcionalidades) | Características de la app |
+| 7 | [📁 Estructura del Proyecto](#7-estructura-del-proyecto) | Organización de archivos |
+| 8 | [🛠️ Tech Stack](#8-tech-stack) | Tecnologías utilizadas |
+| 9 | [📦 Build para Producción](#9-build-para-producción) | Generar APK/IPA |
+| 10 | [🔧 Troubleshooting](#10-troubleshooting) | Solución de problemas |
+| 11 | [❓ FAQ](#11-faq) | Preguntas frecuentes |
+| 12 | [👤 Créditos](#12-créditos) | Información del desarrollador |
+| 13 | [📜 Licencia](#13-licencia) | Términos de uso |
 ---
-
-## Requisitos Previos
-
+## 1. Requisitos Previos
 - **Node.js** (versión 18.x LTS o superior)
 - **npm** o **yarn**
 - **Expo CLI** (se instala automáticamente)
 - Cuenta en **Supabase** (para el backend)
 - Para Android: **Android Studio** o un emulador configurado
 - Para iOS: **Xcode** (solo macOS)
-
 ---
-
-## Instalación
-
+## 2. Instalación
 1. Clonar el repositorio:
    ```bash
    git clone <URL_DEL_REPOSITORIO>
    cd TuVozApp
-   ```
-
 2. Instalar dependencias:
-   ```bash
-   npm install
-   ```
-
+      npm install
+   
 ---
-
-## Configuración de Supabase
-
-### Opción A: Usar un proyecto existente
-
+3. Configuración de Supabase
+Opción A: Usar un proyecto existente
 Si ya tienes un proyecto Supabase configurado, puedes saltar este paso.
-
-### Opción B: Crear base de datos desde cero
-
-1. Crear un nuevo proyecto en [Supabase](https://supabase.com)
-2. Abrir el **SQL Editor**
-3. Ejecutar el archivo `supabase/bootstrap-minimo.sql`
-
+Opción B: Crear base de datos desde cero
+1. Crear un nuevo proyecto en Supabase (https://supabase.com)
+2. Abrir el SQL Editor
+3. Ejecutar el archivo supabase/bootstrap-minimo.sql
 Este script crea:
 - Tablas principales
 - Políticas RLS (Row Level Security)
-- Buckets: `Avatar` y `Categorias`
-- Función RPC: `public.create_user_with_profile`
-
+- Buckets: Avatar y Categorias
+- Función RPC: public.create_user_with_profile
 ---
-
-## Variables de Entorno
-
+4. Variables de Entorno
 1. Copiar el archivo de ejemplo:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Editar `.env` con los valores de tu proyecto Supabase:
-
-```env
+      cp .env.example .env
+   
+2. Editar .env con los valores de tu proyecto Supabase:
 # Supabase (obligatorio)
 EXPO_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
-
 # Opcional: APIs externas
 # EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=
 # EXPO_PUBLIC_SENTRY_DSN=
-```
-
-**Dónde encontrar las credenciales de Supabase:**
+Dónde encontrar las credenciales de Supabase:
 - URL: Configuración → API → Project URL
-- Anon Key: Configuración → API → Project API keys → `anon` key
-
+- Anon Key: Configuración → API → Project API keys → anon key
 ---
-
-## Ejecutar la App
-
-### Desarrollo
-
-```bash
+5. Ejecutar la App
+Desarrollo
 npm run start
-```
-
-### Plataformas específicas
-
-```bash
+Plataformas específicas
 npm run android   # Android
 npm run ios        # iOS (solo macOS)
 npm run web        # Navegador web
-```
-
-### Verificación
-
+Verificación
 Para confirmar que la app funciona correctamente:
-
 1. La app inicia sin errores
 2. La autenticación con Supabase funciona
 3. Se crea usuario y perfil correctamente
 4. Los módulos principales responden
-5. Los assets cargan desde los buckets `Avatar` y `Categorias`
-
+5. Los assets cargan desde los buckets Avatar y Categorias
 ---
-
-## Funcionalidades
-
-### 🚀 Autenticación
+6. Funcionalidades
+🚀 Autenticación
 - Registro e inicio de sesión
 - Verificación de email
 - Gestión de sesiones
-
-### 📋 Perfil de Usuario
+📋 Perfil de Usuario
 - Información personal
 - Preferencias de tema (claro/oscuro)
 - Configuración de idioma
-
-### 📅 Rutinas
+📅 Rutinas
 - Creación y gestión de rutinas semanales
 - Seguimiento de tareas diarias
 - Vista de calendario por día
 - Modal para agregar/editar tareas
 - Detalles de tareas con pasos
 - Progreso del día
-
-### 🚨 Emergencias
+🚨 Emergencias
 - Perfil de emergencia completo
 - Contacto de emergencia
 - Alertas médicas (alergias, medicamentos, tipo de sangre)
 - Notas importantes
-- **Envío de alertas por WhatsApp y SMS** al contacto de emergencia
+- Envío de alertas por WhatsApp y SMS al contacto de emergencia
 - Botón de llamada al 911
-
-### ⚙️ Ajustes
+⚙️ Ajustes
 - Configuración de cuenta
 - Preferencias de personalización
 - Gestión de idioma
-
 ---
-
-## Estructura del Proyecto
-
-```
+7. Estructura del Proyecto
 TuVozApp/
 ├── src/
 │   ├── app/
@@ -179,136 +137,99 @@ TuVozApp/
 │   └── bootstrap-minimo.sql  # Script de base de datos
 ├── package.json
 └── README.md
-```
-
 ---
-
-## Tech Stack
-
-| Tecnología | Descripción |
-|------------|-------------|
-| **Expo** | Framework para React Native |
-| **React Native** | Biblioteca para interfaces móviles |
-| **TypeScript** | Tipado estático |
-| **Supabase** | Backend como servicio (Auth, DB, Storage) |
-| **React Navigation** | Navegación de la app |
-| **Zustand** | Gestión de estado global |
-| **Expo Location** | Acceso a ubicación |
-| **Expo Linking** | Deep linking y abrir apps externas |
-
+8. Tech Stack
+Tecnología
+Expo
+React Native
+TypeScript
+Supabase
+React Navigation
+Zustand
+Expo Location
+Expo Linking
 ---
-
-## Build para Producción
-
-### Android (APK)
-
+9. Build para Producción
+Android (APK)
 1. Generar el build de Android:
-   ```bash
-   npx expo run:android --variant release
-   ```
-
+      npx expo run:android --variant release
+   
 2. El APK se generará en:
-   ```
-   android/app/build/outputs/apk/release/
-   ```
-
-### iOS (IPA)
-
+      android/app/build/outputs/apk/release/
+   
+iOS (IPA)
 > Solo disponible en macOS con Xcode instalado
-
 1. Generar el build de iOS:
-   ```bash
-   npx expo run:ios --configuration Release
-   ```
-
+      npx expo run:ios --configuration Release
+   
 2. El IPA se generará en:
-   ```
-   ios/build/Build/Products/Release-iphoneos/
-   ```
-
-### Prebuild (para builds nativos)
-
+      ios/build/Build/Products/Release-iphoneos/
+   
+Prebuild (para builds nativos)
 Si necesitas modificar código nativo:
-
-```bash
 npx expo prebuild
-```
-
-Esto generará las carpetas `android` e `ios` para desarrollo nativo.
-
+Esto generará las carpetas android e ios para desarrollo nativo.
 ---
-
-## Troubleshooting
-
-### Error: "Unable to resolve module"
-
-```bash
+10. Troubleshooting
+Error: "Unable to resolve module"
 # Limpiar caché y reinstalar
 rm -rf node_modules
 npm install
 npx expo start --clear
-```
-
-### Error de conexión con Supabase
-
-1. Verificar que las variables de entorno estén correctas en `.env`
+Error de conexión con Supabase
+1. Verificar que las variables de entorno estén correctas en .env
 2. Confirmar que el proyecto Supabase esté activo
 3. Revisar las políticas RLS en Supabase
-
-### La app no detecta cambios
-
-```bash
+La app no detecta cambios
 npx expo start --clear
-```
-
-### Problemas con emulador Android
-
+Problemas con emulador Android
 1. Verificar que Android Studio esté instalado
 2. Asegurarse de tener un emulador configurado
 3. Ejecutar:
-   ```bash
-   adb devices
-   ```
-
-### Error de TypeScript
-
-```bash
+      adb devices
+   
+Error de TypeScript
 # Verificar errores de tipo
 npx tsc --noEmit
-```
-
-### Build falla en iOS
-
+Build falla en iOS
 1. Actualizar CocoaPods:
-   ```bash
-   cd ios && pod install && cd ..
-   ```
-2. Verificar versión de Xcode
-
+      cd ios && pod install && cd ..
+   2. Verificar versión de Xcode
 ---
-
-## Scripts Disponibles
-
-| Script | Descripción |
-|--------|-------------|
-| `npm run start` | Inicia el servidor de desarrollo |
-| `npm run android` | Abre en emulador Android |
-| `npm run ios` | Abre en simulador iOS |
-| `npm run web` | Abre en navegador web |
-| `npm run lint` | Ejecuta linter |
-| `npm run reset-project` | Reinicia el proyecto Expo |
-
+11. FAQ
+¿Cómo ejecutar la app en mi celular?
+1. Escanea el código QR que aparece al ejecutar npm run start
+2. O conecta tu dispositivo por USB y ejecuta npm run android
+¿Necesito cuenta de Supabase?
+Sí, la app requiere un proyecto de Supabase para funcionar. Puedes crear uno gratis en supabase.com (https://supabase.com).
+¿La app funciona sin internet?
+Algunas funciones requieren conexión (autenticación, cargar datos), pero la app está diseñada para funcionar offline cuando sea posible.
+¿Cómo contacto al desarrollador?
+Para reportar bugs o sugerencias, puedes crear un issue en el repositorio o contactar directamente.
+¿Puedo contribuir al proyecto?
+Sí, puedes crear un fork y enviar pull requests. Ver sección Contribuir (#contribuir).
 ---
-
-## Contribuir
-
-1. Crear una rama: `git checkout -b feature/nueva-funcionalidad`
-2. Hacer commit: `git commit -m "Agregar nueva funcionalidad"`
-3. Push: `git push origin feature/nueva-funcionalidad`
-4. Crear Pull Request
-
+12. Créditos
+Campo
+Desarrollador
+Año
+Tecnología principal
+Backend
 ---
-
-## Licencia
-
+## 13. Licencia
 MIT License
+---
+Scripts Disponibles
+Script
+npm run start
+npm run android
+npm run ios
+npm run web
+npm run lint
+npm run reset-project
+---
+Contribuir
+1. Crear una rama: git checkout -b feature/nueva-funcionalidad
+2. Hacer commit: git commit -m "Agregar nueva funcionalidad"
+3. Push: git push origin feature/nueva-funcionalidad
+4. Crear Pull Request
