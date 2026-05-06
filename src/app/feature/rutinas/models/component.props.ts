@@ -108,6 +108,7 @@ export interface DaysOfWeekProps {
   setSelectedDayIndex: (index: number) => void;
   routineId: number;
   profileId: string;
+  onChangeWeek?: (newStartDate: Date) => void;
 }
 
 export interface ChangeWeekProps {

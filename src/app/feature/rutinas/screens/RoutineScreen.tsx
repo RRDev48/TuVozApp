@@ -234,6 +234,7 @@ export const RoutineScreen = () => {
         setSelectedDayIndex={setSelectedDayIndex}
         routineId={routineId}
         profileId={profileId}
+        onChangeWeek={handleChangeWeek}
       />
 
       {/*

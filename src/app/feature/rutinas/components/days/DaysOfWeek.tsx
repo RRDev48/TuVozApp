@@ -1,7 +1,7 @@
-import i18n from "@/src/app/i18n";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "../../../common/CustomText";
 import medalImages from "../../constants/medals";
@@ -15,11 +15,53 @@ export const DaysOfWeek = ({
   selectedDayIndex,
   setSelectedDayIndex,
   profileId,
+  onChangeWeek,
 }: DaysOfWeekProps) => {
-  const { getThemedColors } = usePersonalization();
+  const { getThemedColors, idioma } = usePersonalization();
+  const { t } = useLanguageRefresh();
   const themedColors = getThemedColors();
   const weekDates = useWeekDays(currentWeekStart);
   const medals = useWeekMedals(profileId, weekDates);
+
+  const locale = idioma === "es" ? "es-ES" : "en-US";
+
+  const touchStartX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: { nativeEvent: { locationX: number } }) => {
+    touchStartX.current = e.nativeEvent.locationX;
+  };
+
+  const handleTouchEnd = (e: { nativeEvent: { locationX: number } }) => {
+    if (touchStartX.current === null) return;
+
+    const touchEndX = e.nativeEvent.locationX;
+    const diff = touchStartX.current - touchEndX;
+    const swipeThreshold = 30;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        if (selectedDayIndex < 6) {
+          setSelectedDayIndex(selectedDayIndex + 1);
+        } else if (onChangeWeek) {
+          const nextWeek = new Date(currentWeekStart);
+          nextWeek.setDate(currentWeekStart.getDate() + 7);
+          onChangeWeek(nextWeek);
+          setSelectedDayIndex(0);
+        }
+      } else {
+        if (selectedDayIndex > 0) {
+          setSelectedDayIndex(selectedDayIndex - 1);
+        } else if (onChangeWeek) {
+          const prevWeek = new Date(currentWeekStart);
+          prevWeek.setDate(currentWeekStart.getDate() - 7);
+          onChangeWeek(prevWeek);
+          setSelectedDayIndex(6);
+        }
+      }
+    }
+
+    touchStartX.current = null;
+  };
 
   const styles = useMemo(
     () =>
@@ -58,12 +100,11 @@ export const DaysOfWeek = ({
   );
 
   return (
-    <View style={styles.daysContainer}>
-      {/*
-        Recorre los días de la semana y pinta un botón por cada uno.
-        Cada día puede estar seleccionado (se resalta con color) y
-        opcionalmente mostrar una medalla si corresponde.
-      */}
+    <View
+      style={styles.daysContainer}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {weekDates.map((day, index) => {
         const isSelected = index === selectedDayIndex;
         return (
@@ -96,7 +137,7 @@ export const DaysOfWeek = ({
               adjustsFontSizeToFit
               minimumFontScale={0.8}
             >
-              {day.toLocaleString(i18n.language === 'es' ? 'es-ES' : 'en-US', { weekday: "short" })}
+              {day.toLocaleString(locale, { weekday: "short" })}
             </CustomText>
             {/* Número de día del mes (1-31) */}
             <CustomText
