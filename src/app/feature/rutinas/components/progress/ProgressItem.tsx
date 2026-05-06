@@ -1,10 +1,9 @@
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CustomText from "../../../common/CustomText";
-import { useRoutineProgress } from "../../hooks/useRoutineProgress";
 import { ProgressItemProps } from "../../models/component.props";
 import { PendingTasksModal } from "./PendingTasksModal";
 
@@ -18,10 +17,12 @@ export const ProgressItem = ({
   const themedColors = getThemedColors();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { completed, total, percent } = useRoutineProgress(
-    Number(routineId),
-    refreshTrigger,
+  const completed = useMemo(() => 
+    tasks.filter((task) => task.estado === "Completado").length,
+    [tasks]
   );
+  const total = tasks.length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const styles = useMemo(
     () =>

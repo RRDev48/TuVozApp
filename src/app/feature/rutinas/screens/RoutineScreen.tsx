@@ -19,7 +19,6 @@ import { TaskStepModal } from "../components/tasks/TaskStepModal";
 import ChangeWeek from "../components/week/ChangeWeek";
 import { useAchievementCelebration } from "../hooks/useAchievementCelebration";
 import { useModals } from "../hooks/useModals";
-import { useRoutineProgress } from "../hooks/useRoutineProgress";
 import { useTaskOperations } from "../hooks/useTaskOperations";
 import { useWeekRoutine } from "../hooks/useWeekRoutine";
 import { useWeekTasksPreload } from "../hooks/useWeekTasksPreload";
@@ -80,7 +79,7 @@ export const RoutineScreen = () => {
     daysOfWeek,
   );
 
-  // Obtener tareas del día seleccionado (ya precargadas)
+// Obtener tareas del día seleccionado (ya precargadas)
   const selectedDayTasks = useMemo(() => {
     if (!daysOfWeek[selectedDayIndex]) return [];
     return getTasksForDay(daysOfWeek[selectedDayIndex]);
@@ -91,18 +90,22 @@ export const RoutineScreen = () => {
     return daysOfWeek.flatMap((day) => getTasksForDay(day));
   }, [daysOfWeek, getTasksForDay]);
 
+  // Calcular progreso localmente
+  const completedCount = useMemo(() => 
+    allWeekTasks.filter((task) => task.estado === "Completado").length,
+    [allWeekTasks]
+  );
+  const totalCount = allWeekTasks.length;
+  const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
   // Operaciones sobre tareas
-  const {
+const {
     addTask,
     removeTask,
     replaceTask,
     updateTaskState,
     handleTaskTimeChange,
   } = useTaskOperations(selectedDayTasks, reloadWeekTasks);
-
-  const tasksRefreshTrigger = useMemo(() => {
-    return allWeekTasks.map((t) => `${t.id}-${t.estado}`).join(",");
-  }, [allWeekTasks]);
 
   const {
     isAddTaskModalVisible,
@@ -118,7 +121,9 @@ export const RoutineScreen = () => {
     closeAchievementModal,
   } = useModals();
 
-  const { percent } = useRoutineProgress(routineId, tasksRefreshTrigger);
+  const tasksRefreshTrigger = useMemo(() => {
+    return allWeekTasks.length;
+  }, [allWeekTasks]);
 
   useAchievementCelebration({
     percent,
@@ -210,7 +215,7 @@ export const RoutineScreen = () => {
         <ProgressItem
           routineId={routineId}
           refreshTrigger={tasksRefreshTrigger}
-          tasks={allWeekTasks}
+          tasks={selectedDayTasks}
         />
       </View>
 

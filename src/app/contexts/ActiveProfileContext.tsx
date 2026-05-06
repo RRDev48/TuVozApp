@@ -46,6 +46,13 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
 
   if (authError || !user) return null;
 
+  const { data: userData } = await supabase.auth.getUser();
+
+  let avatarUrl: string | null = null;
+  if (userData.user?.user_metadata?.avatar_url) {
+    avatarUrl = userData.user.user_metadata.avatar_url;
+  }
+
   const { data, error } = await supabase
     .from("user_profiles")
     .select("profiles(display_name, avatar_url)")
@@ -53,20 +60,28 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
     .eq("is_owner", true)
     .maybeSingle();
 
-  if (error || !data) return null;
+  if (error && error.code !== "PGRST116") return null;
 
-  const profile = (
-    Array.isArray(data.profiles) ? data.profiles[0] : data.profiles
-  ) as
-    | { display_name: string | null; avatar_url: string | null }
-    | null
-    | undefined;
+  let displayName: string | null = null;
+  let profileAvatarUrl: string | null = null;
 
-  if (!profile) return null;
+  if (data) {
+    const profile = (
+      Array.isArray(data.profiles) ? data.profiles[0] : data.profiles
+    ) as
+      | { display_name: string | null; avatar_url: string | null }
+      | null
+      | undefined;
+
+    if (profile) {
+      displayName = profile.display_name ?? null;
+      profileAvatarUrl = profile.avatar_url ?? null;
+    }
+  }
 
   return {
-    displayName: profile.display_name ?? null,
-    avatarUrl: profile.avatar_url ?? null,
+    displayName: displayName,
+    avatarUrl: profileAvatarUrl || avatarUrl,
   };
 }
 

@@ -116,6 +116,13 @@ export const useEmergencyActions = () => {
             );
           }
         }
+
+        const smsUrl = `sms:${phone}?body=${encodeURIComponent(message)}`;
+        try {
+          await Linking.openURL(smsUrl);
+        } catch (smsError) {
+          console.log("SMS no disponible, solo se envió WhatsApp");
+        }
       }
     } catch (error) {
       const normalizedError = toError(error, "Error enviando alerta");

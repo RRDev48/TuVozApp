@@ -1,13 +1,15 @@
+import { useActiveProfile } from "@/src/app/contexts/ActiveProfileContext";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { useUserData } from "@/src/app/feature/Home/hooks/useUserData";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
+import clearAppCache from "@/src/app/services/cacheCleaner.Service";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -22,12 +24,22 @@ import {
 const ADIP_ICON = require("../../../../assets/image/adip_icon.png");
 const SettingsScreen = () => {
   const { t } = useLanguageRefresh();
-  const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
+  const {
+    userName,
+    avatarUrl,
+    loading: isLoadingUser,
+    refreshUser,
+  } = useUserData();
   const { getThemedColors, reloadLocalPreferences } = usePersonalization();
   const themedColors = getThemedColors();
   const { currentUser, isLoading } = useCurrentUser();
   const buttons = useSettingsButtons(currentUser, isLoading);
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const { clear: clearActiveProfile } = useActiveProfile();
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
 
   const styles = useMemo(
     () =>
@@ -131,13 +143,15 @@ const SettingsScreen = () => {
   const handleLogout = useCallback(async () => {
     const result = await authService.signOut();
     if (result.success) {
+      await clearAppCache();
+      await clearActiveProfile();
       await reloadLocalPreferences();
       navigation.reset({
         index: 0,
         routes: [{ name: "Onboarding" }],
       });
     }
-  }, [navigation, reloadLocalPreferences]);
+  }, [navigation, reloadLocalPreferences, clearActiveProfile]);
 
   const renderButton = useCallback(
     (button: SettingsButton) => (
@@ -194,7 +208,7 @@ const SettingsScreen = () => {
         </View>
         <CustomText style={styles.greetingText}>
           {userName
-            ? t("greetingWithName", { name: userName })
+            ? `¡Hola ${userName}!`
             : t("greetingFallback")}
         </CustomText>
       </View>
