@@ -9,6 +9,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
+import i18n from "@/src/app/i18n";
 
 type AddressScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -89,16 +90,16 @@ const AddressScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Dirección")} />
+      <ScreenTitle text={i18n.t('address')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu dirección?")}
+          {i18n.t('whatIsYourAddress')}
         </Text>
 
         <AddButton
           onPress={handleAddAddress}
-          text={transformText("Añadir nuevo")}
+          text={i18n.t('addNew')}
         />
 
         {addresses.map((address, index) => (

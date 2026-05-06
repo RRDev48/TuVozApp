@@ -21,6 +21,7 @@ import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
+import i18n from "@/src/app/i18n";
 
 type AddAllergyScreenRouteProp = RouteProp<RootStackParamsList, "AddAllergy">;
 type AddAllergyScreenNavigationProp = StackNavigationProp<
@@ -31,7 +32,7 @@ type AddAllergyScreenNavigationProp = StackNavigationProp<
 const AddAllergyScreen = () => {
   const navigation = useNavigation<AddAllergyScreenNavigationProp>();
   const route = useRoute<AddAllergyScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const isKeyboardVisible = useKeyboardVisibility();
 
@@ -109,16 +110,16 @@ const AddAllergyScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Agrega tu alergia")} />
+      <ScreenTitle text={i18n.t('addAllergy')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Qué tipo de alergia presentas?")}
+            {i18n.t('whatAllergy')}
           </Text>
 
           <ThemedTextInput
-            placeholder={transformText("Nombre de la alergia")}
+            placeholder={i18n.t('allergyName')}
             value={allergyName}
             onChangeText={setAllergyName}
           />
@@ -126,7 +127,7 @@ const AddAllergyScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Cuál es el grado?")}
+            {i18n.t('whatDegree')}
           </Text>
 
           <TouchableOpacity
@@ -155,8 +156,8 @@ const AddAllergyScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title="Error"
-        message="Por favor ingrese el nombre de la alergia"
+        title={i18n.t('error')}
+        message={i18n.t('pleaseEnterAllergyName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

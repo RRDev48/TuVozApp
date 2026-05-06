@@ -15,6 +15,7 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
+import i18n from "@/src/app/i18n";
 
 type BloodTypeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -30,7 +31,7 @@ const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const BloodTypeSelectionScreen = () => {
   const navigation = useNavigation<BloodTypeSelectionScreenNavigationProp>();
   const route = useRoute<BloodTypeSelectionScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [selectedBloodType, setSelectedBloodType] = useState<string>(
@@ -107,11 +108,11 @@ const BloodTypeSelectionScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Tipo de sangre")} />
+      <ScreenTitle text={i18n.t('bloodType')} />
 
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu tipo\nde sangre?")}
+          {i18n.t('yourBloodType')}
         </Text>
 
         <TouchableOpacity

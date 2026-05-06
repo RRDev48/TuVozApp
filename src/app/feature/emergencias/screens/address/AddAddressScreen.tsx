@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import i18n from "@/src/app/i18n";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useAddressForm } from "../../hooks/useAddressForm";
@@ -66,15 +67,15 @@ const AddAddressScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Agregar dirección")} />
+      <ScreenTitle text={i18n.t('addAddress')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu dirección?")}
+          {i18n.t('whatIsYourAddress')}
         </Text>
 
         <ThemedTextInput
-          placeholder={transformText("Escribe tu dirección completa")}
+          placeholder={i18n.t('writeYourAddress')}
           value={address}
           onChangeText={setAddress}
           multiline

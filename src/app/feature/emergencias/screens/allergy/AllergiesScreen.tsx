@@ -9,6 +9,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
+import i18n from "@/src/app/i18n";
 
 type AllergiesScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -88,16 +89,16 @@ const AllergiesScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Alergias")} />
+      <ScreenTitle text={i18n.t('allergies')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Tienes alguna alergia?")}
+          {i18n.t('haveAllergy')}
         </Text>
 
         <AddButton
           onPress={handleAddAllergy}
-          text={transformText("Añadir nuevo")}
+          text={i18n.t('addNew')}
         />
 
         {allergies.map((allergy, index) => {

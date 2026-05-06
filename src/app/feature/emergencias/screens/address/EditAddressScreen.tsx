@@ -14,6 +14,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import i18n from "@/src/app/i18n";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
@@ -97,15 +98,15 @@ const EditAddressScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Editar dirección")} />
+      <ScreenTitle text={i18n.t('editAddress')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Cuál es tu dirección?")}
+          {i18n.t('whatIsYourAddress')}
         </Text>
 
         <ThemedTextInput
-          placeholder={transformText("Escribe tu dirección completa")}
+          placeholder={i18n.t('writeYourAddress')}
           value={address}
           onChangeText={setAddress}
           multiline
@@ -117,7 +118,7 @@ const EditAddressScreen = () => {
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
         <Text style={styles.deleteButtonText}>
-          {transformText("Eliminar dirección")}
+          {i18n.t('deleteAddress')}
         </Text>
       </TouchableOpacity>
 

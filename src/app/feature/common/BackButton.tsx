@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import CustomText from "@/src/app/feature/common/CustomText";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,7 +10,7 @@ const BackButton = ({
   onPress,
   disablePersonalization = false,
 }: BackButtonProps) => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({
@@ -36,10 +37,10 @@ const BackButton = ({
         color={disablePersonalization ? colors.black : themedColors.text}
       />
       {disablePersonalization ? (
-        <Text style={styles.backText}>Atrás</Text>
+        <Text style={styles.backText}>{i18n.t('back')}</Text>
       ) : (
         <CustomText style={styles.backText}>
-          {transformText("Atrás")}
+          {i18n.t('back')}
         </CustomText>
       )}
     </TouchableOpacity>

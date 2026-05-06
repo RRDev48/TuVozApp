@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
@@ -15,13 +16,13 @@ const ErrorModal = ({
   visible,
   title,
   message,
-  buttonText = "Entendido",
+  buttonText,
   onClose,
   showDelay = 0,
   autoCloseDelay = 0,
   onDismiss,
 }: ErrorModalProps) => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [showModal, setShowModal] = useState(false);
 
@@ -116,13 +117,15 @@ const ErrorModal = ({
           />
         </View>
 
-        <Text style={styles.title}>{transformText(title)}</Text>
+        <Text style={styles.title}>{title}</Text>
         {message && (
-          <Text style={styles.message}>{transformText(message)}</Text>
+          <Text style={styles.message}>{message}</Text>
         )}
 
         <TouchableOpacity style={styles.button} onPress={handleManualClose}>
-          <Text style={styles.buttonText}>{transformText(buttonText)}</Text>
+          <Text style={styles.buttonText}>
+            {buttonText ? buttonText : i18n.t('understood')}
+          </Text>
         </TouchableOpacity>
       </View>
     </Modal>

@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import React from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
@@ -7,7 +8,7 @@ const EmergencySuccessModal = ({
   visible,
   onClose,
 }: EmergencySuccessModalProps) => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({
@@ -61,7 +62,7 @@ const EmergencySuccessModal = ({
         </View>
 
         <Text style={styles.title}>
-          {transformText("Información de emergencia guardada con éxito")}
+          {i18n.t('emergencySavedSuccess')}
         </Text>
       </View>
     </Modal>

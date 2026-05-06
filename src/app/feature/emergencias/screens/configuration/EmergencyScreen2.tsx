@@ -26,6 +26,7 @@ import {
     EmergencyAlertType,
     EmergencyFormData,
 } from "../../models/emergency.types";
+import i18n from "@/src/app/i18n";
 import { emergencyService } from "../../services/emergency.Service";
 import { parsePhoneNumber } from "../../services/phoneParser";
 
@@ -52,7 +53,7 @@ function normalizeAlertType(value?: string): EmergencyAlertType {
 const EmergencyScreen2 = () => {
   const navigation = useNavigation<EmergencyScreen2NavigationProp>();
   const route = useRoute<EmergencyScreen2RouteProp>();
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = useMemo(
@@ -191,9 +192,7 @@ const EmergencyScreen2 = () => {
         !formData.alert_type
       ) {
         logAndShowError(
-          transformText(
-            "Por favor completa los campos obligatorios: tipo de sangre, contacto de emergencia y modo de alerta.",
-          ),
+          i18n.t('emergencyValidationError'),
           new Error("Campos obligatorios faltantes"),
           {
             context: "emergency_profile_validation_failed",
@@ -232,7 +231,7 @@ const EmergencyScreen2 = () => {
       await logAndShowError(
         error instanceof Error
           ? error.message
-          : transformText("No se pudo guardar el perfil de emergencia"),
+          : i18n.t('couldNotSave'),
         error instanceof Error ? error : new Error("Profile save error"),
         {
           context: "emergency_profile_save_failed",
@@ -287,7 +286,7 @@ const EmergencyScreen2 = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Emergencias (2/2)")} />
+      <ScreenTitle text={i18n.t('emergencies2')} />
 
       <ScrollView
         style={styles.container}
@@ -301,7 +300,7 @@ const EmergencyScreen2 = () => {
               color={themedColors.background}
             />
           }
-          label="Notas"
+          label={i18n.t('notes')}
           value={formData.notes || ""}
           onPress={handleNotesEdit}
         />
@@ -310,7 +309,7 @@ const EmergencyScreen2 = () => {
           icon={
             <Ionicons name="home" size={26} color={themedColors.background} />
           }
-          label="Dirección"
+          label={i18n.t('address')}
           value={formData.address || ""}
           onPress={handleAddressEdit}
         />
@@ -319,7 +318,7 @@ const EmergencyScreen2 = () => {
           icon={
             <Ionicons name="call" size={26} color={themedColors.background} />
           }
-          label="Contacto de emergencia"
+          label={i18n.t('emergencyContact')}
           value={
             formData.emergency_contact_name && formData.emergency_contact_phone
               ? `${formData.emergency_contact_name} - ${formData.emergency_contact_phone}`
@@ -338,7 +337,7 @@ const EmergencyScreen2 = () => {
               color={themedColors.background}
             />
           }
-          label="Modo de alerta"
+          label={i18n.t('alertMode')}
           value={getAlertTypeLabel(formData.alert_type)}
           onPress={handleAlertTypeEdit}
         />
@@ -347,7 +346,7 @@ const EmergencyScreen2 = () => {
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
           <Text style={styles.cancelButtonText}>
-            {transformText("Cancelar")}
+            {i18n.t('cancel')}
           </Text>
         </TouchableOpacity>
 
@@ -360,7 +359,7 @@ const EmergencyScreen2 = () => {
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
             <Text style={styles.saveButtonText}>
-              {transformText("Guardar datos")}
+              {i18n.t('saveData')}
             </Text>
           )}
         </TouchableOpacity>
@@ -379,7 +378,7 @@ const EmergencyScreen2 = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title={transformText("Error")}
+        title={i18n.t('error')}
         message={errorMessage}
         onClose={closeErrorModal}
       />

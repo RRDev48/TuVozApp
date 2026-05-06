@@ -12,7 +12,7 @@ const SuccessModal = ({
   showDelay = 0,
   gifType = "verificado",
 }: SuccessModalProps) => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [showModal, setShowModal] = useState(false);
 
@@ -90,9 +90,9 @@ const SuccessModal = ({
           <Image source={gifSource} style={styles.gifImage} />
         </View>
 
-        <Text style={styles.title}>{transformText(title)}</Text>
+        <Text style={styles.title}>{title}</Text>
         {message && (
-          <Text style={styles.message}>{transformText(message)}</Text>
+          <Text style={styles.message}>{message}</Text>
         )}
       </View>
     </Modal>

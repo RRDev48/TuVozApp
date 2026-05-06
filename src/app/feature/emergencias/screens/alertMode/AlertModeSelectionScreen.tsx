@@ -16,6 +16,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import DropdownList from "../../components/DropdownList";
 import SaveButton from "../../components/SaveButton";
 import { EmergencyAlertType } from "../../models/emergency.types";
+import i18n from "@/src/app/i18n";
 
 type AlertModeSelectionScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -27,17 +28,17 @@ type AlertModeSelectionScreenNavigationProp = StackNavigationProp<
 >;
 
 const ALERT_MODES = [
-  { value: "call", label: "Llamada" },
-  { value: "whatsapp_location", label: "WhatsApp con ubicación" },
+  { value: "call", labelKey: "alertModeCall" },
+  { value: "whatsapp_location", labelKey: "alertModeWhatsApp" },
 ] as const satisfies ReadonlyArray<{
   value: EmergencyAlertType;
-  label: string;
+  labelKey: string;
 }>;
 
 const AlertModeSelectionScreen = () => {
   const navigation = useNavigation<AlertModeSelectionScreenNavigationProp>();
   const route = useRoute<AlertModeSelectionScreenRouteProp>();
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const [selectedAlertMode, setSelectedAlertMode] =
@@ -105,7 +106,11 @@ const AlertModeSelectionScreen = () => {
 
   const getAlertModeLabel = (value: EmergencyAlertType): string => {
     const mode = ALERT_MODES.find((m) => m.value === value);
-    return mode ? mode.label : value;
+    return mode ? i18n.t(mode.labelKey) : value;
+  };
+
+  const getAlertModeLabelForDropdown = (labelKey: string): string => {
+    return i18n.t(labelKey);
   };
 
   return (
@@ -118,11 +123,11 @@ const AlertModeSelectionScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Modo de alerta")} />
+      <ScreenTitle text={i18n.t('alertModeTitle')} />
 
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Cómo deseas activar\nla alerta?")}
+          {i18n.t('howActivateAlert')}
         </Text>
 
         <TouchableOpacity
@@ -141,9 +146,9 @@ const AlertModeSelectionScreen = () => {
 
         {isDropdownOpen && (
           <DropdownList
-            items={ALERT_MODES.map((mode) => mode.label)}
+            items={ALERT_MODES.map((mode) => getAlertModeLabelForDropdown(mode.labelKey))}
             onSelectItem={(label) => {
-              const mode = ALERT_MODES.find((m) => m.label === label);
+              const mode = ALERT_MODES.find((m) => getAlertModeLabelForDropdown(m.labelKey) === label);
               if (mode) handleSelectAlertMode(mode.value);
             }}
           />

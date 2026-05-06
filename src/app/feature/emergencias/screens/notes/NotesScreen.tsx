@@ -15,6 +15,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
+import i18n from "@/src/app/i18n";
 
 type NotesScreenRouteProp = RouteProp<RootStackParamsList, "NotesSelection">;
 type NotesScreenNavigationProp = StackNavigationProp<
@@ -25,7 +26,7 @@ type NotesScreenNavigationProp = StackNavigationProp<
 const NotesScreen = () => {
   const navigation = useNavigation<NotesScreenNavigationProp>();
   const route = useRoute<NotesScreenRouteProp>();
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const isKeyboardVisible = useKeyboardVisibility();
 
@@ -68,15 +69,15 @@ const NotesScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Notas")} />
+      <ScreenTitle text={i18n.t('notes')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("Información adicional")}
+          {i18n.t('additionalInformation')}
         </Text>
 
         <ThemedTextInput
-          placeholder={transformText("Escribe notas adicionales...")}
+          placeholder={i18n.t('writeNotes')}
           value={notes}
           onChangeText={setNotes}
           multiline

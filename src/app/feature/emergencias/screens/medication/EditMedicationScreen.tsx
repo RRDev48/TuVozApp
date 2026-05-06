@@ -25,6 +25,7 @@ import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
 } from "../../hooks/useMedicationForm";
+import i18n from "@/src/app/i18n";
 
 type EditMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -38,7 +39,7 @@ type EditMedicationScreenNavigationProp = StackNavigationProp<
 const EditMedicationScreen = () => {
   const navigation = useNavigation<EditMedicationScreenNavigationProp>();
   const route = useRoute<EditMedicationScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const isKeyboardVisible = useKeyboardVisibility();
 
@@ -137,16 +138,16 @@ const EditMedicationScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Editar medicación")} />
+      <ScreenTitle text={i18n.t('editMedication')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Qué medicación tomas?")}
+            {i18n.t('whatMedicationTake')}
           </Text>
 
           <ThemedTextInput
-            placeholder={transformText("Nombre de la medicación")}
+            placeholder={i18n.t('medicationName')}
             value={medicationName}
             onChangeText={setMedicationName}
           />
@@ -154,7 +155,7 @@ const EditMedicationScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Con qué frecuencia?")}
+            {i18n.t('howOften')}
           </Text>
 
           <TouchableOpacity
@@ -182,13 +183,13 @@ const EditMedicationScreen = () => {
       <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>
+        <Text style={styles.deleteButtonText}>{i18n.t('deleteMedication')}</Text>
       </TouchableOpacity>
 
       <ErrorModal
         visible={showErrorModal}
-        title="Error"
-        message="Por favor ingrese el nombre de la medicación"
+        title={i18n.t('error')}
+        message={i18n.t('pleaseEnterMedicationName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

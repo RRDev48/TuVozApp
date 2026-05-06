@@ -22,6 +22,7 @@ import SaveButton from "../../components/SaveButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import { SEVERITY_LEVELS, useAllergyForm } from "../../hooks/useAllergyForm";
 import { useKeyboardVisibility } from "../../hooks/useKeyboardVisibility";
+import i18n from "@/src/app/i18n";
 
 type EditAllergyScreenRouteProp = RouteProp<RootStackParamsList, "EditAllergy">;
 type EditAllergyScreenNavigationProp = StackNavigationProp<
@@ -32,7 +33,7 @@ type EditAllergyScreenNavigationProp = StackNavigationProp<
 const EditAllergyScreen = () => {
   const navigation = useNavigation<EditAllergyScreenNavigationProp>();
   const route = useRoute<EditAllergyScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const isKeyboardVisible = useKeyboardVisibility();
 
@@ -131,16 +132,16 @@ const EditAllergyScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Editar alergia")} />
+      <ScreenTitle text={i18n.t('editAllergy')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Qué tipo de alergia presentas?")}
+            {i18n.t('whatAllergy')}
           </Text>
 
           <ThemedTextInput
-            placeholder={transformText("Nombre de la alergia")}
+            placeholder={i18n.t('allergyName')}
             value={allergyName}
             onChangeText={setAllergyName}
           />
@@ -148,7 +149,7 @@ const EditAllergyScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Cuál es el grado?")}
+            {i18n.t('whatDegree')}
           </Text>
 
           <TouchableOpacity
@@ -176,13 +177,13 @@ const EditAllergyScreen = () => {
       <SaveButton onPress={handleSave} bottom={isKeyboardVisible ? 300 : 110} />
 
       <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <Text style={styles.deleteButtonText}>{transformText("Eliminar")}</Text>
+        <Text style={styles.deleteButtonText}>{i18n.t('deleteAllergy')}</Text>
       </TouchableOpacity>
 
       <ErrorModal
         visible={showErrorModal}
-        title="Error"
-        message="Por favor ingrese el nombre de la alergia"
+        title={i18n.t('error')}
+        message={i18n.t('pleaseEnterAllergyName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>

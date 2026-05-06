@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import {
@@ -15,7 +16,7 @@ const CancelConfirmationModal = ({
   onConfirm,
   onCancel,
 }: CancelConfirmationModalProps) => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
 
   const styles = StyleSheet.create({
@@ -92,17 +93,17 @@ const CancelConfirmationModal = ({
         </View>
 
         <Text style={styles.title}>
-          {transformText("Desea cancelar la configuración?")}
+          {i18n.t('cancelConfiguration')}
         </Text>
 
         {/* Botones */}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-            <Text style={styles.confirmButtonText}>{transformText("Sí")}</Text>
+            <Text style={styles.confirmButtonText}>{i18n.t('yes')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.cancelButtonText}>{transformText("No")}</Text>
+            <Text style={styles.cancelButtonText}>{i18n.t('no')}</Text>
           </TouchableOpacity>
         </View>
       </View>

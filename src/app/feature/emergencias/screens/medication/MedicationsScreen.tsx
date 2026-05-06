@@ -9,6 +9,7 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import AddButton from "../../components/AddButton";
 import ListItem from "../../components/ListItem";
 import SaveButton from "../../components/SaveButton";
+import i18n from "@/src/app/i18n";
 
 type MedicationsScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -89,16 +90,16 @@ const MedicationsScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Medicaciones")} />
+      <ScreenTitle text={i18n.t('medications')} />
 
       <ScrollView style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>
-          {transformText("¿Tomas alguna medicación?")}
+          {i18n.t('takeMedication')}
         </Text>
 
         <AddButton
           onPress={handleAddMedication}
-          text={transformText("Añadir nuevo")}
+          text={i18n.t('addNew')}
         />
 
         {medications.map((medication, index) => {

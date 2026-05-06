@@ -1,3 +1,4 @@
+import i18n from "@/src/app/i18n";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import React, { useEffect, useState } from "react";
@@ -14,14 +15,14 @@ import { ConfirmationModalProps } from "../models/alert.props";
 const ConfirmationModal = ({
   visible,
   title,
-  confirmText = "Sí",
-  cancelText = "No",
+  confirmText,
+  cancelText,
   onConfirm,
   onCancel,
   showDelay = 0,
   confirmDelay = 0,
 }: ConfirmationModalProps) => {
-  const { transformText, getThemedColors } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const [showModal, setShowModal] = useState(false);
 
@@ -122,7 +123,7 @@ const ConfirmationModal = ({
           />
         </View>
 
-        <Text style={styles.title}>{transformText(title)}</Text>
+        <Text style={styles.title}>{title}</Text>
 
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
@@ -130,13 +131,13 @@ const ConfirmationModal = ({
             onPress={handleConfirm}
           >
             <Text style={styles.confirmButtonText}>
-              {transformText(confirmText)}
+              {confirmText ? confirmText : i18n.t('yes')}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
             <Text style={styles.cancelButtonText}>
-              {transformText(cancelText)}
+              {cancelText ? cancelText : i18n.t('no')}
             </Text>
           </TouchableOpacity>
         </View>

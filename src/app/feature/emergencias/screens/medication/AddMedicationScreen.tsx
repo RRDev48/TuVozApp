@@ -24,6 +24,7 @@ import {
   FREQUENCY_OPTIONS,
   useMedicationForm,
 } from "../../hooks/useMedicationForm";
+import i18n from "@/src/app/i18n";
 
 type AddMedicationScreenRouteProp = RouteProp<
   RootStackParamsList,
@@ -37,7 +38,7 @@ type AddMedicationScreenNavigationProp = StackNavigationProp<
 const AddMedicationScreen = () => {
   const navigation = useNavigation<AddMedicationScreenNavigationProp>();
   const route = useRoute<AddMedicationScreenRouteProp>();
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
   const isKeyboardVisible = useKeyboardVisibility();
 
@@ -115,16 +116,16 @@ const AddMedicationScreen = () => {
 
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Agrega tu medicación")} />
+      <ScreenTitle text={i18n.t('addMedication')} />
 
       <View style={styles.contentContainer}>
         <View style={styles.firstSection}>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Qué medicación tomas?")}
+            {i18n.t('whatMedicationTake')}
           </Text>
 
           <ThemedTextInput
-            placeholder={transformText("Nombre de la medicación")}
+            placeholder={i18n.t('medicationName')}
             value={medicationName}
             onChangeText={setMedicationName}
           />
@@ -132,7 +133,7 @@ const AddMedicationScreen = () => {
 
         <View>
           <Text style={styles.sectionTitle}>
-            {transformText("¿Con qué frecuencia?")}
+            {i18n.t('howOften')}
           </Text>
 
           <TouchableOpacity
@@ -161,8 +162,8 @@ const AddMedicationScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title="Error"
-        message="Por favor ingrese el nombre de la medicación"
+        title={i18n.t('error')}
+        message={i18n.t('pleaseEnterMedicationName')}
         onClose={closeErrorModal}
       />
     </KeyboardAvoidingView>
