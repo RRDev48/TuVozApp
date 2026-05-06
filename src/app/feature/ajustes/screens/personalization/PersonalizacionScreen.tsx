@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import i18n from "@/src/app/i18n";
 
 const PersonalizacionScreen = () => {
   const navigation = useNavigation();
@@ -20,7 +21,6 @@ const PersonalizacionScreen = () => {
     temaOscuro,
     setSoloMayusculas,
     setTemaOscuro,
-    transformText,
     resetToDefaults,
     getThemedColors,
   } = usePersonalization();
@@ -105,14 +105,14 @@ const PersonalizacionScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={transformText("Personalización")} />
+      <ScreenTitle text={i18n.t('personalization')} />
 
       <ScrollView style={styles.content}>
         {/* Opción: Solo Mayúsculas */}
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>
-              {transformText("Solo mayúsculas")}
+              {i18n.t('uppercaseOnly')}
             </CustomText>
             <View
               style={[
@@ -136,7 +136,7 @@ const PersonalizacionScreen = () => {
         <View style={styles.optionContainer}>
           <View style={styles.optionRow}>
             <CustomText style={styles.optionTitle}>
-              {transformText("Tema oscuro")}
+              {i18n.t('darkTheme')}
             </CustomText>
             <View
               style={[
@@ -164,7 +164,7 @@ const PersonalizacionScreen = () => {
             activeOpacity={0.8}
           >
             <CustomText style={styles.resetButtonText}>
-              {transformText("Restablecer configuración por defecto")}
+              {i18n.t('resetToDefaults')}
             </CustomText>
           </TouchableOpacity>
         </View>

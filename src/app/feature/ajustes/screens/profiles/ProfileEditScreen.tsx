@@ -4,6 +4,7 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
+import i18n from "@/src/app/i18n";
 import {
   Image,
   KeyboardAvoidingView,
@@ -188,7 +189,7 @@ const ProfileEditScreen = () => {
       <BackButton onPress={() => navigation.goBack()} />
 
       <View style={styles.headerContainer}>
-        <ScreenTitle text={transformText("Configurando cuenta")} />
+        <ScreenTitle text={i18n.t('editingProfile')} />
       </View>
 
       <View style={styles.contentContainer}>
@@ -209,21 +210,19 @@ const ProfileEditScreen = () => {
             activeOpacity={0.8}
           >
             <Text style={styles.avatarButtonText}>
-              {transformText(
-                isPickingImage ? "Cargando imagen..." : "Cambiar avatar",
-              )}
+              {i18n.t(isPickingImage ? 'loadingImage' : 'changeAvatar')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <Text style={styles.fieldLabel}>
-          {transformText("Nombre completo")}
+          {i18n.t('fullName')}
         </Text>
         <TextInput
           style={styles.input}
           value={fullName}
           onChangeText={setFullName}
-          placeholder={transformText("Ingresa el nombre")}
+          placeholder={i18n.t('enterName')}
           placeholderTextColor={`${themedColors.background}80`}
         />
       </View>
@@ -237,7 +236,7 @@ const ProfileEditScreen = () => {
           disabled={isSaving || isDeleting}
         >
           <Text style={styles.continueButtonText}>
-            {transformText(isSaving ? "Guardando..." : "Continuar")}
+            {i18n.t(isSaving ? 'saving' : 'continueButton')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -249,13 +248,13 @@ const ProfileEditScreen = () => {
         disabled={isSaving || isDeleting}
       >
         <Text style={styles.deleteButtonText}>
-          {transformText(isDeleting ? "Eliminando..." : "Eliminar perfil")}
+          {i18n.t(isDeleting ? 'deleting' : 'deleteProfile')}
         </Text>
       </TouchableOpacity>
 
       <ErrorModal
         visible={showEditError || showDeleteError}
-        title="Error"
+        title={i18n.t('errorTitle')}
         message={editErrorMessage || deleteErrorMessage}
         onClose={() => {
           closeEditError();
@@ -265,17 +264,17 @@ const ProfileEditScreen = () => {
 
       <SuccessModal
         visible={showSuccess}
-        title="Éxito"
-        message="Perfil actualizado correctamente"
+        title={i18n.t('successTitle')}
+        message={i18n.t('profileUpdated')}
         onClose={closeSuccess}
       />
 
       <ConfirmationModal
         visible={showConfirmDelete}
-        title="¿Estás seguro de que deseas eliminar este perfil?"
-        confirmText="Eliminar"
-        cancelText="Cancelar"
-        onConfirm={() => confirmDelete(profileId, handleDeleteComplete)}
+        title={i18n.t('confirmDeleteProfile')}
+        confirmText={i18n.t('deleteButton')}
+        cancelText={i18n.t('cancelButton')}
+        onConfirm={handleDelete}
         onCancel={cancelDelete}
       />
     </KeyboardAvoidingView>

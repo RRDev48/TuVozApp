@@ -8,7 +8,7 @@ import { useErrorHandling } from "./useErrorHandling";
 type SupportNavigation = StackNavigationProp<
   RootStackParamsList,
   "NewSupportEntryScreen"
->;
+> | StackNavigationProp<RootStackParamsList>;
 
 function toError(error: unknown, fallback: string) {
   if (error instanceof Error) {

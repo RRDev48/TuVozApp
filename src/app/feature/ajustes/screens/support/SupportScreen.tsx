@@ -4,6 +4,7 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo, useState } from "react";
+import i18n from "@/src/app/i18n";
 import {
   ActivityIndicator,
   ScrollView,
@@ -17,9 +18,9 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import { supportService, SupportTicket } from "../../services/support.Service";
 
 const SupportScreen = () => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
-  const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>() ?? ({} as StackNavigationProp<RootStackParamsList>);
 
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +122,7 @@ const SupportScreen = () => {
       const fetchTickets = async () => {
         setIsLoading(true);
         const response = await supportService.getUserTickets();
-        if (response.success && response.data) {
+        if ('data' in response && response.success) {
           setTickets(response.data);
         }
         setIsLoading(false);
@@ -146,17 +147,17 @@ const SupportScreen = () => {
   };
 
   const statusLabels = {
-    open: transformText("Abierto"),
-    in_progress: transformText("En progreso"),
-    resolved: transformText("Resuelto"),
-    closed: transformText("Cerrado"),
+    open: i18n.t('statusOpen'),
+    in_progress: i18n.t('statusInProgress'),
+    resolved: i18n.t('statusResolved'),
+    closed: i18n.t('statusClosed'),
   };
 
   return (
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={transformText("Mis entradas")} />
+      <ScreenTitle text={i18n.t('myEntries')} />
 
       {/* Contenido */}
       {isLoading ? (
@@ -174,10 +175,10 @@ const SupportScreen = () => {
             style={{ marginBottom: 20, marginTop: -100 }}
           />
           <CustomText style={styles.emptyStateTitle}>
-            {transformText("Aún no hay entradas")}
+            {i18n.t('noEntriesYet')}
           </CustomText>
           <CustomText style={styles.emptyStateText}>
-            {transformText("Cuando hagas uno, aparecerá aquí.")}
+            {i18n.t('noEntriesDescription')}
           </CustomText>
         </ScrollView>
       ) : (
@@ -241,7 +242,7 @@ const SupportScreen = () => {
           onPress={handleNewEntry}
         >
           <CustomText style={styles.newEntryButtonText}>
-            {transformText("Nueva entrada")}
+            {i18n.t('newEntry')}
           </CustomText>
         </TouchableOpacity>
       </View>

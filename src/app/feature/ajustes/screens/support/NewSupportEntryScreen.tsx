@@ -7,6 +7,7 @@ import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useMemo } from "react";
+import i18n from "@/src/app/i18n";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -21,9 +22,10 @@ import ScreenTitle from "../../../common/ScreenTitle";
 import { useSupportForm } from "../../hooks/useSupportForm";
 
 const NewSupportEntryScreen = () => {
-  const { getThemedColors, transformText } = usePersonalization();
+  const { getThemedColors } = usePersonalization();
   const themedColors = getThemedColors();
-  const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const navigationRaw = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const navigation = navigationRaw ?? ({} as StackNavigationProp<RootStackParamsList, "NewSupportEntryScreen">);
 
   const {
     subject,
@@ -123,7 +125,7 @@ const NewSupportEntryScreen = () => {
     >
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Soporte")} />
+      <ScreenTitle text={i18n.t('support')} />
 
       {/* Contenido */}
       <ScrollView
@@ -131,17 +133,17 @@ const NewSupportEntryScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <CustomText style={styles.questionTitle}>
-          {transformText("¿Cómo podemos ayudarte?")}
+          {i18n.t('howCanWeHelp')}
         </CustomText>
 
         {/* Campo Asunto */}
         <View style={styles.fieldContainer}>
           <CustomText style={styles.label}>
-            {transformText("Asunto*")}
+            {i18n.t('subject')}
           </CustomText>
           <TextInput
             style={styles.input}
-            placeholder={transformText("Escribe un asunto")}
+            placeholder={i18n.t('writeSubject')}
             placeholderTextColor={themedColors.background}
             value={subject}
             onChangeText={setSubject}
@@ -151,11 +153,11 @@ const NewSupportEntryScreen = () => {
         {/* Campo Consulta */}
         <View style={styles.fieldContainer}>
           <CustomText style={styles.label}>
-            {transformText("Consulta*")}
+            {i18n.t('query')}
           </CustomText>
           <TextInput
             style={styles.textArea}
-            placeholder={transformText("Escribe tu consulta*")}
+            placeholder={i18n.t('writeQuery')}
             placeholderTextColor={themedColors.background}
             value={query}
             onChangeText={setQuery}
@@ -175,8 +177,8 @@ const NewSupportEntryScreen = () => {
         >
           <CustomText style={styles.submitButtonText}>
             {isSubmitting
-              ? transformText("Enviando...")
-              : transformText("Enviar informe")}
+              ? i18n.t('sending')
+              : i18n.t('sendReport')}
           </CustomText>
         </TouchableOpacity>
       </View>
@@ -184,7 +186,7 @@ const NewSupportEntryScreen = () => {
       {/* Modales */}
       <SuccessModal
         visible={showSuccessModal}
-        title="Tu consulta ha sido enviada. Te contactaremos pronto."
+        title={i18n.t('supportQuerySent')}
         onClose={handleSuccessModalClose}
         autoCloseDelay={4000}
         showDelay={300}
@@ -192,7 +194,7 @@ const NewSupportEntryScreen = () => {
 
       <ErrorModal
         visible={showErrorModal}
-        title="Error"
+        title={i18n.t('error')}
         message={errorMessage}
         onClose={setShowErrorModal}
         onDismiss={() => {}}

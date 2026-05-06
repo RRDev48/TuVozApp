@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useMemo } from "react";
+import i18n from "@/src/app/i18n";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -20,7 +21,7 @@ import {
 const ADIP_ICON = require("../../../../assets/image/adip_icon.png");
 const SettingsScreen = () => {
   const { userName, avatarUrl, loading: isLoadingUser } = useUserData();
-  const { getThemedColors, transformText, reloadLocalPreferences } =
+  const { getThemedColors, reloadLocalPreferences } =
     usePersonalization();
   const themedColors = getThemedColors();
   const { currentUser, isLoading } = useCurrentUser();
@@ -154,10 +155,10 @@ const SettingsScreen = () => {
         </View>
         <View style={styles.buttonTextContainer}>
           <CustomText style={styles.buttonTitle}>
-            {transformText(button.titleKey)}
+            {i18n.t(button.titleKey)}
           </CustomText>
           <CustomText style={styles.buttonSubtitle}>
-            {transformText(button.subtitleKey)}
+            {i18n.t(button.subtitleKey)}
           </CustomText>
         </View>
         <Ionicons
@@ -168,14 +169,14 @@ const SettingsScreen = () => {
         />
       </TouchableOpacity>
     ),
-    [styles, themedColors, transformText],
+    [styles, themedColors],
   );
 
   return (
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={transformText("Ajustes")} />
+      <ScreenTitle text={i18n.t('settingsTitle')} />
 
       {/* Avatar y saludo del usuario */}
       <View style={styles.userInfoContainer}>
@@ -191,7 +192,7 @@ const SettingsScreen = () => {
           </View>
         </View>
         <CustomText style={styles.greetingText}>
-          {userName ? `¡Hola ${userName}!` : "¡Hola!"}
+          {userName ? i18n.t('greetingWithName', { name: userName }) : i18n.t('greetingFallback')}
         </CustomText>
       </View>
 
@@ -202,7 +203,7 @@ const SettingsScreen = () => {
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>
-          {transformText("Cerrar Sesión")}
+          {i18n.t('logout')}
         </Text>
       </TouchableOpacity>
     </View>

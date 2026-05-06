@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
+import i18n from "@/src/app/i18n";
 import {
   ActivityIndicator,
   GestureResponderEvent,
@@ -216,7 +217,7 @@ const ProfilesConfigScreen = () => {
     return (
       <View style={styles.container}>
         <BackButton onPress={() => navigation.goBack()} />
-        <ScreenTitle text={transformText("Mis perfiles personales")} />
+<ScreenTitle text={i18n.t('myPersonalProfiles')} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={themedColors.primary} />
         </View>
@@ -228,7 +229,7 @@ const ProfilesConfigScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={transformText("Mis perfiles personales")} />
+      <ScreenTitle text={i18n.t('myPersonalProfiles')} />
 
       <View style={styles.contentContainer}>
         {profiles.length > 0 ? (
@@ -236,10 +237,10 @@ const ProfilesConfigScreen = () => {
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>
-              {transformText(
+              {i18n.t(
                 currentUser
-                  ? "No tienes perfiles configurados"
-                  : "Inicia sesión para ver tus perfiles",
+                  ? 'noProfilesConfigured'
+                  : 'loginToViewProfiles',
               )}
             </Text>
           </View>
@@ -259,7 +260,7 @@ const ProfilesConfigScreen = () => {
         >
           <Text style={styles.addButtonText}>+</Text>
           <Text style={styles.addButtonText}>
-            {transformText("Añadir nuevo")}
+            {i18n.t('addNew')}
           </Text>
         </TouchableOpacity>
       </View>
