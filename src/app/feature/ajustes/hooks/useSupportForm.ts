@@ -50,10 +50,10 @@ export const useSupportForm = (navigation: SupportNavigation) => {
         priority: "normal",
       });
 
-      if (response.success) {
+      if ("data" in response && response.success) {
         try {
           await auditLogService.logSupportTicketCreated(
-            response.data?.id || "unknown",
+            response.data.id || "unknown",
             subject.trim(),
           );
         } catch (auditError) {}
@@ -65,11 +65,11 @@ export const useSupportForm = (navigation: SupportNavigation) => {
         const errorContext = {
           subject: subject.trim(),
           queryLength: query.trim().length,
-          response_error: response.error,
+          response_error: "error" in response ? response.error : "Unknown error",
         };
 
         logAndShowServerError(
-          new Error(response.error || "Failed to create support ticket"),
+          new Error("error" in response ? response.error : "Failed to create support ticket"),
           errorContext,
         );
       }

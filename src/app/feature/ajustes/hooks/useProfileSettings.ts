@@ -164,7 +164,7 @@ export const useProfileSettings = (profileId?: string) => {
 
   const getLanguageForApp = useCallback((): string => {
     if (!settings) return "es";
-    return settings.language;
+    return "es";
   }, [settings]);
 
   return {

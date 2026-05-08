@@ -3,9 +3,9 @@ import i18n from "@/src/app/i18n";
 import { ReminderOption } from "../models/options.types";
 
 const REMINDER_OPTIONS: ReminderOption[] = [
-  { labelKey: "10MinutesBefore", value: "600000" },
-  { labelKey: "1HourBefore", value: "3600000" },
-  { labelKey: "1DayBefore", value: "86400000" },
+  { label: "10 minutos antes", labelKey: "10MinutesBefore", value: "600000" },
+  { label: "1 hora antes", labelKey: "1HourBefore", value: "3600000" },
+  { label: "1 día antes", labelKey: "1DayBefore", value: "86400000" },
 ];
 
 export const useReminderPicker = (
@@ -22,13 +22,13 @@ export const useReminderPicker = (
 
   const getSelectedLabel = (): string => {
     const option = REMINDER_OPTIONS.find((option) => option.value === selectedOption);
-    return option ? i18n.t(option.labelKey) : "";
+    return option ? (option.labelKey ? i18n.t(option.labelKey) : option.label) : "";
   };
 
   const getOptions = (): ReminderOption[] => {
     return REMINDER_OPTIONS.map((option) => ({
       ...option,
-      label: i18n.t(option.labelKey),
+      label: option.labelKey ? i18n.t(option.labelKey) : option.label,
     }));
   };
 

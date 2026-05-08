@@ -8,7 +8,7 @@ export const useSupportTickets = () => {
   const loadTickets = useCallback(async () => {
     setIsLoading(true);
     const response = await supportService.getUserTickets();
-    if (response.success && response.data) {
+    if ("data" in response && response.success) {
       setTickets(response.data);
     }
     setIsLoading(false);

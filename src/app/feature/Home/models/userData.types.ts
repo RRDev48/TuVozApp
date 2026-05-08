@@ -7,7 +7,7 @@ export type HomeRouteName = Extract<
 >;
 
 export interface HomeMenuItem {
-  name: string;
+  name?: string;
   nameKey?: string;
   component: HomeRouteName;
   icon: ImageSourcePropType;

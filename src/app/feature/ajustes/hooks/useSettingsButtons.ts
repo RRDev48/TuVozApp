@@ -61,7 +61,7 @@ export const useSettingsButtons = (
       subtitleKey: "helpAssistance",
       iconName: "help-circle",
       onPress: handleNavigateToSupport,
-      show: !isLoading && currentUser,
+      show: !isLoading && !!currentUser,
     },
     {
       id: "emergency",
@@ -69,7 +69,7 @@ export const useSettingsButtons = (
       subtitleKey: "configureEmergency",
       iconName: "alert-circle",
       onPress: handleNavigateToEmergency,
-      show: !isLoading && currentUser,
+      show: !isLoading && !!currentUser,
     },
   ];
 

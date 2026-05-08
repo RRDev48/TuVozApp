@@ -86,8 +86,8 @@ export const useProfilesConfig = (currentUser: CurrentAuthUser) => {
   );
 
   const handleEditProfile = useCallback(
-    (profile: ProfileWithOwner, event?: { stopPropagation?: () => void }) => {
-      if (event) {
+    (profile: ProfileWithOwner, event?: { stopPropagation?: (() => void) | undefined }) => {
+      if (event?.stopPropagation) {
         event.stopPropagation();
       }
       navigation.navigate("ProfileEdit", { profile });
