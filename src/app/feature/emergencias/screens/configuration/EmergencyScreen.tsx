@@ -1,5 +1,8 @@
-import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import SkeletonCard from "@/src/app/components/common/SkeletonCard";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
+import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,12 +10,12 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -20,8 +23,8 @@ import CancelConfirmationModal from "../../components/alerts/CancelConfirmationM
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
 import {
-    DEFAULT_EMERGENCY_FORM_DATA,
-    EmergencyFormData,
+  DEFAULT_EMERGENCY_FORM_DATA,
+  EmergencyFormData,
 } from "../../models/emergency.types";
 type EmergencyScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -117,19 +120,6 @@ const EmergencyScreen = () => {
     }
   }, [profile]);
 
-  useEffect(() => {
-    if (!loading && profile && !fromSettings) {
-      const isProfileComplete =
-        profile.blood_type &&
-        profile.emergency_contact_name &&
-        profile.emergency_contact_phone &&
-        profile.alert_type;
-
-      if (isProfileComplete) {
-        navigation.replace("EmergencyProfile");
-      }
-    }
-  }, [loading, profile, navigation, fromSettings]);
 
   const handleBloodTypeEdit = () => {
     navigation.navigate("BloodTypeSelection", {
@@ -172,12 +162,44 @@ const EmergencyScreen = () => {
     setShowCancelModal(false);
   };
 
-  if (loading) {
+  const renderSkeletonForm = () => {
+    const screenWidth = Dimensions.get("window").width;
+    const cardWidth = screenWidth - 40; // 20 padding on each side
+
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.blue} />
+      <View style={styles.container}>
+        <BackButton onPress={() => navigation.goBack()} />
+        <ScreenTitle text={t("emergenciesTitle")} />
+        <View style={styles.scrollContent}>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          {fromSettings && (
+            <View style={{ marginBottom: 15 }}>
+              <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+            </View>
+          )}
+        </View>
+        <View style={styles.buttonsContainer}>
+          <View style={{ flex: 1 }}>
+            <SkeletonButton height={56} borderRadius={16} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <SkeletonButton height={56} borderRadius={16} />
+          </View>
+        </View>
       </View>
     );
+  };
+
+  if (loading) {
+    return renderSkeletonForm();
   }
 
   return (

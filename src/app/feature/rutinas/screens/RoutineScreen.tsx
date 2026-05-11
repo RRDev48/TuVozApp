@@ -1,3 +1,6 @@
+import SkeletonAvatar from "@/src/app/components/common/SkeletonAvatar";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
@@ -73,13 +76,60 @@ export const RoutineScreen = () => {
     handleChangeWeek,
   } = useWeekRoutine(profileId || "");
 
+  const renderSkeletonRoutine = () => (
+    <View style={styles.screenContainer}>
+      <BackButton onPress={() => navigation.goBack()} />
+      <ScreenTitle text={t("routines")} />
+
+      {/* Skeleton Progreso (Mismo estilo que un título) */}
+      <View style={{ paddingHorizontal: 20, marginTop: 10, alignItems: "center", marginBottom: 30 }}>
+        <SkeletonText width={200} height={32} borderRadius={8} />
+        <SkeletonText width={120} height={16} marginTop={12} borderRadius={4} />
+      </View>
+
+      {/* Skeleton Cambio de Semana */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginVertical: 15, paddingHorizontal: 20 }}>
+        <SkeletonButton width={30} height={30} borderRadius={15} />
+        <View style={{ marginHorizontal: 20 }}>
+          <SkeletonText width={150} height={20} borderRadius={6} />
+        </View>
+        <SkeletonButton width={30} height={30} borderRadius={15} />
+      </View>
+
+      {/* Skeleton Selector de Días (Usando rectángulos tipo título pequeño) */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 30 }}>
+        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+          <View key={i} style={{ alignItems: "center" }}>
+            <SkeletonText width={35} height={35} borderRadius={8} />
+            <SkeletonText width={20} height={10} marginTop={8} borderRadius={4} />
+          </View>
+        ))}
+      </View>
+
+      {/* Skeleton Calendario / Comenzamos el día */}
+      <View style={{ paddingHorizontal: 20, flex: 1 }}>
+        <View style={{ marginBottom: 20 }}>
+          <SkeletonText width={180} height={24} borderRadius={8} />
+        </View>
+        {[1, 2, 3, 4].map((i) => (
+          <View key={i} style={{ flexDirection: 'row', marginBottom: 25, alignItems: 'center' }}>
+            <View style={{ marginRight: 15 }}>
+              <SkeletonText width={50} height={16} borderRadius={4} />
+            </View>
+            <View style={{ flex: 1, height: 2, backgroundColor: themedColors.cardBackground, opacity: 0.2 }} />
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
   // Precargar todas las tareas de la semana
-  const { getTasksForDay, reloadWeekTasks } = useWeekTasksPreload(
+  const { getTasksForDay, reloadWeekTasks, isLoading: isTasksLoading } = useWeekTasksPreload(
     profileId || "",
     daysOfWeek,
   );
 
-// Obtener tareas del día seleccionado (ya precargadas)
+  // Obtener tareas del día seleccionado (ya precargadas)
   const selectedDayTasks = useMemo(() => {
     if (!daysOfWeek[selectedDayIndex]) return [];
     return getTasksForDay(daysOfWeek[selectedDayIndex]);
@@ -91,15 +141,33 @@ export const RoutineScreen = () => {
   }, [daysOfWeek, getTasksForDay]);
 
   // Calcular progreso localmente
-  const completedCount = useMemo(() => 
+  const completedCount = useMemo(() =>
     allWeekTasks.filter((task) => task.estado === "Completado").length,
     [allWeekTasks]
   );
   const totalCount = allWeekTasks.length;
   const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+  // Calcular medallas de toda la semana (instantáneo con las tareas precargadas)
+  const weekMedals = useMemo(() => {
+    return daysOfWeek.map((day) => {
+      const dateStr = day.toISOString().slice(0, 10);
+      const dayTasks = getTasksForDay(day);
+
+      if (dayTasks.length === 0) return "none";
+
+      const completed = dayTasks.filter((t) => t.estado === "Completado").length;
+      const dayPercent = (completed / dayTasks.length) * 100;
+
+      if (dayPercent === 100) return "oro";
+      if (dayPercent >= 50) return "plata";
+      if (dayPercent > 0) return "bronce";
+      return "none";
+    });
+  }, [daysOfWeek, getTasksForDay, allWeekTasks]);
+
   // Operaciones sobre tareas
-const {
+  const {
     addTask,
     removeTask,
     replaceTask,
@@ -201,8 +269,8 @@ const {
     [daysOfWeek, selectedDayIndex, toggleAddTask],
   );
 
-  if (!profileId) {
-    return null;
+  if (profileLoading || !profileId || (isTasksLoading && allWeekTasks.length === 0)) {
+    return renderSkeletonRoutine();
   }
 
   return (
@@ -240,6 +308,7 @@ const {
         routineId={routineId}
         profileId={profileId}
         onChangeWeek={handleChangeWeek}
+        medals={weekMedals}
       />
 
       {/*

@@ -1,3 +1,6 @@
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import SkeletonCard from "@/src/app/components/common/SkeletonCard";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
@@ -9,12 +12,13 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
@@ -23,11 +27,10 @@ import EmergencySuccessModal from "../../components/alerts/EmergencySuccessModal
 import { EmergencyField } from "../../components/EmergencyField";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
 import {
-    DEFAULT_EMERGENCY_FORM_DATA,
-    EmergencyAlertType,
-    EmergencyFormData,
+  DEFAULT_EMERGENCY_FORM_DATA,
+  EmergencyAlertType,
+  EmergencyFormData,
 } from "../../models/emergency.types";
-import i18n from "@/src/app/i18n";
 import { emergencyService } from "../../services/emergency.Service";
 import { parsePhoneNumber } from "../../services/phoneParser";
 
@@ -276,12 +279,42 @@ const EmergencyScreen2 = () => {
     setShowCancelModal(false);
   };
 
-  if (loading) {
+  const renderSkeletonForm = () => {
+    const screenWidth = Dimensions.get("window").width;
+    const cardWidth = screenWidth - 40;
+
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.blue} />
+      <View style={styles.container}>
+        <BackButton onPress={() => navigation.goBack()} />
+        <ScreenTitle text={t("emergencies2")} />
+        <View style={styles.scrollContent}>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+          <View style={{ marginBottom: 15 }}>
+            <SkeletonCard width={cardWidth} height={80} borderRadius={16} />
+          </View>
+        </View>
+        <View style={styles.buttonsContainer}>
+          <View style={{ flex: 1 }}>
+            <SkeletonButton height={56} borderRadius={16} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <SkeletonButton height={56} borderRadius={16} />
+          </View>
+        </View>
       </View>
     );
+  };
+
+  if (loading) {
+    return renderSkeletonForm();
   }
 
   return (
@@ -325,8 +358,8 @@ const EmergencyScreen2 = () => {
             formData.emergency_contact_name && formData.emergency_contact_phone
               ? `${formData.emergency_contact_name} - ${formData.emergency_contact_phone}`
               : formData.emergency_contact_name ||
-                formData.emergency_contact_phone ||
-                ""
+              formData.emergency_contact_phone ||
+              ""
           }
           onPress={handleEmergencyContactEdit}
         />

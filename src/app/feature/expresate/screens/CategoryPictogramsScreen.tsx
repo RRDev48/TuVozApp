@@ -7,6 +7,7 @@ import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
 import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavoritePictograms";
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
+import { usePictogramUsage } from "@/src/app/feature/expresate/hooks/usePictogramUsage";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
@@ -29,7 +30,7 @@ import {
 } from "react-native";
 import { Pictogram } from "../models/pictogram.types";
 import { speakPictogramText } from "../services/speech.Service";
-import i18n from "@/src/app/i18n";
+import SkeletonCard from "@/src/app/components/common/SkeletonCard";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -46,7 +47,7 @@ const CategoryPictogramsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
   const route = useRoute<CategoryPictogramsScreenRouteProp>();
 
-  const { categoryId, categoryName } = route.params;
+  const { categoryId, categoryName, categorySlug } = route.params;
 
   const { pictograms, isLoading, error } = usePictogramsByCategory(categoryId);
   const {
@@ -54,6 +55,7 @@ const CategoryPictogramsScreen = () => {
     toggleFavorite,
     isReady: favoritesReady,
   } = useFavoritePictograms();
+  const { trackUsage } = usePictogramUsage();
   const [currentPage, setCurrentPage] = useState(0);
   const [stableOrder, setStableOrder] = useState<Pictogram[]>([]);
   const sortedOnceRef = useRef(false);
@@ -62,14 +64,21 @@ const CategoryPictogramsScreen = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    if (sortedOnceRef.current || pictograms.length === 0 || !favoritesReady) {
+    if (sortedOnceRef.current || pictograms.length === 0) {
       return;
     }
+    // Si los favoritos están listos, ordenamos. Si no, mostramos el orden natural.
+    // Esto evita que la pantalla se quede en blanco esperando a los favoritos.
     sortedOnceRef.current = true;
-    setStableOrder([
-      ...pictograms.filter((p) => favoriteIds.has(p.id)),
-      ...pictograms.filter((p) => !favoriteIds.has(p.id)),
-    ]);
+
+    if (favoritesReady) {
+      setStableOrder([
+        ...pictograms.filter((p) => favoriteIds.has(p.id)),
+        ...pictograms.filter((p) => !favoriteIds.has(p.id)),
+      ]);
+    } else {
+      setStableOrder(pictograms);
+    }
   }, [pictograms, favoriteIds, favoritesReady]);
 
   const { paginatedPictograms, totalPages } = usePaginatedPictograms({
@@ -83,9 +92,20 @@ const CategoryPictogramsScreen = () => {
 
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
+    void trackUsage(pictogram);
     void speakPictogramText(pictogram.keyword, pictogram.language);
-  }, []);
+  }, [trackUsage]);
+
+  const normalizeCategoryName = useCallback((name: string, slug?: string) => {
+    if (slug) {
+      const translationKey = `category_${slug}`;
+      const translated = t(translationKey);
+      if (translated !== translationKey) {
+        return translated;
+      }
+    }
+    return name;
+  }, [t]);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -332,23 +352,31 @@ const CategoryPictogramsScreen = () => {
     ],
   );
 
-  const showLoading =
-    isLoading || (pictograms.length > 0 && stableOrder.length === 0);
+  const renderSkeletonGrid = () => (
+    <View style={containerStyles.carouselContainer}>
+      <View style={containerStyles.pageContainer}>
+        <View style={containerStyles.gridRow}>
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
+        <View style={containerStyles.gridRow}>
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
+        <View style={containerStyles.gridRow}>
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
+      </View>
+    </View>
+  );
 
-  if (showLoading) {
+  if (isLoading) {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-        <ScreenTitle text={transformText(categoryName)} />
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-           <CustomText>{transformText(t('loadingPictograms'))}</CustomText>
-        </View>
+        <ScreenTitle text={transformText(normalizeCategoryName(categoryName, categorySlug))} />
+        {renderSkeletonGrid()}
       </View>
     );
   }
@@ -357,7 +385,7 @@ const CategoryPictogramsScreen = () => {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-        <ScreenTitle text={transformText(categoryName)} />
+        <ScreenTitle text={transformText(normalizeCategoryName(categoryName, categorySlug))} />
         <View
           style={{
             flex: 1,
@@ -365,11 +393,9 @@ const CategoryPictogramsScreen = () => {
             alignItems: "center",
           }}
         >
-           <CustomText>
-             {transformText(
-               error || t('noPictogramsInCategory'),
-             )}
-           </CustomText>
+          <CustomText>
+            {transformText(error || t("noPictogramsInCategory"))}
+          </CustomText>
         </View>
       </View>
     );
@@ -378,7 +404,7 @@ const CategoryPictogramsScreen = () => {
   return (
     <View style={containerStyles.container}>
       <BackButton onPress={handleGoBack} />
-      <ScreenTitle text={transformText(categoryName)} />
+      <ScreenTitle text={transformText(normalizeCategoryName(categoryName, categorySlug))} />
 
       <View style={containerStyles.carouselContainer}>{renderCarousel()}</View>
 

@@ -150,6 +150,15 @@ export const ActiveProfileProvider = ({
 
   useEffect(() => {
     const init = async () => {
+      // 1. Verificar si hay sesión activa antes de cargar nada
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        await clear();
+        setLoading(false);
+        return;
+      }
+
       await loadFromStorage(); // instantáneo → sin parpadeo
       setLoading(false);
       void refresh(); // background sync con Supabase
@@ -157,12 +166,12 @@ export const ActiveProfileProvider = ({
 
     void init();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
       if (event === "SIGNED_IN") {
         void refresh();
       }
       if (event === "SIGNED_OUT") {
-        void clear();
+        await clear();
       }
     });
 

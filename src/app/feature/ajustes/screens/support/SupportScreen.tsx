@@ -1,3 +1,5 @@
+import SkeletonText from "@/src/app/components/common/SkeletonText";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import CustomText from "@/src/app/feature/common/CustomText";
@@ -154,18 +156,52 @@ const SupportScreen = () => {
     closed: t('statusClosed'),
   };
 
+  const renderSkeletonSupport = () => (
+    <View style={styles.container}>
+      <BackButton onPress={handleGoBack} />
+      <ScreenTitle text={t("myEntries")} />
+      <View style={styles.ticketsContainer}>
+        {/* Ticket Skeleton 1 */}
+        <View style={[styles.ticketCard, { backgroundColor: 'transparent' }]}>
+          <View style={styles.ticketHeader}>
+            <SkeletonText width="60%" height={20} />
+            <SkeletonText width={80} height={24} borderRadius={12} />
+          </View>
+          <View style={{ marginTop: 8 }}>
+            <SkeletonText width="90%" height={16} marginBottom={6} />
+            <SkeletonText width="40%" height={14} />
+          </View>
+        </View>
+        {/* Ticket Skeleton 2 */}
+        <View style={[styles.ticketCard, { backgroundColor: 'transparent' }]}>
+          <View style={styles.ticketHeader}>
+            <SkeletonText width="50%" height={20} />
+            <SkeletonText width={80} height={24} borderRadius={12} />
+          </View>
+          <View style={{ marginTop: 8 }}>
+            <SkeletonText width="85%" height={16} marginBottom={6} />
+            <SkeletonText width="35%" height={14} />
+          </View>
+        </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <SkeletonButton height={56} borderRadius={25} />
+      </View>
+    </View>
+  );
+
+  if (isLoading && tickets.length === 0) {
+    return renderSkeletonSupport();
+  }
+
   return (
     <View style={styles.container}>
       <BackButton onPress={handleGoBack} />
 
-      <ScreenTitle text={t('myEntries')} />
+      <ScreenTitle text={t("myEntries")} />
 
       {/* Contenido */}
-      {isLoading ? (
-        <View style={styles.contentContainer}>
-          <ActivityIndicator size="large" color={themedColors.primary} />
-        </View>
-      ) : tickets.length === 0 ? (
+      {tickets.length === 0 ? (
         <ScrollView
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}

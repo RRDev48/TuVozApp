@@ -48,6 +48,7 @@ type RootStackParamsList = {
   CategoryPictograms: {
     categoryId: string;
     categoryName: string;
+    categorySlug?: string;
   };
   Rutinas: undefined;
   Tarjetas: undefined;

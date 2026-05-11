@@ -1,3 +1,6 @@
+import SkeletonAvatar from "@/src/app/components/common/SkeletonAvatar";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import { colors } from "@/src/app/design-system/themes/globalColors-theme";
@@ -31,6 +34,7 @@ type ProfileEditScreenNavigationProp = StackNavigationProp<
 
 const ProfileEditScreen = () => {
   const { t } = useLanguageRefresh();
+  const [loading, setLoading] = React.useState(false);
   const navigation = useNavigation<ProfileEditScreenNavigationProp>();
   const route = useRoute<ProfileEditScreenRouteProp>();
   const { transformText, getThemedColors } = usePersonalization();
@@ -181,6 +185,35 @@ const ProfileEditScreen = () => {
       }),
     [themedColors],
   );
+
+  const renderSkeletonForm = () => (
+    <View style={styles.container}>
+      <BackButton onPress={() => navigation.goBack()} />
+      <View style={styles.headerContainer}>
+        <ScreenTitle text={t("editingProfile")} />
+      </View>
+      <View style={styles.contentContainer}>
+        <View style={styles.avatarSection}>
+          <SkeletonAvatar size={120} />
+          <View style={{ marginTop: 12 }}>
+            <SkeletonButton width={140} height={40} borderRadius={12} />
+          </View>
+        </View>
+        <SkeletonText width={100} height={18} marginBottom={10} />
+        <SkeletonButton height={56} borderRadius={12} />
+      </View>
+      <View style={styles.buttonContainer}>
+        <SkeletonButton height={56} borderRadius={16} />
+      </View>
+      <View style={[styles.deleteButton, { borderWidth: 0, paddingVertical: 0 }]}>
+        <SkeletonButton width="100%" height={56} borderRadius={16} />
+      </View>
+    </View>
+  );
+
+  if (loading) {
+    return renderSkeletonForm();
+  }
 
   return (
     <KeyboardAvoidingView

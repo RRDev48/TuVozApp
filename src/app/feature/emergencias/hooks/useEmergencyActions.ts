@@ -35,8 +35,19 @@ export const useEmergencyActions = () => {
         return null;
       }
 
+      // 1. Intentar obtener la última ubicación conocida (es casi instantáneo)
+      const lastKnown = await Location.getLastKnownPositionAsync();
+      if (lastKnown) {
+        // Si la ubicación es de hace menos de 5 minutos, la usamos
+        const age = (Date.now() - lastKnown.timestamp) / 1000;
+        if (age < 300) {
+          return lastKnown;
+        }
+      }
+
+      // 2. Si no hay o es vieja, pedir una nueva pero con precisión balanceada (más rápido que High)
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
+        accuracy: Location.Accuracy.Balanced,
       });
 
       return location;

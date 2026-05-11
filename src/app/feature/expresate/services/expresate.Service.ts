@@ -56,23 +56,15 @@ export const expresateService = {
     try {
       const { data, error } = await supabase
         .from("pictograms_categories")
-        .select("id, name, slug, image_url, pictograms!inner(id)")
+        .select("id, name, slug, image_url")
         .order("name", { ascending: true });
 
       if (error) {
         throw error;
       }
 
-      const categories =
-        (data as CategoryWithPictogramsRow[] | null)?.map((row) => ({
-          id: row.id,
-          name: row.name,
-          slug: row.slug,
-          image_url: row.image_url,
-        })) ?? [];
-
       return {
-        data: categories,
+        data: (data as PictogramCategory[] | null) ?? [],
         error: null,
       };
     } catch (error: unknown) {

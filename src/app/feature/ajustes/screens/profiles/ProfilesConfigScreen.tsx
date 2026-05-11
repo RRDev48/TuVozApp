@@ -1,3 +1,6 @@
+import SkeletonAvatar from "@/src/app/components/common/SkeletonAvatar";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
@@ -6,13 +9,12 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useCallback, useEffect, useMemo } from "react";
 import {
-  ActivityIndicator,
   GestureResponderEvent,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import BackButton from "../../../common/BackButton";
 import type { Profile } from "../../../common/models/database.types";
@@ -214,16 +216,32 @@ const ProfilesConfigScreen = () => {
     [styles, themedColors, handleProfilePress, handleEditProfile],
   );
 
-  if (isLoadingUser || isLoadingProfiles || isLoadingRole) {
-    return (
-      <View style={styles.container}>
-        <BackButton onPress={() => navigation.goBack()} />
-<ScreenTitle text={t('myPersonalProfiles')} />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={themedColors.primary} />
+  const renderSkeletonProfiles = () => (
+    <View style={styles.container}>
+      <BackButton onPress={() => navigation.goBack()} />
+      <ScreenTitle text={t("myPersonalProfiles")} />
+      <View style={styles.contentContainer}>
+        <View style={styles.profilesList}>
+          {/* Fila Skeleton 1 */}
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
+            <SkeletonAvatar size={60} />
+            <View style={{ flex: 1, marginLeft: 16 }}>
+              <SkeletonText width={150} height={20} />
+            </View>
+          </View>
         </View>
       </View>
-    );
+      <View style={styles.addButtonContainer}>
+        <SkeletonButton height={56} borderRadius={16} />
+      </View>
+    </View>
+  );
+
+  const isActuallyLoading =
+    isLoadingUser || isLoadingRole || (isLoadingProfiles && profiles.length === 0);
+
+  if (isActuallyLoading) {
+    return renderSkeletonProfiles();
   }
 
   return (

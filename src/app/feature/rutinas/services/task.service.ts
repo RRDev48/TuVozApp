@@ -74,13 +74,20 @@ async function getProfileIdByTaskId(taskId: number): Promise<string | null> {
 export async function getTasksByRoutine(
   routineId: number,
 ): Promise<(TaskDb & { steps?: TaskStepDb[] })[]> {
-  const { data: tasks, error: tasksError } = await supabase
-    .from("tasks")
-    .select(
-      "id, routine_id, category_id, title, status, start_time, end_time, reminder, created_at, updated_at, category:task_categories(id, name, image_url)",
-    )
-    .eq("routine_id", routineId)
-    .order("created_at");
+  const [{ data: tasks, error: tasksError }, { data: routine }] = await Promise.all([
+    supabase
+      .from("tasks")
+      .select(
+        "id, routine_id, category_id, title, status, start_time, end_time, reminder, created_at, updated_at, category:task_categories(id, name, image_url)",
+      )
+      .eq("routine_id", routineId)
+      .order("created_at"),
+    supabase
+      .from("routines")
+      .select("routine_date")
+      .eq("id", routineId)
+      .single()
+  ]);
 
   if (tasksError) throw tasksError;
   if (!tasks) return [];
@@ -109,14 +116,61 @@ export async function getTasksByRoutine(
     steps: stepsByTask[task.id] || [],
   }));
 
-  const { data: routine } = await supabase
-    .from("routines")
-    .select("routine_date")
-    .eq("id", routineId)
-    .single();
   const routineDate: string = routine?.routine_date ?? "";
 
   return tasksWithSteps.map((task) => ({ ...task, _routineDate: routineDate }));
+}
+
+export async function getTasksByRoutineRange(
+  routineIds: number[],
+): Promise<(TaskDb & { steps?: TaskStepDb[] })[]> {
+  if (routineIds.length === 0) return [];
+
+  // 1. Obtener todas las tareas de esas rutinas con su categoría y fecha de rutina
+  const { data: tasks, error: tasksError } = await supabase
+    .from("tasks")
+    .select(
+      "*, category:task_categories(id, name, image_url), routine:routines(routine_date)",
+    )
+    .in("routine_id", routineIds)
+    .order("created_at");
+
+  if (tasksError) throw tasksError;
+  if (!tasks || tasks.length === 0) return [];
+
+  // 2. Obtener todos los pasos de esas tareas
+  const taskIds = tasks.map((t) => t.id);
+  const { data: steps, error: stepsError } = await supabase
+    .from("task_steps")
+    .select("*")
+    .in("task_id", taskIds)
+    .order("step_order");
+
+  if (stepsError) throw stepsError;
+
+  // 3. Mapear pasos a tareas
+  const stepsByTask: Record<number, TaskStepDb[]> = {};
+  (steps || []).forEach((step) => {
+    if (!stepsByTask[step.task_id]) {
+      stepsByTask[step.task_id] = [];
+    }
+    stepsByTask[step.task_id].push(step);
+  });
+
+  // 4. Normalizar y estructurar el resultado
+  return (tasks as any[]).map((task) => {
+    const routineDate = task.routine?.routine_date || "";
+    const normalizedTask = normalizeTaskRow({
+      ...task,
+      category: task.category,
+    } as any);
+    
+    return {
+      ...normalizedTask,
+      steps: stepsByTask[task.id] || [],
+      _routineDate: routineDate,
+    };
+  });
 }
 
 export async function createTask(

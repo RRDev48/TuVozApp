@@ -5,12 +5,14 @@ import CachedPictogramImage from "@/src/app/feature/common/CachedPictogramImage"
 import CustomText from "@/src/app/feature/common/CustomText";
 import MenuItem from "@/src/app/feature/common/menu/MenuItem";
 import ScreenTitle from "@/src/app/feature/common/ScreenTitle";
+import SkeletonCard from "@/src/app/components/common/SkeletonCard";
 import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavoritePictograms";
 import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
 import { usePictogramsByCategory } from "@/src/app/feature/expresate/hooks/usePictogramsByCategory";
 import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
+import { usePictogramUsage } from "@/src/app/feature/expresate/hooks/usePictogramUsage";
 import {
   Pictogram,
   PictogramCategory,
@@ -46,6 +48,7 @@ const ShortcutScreen = () => {
   const { favoriteIds } = useFavoritePictograms();
   const { selectedPictograms, addPictogram, removeLastPictogram, speakPhrase } =
     useFrasesPhrase();
+  const { trackUsage } = usePictogramUsage();
 
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -145,7 +148,6 @@ const ShortcutScreen = () => {
           flex: 1,
           backgroundColor: themedColors.background,
         },
-        // — Phrase bar —
         phraseBar: {
           borderBottomWidth: 1,
           borderBottomColor: themedColors.secondary + "30",
@@ -207,7 +209,6 @@ const ShortcutScreen = () => {
           textAlign: "center",
           maxWidth: 50,
         },
-        // — Pagination dots —
         paginationContainer: {
           flexDirection: "row",
           justifyContent: "center",
@@ -234,7 +235,6 @@ const ShortcutScreen = () => {
           borderRadius: 4,
           backgroundColor: "#03A503",
         },
-        // — Carousel —
         carouselContainer: {
           flex: 1,
           alignItems: "center",
@@ -284,14 +284,10 @@ const ShortcutScreen = () => {
           padding: 3,
           zIndex: 1,
         },
-        image: {
+        icon: {
           width: 68,
           height: 68,
           resizeMode: "contain",
-        },
-        icon: {
-          width: 70,
-          height: 70,
         },
         textCard: {
           fontSize: 14,
@@ -303,7 +299,6 @@ const ShortcutScreen = () => {
           minHeight: 32,
           maxWidth: 110,
         },
-        // — Search —
         searchContainer: {
           paddingHorizontal: 20,
           paddingVertical: 10,
@@ -327,7 +322,6 @@ const ShortcutScreen = () => {
           fontSize: 16,
           color: themedColors.secondary,
         },
-        // — Bottom action bar —
         bottomBar: {
           justifyContent: "center",
           alignItems: "center",
@@ -361,7 +355,6 @@ const ShortcutScreen = () => {
           alignItems: "center",
           justifyContent: "center",
         },
-        // — Breadcrumb —
         breadcrumb: {
           flexDirection: "row",
           alignItems: "center",
@@ -385,7 +378,7 @@ const ShortcutScreen = () => {
         breadcrumbCurrent: {
           color: themedColors.text,
           fontSize: 14,
-          fontWeight: "bold" as const,
+          fontWeight: "bold",
         },
       }),
     [themedColors, temaOscuro],
@@ -400,14 +393,17 @@ const ShortcutScreen = () => {
       return (
         <TouchableOpacity
           style={styles.itemContainer}
-          onPress={() => addPictogram(item)}
+          onPress={() => {
+            trackUsage(item);
+            addPictogram(item);
+          }}
           activeOpacity={0.7}
         >
           <View style={styles.cardWrapper}>
             <View style={styles.buttonContainer}>
               <CachedPictogramImage
                 arasaacId={item.arasaac_id}
-                style={styles.image}
+                style={styles.icon}
                 placeholder={require("@/src/app/assets/icon/Ajustes.png")}
               />
             </View>
@@ -450,24 +446,16 @@ const ShortcutScreen = () => {
           : renderCategoryCard(item as PictogramCategory);
       };
 
-      const rows = showPictograms
-        ? [
-            [page[0], page[1]],
-            [page[2], page[3]],
-          ]
-        : [
-            [page[0], page[1]],
-            [page[2], page[3]],
-          ];
-
       return (
         <View style={styles.pageContainer}>
-          {rows.map((row, i) => (
-            <View key={i} style={styles.gridRow}>
-              {renderItem(row[0])}
-              {renderItem(row[1])}
-            </View>
-          ))}
+          <View style={styles.gridRow}>
+            {renderItem(page[0])}
+            {renderItem(page[1])}
+          </View>
+          <View style={styles.gridRow}>
+            {renderItem(page[2])}
+            {renderItem(page[3])}
+          </View>
         </View>
       );
     },
@@ -480,16 +468,28 @@ const ShortcutScreen = () => {
     ],
   );
 
+  const renderSkeletonGrid = () => (
+    <View style={styles.pageContainer}>
+      <View style={styles.gridRow}>
+        <SkeletonCard width={108} height={108} borderRadius={26} />
+        <SkeletonCard width={108} height={108} borderRadius={26} />
+      </View>
+      <View style={styles.gridRow}>
+        <SkeletonCard width={108} height={108} borderRadius={26} />
+        <SkeletonCard width={108} height={108} borderRadius={26} />
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
-      <ScreenTitle text={t('phrases')} />
+      <ScreenTitle text={t("phrases")} />
 
-      {/* Barra de pictogramas seleccionados */}
       <View style={styles.phraseBar}>
         {selectedPictograms.length === 0 && (
           <CustomText style={styles.phraseHintText}>
-            {t('selectPictogramHint')}
+            {t("selectPictogramHint")}
           </CustomText>
         )}
         <ScrollView
@@ -534,7 +534,6 @@ const ShortcutScreen = () => {
         </ScrollView>
       </View>
 
-      {/* Pagination dots */}
       {totalPages > 1 && (
         <View style={styles.paginationContainer}>
           {showLeadingOverflowDot && (
@@ -556,7 +555,6 @@ const ShortcutScreen = () => {
         </View>
       )}
 
-      {/* Search */}
       <View style={styles.searchContainer}>
         <View style={styles.searchInputWrapper}>
           <Ionicons
@@ -567,7 +565,7 @@ const ShortcutScreen = () => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder={t('filter')}
+            placeholder={t("filter")}
             placeholderTextColor={themedColors.secondary}
             value={searchQuery}
             onChangeText={(text) => {
@@ -592,8 +590,6 @@ const ShortcutScreen = () => {
         </View>
       </View>
 
-      {/* Carrusel */}
-      {/* Breadcrumb — visible only when drilling into a category */}
       {isCategoryMode && (
         <View style={styles.breadcrumb}>
           <TouchableOpacity
@@ -606,7 +602,7 @@ const ShortcutScreen = () => {
               color={themedColors.primary}
             />
             <CustomText style={styles.breadcrumbText}>
-              {t('categories')}
+              {t("categories")}
             </CustomText>
           </TouchableOpacity>
           <CustomText style={styles.breadcrumbSeparator}>/</CustomText>
@@ -616,20 +612,11 @@ const ShortcutScreen = () => {
         </View>
       )}
 
-      {/* Carrusel */}
       <View style={styles.carouselContainer}>
-        {isLoading || (isCategoryMode && isCategoryLoading) ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <CustomText>{t('loadingCategories')}</CustomText>
-          </View>
-        ) : isSearchMode && isSearching ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <CustomText>{t('searchingPictograms')}</CustomText>
-          </View>
+        {isLoading ||
+        (isCategoryMode && isCategoryLoading) ||
+        (isSearchMode && isSearching) ? (
+          renderSkeletonGrid()
         ) : (
           <FlatList
             ref={flatListRef}
@@ -648,7 +635,6 @@ const ShortcutScreen = () => {
         )}
       </View>
 
-      {/* Barra inferior */}
       <View style={styles.bottomBar}>
         <View style={styles.actionButtonsRow}>
           {selectedPictograms.length > 0 && (

@@ -19,6 +19,8 @@ import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { useEmergencyActions } from "../../hooks/useEmergencyActions";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
+import SkeletonButton from "@/src/app/components/common/SkeletonButton";
 
 type EmergencyProfileScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -146,6 +148,46 @@ const EmergencyProfileScreen = () => {
           fontSize: 18,
           fontWeight: "bold",
         },
+        emptyStateContainer: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+          backgroundColor: themedColors.background,
+        },
+        emptyStateIcon: {
+          marginBottom: 20,
+          opacity: 0.8,
+        },
+        emptyStateTitle: {
+          fontSize: 22,
+          fontWeight: "bold",
+          color: themedColors.text,
+          textAlign: "center",
+          marginBottom: 12,
+        },
+        emptyStateMessage: {
+          fontSize: 16,
+          color: themedColors.text,
+          textAlign: "center",
+          opacity: 0.7,
+          lineHeight: 24,
+          marginBottom: 30,
+        },
+        goToSettingsButton: {
+          backgroundColor: themedColors.secondary,
+          paddingVertical: 14,
+          paddingHorizontal: 24,
+          borderRadius: 12,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8,
+        },
+        goToSettingsButtonText: {
+          color: themedColors.primary,
+          fontSize: 16,
+          fontWeight: "bold",
+        },
       }),
     [themedColors],
   );
@@ -169,10 +211,87 @@ const EmergencyProfileScreen = () => {
     }
   };
 
+  const renderSkeletonProfile = () => (
+    <View style={styles.container}>
+      <BackButton onPress={() => navigation.goBack()} />
+      <ScreenTitle text={t("emergencyProfile")} />
+      <View style={styles.content}>
+        {/* Section 1 Skeleton */}
+        <View style={styles.section}>
+          <SkeletonText width={100} height={14} marginBottom={12} />
+          <View style={styles.infoRowLast}>
+            <SkeletonText width={200} height={18} />
+          </View>
+        </View>
+
+        {/* Section 2 Skeleton */}
+        <View style={styles.section}>
+          <SkeletonText width={120} height={14} marginBottom={12} />
+          <View style={styles.infoRow}>
+            <SkeletonText width={150} height={16} />
+          </View>
+          <View style={styles.infoRow}>
+            <SkeletonText width={180} height={16} />
+          </View>
+          <View style={styles.infoRowLast}>
+            <SkeletonText width={160} height={16} />
+          </View>
+        </View>
+
+        {/* Section 3 Skeleton */}
+        <View style={styles.section}>
+          <SkeletonText width={140} height={14} marginBottom={12} />
+          <View style={styles.infoRow}>
+            <SkeletonText width={170} height={16} />
+          </View>
+          <View style={styles.infoRowLast}>
+            <SkeletonText width={190} height={16} />
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.buttonsContainer}>
+        <View style={{ marginBottom: 12 }}>
+          <SkeletonButton height={56} borderRadius={16} />
+        </View>
+        <SkeletonButton height={56} borderRadius={16} />
+      </View>
+    </View>
+  );
+
   if (loading) {
+    return renderSkeletonProfile();
+  }
+
+  const isProfileComplete = !!(
+    profile?.blood_type &&
+    profile?.emergency_contact_name &&
+    profile?.emergency_contact_phone &&
+    profile?.alert_type
+  );
+
+  if (!isProfileComplete) {
     return (
-      <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.blue} />
+      <View style={styles.emptyStateContainer}>
+        <BackButton onPress={() => navigation.goBack()} />
+        <Ionicons
+          name="alert-circle-outline"
+          size={80}
+          color={themedColors.secondary}
+          style={styles.emptyStateIcon}
+        />
+        <Text style={styles.emptyStateTitle}>{t("noEmergencyDataTitle") || "Sin datos de emergencia"}</Text>
+        <Text style={styles.emptyStateMessage}>
+          {t("noEmergencyDataMessage") ||
+            "No tienes datos de emergencia cargados. Por favor, configúralos en la sección de Ajustes para estar protegido."}
+        </Text>
+        <TouchableOpacity
+          style={styles.goToSettingsButton}
+          onPress={() => navigation.navigate("Ajustes")}
+        >
+          <Ionicons name="settings-outline" size={20} color={themedColors.primary} />
+          <Text style={styles.goToSettingsButtonText}>{t("goToSettings") || "Ir a Ajustes"}</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -181,7 +300,7 @@ const EmergencyProfileScreen = () => {
     <View style={styles.container}>
       <BackButton onPress={() => navigation.goBack()} />
 
-      <ScreenTitle text={t('emergencyProfile')} />
+      <ScreenTitle text={t("emergencyProfile")} />
 
       <View style={styles.content}>
         {/* Nombre */}

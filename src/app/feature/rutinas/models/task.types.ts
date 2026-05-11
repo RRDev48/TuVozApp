@@ -45,4 +45,5 @@ export interface Task {
   titulo: string;
   estado?: string;
   rutinaId?: string;
+  _routineDate?: string;
 }

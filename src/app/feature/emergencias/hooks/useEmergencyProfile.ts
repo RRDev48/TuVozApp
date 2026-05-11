@@ -30,11 +30,13 @@ export const useEmergencyProfile = () => {
 
       setProfileId(userProfileId);
 
-      const fullName = await emergencyService.getProfileFullName(userProfileId);
-      setProfileFullName(fullName);
+      // Ejecutar estas peticiones en paralelo para ahorrar tiempo
+      const [fullName, emergencyProfile] = await Promise.all([
+        emergencyService.getProfileFullName(userProfileId),
+        emergencyService.getEmergencyProfile(userProfileId),
+      ]);
 
-      const emergencyProfile =
-        await emergencyService.getEmergencyProfile(userProfileId);
+      setProfileFullName(fullName);
       setProfile(emergencyProfile);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");

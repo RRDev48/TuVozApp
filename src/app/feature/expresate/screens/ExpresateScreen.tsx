@@ -1,4 +1,5 @@
 import ZenithXAnimado from "@/src/app/assets/icon/ZenithXAnimado.svg";
+import SkeletonCard from "@/src/app/components/common/SkeletonCard";
 import { usePersonalization } from "@/src/app/contexts/PersonalizationContext";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
 import BackButton from "@/src/app/feature/common/BackButton";
@@ -9,8 +10,9 @@ import { useFavoritePictograms } from "@/src/app/feature/expresate/hooks/useFavo
 import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePaginatedCategories";
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
-import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
 import { usePictogramPreloader } from "@/src/app/feature/expresate/hooks/usePictogramPreloader";
+import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
+import { usePictogramUsage } from "@/src/app/feature/expresate/hooks/usePictogramUsage";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -28,6 +30,7 @@ import {
   FlatList,
   Keyboard,
   Platform,
+  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -36,8 +39,8 @@ import {
 } from "react-native";
 import MenuItem from "../../common/menu/MenuItem";
 import { Pictogram, PictogramCategory } from "../models/pictogram.types";
-import { speakWithQueue } from "../services/speechQueue.Service";
 import { pictogramCacheService } from "../services/pictogramCache.Service";
+import { speakWithQueue } from "../services/speechQueue.Service";
 
 const { width } = Dimensions.get("window");
 const PAGE_WIDTH = width - 40;
@@ -52,8 +55,10 @@ const ExpresateScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
-  const { favoriteIds, toggleFavorite } = useFavoritePictograms();
+  const { favoriteIds, favoritePictograms, toggleFavorite } = useFavoritePictograms();
   const { preloadInBackground } = usePictogramPreloader();
+  const { trackUsage, recentPictograms, topPictograms } = usePictogramUsage();
+  const [activeTab, setActiveTab] = useState<'categories' | 'favorites' | 'top' | 'recent'>('categories');
 
   useEffect(() => {
     if (categories.length > 0) {
@@ -84,13 +89,25 @@ const ExpresateScreen = () => {
       itemsPerPage: categoryItemsPerPage,
     });
 
-  const { paginatedPictograms, totalPages: totalPictogramPages } =
+  const activeData = useMemo(() => {
+    if (isSearchMode) return searchResults;
+    switch (activeTab) {
+      case 'favorites': return favoritePictograms;
+      case 'top': return topPictograms;
+      case 'recent': return recentPictograms;
+      default: return [];
+    }
+  }, [activeTab, isSearchMode, searchResults, favoritePictograms, topPictograms, recentPictograms]);
+
+  const { paginatedPictograms: paginatedItems, totalPages: totalPictoPages } =
     usePaginatedPictograms({
-      pictograms: searchResults,
+      pictograms: activeData,
       itemsPerPage: pictogramItemsPerPage,
     });
 
-  const totalPages = isSearchMode ? totalPictogramPages : totalCategoryPages;
+  const totalPages = isSearchMode || activeTab !== 'categories'
+    ? totalPictoPages
+    : totalCategoryPages;
 
   useEffect(() => {
     setCurrentPage(0);
@@ -100,7 +117,7 @@ const ExpresateScreen = () => {
   useEffect(() => {
     setCurrentPage(0);
     flatListRef.current?.scrollToIndex({ index: 0, animated: false });
-  }, [isKeyboardOpen]);
+  }, [isSearchMode, activeTab]);
 
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
@@ -137,6 +154,7 @@ const ExpresateScreen = () => {
       navigation.navigate("CategoryPictograms", {
         categoryId,
         categoryName,
+        categorySlug,
       });
     },
     [navigation],
@@ -144,9 +162,9 @@ const ExpresateScreen = () => {
 
   const handlePictogramPress = useCallback((pictogram: Pictogram) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
+    void trackUsage(pictogram);
     void speakWithQueue(pictogram.keyword, pictogram.language);
-  }, []);
+  }, [trackUsage]);
 
   const normalizeCategoryName = useCallback((name: string, slug?: string) => {
     if (slug) {
@@ -311,7 +329,7 @@ const ExpresateScreen = () => {
     (item: Pictogram) => {
       const capitalizedKeyword =
         item.keyword.charAt(0).toUpperCase() + item.keyword.slice(1);
-      const isFavorite = favoriteIds.has(item.id);
+      const isFavorite = favoriteIds.has(item.id.toString());
 
       return (
         <TouchableOpacity
@@ -361,7 +379,9 @@ const ExpresateScreen = () => {
           return <View style={{ flex: 1 }} />;
         }
 
-        return isSearchMode
+        const isPictogram = (item as any).keyword !== undefined;
+
+        return isPictogram
           ? renderPictogramItem(item as Pictogram)
           : renderCategoryItem(item as PictogramCategory);
       };
@@ -400,8 +420,9 @@ const ExpresateScreen = () => {
   const renderCarousel = useCallback(
     () => (
       <FlatList
+        key={`carousel-${activeTab}-${isSearchMode}`}
         ref={flatListRef}
-        data={isSearchMode ? paginatedPictograms : paginatedCategories}
+        data={activeTab === 'categories' && !isSearchMode ? paginatedCategories : paginatedItems}
         renderItem={({ item }) => renderPage(item)}
         keyExtractor={(_, index) => index.toString()}
         horizontal
@@ -411,7 +432,7 @@ const ExpresateScreen = () => {
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
       />
     ),
-    [isSearchMode, paginatedCategories, paginatedPictograms, renderPage],
+    [isSearchMode, paginatedCategories, paginatedItems, activeTab, renderPage],
   );
 
   const renderPagination = useCallback(
@@ -475,31 +496,38 @@ const ExpresateScreen = () => {
 
         <View style={errorScreenStyles.errorContent}>
           <ZenithXAnimado width={180} height={180} />
-           <CustomText style={errorScreenStyles.errorText}>
-             {transformText(
-               error || t('somethingWentWrong'),
-             )}
-           </CustomText>
+          <CustomText style={errorScreenStyles.errorText}>
+            {transformText(
+              error || t('somethingWentWrong'),
+            )}
+          </CustomText>
         </View>
       </View>
     ),
     [error, errorScreenStyles, handleGoBack, transformText],
   );
 
+  const renderSkeletonGrid = () => (
+    <View style={containerStyles.carouselContainer}>
+      <View style={containerStyles.pageContainer}>
+        <View style={containerStyles.gridRow}>
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
+        <View style={containerStyles.gridRow}>
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
+      </View>
+    </View>
+  );
+
   if (isLoading) {
     return (
       <View style={containerStyles.container}>
         <BackButton onPress={handleGoBack} />
-         <ScreenTitle text={transformText(t('expressWithCards'))} />
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CustomText>{transformText(t('loadingCategories'))}</CustomText>
-        </View>
+        <ScreenTitle text={transformText(t("expressWithCards"))} />
+        {renderSkeletonGrid()}
       </View>
     );
   }
@@ -516,18 +544,52 @@ const ExpresateScreen = () => {
       ]}
     >
       <BackButton onPress={handleGoBack} />
-      <ScreenTitle text={transformText(t('expressWithCards'))} />
+      <ScreenTitle text={transformText(t("expressWithCards"))} />
+
+      {!isSearchMode && (
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={tabsStyles.tabsScroll}
+          contentContainerStyle={tabsStyles.tabsContainer}
+        >
+          <TouchableOpacity 
+            onPress={() => setActiveTab('categories')}
+            style={[tabsStyles.tab, activeTab === 'categories' && tabsStyles.activeTab]}
+          >
+            <CustomText style={[tabsStyles.tabText, activeTab === 'categories' && tabsStyles.activeTabText]}>
+              {t('categoriesTab')}
+            </CustomText>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => setActiveTab('favorites')}
+            style={[tabsStyles.tab, activeTab === 'favorites' && tabsStyles.activeTab]}
+          >
+            <CustomText style={[tabsStyles.tabText, activeTab === 'favorites' && tabsStyles.activeTabText]}>
+              {t('favoritesTab')}
+            </CustomText>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => setActiveTab('top')}
+            style={[tabsStyles.tab, activeTab === 'top' && tabsStyles.activeTab]}
+          >
+            <CustomText style={[tabsStyles.tabText, activeTab === 'top' && tabsStyles.activeTabText]}>
+              {t('topUsedTab')}
+            </CustomText>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => setActiveTab('recent')}
+            style={[tabsStyles.tab, activeTab === 'recent' && tabsStyles.activeTab]}
+          >
+            <CustomText style={[tabsStyles.tabText, activeTab === 'recent' && tabsStyles.activeTabText]}>
+              {t('recentsTab')}
+            </CustomText>
+          </TouchableOpacity>
+        </ScrollView>
+      )}
 
       {isSearchMode && isSearching ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <CustomText>{transformText(t('searchingPictograms'))}</CustomText>
-        </View>
+        renderSkeletonGrid()
       ) : isSearchMode && (searchError || searchResults.length === 0) ? (
         <View
           style={{
@@ -537,13 +599,26 @@ const ExpresateScreen = () => {
           }}
         >
           <CustomText>
-            {transformText(searchError || t('noPictogramsFound'))}
+            {transformText(searchError || t("noPictogramsFound"))}
           </CustomText>
         </View>
       ) : (
         <>
           <View style={containerStyles.carouselContainer}>
-            {renderCarousel()}
+            {activeData.length === 0 && activeTab !== 'categories' ? (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+                <Ionicons 
+                  name={activeTab === 'favorites' ? 'heart-outline' : 'time-outline'} 
+                  size={60} 
+                  color={themedColors.secondary + '40'} 
+                />
+                <CustomText style={{ textAlign: 'center', marginTop: 10, color: themedColors.secondary }}>
+                  {activeTab === 'favorites' ? t('noFavoritesMessage') : t('noUsageMessage')}
+                </CustomText>
+              </View>
+            ) : (
+              renderCarousel()
+            )}
           </View>
 
           {totalPages > 1 && renderPagination()}
@@ -581,5 +656,38 @@ const ExpresateScreen = () => {
     </View>
   );
 };
+
+const tabsStyles = StyleSheet.create({
+  tabsScroll: {
+    maxHeight: 50,
+    marginBottom: 10,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    gap: 10,
+    alignItems: 'center',
+  },
+  tab: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#9E9E9E40',
+  },
+  activeTab: {
+    backgroundColor: '#006F9E',
+    borderColor: '#006F9E',
+  },
+  tabText: {
+    fontSize: 14,
+    color: '#9E9E9E',
+    fontWeight: '600',
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
+});
 
 export default ExpresateScreen;

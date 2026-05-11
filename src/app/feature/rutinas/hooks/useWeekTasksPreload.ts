@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Task } from "../models/task.types";
 import { getRoutinesByRange } from "../services/routine.service";
-import { getTasksByRoutine } from "../services/task.service";
+import { getTasksByRoutineRange } from "../services/task.service";
 import { mapTasksFromDB } from "./useTaskMapper";
 
 type TasksByDay = Record<string, Task[]>;
@@ -20,43 +20,47 @@ export const useWeekTasksPreload = (profileId: string, daysOfWeek: Date[]) => {
     setIsLoading(true);
 
     try {
-      // Obtener el rango de fechas de la semana
+      // 1. Obtener el rango de fechas de la semana
       const startDate = daysOfWeek[0].toISOString().slice(0, 10);
       const endDate = daysOfWeek[daysOfWeek.length - 1]
         .toISOString()
         .slice(0, 10);
 
-      // Obtener todas las rutinas de la semana
+      // 2. Obtener todas las rutinas de la semana en una sola consulta
       const routines = await getRoutinesByRange(profileId, startDate, endDate);
+      
+      if (routines.length === 0) {
+        setTasksByDay({});
+        return;
+      }
 
-      // Crear un mapa de fecha a routine_id
-      const routinesByDate = new Map(
-        routines.map((r) => [r.routine_date, r.id]),
-      );
+      // 3. Obtener TODAS las tareas de esas rutinas en una sola consulta masiva
+      const routineIds = routines.map((r) => r.id);
+      const allTasksData = await getTasksByRoutineRange(routineIds);
 
-      // Cargar tareas para todas las rutinas en paralelo
-      const tasksPromises = routines.map((routine) =>
-        getTasksByRoutine(routine.id),
-      );
-      const allTasksData = await Promise.all(tasksPromises);
-
-      // Organizar tareas por fecha
+      // 4. Organizar tareas por fecha
       const newTasksByDay: TasksByDay = {};
 
+      // Inicializar días vacíos
       daysOfWeek.forEach((day) => {
         const dateStr = day.toISOString().slice(0, 10);
         newTasksByDay[dateStr] = [];
       });
 
-      routines.forEach((routine, index) => {
-        const tasksForRoutine = mapTasksFromDB(allTasksData[index]);
-        newTasksByDay[routine.routine_date] = tasksForRoutine;
+      // Mapear y agrupar tareas por su fecha de rutina
+      const mappedTasks = mapTasksFromDB(allTasksData);
+      
+      mappedTasks.forEach((task) => {
+        const dateStr = task._routineDate; // El servicio ahora nos provee esta fecha
+        if (dateStr && newTasksByDay[dateStr]) {
+          newTasksByDay[dateStr].push(task);
+        }
       });
 
       setTasksByDay(newTasksByDay);
     } catch (error) {
       console.error("Error loading week tasks:", error);
-      setTasksByDay({});
+      // No reseteamos a vacío para mantener lo que ya tenemos si falla el reload
     } finally {
       setIsLoading(false);
     }

@@ -13,6 +13,8 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
+import SkeletonAvatar from "@/src/app/components/common/SkeletonAvatar";
+import SkeletonText from "@/src/app/components/common/SkeletonText";
 import Translate from "../../../common/Translate";
 import { authService } from "../../../start/Auth/services/auth.Service";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
@@ -197,7 +199,9 @@ const SettingsScreen = () => {
       <View style={styles.userInfoContainer}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatarCircle}>
-            {!isLoadingUser && (
+            {isLoadingUser ? (
+              <SkeletonAvatar size={80} />
+            ) : (
               <Image
                 source={avatarUrl ? { uri: avatarUrl } : ADIP_ICON}
                 style={styles.avatarImage}
@@ -206,11 +210,15 @@ const SettingsScreen = () => {
             )}
           </View>
         </View>
-        <CustomText style={styles.greetingText}>
-          {userName
-            ? `¡Hola ${userName}!`
-            : t("greetingFallback")}
-        </CustomText>
+        {isLoadingUser ? (
+          <View style={{ flex: 1, gap: 8 }}>
+            <SkeletonText width={150} height={20} />
+          </View>
+        ) : (
+          <CustomText style={styles.greetingText}>
+            {userName ? `¡Hola ${userName}!` : t("greetingFallback")}
+          </CustomText>
+        )}
       </View>
 
       {/* Botones de configuración */}

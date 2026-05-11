@@ -12,6 +12,8 @@ export const colors = {
   darkGray: "#333",
   white: "#fff",
   transparent: "rgba(0, 0, 0, 0)",
+  skeletonLight: "#E1E9EE",
+  skeletonDark: "#2C3E50",
 };
 
 export default {};

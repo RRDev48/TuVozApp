@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
 import { emergencyService } from "../../emergencias/services/emergency.Service";
 import { expresateService } from "../services/expresate.Service";
+import { Pictogram } from "../models/pictogram.types";
 
 const GUEST_FAVORITES_KEY = "@tuVoz:guest_favorites";
 
@@ -14,6 +15,7 @@ export const useFavoritePictograms = () => {
     loading: profileLoading,
   } = useCurrentUserProfile();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [favoritePictograms, setFavoritePictograms] = useState<Pictogram[]>([]);
   const [isReady, setIsReady] = useState(false);
   const favoriteIdsRef = useRef<Set<string>>(new Set());
 
@@ -55,10 +57,13 @@ export const useFavoritePictograms = () => {
 
         const { data } =
           await expresateService.getFavoritePictograms(effectiveProfileId);
-        const remoteIds = (data ?? []).map((p) => p.id);
-        const merged = new Set([...localIds, ...remoteIds]);
+        const remotePictograms = data ?? [];
+        const remoteIds = remotePictograms.map((p) => p.id.toString());
+        const localIdsParsed = (localIds as (string | number)[]).map(id => id.toString());
+        const merged = new Set([...localIdsParsed, ...remoteIds]);
 
         setFavoriteIds(merged);
+        setFavoritePictograms(remotePictograms);
         await AsyncStorage.setItem(
           GUEST_FAVORITES_KEY,
           JSON.stringify([...merged]),
@@ -129,5 +134,5 @@ export const useFavoritePictograms = () => {
     [resolveProfileId],
   );
 
-  return { favoriteIds, toggleFavorite, isReady };
+  return { favoriteIds, favoritePictograms, toggleFavorite, isReady };
 };

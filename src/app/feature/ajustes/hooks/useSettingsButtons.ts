@@ -16,11 +16,14 @@ export interface SettingsButton {
   show: boolean;
 }
 
+import { useActiveProfile } from "@/src/app/contexts/ActiveProfileContext";
+
 export const useSettingsButtons = (
   currentUser: CurrentAuthUser,
   isLoading: boolean,
 ) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamsList>>();
+  const { displayName } = useActiveProfile();
 
   const handleNavigateToProfiles = useCallback(() => {
     navigation.navigate("ProfilesConfigScreen");
@@ -45,7 +48,7 @@ export const useSettingsButtons = (
       subtitleKey: "configureProfiles",
       iconName: "person",
       onPress: handleNavigateToProfiles,
-      show: true,
+      show: true, // Siempre mostrar para poder cambiar de perfil
     },
     {
       id: "personalization",
@@ -61,7 +64,7 @@ export const useSettingsButtons = (
       subtitleKey: "helpAssistance",
       iconName: "help-circle",
       onPress: handleNavigateToSupport,
-      show: !isLoading && !!currentUser,
+      show: true,
     },
     {
       id: "emergency",
@@ -69,7 +72,7 @@ export const useSettingsButtons = (
       subtitleKey: "configureEmergency",
       iconName: "alert-circle",
       onPress: handleNavigateToEmergency,
-      show: !isLoading && !!currentUser,
+      show: !!displayName,
     },
   ];
 

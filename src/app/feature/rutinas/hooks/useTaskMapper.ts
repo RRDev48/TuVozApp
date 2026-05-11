@@ -24,10 +24,11 @@ export const mapTaskFromDB = (
   recordatorio: taskDb.reminder || undefined,
   titulo: taskDb.title,
   estado: taskDb.status,
+  _routineDate: taskDb._routineDate,
 });
 
 export const mapTasksFromDB = (
-  tasksDb: (TaskDb & { steps?: TaskStepDb[] })[],
+  tasksDb: (TaskDb & { steps?: TaskStepDb[]; _routineDate?: string })[],
 ): Task[] => {
   return tasksDb.map(mapTaskFromDB);
 };

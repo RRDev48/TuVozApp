@@ -109,6 +109,7 @@ export interface DaysOfWeekProps {
   routineId: number;
   profileId: string;
   onChangeWeek?: (newStartDate: Date) => void;
+  medals?: string[];
 }
 
 export interface ChangeWeekProps {

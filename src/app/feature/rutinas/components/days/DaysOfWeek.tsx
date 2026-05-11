@@ -16,12 +16,16 @@ export const DaysOfWeek = ({
   setSelectedDayIndex,
   profileId,
   onChangeWeek,
+  medals: medalsProp,
 }: DaysOfWeekProps) => {
   const { getThemedColors, idioma } = usePersonalization();
   const { t } = useLanguageRefresh();
   const themedColors = getThemedColors();
   const weekDates = useWeekDays(currentWeekStart);
-  const medals = useWeekMedals(profileId, weekDates);
+  
+  // Si nos pasan las medallas por props, las usamos. Si no, usamos el hook (aunque es lento).
+  const hookMedals = useWeekMedals(profileId, weekDates);
+  const medals = medalsProp || hookMedals;
 
   const locale = idioma === "es" ? "es-ES" : "en-US";
 

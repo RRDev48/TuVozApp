@@ -105,50 +105,58 @@ const mainScreens = [
   { name: "Ajustes", component: SettingsScreen },
 ];
 
+import { NavigationContainer, NavigationIndependentTree } from "@react-navigation/native";
+import FloatingAdipFAB from "../components/common/FloatingAdipFAB";
+
 const StackNavigator = () => {
   return (
-    <Stack.Navigator
-      initialRouteName="Splash"
-      screenOptions={{
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitle: "",
-      }}
-    >
-      {authScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
+    <NavigationIndependentTree>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Splash"
+          screenOptions={{
+            headerShown: false,
+            headerStyle: {
+              backgroundColor: colors.white,
+            },
+            headerTitle: "",
+          }}
+        >
+          {authScreens.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              name={screen.name as keyof RootStackParamsList}
+              component={screen.component}
+            />
+          ))}
 
-      {emergencyScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
+          {emergencyScreens.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              name={screen.name as keyof RootStackParamsList}
+              component={screen.component}
+            />
+          ))}
 
-      {settingsScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
+          {settingsScreens.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              name={screen.name as keyof RootStackParamsList}
+              component={screen.component}
+            />
+          ))}
 
-      {mainScreens.map((screen) => (
-        <Stack.Screen
-          key={screen.name}
-          name={screen.name as keyof RootStackParamsList}
-          component={screen.component}
-        />
-      ))}
-    </Stack.Navigator>
+          {mainScreens.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              name={screen.name as keyof RootStackParamsList}
+              component={screen.component}
+            />
+          ))}
+        </Stack.Navigator>
+        <FloatingAdipFAB />
+      </NavigationContainer>
+    </NavigationIndependentTree>
   );
 };
 
