@@ -11,8 +11,8 @@ import { usePaginatedCategories } from "@/src/app/feature/expresate/hooks/usePag
 import { usePaginatedPictograms } from "@/src/app/feature/expresate/hooks/usePaginatedPictograms";
 import { usePictogramCategories } from "@/src/app/feature/expresate/hooks/usePictogramCategories";
 import { usePictogramPreloader } from "@/src/app/feature/expresate/hooks/usePictogramPreloader";
-import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
 import { usePictogramUsage } from "@/src/app/feature/expresate/hooks/usePictogramUsage";
+import { useSearchPictograms } from "@/src/app/feature/expresate/hooks/useSearchPictograms";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -308,6 +308,36 @@ const ExpresateScreen = () => {
           fontSize: 16,
           color: themedColors.secondary,
         },
+        tabsScroll: {
+          maxHeight: 50,
+          marginBottom: 10,
+        },
+        tabsContainer: {
+          flexDirection: 'row',
+          paddingHorizontal: 20,
+          gap: 10,
+          alignItems: 'center',
+        },
+        tab: {
+          paddingVertical: 8,
+          paddingHorizontal: 12,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: 'transparent',
+        },
+        activeTab: {
+          backgroundColor: themedColors.primary,
+        },
+        inactiveTab: {
+          backgroundColor: '#9E9E9E25',
+        },
+        tabText: {
+          fontSize: 14,
+          fontWeight: '600',
+        },
+        activeTabText: {
+          color: themedColors.secondary,
+        },
       }),
     [themedColors, temaOscuro],
   );
@@ -547,41 +577,68 @@ const ExpresateScreen = () => {
       <ScreenTitle text={transformText(t("expressWithCards"))} />
 
       {!isSearchMode && (
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={tabsStyles.tabsScroll}
-          contentContainerStyle={tabsStyles.tabsContainer}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={containerStyles.tabsScroll}
+          contentContainerStyle={containerStyles.tabsContainer}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setActiveTab('categories')}
-            style={[tabsStyles.tab, activeTab === 'categories' && tabsStyles.activeTab]}
+            style={[
+              containerStyles.tab,
+              activeTab === 'categories' ? containerStyles.activeTab : containerStyles.inactiveTab
+            ]}
           >
-            <CustomText style={[tabsStyles.tabText, activeTab === 'categories' && tabsStyles.activeTabText]}>
+            <CustomText style={[
+              containerStyles.tabText,
+              activeTab === 'categories' ? containerStyles.activeTabText : { color: themedColors.primary }
+            ]}>
               {t('categoriesTab')}
             </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => setActiveTab('favorites')}
-            style={[tabsStyles.tab, activeTab === 'favorites' && tabsStyles.activeTab]}
+            style={[
+              containerStyles.tab,
+              activeTab === 'favorites' ? containerStyles.activeTab : containerStyles.inactiveTab
+            ]}
           >
-            <CustomText style={[tabsStyles.tabText, activeTab === 'favorites' && tabsStyles.activeTabText]}>
+            <CustomText style={[
+              containerStyles.tabText,
+              activeTab === 'favorites' ? containerStyles.activeTabText : { color: themedColors.primary }
+            ]}>
               {t('favoritesTab')}
             </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => setActiveTab('top')}
-            style={[tabsStyles.tab, activeTab === 'top' && tabsStyles.activeTab]}
+            style={[
+              containerStyles.tab,
+              activeTab === 'top' ? containerStyles.activeTab : containerStyles.inactiveTab
+            ]}
           >
-            <CustomText style={[tabsStyles.tabText, activeTab === 'top' && tabsStyles.activeTabText]}>
+            <CustomText style={[
+              containerStyles.tabText,
+              activeTab === 'top' ? containerStyles.activeTabText : { color: themedColors.primary }
+            ]}>
               {t('topUsedTab')}
             </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => setActiveTab('recent')}
-            style={[tabsStyles.tab, activeTab === 'recent' && tabsStyles.activeTab]}
+            style={[
+              containerStyles.tab,
+              activeTab === 'recent' ? containerStyles.activeTab : containerStyles.inactiveTab
+            ]}
           >
-            <CustomText style={[tabsStyles.tabText, activeTab === 'recent' && tabsStyles.activeTabText]}>
+            <CustomText style={[
+              containerStyles.tabText,
+              activeTab === 'recent' ? containerStyles.activeTabText : { color: themedColors.primary }
+            ]}>
               {t('recentsTab')}
             </CustomText>
           </TouchableOpacity>
@@ -607,10 +664,10 @@ const ExpresateScreen = () => {
           <View style={containerStyles.carouselContainer}>
             {activeData.length === 0 && activeTab !== 'categories' ? (
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-                <Ionicons 
-                  name={activeTab === 'favorites' ? 'heart-outline' : 'time-outline'} 
-                  size={60} 
-                  color={themedColors.secondary + '40'} 
+                <Ionicons
+                  name={activeTab === 'favorites' ? 'heart-outline' : 'time-outline'}
+                  size={60}
+                  color={themedColors.secondary + '40'}
                 />
                 <CustomText style={{ textAlign: 'center', marginTop: 10, color: themedColors.secondary }}>
                   {activeTab === 'favorites' ? t('noFavoritesMessage') : t('noUsageMessage')}
@@ -656,38 +713,5 @@ const ExpresateScreen = () => {
     </View>
   );
 };
-
-const tabsStyles = StyleSheet.create({
-  tabsScroll: {
-    maxHeight: 50,
-    marginBottom: 10,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 10,
-    alignItems: 'center',
-  },
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#9E9E9E40',
-  },
-  activeTab: {
-    backgroundColor: '#006F9E',
-    borderColor: '#006F9E',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#9E9E9E',
-    fontWeight: '600',
-  },
-  activeTabText: {
-    color: '#FFFFFF',
-  },
-});
 
 export default ExpresateScreen;

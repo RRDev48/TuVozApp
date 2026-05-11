@@ -18,6 +18,7 @@ import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
 import BackButton from "../../../common/BackButton";
 import ScreenTitle from "../../../common/ScreenTitle";
 import { supportService, SupportTicket } from "../../services/support.Service";
+import i18n from "@/src/app/i18n";
 
 const SupportScreen = () => {
   const { t } = useLanguageRefresh();
@@ -259,7 +260,7 @@ const SupportScreen = () => {
                   {ticket.message}
                 </CustomText>
                 <CustomText style={styles.ticketDate}>
-                  {new Date(ticket.created_at).toLocaleDateString("es-ES", {
+                  {new Date(ticket.created_at).toLocaleDateString(i18n.language === 'es' ? 'es-ES' : 'en-US', {
                     day: "numeric",
                     month: "long",
                     year: "numeric",

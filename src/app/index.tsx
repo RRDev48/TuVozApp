@@ -5,9 +5,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ActiveProfileProvider } from "./contexts/ActiveProfileContext";
 import ExpresateProvider from "./contexts/ExpresateContext";
 import PersonalizationProvider from "./contexts/PersonalizationContext";
-import i18n from "./i18n";
-import StackNavigator from "./navigation/Navigator";
 import { PictogramUsageProvider } from "./feature/expresate/contexts/PictogramUsageContext";
+import { SavedPhrasesProvider } from "./feature/frases/contexts/SavedPhrasesContext";
+import StackNavigator from "./navigation/Navigator";
 import "./performance"; // Initialize performance monitoring
 
 SplashScreen.preventAutoHideAsync();
@@ -23,7 +23,9 @@ const PictomindApp = () => {
         <PersonalizationProvider>
           <ExpresateProvider>
             <PictogramUsageProvider>
-              <StackNavigator />
+              <SavedPhrasesProvider>
+                <StackNavigator />
+              </SavedPhrasesProvider>
             </PictogramUsageProvider>
           </ExpresateProvider>
         </PersonalizationProvider>

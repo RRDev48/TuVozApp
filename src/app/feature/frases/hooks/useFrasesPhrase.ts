@@ -48,10 +48,15 @@ export const useFrasesPhrase = () => {
     }
   }, [selectedPictograms]);
 
+  const clearPhrase = useCallback(() => {
+    setSelectedPictograms([]);
+  }, []);
+
   return {
     selectedPictograms,
     addPictogram,
     removeLastPictogram,
     speakPhrase,
+    clearPhrase,
   };
 };
