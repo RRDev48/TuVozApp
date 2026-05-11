@@ -420,5 +420,6 @@
   "category_salud": "Salud",
   "category_rutina-diaria": "Rutina diaria",
   "allCategories": "Todo",
-  "Search": "Buscar"
+  "Search": "Buscar",
+  "passwordLabelLogin": "Y tu contraseña?"
 }

@@ -1,5 +1,5 @@
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type { RouteProp } from "@react-navigation/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -15,8 +15,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import OptimizedGif from "../../../common/OptimizedGif";
 import BackButton from "../../../common/BackButton";
+import OptimizedGif from "../../../common/OptimizedGif";
 import ProgressBar from "../components/ProgressBar";
 import VerificationErrorModal from "../components/VerificationErrorModal";
 import VerificationSuccessModal from "../components/VerificationSuccessModal";

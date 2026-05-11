@@ -1,5 +1,5 @@
-import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import { useLanguageRefresh } from "@/src/app/contexts/useLanguageRefresh";
+import { colors } from "@/src/app/design-system/themes/globalColors-theme";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import {
   useNavigation,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   roleButtonSelected: {
     backgroundColor: "#3A4A6A",
     borderWidth: 2,
-    borderColor: colors.lightBlue,
+    borderColor: colors.green,
   },
   roleText: {
     fontSize: 16,

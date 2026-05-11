@@ -172,7 +172,10 @@ export const authService = {
         type,
       });
 
+      console.log("Supabase VerifyOTP Response:", { data, error });
+
       if (error) {
+        console.error("Supabase VerifyOTP Error Detail:", error);
         throw error;
       }
 
@@ -289,11 +292,18 @@ export const authService = {
         password,
         options: {
           data: metadata,
-          emailRedirectTo: undefined,
+          // Eliminamos emailRedirectTo para que use la config por defecto de Supabase
         },
       });
 
+      console.log("Supabase SignUp Response:", { 
+        user: data?.user?.id, 
+        session: !!data?.session, 
+        error 
+      });
+
       if (error) {
+        console.error("Supabase SignUp Error Detail:", error);
         throw error;
       }
 
