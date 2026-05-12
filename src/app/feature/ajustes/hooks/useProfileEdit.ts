@@ -21,7 +21,7 @@ export const useProfileEdit = (
   const [isSaving, setIsSaving] = useState(false);
   const [isPickingImage, setIsPickingImage] = useState(false);
   const { updateProfile } = useUserProfiles();
-  const { update: updateActiveProfile } = useActiveProfile();
+  const { id: activeProfileId, update: updateActiveProfile } = useActiveProfile();
 
   const handlePickAvatar = useCallback(async () => {
     try {
@@ -128,10 +128,12 @@ export const useProfileEdit = (
           avatar_url: avatarUrl,
         });
 
-        await updateActiveProfile({
-          displayName: hasNameChanged ? newName : undefined,
-          avatarUrl: hasAvatarChanged ? avatarUrl : undefined,
-        });
+        if (activeProfileId === profileId) {
+          await updateActiveProfile({
+            displayName: hasNameChanged ? newName : undefined,
+            avatarUrl: hasAvatarChanged ? avatarUrl : undefined,
+          });
+        }
 
         setShowSuccess(true);
 
@@ -156,6 +158,7 @@ export const useProfileEdit = (
       initialName,
       profileId,
       updateProfile,
+      activeProfileId,
       updateActiveProfile,
     ],
   );

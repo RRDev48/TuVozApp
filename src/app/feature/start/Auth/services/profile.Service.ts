@@ -384,6 +384,7 @@ export const profileService = {
 
       const allProfilesMap = new Map<string, ProfileWithOwner>();
 
+      // Primero los vinculados por la tabla intermedia (tienen prioridad por is_owner)
       linkedProfilesData.forEach((profile) =>
         allProfilesMap.set(profile.id, profile),
       );

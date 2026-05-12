@@ -11,11 +11,13 @@ import React, {
 const STORAGE_KEY = "@active_profile";
 
 type ActiveProfileData = {
+  id: string | null;
   displayName: string | null;
   avatarUrl: string | null;
 };
 
 type ActiveProfileContextType = {
+  id: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   loading: boolean;
@@ -53,14 +55,15 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
     avatarUrl = userData.user.user_metadata.avatar_url;
   }
 
-  const { data, error } = await supabase
+  const { data: rows, error } = await supabase
     .from("user_profiles")
-    .select("profiles(display_name, avatar_url)")
+    .select("profile_id, profiles(display_name, avatar_url)")
     .eq("user_id", user.id)
     .eq("is_owner", true)
-    .maybeSingle();
+    .limit(1);
 
-  if (error && error.code !== "PGRST116") return null;
+  if (error || !rows || rows.length === 0) return null;
+  const data = rows[0];
 
   let displayName: string | null = null;
   let profileAvatarUrl: string | null = null;
@@ -80,6 +83,7 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
   }
 
   return {
+    id: data?.profile_id ?? null,
     displayName: displayName,
     avatarUrl: profileAvatarUrl || avatarUrl,
   };
@@ -90,6 +94,7 @@ export const ActiveProfileProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const [id, setId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +104,7 @@ export const ActiveProfileProvider = ({
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       if (raw) {
         const cached: ActiveProfileData = JSON.parse(raw);
+        setId(cached.id);
         setDisplayName(cached.displayName);
         setAvatarUrl(cached.avatarUrl);
       }
@@ -118,6 +124,7 @@ export const ActiveProfileProvider = ({
   const refresh = useCallback(async () => {
     const remote = await fetchProfileFromSupabase();
     if (remote) {
+      setId(remote.id);
       setDisplayName(remote.displayName);
       setAvatarUrl(remote.avatarUrl);
       await persistToStorage(remote);
@@ -127,18 +134,21 @@ export const ActiveProfileProvider = ({
   const update = useCallback(
     async (data: Partial<ActiveProfileData>) => {
       const next: ActiveProfileData = {
+        id: data.id !== undefined ? data.id : id,
         displayName:
           data.displayName !== undefined ? data.displayName : displayName,
         avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl : avatarUrl,
       };
+      setId(next.id);
       setDisplayName(next.displayName);
       setAvatarUrl(next.avatarUrl);
       await persistToStorage(next);
     },
-    [displayName, avatarUrl, persistToStorage],
+    [id, displayName, avatarUrl, persistToStorage],
   );
 
   const clear = useCallback(async () => {
+    setId(null);
     setDisplayName(null);
     setAvatarUrl(null);
     try {
@@ -182,7 +192,7 @@ export const ActiveProfileProvider = ({
 
   return (
     <ActiveProfileContext.Provider
-      value={{ displayName, avatarUrl, loading, refresh, update, clear }}
+      value={{ id, displayName, avatarUrl, loading, refresh, update, clear }}
     >
       {children}
     </ActiveProfileContext.Provider>

@@ -421,5 +421,8 @@
   "category_salud": "Health",
   "category_rutina-diaria": "Daily routine",
   "allCategories": "All",
-  "Search": "Search"
+  "Search": "Search",
+  "noEmergencyDataTitle": "Profile not configured",
+  "noEmergencyDataMessage": "Complete your emergency data to stay protected at all times.",
+  "goToSettings": "Go to Settings"
 }

@@ -421,5 +421,8 @@
   "category_rutina-diaria": "Rutina diaria",
   "allCategories": "Todo",
   "Search": "Buscar",
-  "passwordLabelLogin": "Y tu contraseña?"
+  "passwordLabelLogin": "Y tu contraseña?",
+  "noEmergencyDataTitle": "Perfil no configurado",
+  "noEmergencyDataMessage": "Completa tus datos de emergencia para estar protegido en todo momento.",
+  "goToSettings": "Ir a Ajustes"
 }

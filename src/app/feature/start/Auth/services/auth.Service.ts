@@ -213,6 +213,64 @@ export const authService = {
         throw new Error(data.error || "Error en la función de base de datos");
       }
 
+      // Si hay un ownerUserId (flujo de Tutor vinculando subcuenta), gestionamos la propiedad delegada
+      if (userData.ownerUserId) {
+        console.log(`[Link] Intentando vincular subcuenta ${userId} al tutor ${userData.ownerUserId}`);
+        
+        // 1. Buscamos el profile_id que acaba de crear el RPC para el nuevo usuario
+        // Añadimos un pequeño reintento por si el trigger/RPC tiene latencia
+        let profileId: string | null = null;
+        for (let i = 0; i < 3; i++) {
+          const { data: profileLink, error: linkError } = await supabase
+            .from("user_profiles")
+            .select("profile_id")
+            .eq("user_id", userId)
+            .maybeSingle();
+
+          if (profileLink?.profile_id) {
+            profileId = profileLink.profile_id;
+            break;
+          }
+          console.log(`[Link] Intento ${i + 1}: Perfil no encontrado aún para ${userId}...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        if (profileId) {
+          console.log(`[Link] Perfil encontrado: ${profileId}.`);
+          
+          // 2. Vinculamos el perfil al Tutor como dueño (is_owner: true)
+          try {
+            const { error: upsertError } = await supabase.from("user_profiles").upsert(
+              {
+                user_id: userData.ownerUserId,
+                profile_id: profileId,
+                is_owner: true,
+              },
+              { onConflict: "user_id,profile_id" },
+            );
+
+            if (upsertError) {
+              console.error("[Link] Error al insertar en user_profiles para el tutor:", upsertError);
+            }
+          } catch (e) {
+            console.error("[Link] Error silencioso al intentar vincular perfil:", e);
+          }
+
+          // 3. Actualizamos el vínculo del nuevo usuario para reflejar si es dueño o no
+          if (typeof userData.isOwner !== "undefined") {
+            await supabase
+              .from("user_profiles")
+              .update({ is_owner: userData.isOwner })
+              .eq("user_id", userId)
+              .eq("profile_id", profileId);
+          }
+
+          console.log("[Link] Proceso de vinculación completado con éxito");
+        } else {
+          console.error("[Link] No se pudo encontrar un perfil vinculado al nuevo usuario después de varios intentos");
+        }
+      }
+
       await logAuthEvent(
         auditLogService.events.USER_PROFILE_CREATED,
         "User and profile created successfully",

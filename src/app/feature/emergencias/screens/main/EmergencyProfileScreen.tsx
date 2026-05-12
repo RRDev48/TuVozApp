@@ -21,6 +21,7 @@ import { useEmergencyActions } from "../../hooks/useEmergencyActions";
 import { useEmergencyProfile } from "../../hooks/useEmergencyProfile";
 import SkeletonText from "@/src/app/components/common/SkeletonText";
 import SkeletonButton from "@/src/app/components/common/SkeletonButton";
+import CustomText from "../../../common/CustomText";
 
 type EmergencyProfileScreenNavigationProp = StackNavigationProp<
   RootStackParamsList,
@@ -150,42 +151,35 @@ const EmergencyProfileScreen = () => {
         },
         emptyStateContainer: {
           flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingHorizontal: 30,
           backgroundColor: themedColors.background,
         },
-        emptyStateIcon: {
-          marginBottom: 20,
-          opacity: 0.8,
+        emptyStateContent: {
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 30,
+          marginTop: -60,
+          paddingHorizontal: 24,
         },
-        emptyStateTitle: {
-          fontSize: 22,
-          fontWeight: "bold",
+        emptyStateText: {
+          fontSize: 24,
+          fontWeight: "700",
           color: themedColors.text,
           textAlign: "center",
-          marginBottom: 12,
-        },
-        emptyStateMessage: {
-          fontSize: 16,
-          color: themedColors.text,
-          textAlign: "center",
-          opacity: 0.7,
-          lineHeight: 24,
-          marginBottom: 30,
+          lineHeight: 32,
         },
         goToSettingsButton: {
-          backgroundColor: themedColors.secondary,
-          paddingVertical: 14,
-          paddingHorizontal: 24,
-          borderRadius: 12,
+          backgroundColor: themedColors.primary,
+          paddingVertical: 16,
+          paddingHorizontal: 32,
+          borderRadius: 30,
           flexDirection: "row",
           alignItems: "center",
-          gap: 8,
+          gap: 12,
         },
         goToSettingsButtonText: {
-          color: themedColors.primary,
-          fontSize: 16,
+          color: themedColors.secondary,
+          fontSize: 18,
           fontWeight: "bold",
         },
       }),
@@ -274,24 +268,26 @@ const EmergencyProfileScreen = () => {
     return (
       <View style={styles.emptyStateContainer}>
         <BackButton onPress={() => navigation.goBack()} />
-        <Ionicons
-          name="alert-circle-outline"
-          size={80}
-          color={themedColors.secondary}
-          style={styles.emptyStateIcon}
-        />
-        <Text style={styles.emptyStateTitle}>{t("noEmergencyDataTitle") || "Sin datos de emergencia"}</Text>
-        <Text style={styles.emptyStateMessage}>
-          {t("noEmergencyDataMessage") ||
-            "No tienes datos de emergencia cargados. Por favor, configúralos en la sección de Ajustes para estar protegido."}
-        </Text>
-        <TouchableOpacity
-          style={styles.goToSettingsButton}
-          onPress={() => navigation.navigate("Ajustes")}
-        >
-          <Ionicons name="settings-outline" size={20} color={themedColors.primary} />
-          <Text style={styles.goToSettingsButtonText}>{t("goToSettings") || "Ir a Ajustes"}</Text>
-        </TouchableOpacity>
+        <ScreenTitle text={t("emergencyProfile")} />
+        
+        <View style={styles.emptyStateContent}>
+          <Ionicons name="shield-half-sharp" size={180} color={themedColors.secondary} />
+          
+          <CustomText style={styles.emptyStateText}>
+            {t("noEmergencyDataMessage")}
+          </CustomText>
+          
+          <TouchableOpacity
+            style={styles.goToSettingsButton}
+            onPress={() => navigation.navigate("Ajustes")}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="settings-outline" size={24} color={themedColors.secondary} />
+            <CustomText style={styles.goToSettingsButtonText}>
+              {t("goToSettings")}
+            </CustomText>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
