@@ -235,7 +235,7 @@ const CategoryPictogramsScreen = () => {
               <CachedPictogramImage
                 arasaacId={item.arasaac_id}
                 style={containerStyles.image}
-                placeholder={require("@/src/app/assets/icon/Ajustes.png")}
+                placeholder={require("@/src/app/assets/image/adip_icon.png")}
               />
             </View>
             <TouchableOpacity

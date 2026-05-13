@@ -347,7 +347,7 @@ const ExpresateScreen = () => {
       <MenuItem
         name={normalizeCategoryName(item.name, item.slug)}
         route={item.slug}
-        image={require("@/src/app/assets/icon/Ajustes.png")}
+        image={item.image_url ? { uri: item.image_url } : require("@/src/app/assets/image/adip_icon.png")}
         styles={containerStyles}
         onPress={() => handleMenuItemPress(item.id, item.slug, item.name)}
       />

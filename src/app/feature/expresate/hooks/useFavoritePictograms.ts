@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
 import { Pictogram } from "../models/pictogram.types";
 import { expresateService } from "../services/expresate.Service";
+import { useExpresate } from "@/src/app/contexts/ExpresateContext";
 
 const BASE_FAVORITES_KEY = "@tuVoz:favorites";
 
@@ -123,5 +124,11 @@ export const useFavoritePictograms = () => {
     [profileId, storageKey],
   );
 
-  return { favoriteIds, favoritePictograms, toggleFavorite, isReady };
+  const { hiddenPictogramIds } = useExpresate();
+
+  const filteredFavorites = useMemo(() => {
+    return favoritePictograms.filter(p => !hiddenPictogramIds.has(p.id.toString()));
+  }, [favoritePictograms, hiddenPictogramIds]);
+
+  return { favoriteIds, favoritePictograms: filteredFavorites, toggleFavorite, isReady };
 };

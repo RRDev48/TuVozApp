@@ -56,7 +56,7 @@ export const expresateService = {
     try {
       const { data, error } = await supabase
         .from("pictograms_categories")
-        .select("id, name, slug, image_url")
+        .select("id, name, slug, image_url, pictograms(count)")
         .order("name", { ascending: true });
 
       if (error) {

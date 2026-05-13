@@ -58,6 +58,15 @@ type RootStackParamsList = {
     formData: EmergencyFormData;
   };
   EmergencyProfile: undefined;
+  ManageCategories: undefined;
+  EditCategory: {
+    category?: {
+      id: string;
+      name: string;
+      image_url?: string | null;
+    };
+  };
+  AddPictograms: undefined;
 
   BloodTypeSelection: {
     currentBloodType?: string;

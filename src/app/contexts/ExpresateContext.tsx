@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -12,11 +13,15 @@ import {
   PictogramCategory,
 } from "../feature/expresate/models/pictogram.types";
 import { expresateService } from "../feature/expresate/services/expresate.Service";
+import { useActiveProfile } from "./ActiveProfileContext";
 
-const CACHE_KEYS = {
+const BASE_CACHE_KEYS = {
   categories: "expresate.categories.v1",
   pictogramsByCategory: "expresate.pictogramsByCategory.v1",
   search: "expresate.search.v1",
+  customCategories: "expresate.customCategories.v1",
+  customPictograms: "expresate.customPictograms.v1",
+  hiddenPictograms: "expresate.hiddenPictograms.v1",
 };
 
 const SEARCH_CACHE_MAX_ENTRIES = 25;
@@ -29,11 +34,19 @@ interface ExpresateContextType {
   refetchCategories: () => Promise<void>;
   getPictogramsByCategory: (
     categoryId: string,
+    includeHidden?: boolean,
   ) => Promise<{ data: Pictogram[]; fromCache: boolean; error: string | null }>;
   searchPictograms: (
     keyword: string,
   ) => Promise<{ data: Pictogram[]; fromCache: boolean; error: string | null }>;
   clearPictogramsCache: () => void;
+  addCustomPictogram: (pictogram: Pictogram, categoryId: string) => Promise<void>;
+  updateCategoryLocally: (categoryId: string, name: string, imageUrl: string) => Promise<void>;
+  addCustomCategory: (name: string, imageUrl: string) => Promise<void>;
+  deleteCustomPictogram: (pictogramId: string, categoryId: string) => Promise<void>;
+  togglePictogramVisibility: (pictogramId: string, categoryId: string) => Promise<void>;
+  hiddenPictogramIds: Set<string>;
+  customPictograms: Pictogram[];
 }
 
 const ExpresateContext = createContext<ExpresateContextType | undefined>(
@@ -56,6 +69,23 @@ export const ExpresateProvider = ({
   );
   const [isHydrated, setIsHydrated] = useState(false);
   const [hasHydratedCategories, setHasHydratedCategories] = useState(false);
+  const [customCategories, setCustomCategories] = useState<Record<string, Partial<PictogramCategory>>>({});
+  const [customPictograms, setCustomPictograms] = useState<Pictogram[]>([]);
+  const [hiddenPictogramIds, setHiddenPictogramIds] = useState<Set<string>>(new Set());
+  const { id: profileId } = useActiveProfile();
+
+  const cacheKeys = useMemo(() => {
+    const suffix = profileId ? `_${profileId}` : "_guest";
+    return {
+      categories: `${BASE_CACHE_KEYS.categories}${suffix}`,
+      pictogramsByCategory: `${BASE_CACHE_KEYS.pictogramsByCategory}${suffix}`,
+      search: `${BASE_CACHE_KEYS.search}${suffix}`,
+      customCategories: `${BASE_CACHE_KEYS.customCategories}${suffix}`,
+      customPictograms: `${BASE_CACHE_KEYS.customPictograms}${suffix}`,
+      hiddenPictograms: `${BASE_CACHE_KEYS.hiddenPictograms}${suffix}`,
+    };
+  }, [profileId]);
+
   const pictogramsCacheRef = useRef<Record<string, Pictogram[]>>({});
   const searchCacheRef = useRef<Record<string, Pictogram[]>>({});
 
@@ -76,7 +106,15 @@ export const ExpresateProvider = ({
         return;
       }
 
-      setCategories(data || []);
+      const mergedCategories = (data || []).map(cat => {
+        const custom = customCategories[cat.id];
+        if (custom) {
+          return { ...cat, name: custom.name || cat.name, image_url: custom.image_url || cat.image_url };
+        }
+        return cat;
+      });
+
+      setCategories(mergedCategories);
       setError(null);
     } catch (err) {
       if (!background) {
@@ -93,6 +131,7 @@ export const ExpresateProvider = ({
   const getPictogramsByCategory = useCallback(
     async (
       categoryId: string,
+      includeHidden = false,
     ): Promise<{
       data: Pictogram[];
       fromCache: boolean;
@@ -102,7 +141,9 @@ export const ExpresateProvider = ({
 
       if (cachedByCategory) {
         return {
-          data: cachedByCategory,
+          data: includeHidden 
+            ? cachedByCategory 
+            : cachedByCategory.filter(p => !hiddenPictogramIds.has(p.id.toString())),
           fromCache: true,
           error: null,
         };
@@ -116,7 +157,10 @@ export const ExpresateProvider = ({
           return { data: [], fromCache: false, error: serviceError };
         }
 
-        const pictograms = data || [];
+        const pictograms = [
+          ...(data || []),
+          ...customPictograms.filter(p => p.category_id === categoryId)
+        ];
 
         setPictogramsCache((prev) => {
           if (prev[categoryId]) {
@@ -129,7 +173,13 @@ export const ExpresateProvider = ({
           };
         });
 
-        return { data: pictograms, fromCache: false, error: null };
+        return { 
+          data: includeHidden 
+            ? pictograms 
+            : pictograms.filter(p => !hiddenPictogramIds.has(p.id.toString())), 
+          fromCache: false, 
+          error: null 
+        };
       } catch {
         return {
           data: [],
@@ -138,17 +188,75 @@ export const ExpresateProvider = ({
         };
       }
     },
-    [],
+    [customPictograms, cacheKeys, hiddenPictogramIds],
   );
+
+  const addCustomPictogram = async (pictogram: Pictogram, categoryId: string) => {
+    const newPictogram = { ...pictogram, category_id: categoryId, is_custom: true };
+    const updated = [...customPictograms, newPictogram];
+    setCustomPictograms(updated);
+    await AsyncStorage.setItem(cacheKeys.customPictograms, JSON.stringify(updated));
+    setPictogramsCache(prev => {
+      const next = { ...prev };
+      delete next[categoryId];
+      return next;
+    });
+  };
+
+  const updateCategoryLocally = async (categoryId: string, name: string, imageUrl: string) => {
+    const updated = { ...customCategories, [categoryId]: { name, image_url: imageUrl } };
+    setCustomCategories(updated);
+    await AsyncStorage.setItem(cacheKeys.customCategories, JSON.stringify(updated));
+    setCategories(prev => prev.map(cat => 
+      cat.id === categoryId ? { ...cat, name, image_url: imageUrl } : cat
+    ));
+  };
+
+  const addCustomCategory = async (name: string, imageUrl: string) => {
+    const newId = `local_${Date.now()}`;
+    const slug = name.toLowerCase().trim().replace(/\s+/g, "-");
+    const newCategory = { id: newId, name, image_url: imageUrl, slug, is_custom: true };
+    const updatedCustom = { ...customCategories, [newId]: { name, image_url: imageUrl } };
+    setCustomCategories(updatedCustom);
+    setCategories(prev => [...prev, newCategory]);
+    await AsyncStorage.setItem(cacheKeys.customCategories, JSON.stringify(updatedCustom));
+  };
+  
+  const deleteCustomPictogram = async (pictogramId: string, categoryId: string) => {
+    const updated = customPictograms.filter(p => p.id.toString() !== pictogramId.toString());
+    setCustomPictograms(updated);
+    await AsyncStorage.setItem(cacheKeys.customPictograms, JSON.stringify(updated));
+    setPictogramsCache(prev => {
+      const next = { ...prev };
+      delete next[categoryId];
+      return next;
+    });
+  };
+
+  const togglePictogramVisibility = async (pictogramId: string, categoryId: string) => {
+    const nextHidden = new Set(hiddenPictogramIds);
+    if (nextHidden.has(pictogramId)) {
+      nextHidden.delete(pictogramId);
+    } else {
+      nextHidden.add(pictogramId);
+    }
+    setHiddenPictogramIds(nextHidden);
+    await AsyncStorage.setItem(cacheKeys.hiddenPictograms, JSON.stringify(Array.from(nextHidden)));
+    setPictogramsCache(prev => {
+      const next = { ...prev };
+      delete next[categoryId];
+      return next;
+    });
+  };
 
   const clearPictogramsCache = useCallback(() => {
     setPictogramsCache({});
     setSearchCache({});
     void AsyncStorage.multiRemove([
-      CACHE_KEYS.pictogramsByCategory,
-      CACHE_KEYS.search,
+      cacheKeys.pictogramsByCategory,
+      cacheKeys.search,
     ]);
-  }, []);
+  }, [cacheKeys]);
 
   const searchPictograms = useCallback(
     async (
@@ -163,7 +271,7 @@ export const ExpresateProvider = ({
 
       if (cachedByKeyword) {
         return {
-          data: cachedByKeyword,
+          data: cachedByKeyword.filter(p => !hiddenPictogramIds.has(p.id.toString())),
           fromCache: true,
           error: null,
         };
@@ -177,7 +285,12 @@ export const ExpresateProvider = ({
           return { data: [], fromCache: false, error: serviceError };
         }
 
-        const pictograms = data || [];
+        const pictograms = [
+          ...(data || []),
+          ...customPictograms.filter(p => 
+            p.keyword.toLowerCase().includes(cacheKey)
+          )
+        ];
 
         setSearchCache((prev) => {
           if (prev[cacheKey]) {
@@ -208,7 +321,11 @@ export const ExpresateProvider = ({
           return bounded;
         });
 
-        return { data: pictograms, fromCache: false, error: null };
+        return { 
+          data: pictograms.filter(p => !hiddenPictogramIds.has(p.id.toString())), 
+          fromCache: false, 
+          error: null 
+        };
       } catch {
         return {
           data: [],
@@ -217,7 +334,7 @@ export const ExpresateProvider = ({
         };
       }
     },
-    [],
+    [customPictograms, hiddenPictogramIds],
   );
 
   useEffect(() => {
@@ -233,11 +350,20 @@ export const ExpresateProvider = ({
 
     const hydrateCache = async () => {
       try {
-        const [categoriesEntry, pictogramsByCategoryEntry, searchEntry] =
-          await AsyncStorage.multiGet([
-            CACHE_KEYS.categories,
-            CACHE_KEYS.pictogramsByCategory,
-            CACHE_KEYS.search,
+        const [
+          categoriesEntry, 
+          pictogramsByCategoryEntry, 
+          searchEntry,
+          customCatsEntry,
+          customPicsEntry,
+          hiddenPicsEntry
+        ] = await AsyncStorage.multiGet([
+            cacheKeys.categories,
+            cacheKeys.pictogramsByCategory,
+            cacheKeys.search,
+            cacheKeys.customCategories,
+            cacheKeys.customPictograms,
+            cacheKeys.hiddenPictograms
           ]);
 
         const storedCategories = categoriesEntry?.[1]
@@ -252,13 +378,31 @@ export const ExpresateProvider = ({
         const storedSearch = searchEntry?.[1]
           ? (JSON.parse(searchEntry[1]) as Record<string, Pictogram[]>)
           : {};
+        
+        const storedCustomCats = customCatsEntry?.[1]
+          ? (JSON.parse(customCatsEntry[1]) as Record<string, Partial<PictogramCategory>>)
+          : {};
+        
+        const storedCustomPics = customPicsEntry?.[1]
+          ? (JSON.parse(customPicsEntry[1]) as Pictogram[])
+          : [];
 
-        if (!isMounted) {
-          return;
-        }
+        const storedHiddenPics = hiddenPicsEntry?.[1]
+          ? (JSON.parse(hiddenPicsEntry[1]) as string[])
+          : [];
+
+        if (!isMounted) return;
+
+        setCustomCategories(storedCustomCats);
+        setCustomPictograms(storedCustomPics);
+        setHiddenPictogramIds(new Set(storedHiddenPics));
 
         if (storedCategories.length > 0) {
-          setCategories(storedCategories);
+          const localized = storedCategories.map(cat => {
+            const custom = storedCustomCats[cat.id];
+            return custom ? { ...cat, ...custom } : cat;
+          });
+          setCategories(localized);
           setHasHydratedCategories(true);
           setIsLoading(false);
         }
@@ -266,11 +410,9 @@ export const ExpresateProvider = ({
         setPictogramsCache(storedPictogramsByCategory);
         setSearchCache(storedSearch);
       } catch {
-        // Ignore hydration failures and continue with network fetch.
+        // Ignore hydration failures
       } finally {
-        if (isMounted) {
-          setIsHydrated(true);
-        }
+        if (isMounted) setIsHydrated(true);
       }
     };
 
@@ -279,7 +421,7 @@ export const ExpresateProvider = ({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [cacheKeys]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -287,7 +429,7 @@ export const ExpresateProvider = ({
     }
 
     void fetchCategories(hasHydratedCategories);
-  }, [isHydrated, hasHydratedCategories]);
+  }, [isHydrated, hasHydratedCategories, cacheKeys]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -296,13 +438,13 @@ export const ExpresateProvider = ({
 
     const timeoutId = setTimeout(() => {
       void AsyncStorage.setItem(
-        CACHE_KEYS.categories,
+        cacheKeys.categories,
         JSON.stringify(categories),
       );
     }, CACHE_PERSIST_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [categories, isHydrated]);
+  }, [categories, isHydrated, cacheKeys]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -311,13 +453,13 @@ export const ExpresateProvider = ({
 
     const timeoutId = setTimeout(() => {
       void AsyncStorage.setItem(
-        CACHE_KEYS.pictogramsByCategory,
+        cacheKeys.pictogramsByCategory,
         JSON.stringify(pictogramsCache),
       );
     }, CACHE_PERSIST_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [pictogramsCache, isHydrated]);
+  }, [pictogramsCache, isHydrated, cacheKeys]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -325,11 +467,11 @@ export const ExpresateProvider = ({
     }
 
     const timeoutId = setTimeout(() => {
-      void AsyncStorage.setItem(CACHE_KEYS.search, JSON.stringify(searchCache));
+      void AsyncStorage.setItem(cacheKeys.search, JSON.stringify(searchCache));
     }, CACHE_PERSIST_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [searchCache, isHydrated]);
+  }, [searchCache, isHydrated, cacheKeys]);
 
   const value = {
     categories,
@@ -339,6 +481,13 @@ export const ExpresateProvider = ({
     getPictogramsByCategory,
     searchPictograms,
     clearPictogramsCache,
+    addCustomPictogram,
+    updateCategoryLocally,
+    addCustomCategory,
+    deleteCustomPictogram,
+    togglePictogramVisibility,
+    hiddenPictogramIds,
+    customPictograms,
   };
 
   return (

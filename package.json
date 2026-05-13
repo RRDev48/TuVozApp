@@ -18,6 +18,7 @@
     "@react-navigation/native": "^7.1.28",
     "@react-navigation/stack": "^7.6.16",
     "@supabase/supabase-js": "^2.91.1",
+    "axios": "^1.16.0",
     "dotenv": "^17.2.3",
     "expo": "~54.0.32",
     "expo-constants": "~18.0.13",
@@ -50,6 +51,7 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",

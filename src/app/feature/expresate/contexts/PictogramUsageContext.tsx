@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Pictogram } from '../models/pictogram.types';
 import { useActiveProfile } from '@/src/app/contexts/ActiveProfileContext';
+import { useExpresate } from '@/src/app/contexts/ExpresateContext';
 
 const BASE_USAGE_KEY = '@pictogram_usage_history';
 const MAX_RECENT_ITEMS = 12;
@@ -114,8 +115,23 @@ export const PictogramUsageProvider: React.FC<{ children: ReactNode }> = ({ chil
     }
   };
 
+  const { hiddenPictogramIds } = useExpresate();
+
+  const filteredRecent = useMemo(() => {
+    return recentPictograms.filter(p => !hiddenPictogramIds.has(p.id.toString()));
+  }, [recentPictograms, hiddenPictogramIds]);
+
+  const filteredTop = useMemo(() => {
+    return topPictograms.filter(p => !hiddenPictogramIds.has(p.id.toString()));
+  }, [topPictograms, hiddenPictogramIds]);
+
   return (
-    <PictogramUsageContext.Provider value={{ recentPictograms, topPictograms, trackUsage, clearOldData }}>
+    <PictogramUsageContext.Provider value={{ 
+      recentPictograms: filteredRecent, 
+      topPictograms: filteredTop, 
+      trackUsage, 
+      clearOldData 
+    }}>
       {children}
     </PictogramUsageContext.Provider>
   );

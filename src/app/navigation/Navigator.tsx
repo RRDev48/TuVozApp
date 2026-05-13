@@ -25,6 +25,9 @@ import MedicationsScreen from "../feature/emergencias/screens/medication/Medicat
 import NotesScreen from "../feature/emergencias/screens/notes/NotesScreen";
 import CategoryPictogramsScreen from "../feature/expresate/screens/CategoryPictogramsScreen";
 import ExpresateScreen from "../feature/expresate/screens/ExpresateScreen";
+import AddPictogramsScreen from "../feature/tarjetas/screens/AddPictogramsScreen";
+import EditCategoryScreen from "../feature/tarjetas/screens/EditCategoryScreen";
+import ManageCategoriesScreen from "../feature/tarjetas/screens/ManageCategoriesScreen";
 import ShortcutScreen from "../feature/frases/screens/ShortcutScreen";
 import HomeScreen from "../feature/Home/screen/HomeScreen";
 import LogrosScreen from "../feature/rutinas/screens/LogrosScreen";
@@ -98,6 +101,9 @@ const mainScreens = [
   { name: "Rutinas", component: RoutineScreen },
   { name: "Logros", component: LogrosScreen },
   { name: "Tarjetas", component: CardsScreen },
+  { name: "ManageCategories", component: ManageCategoriesScreen },
+  { name: "EditCategory", component: EditCategoryScreen },
+  { name: "AddPictograms", component: AddPictogramsScreen },
   { name: "Frases", component: ShortcutScreen },
   { name: "Emergencias", component: EmergencyScreen },
   { name: "EmergenciasParte2", component: EmergencyScreen2 },
