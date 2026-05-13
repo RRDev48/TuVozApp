@@ -61,7 +61,7 @@ const CategoryPictogramsScreen = () => {
   const sortedOnceRef = useRef(false);
   const flatListRef = useRef<FlatList>(null);
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 4;
 
   useEffect(() => {
     if (sortedOnceRef.current || pictograms.length === 0) {
@@ -289,18 +289,6 @@ const CategoryPictogramsScreen = () => {
               <View style={{ flex: 1 }} />
             )}
           </View>
-          <View style={containerStyles.gridRow}>
-            {page[4] ? (
-              renderPictogramItem(page[4])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-            {page[5] ? (
-              renderPictogramItem(page[5])
-            ) : (
-              <View style={{ flex: 1 }} />
-            )}
-          </View>
         </View>
       );
     },
@@ -355,10 +343,6 @@ const CategoryPictogramsScreen = () => {
   const renderSkeletonGrid = () => (
     <View style={containerStyles.carouselContainer}>
       <View style={containerStyles.pageContainer}>
-        <View style={containerStyles.gridRow}>
-          <SkeletonCard />
-          <SkeletonCard />
-        </View>
         <View style={containerStyles.gridRow}>
           <SkeletonCard />
           <SkeletonCard />
