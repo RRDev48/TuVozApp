@@ -1,11 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCurrentUserProfile } from "../../ajustes/hooks/useCurrentUserProfile";
-import { emergencyService } from "../../emergencias/services/emergency.Service";
-import { expresateService } from "../services/expresate.Service";
 import { Pictogram } from "../models/pictogram.types";
+import { expresateService } from "../services/expresate.Service";
 
-const GUEST_FAVORITES_KEY = "@tuVoz:guest_favorites";
+const BASE_FAVORITES_KEY = "@tuVoz:favorites";
 
 export const useFavoritePictograms = () => {
   const {
@@ -19,44 +18,32 @@ export const useFavoritePictograms = () => {
   const [isReady, setIsReady] = useState(false);
   const favoriteIdsRef = useRef<Set<string>>(new Set());
 
+  const storageKey = useMemo(() => {
+    if (profileId) return `${BASE_FAVORITES_KEY}_${profileId}`;
+    return "@tuVoz:guest_favorites";
+  }, [profileId]);
+
   useEffect(() => {
     favoriteIdsRef.current = favoriteIds;
   }, [favoriteIds]);
 
-  const resolveProfileId = useCallback(async () => {
-    if (profileId) {
-      return profileId;
-    }
-
-    if (!isAuthenticated || !userId) {
-      return null;
-    }
-
-    try {
-      return await emergencyService.getCurrentUserProfileId(userId);
-    } catch {
-      return null;
-    }
-  }, [profileId, isAuthenticated, userId]);
-
   const fetchFavorites = useCallback(async () => {
-    if (profileLoading) return;
+    if (profileLoading || !storageKey) return;
 
     try {
-      const stored = await AsyncStorage.getItem(GUEST_FAVORITES_KEY);
+      const stored = await AsyncStorage.getItem(storageKey);
       const localIds: string[] = stored ? (JSON.parse(stored) as string[]) : [];
-      const effectiveProfileId = await resolveProfileId();
 
-      if (effectiveProfileId) {
+      if (profileId) {
         if (localIds.length > 0) {
           await expresateService.syncFavoritePictograms(
-            effectiveProfileId,
+            profileId,
             localIds,
           );
         }
 
         const { data } =
-          await expresateService.getFavoritePictograms(effectiveProfileId);
+          await expresateService.getFavoritePictograms(profileId);
         const remotePictograms = data ?? [];
         const remoteIds = remotePictograms.map((p) => p.id.toString());
         const localIdsParsed = (localIds as (string | number)[]).map(id => id.toString());
@@ -65,18 +52,19 @@ export const useFavoritePictograms = () => {
         setFavoriteIds(merged);
         setFavoritePictograms(remotePictograms);
         await AsyncStorage.setItem(
-          GUEST_FAVORITES_KEY,
+          storageKey,
           JSON.stringify([...merged]),
         );
       } else {
         setFavoriteIds(new Set(localIds));
       }
-    } catch {
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
       setFavoriteIds(new Set());
     } finally {
       setIsReady(true);
     }
-  }, [profileLoading, resolveProfileId]);
+  }, [profileLoading, profileId, storageKey]);
 
   useEffect(() => {
     fetchFavorites();
@@ -84,6 +72,8 @@ export const useFavoritePictograms = () => {
 
   const toggleFavorite = useCallback(
     async (pictogramId: string) => {
+      if (!storageKey) return;
+
       const nextIds = new Set(favoriteIdsRef.current);
       const wasFavorite = nextIds.has(pictogramId);
 
@@ -98,28 +88,27 @@ export const useFavoritePictograms = () => {
 
       try {
         await AsyncStorage.setItem(
-          GUEST_FAVORITES_KEY,
+          storageKey,
           JSON.stringify([...nextIds]),
         );
 
-        const effectiveProfileId = await resolveProfileId();
-
-        if (effectiveProfileId) {
+        if (profileId) {
           const result = wasFavorite
             ? await expresateService.removeFavoritePictogram(
-                effectiveProfileId,
-                pictogramId,
-              )
+              profileId,
+              pictogramId,
+            )
             : await expresateService.addFavoritePictogram(
-                effectiveProfileId,
-                pictogramId,
-              );
+              profileId,
+              pictogramId,
+            );
 
           if (!result.success) {
             return;
           }
         }
-      } catch {
+      } catch (error) {
+        console.error("Error toggling favorite:", error);
         setFavoriteIds((prev) => {
           const next = new Set(prev);
           if (wasFavorite) {
@@ -131,7 +120,7 @@ export const useFavoritePictograms = () => {
         });
       }
     },
-    [resolveProfileId],
+    [profileId, storageKey],
   );
 
   return { favoriteIds, favoritePictograms, toggleFavorite, isReady };

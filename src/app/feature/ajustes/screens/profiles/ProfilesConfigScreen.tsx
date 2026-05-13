@@ -48,6 +48,7 @@ const ProfilesConfigScreen = () => {
     handleAddProfile,
     handleProfilePress,
     handleEditProfile,
+    activeProfileId,
   } = useProfilesConfig(currentUser);
 
   useEffect(() => {
@@ -189,14 +190,12 @@ const ProfilesConfigScreen = () => {
         <View style={styles.profileInfo}>
           <Text style={styles.profileName}>{profile.display_name}</Text>
         </View>
-        {index === 0 && (
-          <Ionicons
-            name="eye"
-            size={24}
-            color={themedColors.background}
-            style={styles.eyeIcon}
-          />
-        )}
+        <Ionicons
+          name={profile.id === activeProfileId ? "eye" : "eye-off"}
+          size={24}
+          color={themedColors.background}
+          style={styles.eyeIcon}
+        />
         <TouchableOpacity
           style={styles.editIconButton}
           onPress={(event: GestureResponderEvent) => {
@@ -213,7 +212,7 @@ const ProfilesConfigScreen = () => {
         </TouchableOpacity>
       </TouchableOpacity>
     ),
-    [styles, themedColors, handleProfilePress, handleEditProfile],
+    [styles, themedColors, handleProfilePress, handleEditProfile, activeProfileId],
   );
 
   const renderSkeletonProfiles = () => (

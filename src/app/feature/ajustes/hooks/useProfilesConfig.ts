@@ -1,3 +1,4 @@
+import { useActiveProfile } from "@/src/app/contexts/ActiveProfileContext";
 import RootStackParamsList from "@/src/app/navigation/navigation.types";
 import type {
   Profile,
@@ -21,6 +22,7 @@ export const useProfilesConfig = (currentUser: CurrentAuthUser) => {
   const navigation = useNavigation<ProfilesConfigScreenNavigationProp>();
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isLoadingRole, setIsLoadingRole] = useState(false);
+  const { id: activeProfileId, update: updateActiveProfile } = useActiveProfile();
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -81,8 +83,21 @@ export const useProfilesConfig = (currentUser: CurrentAuthUser) => {
   }, [currentUser, userRole, navigation]);
 
   const handleProfilePress = useCallback(
-    (_profile: ProfileWithOwner) => {},
-    [],
+    async (profile: ProfileWithOwner) => {
+      if (profile.id === activeProfileId) return;
+
+      await updateActiveProfile({
+        id: profile.id,
+        displayName: profile.display_name,
+        avatarUrl: profile.avatar_url,
+      });
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    },
+    [activeProfileId, updateActiveProfile],
   );
 
   const handleEditProfile = useCallback(
@@ -102,5 +117,6 @@ export const useProfilesConfig = (currentUser: CurrentAuthUser) => {
     handleAddProfile,
     handleProfilePress,
     handleEditProfile,
+    activeProfileId,
   };
 };

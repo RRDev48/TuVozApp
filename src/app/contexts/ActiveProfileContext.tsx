@@ -40,7 +40,7 @@ export const useActiveProfile = (): ActiveProfileContextType => {
   return ctx;
 };
 
-async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
+async function fetchProfileFromSupabase(targetProfileId?: string | null): Promise<ActiveProfileData | null> {
   const {
     data: { user },
     error: authError,
@@ -48,19 +48,18 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
 
   if (authError || !user) return null;
 
-  const { data: userData } = await supabase.auth.getUser();
-
-  let avatarUrl: string | null = null;
-  if (userData.user?.user_metadata?.avatar_url) {
-    avatarUrl = userData.user.user_metadata.avatar_url;
-  }
-
-  const { data: rows, error } = await supabase
+  let query = supabase
     .from("user_profiles")
     .select("profile_id, profiles(display_name, avatar_url)")
-    .eq("user_id", user.id)
-    .eq("is_owner", true)
-    .limit(1);
+    .eq("user_id", user.id);
+
+  if (targetProfileId) {
+    query = query.eq("profile_id", targetProfileId);
+  } else {
+    query = query.eq("is_owner", true);
+  }
+
+  const { data: rows, error } = await query.limit(1);
 
   if (error || !rows || rows.length === 0) return null;
   const data = rows[0];
@@ -85,7 +84,7 @@ async function fetchProfileFromSupabase(): Promise<ActiveProfileData | null> {
   return {
     id: data?.profile_id ?? null,
     displayName: displayName,
-    avatarUrl: profileAvatarUrl || avatarUrl,
+    avatarUrl: profileAvatarUrl,
   };
 }
 
@@ -122,14 +121,14 @@ export const ActiveProfileProvider = ({
   }, []);
 
   const refresh = useCallback(async () => {
-    const remote = await fetchProfileFromSupabase();
+    const remote = await fetchProfileFromSupabase(id);
     if (remote) {
       setId(remote.id);
       setDisplayName(remote.displayName);
       setAvatarUrl(remote.avatarUrl);
       await persistToStorage(remote);
     }
-  }, [persistToStorage]);
+  }, [id, persistToStorage]);
 
   const update = useCallback(
     async (data: Partial<ActiveProfileData>) => {

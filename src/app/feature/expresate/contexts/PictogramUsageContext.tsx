@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Pictogram } from '../models/pictogram.types';
+import { useActiveProfile } from '@/src/app/contexts/ActiveProfileContext';
 
-const USAGE_STORAGE_KEY = '@pictogram_usage_history';
+const BASE_USAGE_KEY = '@pictogram_usage_history';
 const MAX_RECENT_ITEMS = 12;
 const MAX_TOP_ITEMS = 20;
 
@@ -26,25 +27,34 @@ interface PictogramUsageContextType {
 const PictogramUsageContext = createContext<PictogramUsageContextType | undefined>(undefined);
 
 export const PictogramUsageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { id: profileId } = useActiveProfile();
   const [usageData, setUsageData] = useState<UsageData>({});
   const [recentPictograms, setRecentPictograms] = useState<Pictogram[]>([]);
   const [topPictograms, setTopPictograms] = useState<Pictogram[]>([]);
 
-  // Cargar datos iniciales
+  const storageKey = useMemo(() => {
+    if (profileId) return `${BASE_USAGE_KEY}_${profileId}`;
+    return `${BASE_USAGE_KEY}_guest`;
+  }, [profileId]);
+
+  // Cargar datos iniciales cuando cambia el perfil
   useEffect(() => {
     const loadUsageData = async () => {
       try {
-        const stored = await AsyncStorage.getItem(USAGE_STORAGE_KEY);
+        const stored = await AsyncStorage.getItem(storageKey);
         if (stored) {
           const parsed = JSON.parse(stored);
           setUsageData(parsed);
+        } else {
+          setUsageData({});
         }
       } catch (e) {
         console.error('Error loading pictogram usage:', e);
+        setUsageData({});
       }
     };
     loadUsageData();
-  }, []);
+  }, [storageKey]);
 
   // Actualizar listas derivadas
   useEffect(() => {
@@ -87,17 +97,17 @@ export const PictogramUsageProvider: React.FC<{ children: ReactNode }> = ({ chil
         [idStr]: newEntry
       };
 
-      AsyncStorage.setItem(USAGE_STORAGE_KEY, JSON.stringify(newData)).catch(err => 
+      AsyncStorage.setItem(storageKey, JSON.stringify(newData)).catch(err => 
         console.error('Error saving usage to storage:', err)
       );
 
       return newData;
     });
-  }, []);
+  }, [storageKey]);
 
   const clearOldData = async () => {
     try {
-      await AsyncStorage.removeItem(USAGE_STORAGE_KEY);
+      await AsyncStorage.removeItem(storageKey);
       setUsageData({});
     } catch (e) {
       console.error('Error clearing usage data:', e);

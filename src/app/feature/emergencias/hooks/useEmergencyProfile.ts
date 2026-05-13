@@ -1,4 +1,4 @@
-import { supabase } from "@/src/lib/supabaseClient";
+import { useActiveProfile } from "@/src/app/contexts/ActiveProfileContext";
 import { useEffect, useState } from "react";
 import {
   EmergencyProfile,
@@ -8,32 +8,24 @@ import {
 export const useEmergencyProfile = () => {
   const [profile, setProfile] = useState<EmergencyProfile | null>(null);
   const [profileFullName, setProfileFullName] = useState<string>("");
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const { id: profileId, loading: activeProfileLoading } = useActiveProfile();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = async () => {
+    if (!profileId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuario no autenticado");
-
-      const userProfileId = await emergencyService.getCurrentUserProfileId(
-        user.id,
-      );
-      if (!userProfileId)
-        throw new Error("No se encontró perfil para el usuario");
-
-      setProfileId(userProfileId);
-
       // Ejecutar estas peticiones en paralelo para ahorrar tiempo
       const [fullName, emergencyProfile] = await Promise.all([
-        emergencyService.getProfileFullName(userProfileId),
-        emergencyService.getEmergencyProfile(userProfileId),
+        emergencyService.getProfileFullName(profileId),
+        emergencyService.getEmergencyProfile(profileId),
       ]);
 
       setProfileFullName(fullName);
@@ -46,14 +38,18 @@ export const useEmergencyProfile = () => {
   };
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (profileId) {
+      fetchProfile();
+    } else if (!activeProfileLoading) {
+      setLoading(false);
+    }
+  }, [profileId, activeProfileLoading]);
 
   return {
     profile,
     profileFullName,
     profileId,
-    loading,
+    loading: loading || activeProfileLoading,
     error,
     refetch: fetchProfile,
   };

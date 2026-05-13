@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { supabase } from "@/src/lib/supabaseClient";
 import ZenithXAnimado from "../../../../assets/icon/ZenithXAnimado.svg";
 import TuvozLogo from "../../../../assets/image/tuvoz.svg";
 
@@ -20,11 +21,20 @@ const SplashScreen = () => {
   usePreloadGifs();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace("Onboarding");
-    }, 3000);
+    const checkUserAndNavigate = async () => {
+      // Esperar un poco para mostrar el splash
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-    return () => clearTimeout(timer);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        navigation.replace("Home");
+      } else {
+        navigation.replace("Onboarding");
+      }
+    };
+
+    checkUserAndNavigate();
   }, [navigation]);
 
   return (
